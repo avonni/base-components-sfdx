@@ -1,0 +1,67 @@
+<template>
+    <button
+        class={computedButtonClass}
+        disabled={disabled}
+        aria-expanded={computedAriaExpanded}
+        title={computedTitle}
+        accesskey={computedAccessKey}
+        value={value}
+        aria-haspopup="true"
+        onclick={handleButtonClick}
+        onblur={handleBlur}
+        onfocus={handleFocus}
+        type="button"
+        onmousedown={handleButtonMouseDown}
+    >
+        <abbr
+            if:true={isDraft}
+            class="slds-indicator_unsaved slds-p-right_xx-small"
+            title={draftAlternativeText}
+            >*</abbr
+        >
+        {label}
+
+        <lightning-icon icon-name={iconName} size="x-small"></lightning-icon>
+
+        <template if:true={computedShowDownIcon}>
+            <lightning-icon
+                icon-name={iconName}
+                size="x-small"
+                class="slds-m-left_xx-small"
+            ></lightning-icon>
+        </template>
+
+        <span class="slds-assistive-text">{computedAlternativeText}</span>
+    </button>
+
+    <template if:true={_dropdownOpened}>
+        <div
+            class={computedDropdownClass}
+            onmousedown={handleDropdownMouseDown}
+            onmouseup={handleDropdownMouseUp}
+            onmouseleave={handleDropdownMouseLeave}
+            onscroll={handleDropdownScroll}
+        >
+            <template if:true={isLoading}>
+                <lightning-spinner
+                    size="small"
+                    alternative-text={computedLoadingStateAlternativeText}
+                ></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                <div
+                    class="slds-dropdown__list"
+                    role="menu"
+                    onprivateselect={handleMenuItemPrivateSelect}
+                    onprivateblur={handlePrivateBlur}
+                    onprivatefocus={handlePrivateFocus}
+                    onmouseover={handleMouseOverOnMenuItem}
+                    onmouseout={allowBlur}
+                >
+                    <slot></slot>
+                </div>
+            </template>
+        </div>
+    </template>
+    <slot name="dialogs"></slot>
+</template>

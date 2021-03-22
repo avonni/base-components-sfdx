@@ -1,0 +1,72 @@
+.avonni-img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.avonni-img-fluid-grow {
+    width: 100%;
+}
+
+.avonni-img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+.avonni-rounded {
+    border-radius: 0.25rem;
+}
+
+.avonni-rounded-right,
+.avonni-rounded-top {
+    border-top-right-radius: 0.25rem;
+}
+
+.avonni-rounded-top {
+    border-top-left-radius: 0.25rem;
+}
+
+.avonni-rounded-bottom,
+.avonni-rounded-right {
+    border-bottom-right-radius: 0.25rem;
+}
+
+.avonni-rounded-bottom,
+.avonni-rounded-left {
+    border-bottom-left-radius: 0.25rem;
+}
+
+.avonni-rounded-left {
+    border-top-left-radius: 0.25rem;
+}
+
+.avonni-rounded-circle {
+    border-radius: 50%;
+}
+
+.avonni-not-rounded {
+    border-radius: 0;
+}
+
+.avonni-float-left {
+    float: left;
+}
+
+.avonni-float-right {
+    float: right;
+}
+
+.avonni-margin-left-auto,
+.avonni-margin-auto {
+    margin-left: auto;
+}
+
+.avonni-margin-right-auto,
+.avonni-margin-auto {
+    margin-right: auto;
+}
+
+.avonni-display-block {
+    display: block;
+}

@@ -1,0 +1,19 @@
+.avonni-pallet-container {
+    position: relative;
+    display: inline-block;
+}
+
+a[read-only='true'],
+a[is-disabled='true'] {
+    cursor: default;
+}
+
+a[read-only='true']:focus,
+a[is-disabled='true']:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.slds-color-picker__swatches {
+    white-space: initial;
+}

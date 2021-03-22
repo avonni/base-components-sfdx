@@ -1,0 +1,19 @@
+.avonni-pagination-container {
+    display: flex;
+}
+
+.avonni-pagination-container-left {
+    justify-content: flex-start;
+}
+
+.avonni-pagination-container-center {
+    justify-content: center;
+}
+
+.avonni-pagination-container-right {
+    justify-content: flex-end;
+}
+
+.avonni-pagination-container-fill {
+    width: 100%;
+}

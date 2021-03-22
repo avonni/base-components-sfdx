@@ -1,0 +1,100 @@
+<template>
+    <div
+        class="avonni-calendar-container"
+        onfocus={handleFocus}
+        onblur={handleBlur}
+        tabindex="0"
+    >
+        <div class="slds-form-element">
+            <div class="slds-datepicker">
+                <div class="slds-datepicker__filter slds-grid">
+                    <div
+                        class="slds-datepicker__filter_month slds-grid slds-grid_align-spread slds-grow"
+                    >
+                        <div class="slds-align-middle">
+                            <lightning-button-icon
+                                icon-name="utility:left"
+                                variant="container"
+                                alternative-text="Previous Month"
+                                title="Previous Month"
+                                onclick={handlerPreviousMonth}
+                                disabled={disabledPrevious}
+                                onfocus={handleFocus}
+                                onblur={handleBlur}
+                            ></lightning-button-icon>
+                        </div>
+                        <h2 class="slds-align-middle" id="month">{month}</h2>
+                        <div class="slds-align-middle">
+                            <lightning-button-icon
+                                icon-name="utility:right"
+                                variant="container"
+                                alternative-text="Next Month"
+                                title="Next Month"
+                                onclick={handlerNextMonth}
+                                disabled={disabledNext}
+                                onfocus={handleFocus}
+                                onblur={handleBlur}
+                            ></lightning-button-icon>
+                        </div>
+                    </div>
+                    <lightning-combobox
+                        name="years"
+                        label="Years"
+                        variant="label-hidden"
+                        dropdown-alignment="right"
+                        value={year}
+                        placeholder={year}
+                        options={yearsList}
+                        onchange={handleYearChange}
+                        disabled={disabled}
+                        onfocus={handleFocus}
+                        onblur={handleBlur}
+                    >
+                    </lightning-combobox>
+                </div>
+                <table
+                    aria-labelledby="month"
+                    aria-multiselectable="true"
+                    class="slds-datepicker__month"
+                    role="grid"
+                >
+                    <thead>
+                        <tr id="weekdays">
+                            <template
+                                for:each={days}
+                                for:item="day"
+                                for:index="index"
+                            >
+                                <th key={day} id={index} scope="col">
+                                    <abbr>{day}</abbr>
+                                </th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={calendarData} for:item="week">
+                            <tr key={generateKey}>
+                                <template for:each={week} for:item="day">
+                                    <td
+                                        class={day.class}
+                                        role="gridcell"
+                                        key={generateKey}
+                                        aria-selected={day.selected}
+                                        aria-current={day.currentDate}
+                                    >
+                                        <span
+                                            class={day.dayClass}
+                                            data-day={day.fullDate}
+                                            onclick={handlerSelectDate}
+                                            >{day.label}</span
+                                        >
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,112 @@
+.slds-progress-ring__progress {
+    position: initial;
+}
+
+.avonni-progress-ring {
+    position: relative;
+    display: inline-block;
+    background: #dddbda;
+}
+
+.avonni-progress-x-small {
+    height: 26px;
+    width: 26px;
+    border-radius: 26px;
+}
+
+.avonni-progress-small {
+    height: 52px;
+    width: 52px;
+    border-radius: 52px;
+}
+
+.avonni-progress-medium {
+    height: 104px;
+    width: 104px;
+    border-radius: 104px;
+}
+
+.avonni-progress-large {
+    height: 152px;
+    width: 152px;
+    border-radius: 152px;
+}
+
+.avonni-progress-x-large {
+    height: 208px;
+    width: 208px;
+    border-radius: 208px;
+}
+
+.avonni-progress-content {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(255, 255, 255);
+}
+
+.avonni-progress-content-x-small {
+    border-radius: 26px;
+    left: 4px;
+    bottom: 4px;
+    top: 4px;
+    right: 4px;
+    font-size: 6px;
+}
+
+.avonni-progress-content-small {
+    border-radius: 52px;
+    left: 6px;
+    bottom: 6px;
+    top: 6px;
+    right: 6px;
+    font-size: 10px;
+}
+
+.avonni-progress-content-medium {
+    border-radius: 104px;
+    left: 9px;
+    bottom: 9px;
+    top: 9px;
+    right: 9px;
+    font-size: 19px;
+}
+
+.avonni-progress-content-large {
+    border-radius: 152px;
+    left: 11px;
+    bottom: 11px;
+    top: 11px;
+    right: 11px;
+    font-size: 26px;
+}
+
+.avonni-progress-content-x-large {
+    border-radius: 208px;
+    left: 13px;
+    bottom: 13px;
+    top: 13px;
+    right: 13px;
+    font-size: 30px;
+}
+
+.avonni-progress-label-x-small {
+    font-size: 6px;
+}
+
+.avonni-progress-label-small {
+    font-size: 10px;
+}
+
+.avonni-progress-label-medium {
+    font-size: 19px;
+}
+
+.avonni-progress-label-large {
+    font-size: 26px;
+}
+
+.avonni-progress-label-x-large {
+    font-size: 30px;
+}

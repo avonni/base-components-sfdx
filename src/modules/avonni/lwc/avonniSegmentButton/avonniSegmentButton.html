@@ -1,0 +1,27 @@
+<template>
+    <button
+        class="avonni-button-switch"
+        disabled={disabled}
+        type={type}
+        value={value}
+        onclick={handleButtonClick}
+    >
+        <template if:true={prefixIconName}>
+            <lightning-icon
+                icon-name={prefixIconName}
+                class="slds-button__icon_left"
+                size="xx-small"
+            ></lightning-icon>
+        </template>
+
+        {label}
+
+        <template if:true={iconName}>
+            <lightning-icon
+                icon-name={iconName}
+                class="slds-button__icon_right"
+                size="xx-small"
+            ></lightning-icon>
+        </template>
+    </button>
+</template>

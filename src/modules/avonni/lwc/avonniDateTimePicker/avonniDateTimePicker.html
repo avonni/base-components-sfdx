@@ -1,0 +1,158 @@
+<template>
+    <!-- Input label -->
+    <p
+        class="slds-form-element__legend slds-form-element__label avonni-date-time-picker__label"
+        if:false={hideLabel}
+    >
+        <abbr
+            if:true={required}
+            title="required"
+            aria-label="required"
+            class="slds-required"
+            >*</abbr
+        >
+        {label}
+    </p>
+
+    <!-- Help text -->
+    <lightning-helptext
+        if:true={fieldLevelHelp}
+        content={fieldLevelHelp}
+    ></lightning-helptext>
+
+    <lightning-layout multiple-rows="true" pull-to-boundary="small">
+        <!-- Current date range -->
+        <lightning-layout-item flexibility="auto" padding="horizontal-small">
+            <p
+                class="slds-text-heading_medium slds-m-bottom_small slds-grid slds-grid_vertical-align-center"
+            >
+                {currentDateRangeString}
+            </p>
+
+            <!-- Error message -->
+            <div
+                class="slds-form-element__help"
+                aria-live="assertive"
+                if:true={helpMessage}
+            >
+                {helpMessage}
+            </div>
+        </lightning-layout-item>
+
+        <!-- Time zone -->
+        <lightning-layout-item padding="horizontal-small" flexibility="auto">
+            <lightning-combobox
+                if:true={showTimeZone}
+                name="timezone"
+                label="Time zone"
+                value={selectedTimeZone}
+                placeholder="Select time zone"
+                options={timeZones}
+                onchange={handleTimeZoneChange}
+                variant="label-hidden"
+                class="slds-m-bottom_small avonni-date-time-picker__time-zone"
+            ></lightning-combobox>
+        </lightning-layout-item>
+
+        <!-- Navigation -->
+        <lightning-layout-item
+            if:false={hideNavigation}
+            padding="horizontal-small"
+        >
+            <lightning-button-group class="slds-m-bottom_small">
+                <lightning-button-icon
+                    alternative-text="Previous dates"
+                    icon-name="utility:left"
+                    onclick={handlePrevNextClick}
+                    title="Previous dates"
+                    variant="border-filled"
+                    disabled={prevButtonIsDisabled}
+                    data-direction="previous"
+                ></lightning-button-icon>
+                <lightning-button
+                    label="Today"
+                    onclick={handleTodayClick}
+                ></lightning-button>
+                <lightning-button-icon
+                    alternative-text="Next dates"
+                    icon-name="utility:right"
+                    onclick={handlePrevNextClick}
+                    title="Next dates"
+                    variant="border-filled"
+                    disabled={nextButtonIsDisabled}
+                    data-direction="next"
+                ></lightning-button-icon>
+            </lightning-button-group>
+        </lightning-layout-item>
+
+        <!-- Date picker -->
+        <lightning-layout-item
+            if:false={hideDatePicker}
+            padding="horizontal-small"
+        >
+            <lightning-input
+                label="Date"
+                max={maxToString}
+                min={minToString}
+                onchange={handleDatePickerChange}
+                type="date"
+                value={datePickerValue}
+                variant="label-hidden"
+            ></lightning-input>
+        </lightning-layout-item>
+    </lightning-layout>
+
+    <!-- Hour table -->
+    <div class="avonni-date-time-picker__table">
+        <template for:each={table} for:item="day">
+            <div class="avonni-date-time-picker__day" key={day.key}>
+                <!-- Day label -->
+                <div
+                    if:true={day.label}
+                    aria-selected={day.selected}
+                    data-today={day.isToday}
+                    class="avonni-date-time-picker__day-label"
+                >
+                    {day.label}
+                </div>
+
+                <!-- Hours -->
+                <template for:each={day.times} for:item="time">
+                    <div
+                        class="avonni-date-time-picker__time"
+                        key={time.startTimeISO}
+                    >
+                        <button
+                            aria-selected={time.selected}
+                            class="avonni-date-time-picker__time-button"
+                            disabled={time.disabled}
+                            type="button"
+                            onclick={handleTimeSlotClick}
+                            aria-readonly={readOnly}
+                        >
+                            <lightning-formatted-date-time
+                                value={time.startTimeISO}
+                                time-zone={selectedTimeZone}
+                                hour={timeFormatHour}
+                                minute={timeFormatMinute}
+                                second={timeFormatSecond}
+                                hour12={timeFormatHour12}
+                            ></lightning-formatted-date-time>
+                            <template if:true={showEndTime}>
+                                &nbsp;-&nbsp;
+                                <lightning-formatted-date-time
+                                    value={time.endTimeISO}
+                                    time-zone={selectedTimeZone}
+                                    hour={timeFormatHour}
+                                    minute={timeFormatMinute}
+                                    second={timeFormatSecond}
+                                    hour12={timeFormatHour12}
+                                ></lightning-formatted-date-time>
+                            </template>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>

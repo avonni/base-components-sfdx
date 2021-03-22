@@ -1,0 +1,27 @@
+<template>
+    <div class={computedOuterClass}>
+        <div
+            class="slds-progress-ring__progress"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={value}
+        >
+            <svg viewBox="-1 -1 2 2">
+                <path if:true={d} class="slds-progress-ring__path" d={d}></path>
+            </svg>
+        </div>
+        <div class="slds-progress-ring__content">
+            <template if:true={showSlot}>
+                <slot></slot>
+            </template>
+            <template if:true={showIcon}>
+                <lightning-icon
+                    icon-name={iconName}
+                    class={computedIconTheme}
+                    alternative-text={computedAltText}
+                ></lightning-icon>
+            </template>
+        </div>
+    </div>
+</template>

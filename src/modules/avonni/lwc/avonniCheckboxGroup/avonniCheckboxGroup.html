@@ -1,0 +1,51 @@
+<template>
+    <fieldset aria-required={required}>
+        <legend class={computedLegendClass}>
+            <template if:true={required}>
+                <abbr class="slds-required" title={i18n.required}>*</abbr>
+            </template>
+            {label}
+        </legend>
+        <div class="slds-form-element__control">
+            <div class={computedButtonClass}>
+                <template for:each={transformedOptions} for:item="option">
+                    <span
+                        class={computedCheckboxContainerClass}
+                        key={option.value}
+                    >
+                        <input
+                            type="checkbox"
+                            name={name}
+                            id={option.id}
+                            checked={option.isChecked}
+                            value={option.value}
+                            disabled={disabled}
+                            onclick={handleClick}
+                            onchange={handleChange}
+                            onfocus={handleFocus}
+                            onblur={handleBlur}
+                        />
+                        <label class={computedLabelClass} for={option.id}>
+                            <template if:true={checkboxVariant}>
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-form-element__label"
+                                    >{option.label}</span
+                                >
+                            </template>
+                            <template if:false={checkboxVariant}>
+                                <span class="slds-checkbox_faux"
+                                    >{option.label}</span
+                                >
+                            </template>
+                        </label>
+                    </span>
+                </template>
+            </div>
+        </div>
+        <template if:true={_helpMessage}>
+            <div id="helptext" data-helptext class="slds-form-element__help">
+                {_helpMessage}
+            </div>
+        </template>
+    </fieldset>
+</template>

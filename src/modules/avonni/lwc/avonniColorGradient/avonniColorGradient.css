@@ -1,0 +1,20 @@
+.slds-color-picker__custom {
+    max-width: 20rem;
+}
+.avonni-opacity {
+    padding-top: 0.25rem;
+}
+
+.slds-color-picker__range-indicator {
+    border: 1px solid #ffffff;
+}
+
+.slds-color-picker__input-custom-hex {
+    min-width: 5rem;
+}
+
+.slds-form-error {
+    padding-top: 0.5rem;
+    color: #c23934;
+    font-size: 0.75rem;
+}

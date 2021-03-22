@@ -1,0 +1,39 @@
+<template>
+    <div class="slds-dropdown__item" role="presentation">
+        <a
+            href="javascript:void(0)"
+            role="menuitem"
+            tabindex={tabIndex}
+            accesskey={accessKey}
+            aria-disabled={disabled}
+            onclick={handleClick}
+            onfocus={handleFocus}
+            onkeydown={handleKeyDown}
+            onblur={handleBlur}
+        >
+            <span class="slds-truncate" title={label}>
+                <abbr
+                    if:true={isDraft}
+                    class="slds-indicator_unsaved"
+                    title={draftAlternativeText}
+                    >*</abbr
+                >
+                <template if:true={prefixIconName}>
+                    <lightning-icon
+                        icon-name={prefixIconName}
+                        size="x-small"
+                        class="slds-m-right_x-small slds-icon-text-default"
+                    ></lightning-icon>
+                </template>
+                {label}
+            </span>
+            <template if:true={iconName}>
+                <lightning-icon
+                    icon-name={iconName}
+                    size="x-small"
+                    class="slds-icon-text-default slds-m-left_small slds-shrink-none"
+                ></lightning-icon>
+            </template>
+        </a>
+    </div>
+</template>

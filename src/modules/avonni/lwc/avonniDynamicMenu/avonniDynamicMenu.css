@@ -1,0 +1,31 @@
+.slds-nubbin_top {
+    margin-top: 1rem;
+}
+
+.slds-nubbin_bottom {
+    margin-bottom: 1rem;
+}
+
+.slds-nubbin_top-left {
+    margin-top: 1rem;
+    margin-left: -0.5rem;
+}
+
+.slds-nubbin_top-right {
+    margin-top: 1rem;
+    margin-right: -0.5rem;
+}
+
+.slds-nubbin_bottom-left {
+    margin-bottom: 1rem;
+    margin-left: -0.5rem;
+}
+
+.slds-nubbin_bottom-right {
+    margin-bottom: 1rem;
+    margin-right: -0.5rem;
+}
+
+div:focus{
+    outline: none;
+}

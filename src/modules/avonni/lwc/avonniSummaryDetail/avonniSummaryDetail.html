@@ -1,0 +1,30 @@
+<template>
+    <div class={sectionClass}>
+        <lightning-button-icon
+            icon-name="utility:switch"
+            onclick={changeSectionStatus}
+            variant="bare"
+            class="slds-button__icon slds-summary-detail__action-icon slds-m-right_x-small"
+        ></lightning-button-icon>
+        <div>
+            <div class="slds-summary-detail__title">
+                <div class="slds-grid">
+                    <h3
+                        if:true={title}
+                        class="slds-text-heading_small slds-truncate slds-p-right_small"
+                        title={title}
+                    >
+                        {title}
+                    </h3>
+                    <template if:false={title}>
+                        <slot name="title"></slot>
+                    </template>
+                    <slot name="actions"></slot>
+                </div>
+            </div>
+            <div aria-hidden="true" class="slds-summary-detail__content">
+                <slot></slot>
+            </div>
+        </div>
+    </div>
+</template>

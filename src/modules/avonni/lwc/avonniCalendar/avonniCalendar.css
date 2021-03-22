@@ -1,0 +1,61 @@
+.avonni-calendar-container {
+    width: fit-content;
+    opacity: 0.99;
+}
+
+lightning-combobox {
+    width: 6rem;
+}
+
+.avonni-week-cell,
+.avonni-disabled-cell,
+th {
+    cursor: default;
+}
+
+.slds-day_adjacent-month {
+    color: #adadad;
+}
+
+.slds-datepicker td > span {
+    width: var(--lwc-squareIconMediumBoundary, 2rem);
+    height: var(--lwc-squareIconMediumBoundary, 2rem);
+    display: block;
+    position: relative;
+    min-width: var(--lwc-squareIconMediumBoundary, 2rem);
+    line-height: var(--lwc-squareIconMediumBoundary, 2rem);
+    border-radius: var(--lwc-borderRadiusCircle, 50%);
+    margin: auto;
+}
+
+.slds-is-today .avonni-disabled-cell {
+    background-color: var(--lwc-colorBackgroundRowSelected, rgb(236, 235, 234));
+}
+
+.slds-is-selected .avonni-disabled-cell {
+    background: var(--lwc-brandAccessible, rgb(0, 112, 210));
+    color: #ffffff;
+}
+
+.slds-datepicker
+    td.slds-is-selected-multi
+    + .slds-is-selected-multi
+    > .slds-day:before,
+.slds-datepicker
+    td.slds-is-selected-multi
+    + .slds-is-selected-multi
+    > .avonni-disabled-cell:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    height: 100%;
+    width: 2.5rem;
+    transform: translateX(-0.5rem);
+    z-index: -1;
+    background: var(--lwc-brandAccessible, rgb(0, 112, 210));
+}
+
+div:focus {
+    outline: none;
+}

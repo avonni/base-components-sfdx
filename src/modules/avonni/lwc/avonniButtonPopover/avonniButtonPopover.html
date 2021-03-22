@@ -1,0 +1,59 @@
+<template>
+    <lightning-button
+        label={label}
+        accesskey={accessKey}
+        disabled={disabled}
+        variant={variant}
+        icon-name={iconName}
+        icon-position={iconPosition}
+        onclick={click}
+        onfocus={focus}
+        onblur={handleBlur}
+        onmouseenter={handleMouseEnter}
+        onmouseleave={handleMouseLeave}
+        aria-haspopup="true"
+        aria-expanded={computedAriaExpanded}
+    >
+    </lightning-button>
+
+    <template if:true={popoverVisible}>
+        <div
+            class={computedPopoverClass}
+            onmousedown={handleDropdownMouseDown}
+            onmouseup={handleDropdownMouseUp}
+            onmouseenter={handleMouseEnterBody}
+            onmouseleave={handleMouseLeaveBody}
+            onblur={handleBlur}
+            tabindex="0"
+        >
+            <template if:true={isLoading}>
+                <lightning-spinner
+                    alternative-text={loadingStateAlternativeText}
+                    size="small"
+                ></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                <template if:true={showTitle}>
+                    <header class="slds-popover__header">
+                        <slot name="title"></slot>
+                    </header>
+                </template>
+                <template if:false={showTitle}>
+                    <template if:true={title}>
+                        <header class="slds-popover__header">
+                            <h2 class="slds-text-heading_small">{title}</h2>
+                        </header>
+                    </template>
+                </template>
+                <div class="slds-popover__body">
+                    <slot></slot>
+                </div>
+                <template if:true={showFooter}>
+                    <div class="slds-popover__footer">
+                        <slot name="footer"></slot>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </template>
+</template>

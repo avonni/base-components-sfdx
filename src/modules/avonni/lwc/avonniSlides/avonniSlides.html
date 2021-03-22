@@ -1,0 +1,63 @@
+<template>
+    <div class="avonni-container">
+        <div if:true={navigation} class="avonni-left-button">
+            <lightning-button
+                variant={buttonPreviousVariant}
+                label={buttonPreviousLabel}
+                icon-name={buttonPreviousIconName}
+                icon-position={buttonPreviousIconPosition}
+                onclick={previous}
+                disabled={leftButtonDisabled}
+            ></lightning-button>
+        </div>
+        <div class="avonni-swiper-container" onmousedown={handlerMouseDown}>
+            <div class="avonni-swiper-wrapper">
+                <slot></slot>
+            </div>
+        </div>
+        <div if:true={navigation} class="avonni-right-button">
+            <lightning-button
+                variant={buttonNextVariant}
+                label={buttonNextLabel}
+                icon-name={buttonNextIconName}
+                icon-position={buttonNextIconPosition}
+                onclick={next}
+                disabled={rightButtonDisabled}
+            ></lightning-button>
+        </div>
+        <div
+            if:true={showProgressBar}
+            class="slds-progress-bar"
+            role="progressbar"
+        >
+            <span class="slds-progress-bar__value"></span>
+        </div>
+        <div if:true={showFractions} class="avonni-fractions">
+            {fractions}
+        </div>
+        <div if:true={isBullets} class="avonni-bullets">
+            <ul class="slds-carousel__indicators" role="tablist">
+                <template
+                    for:each={bulletList}
+                    for:item="item"
+                    for:index="index"
+                >
+                    <li
+                        class="slds-carousel__indicator"
+                        role="presentation"
+                        key={item}
+                    >
+                        <a
+                            class="slds-carousel__indicator-action"
+                            href="javascript:void(0);"
+                            role="tab"
+                            slide-id={item}
+                            onclick={handlerBulletClick}
+                        >
+                        </a>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </div>
+</template>

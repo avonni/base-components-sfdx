@@ -1,0 +1,48 @@
+.slds-theme_brand {
+    background-color: #0070d1;
+    color: #ffffff;
+}
+.avonni-outline.slds-theme_base {
+    background-color: #ffffff;
+    border: 1px solid #ecebea;
+}
+.avonni-outline.slds-theme_brand {
+    background-color: #ffffff;
+    color: #0070d1;
+    border: 1px solid #0070d1;
+}
+.avonni-outline.slds-theme_inverse {
+    background-color: #ffffff;
+    color: #061b3f;
+    border: 1px solid #061b3f;
+}
+.avonni-outline.slds-theme_alt-inverse {
+    background-color: #ffffff;
+    color: #16315c;
+    border: 1px solid #16315c;
+}
+.avonni-outline.slds-theme_success {
+    background-color: #ffffff;
+    color: #04844a;
+    border: 1px solid #04844a;
+}
+.avonni-outline.slds-theme_info {
+    background-color: #ffffff;
+    color: #706e6b;
+    border: 1px solid #706e6b;
+}
+.avonni-outline.slds-theme_warning {
+    background-color: #ffffff;
+    color: #feb75d;
+    border: 1px solid #feb75d;
+}
+.avonni-outline.slds-theme_error {
+    background-color: #ffffff;
+    color: #c23934;
+    border: 1px solid #c23934;
+}
+.avonni-outline.slds-theme_offline {
+    background-color: #ffffff;
+    color: #444444;
+    border: 1px solid #444444;
+}

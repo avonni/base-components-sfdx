@@ -1,0 +1,41 @@
+:host {
+    border-left: 1px solid #808080;
+}
+
+:host:first-child {
+    border-left: none;
+}
+
+.avonni-button-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    background: transparent;
+    background-clip: border-box;
+    border-radius: 0.25rem;
+    line-height: 1.875rem;
+    text-decoration: none;
+    color: #000000;
+    -webkit-appearance: none;
+    white-space: normal;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding-left: var(--lwc-spacingMedium, 1rem);
+    padding-right: var(--lwc-spacingMedium, 1rem);
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+    border: none;
+    z-index: 1000;
+}
+
+.avonni-button-switch:focus {
+    outline: none;
+}
+
+.avonni-button-switch:disabled {
+    color: #808080;
+}

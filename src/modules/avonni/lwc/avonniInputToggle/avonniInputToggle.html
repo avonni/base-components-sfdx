@@ -1,0 +1,49 @@
+<template>
+    <label
+        class="slds-checkbox_toggle slds-grid avonni-input-toggle__label"
+        for="avonni-input-toggle"
+    >
+        <template if:true={required}>
+            <abbr class="slds-required" title={i18n.required}>*</abbr>
+        </template>
+        <span class={computedLabelClass}>{label}</span>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+            class="slds-m-right_x-small"
+        ></lightning-helptext>
+        <input
+            id="avonni-input-toggle"
+            accesskey={accessKey}
+            aria-controls={ariaControls}
+            aria-describedby={ariaDescribedBy}
+            aria-label={ariaLabel}
+            aria-labelled-by={ariaLabelledBy}
+            checked={checked}
+            disabled={disabled}
+            name={name}
+            onblur={handleBlur}
+            onchange={handleChange}
+            readonly={readOnly}
+            required={required}
+            type="checkbox"
+            value={value}
+        />
+        <span class="slds-checkbox_faux_container" aria-live="assertive">
+            <span class={computedFauxToggleClass}></span>
+            <span class="slds-checkbox_on">{messageToggleActive}</span>
+            <span class="slds-checkbox_off">{messageToggleInactive}</span>
+        </span>
+    </label>
+
+    <template if:false={valid}>
+        <div
+            id="help-message"
+            class="slds-form-element__help"
+            data-help-message
+            role="alert"
+        >
+            {messageWhenValueMissing}
+        </div>
+    </template>
+</template>

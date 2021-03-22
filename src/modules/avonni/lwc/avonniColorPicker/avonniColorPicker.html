@@ -1,0 +1,183 @@
+<template>
+    <div class={computedContainerClass}>
+        <label if:true={showLabel} class={computedLegendClass}>
+            <abbr if:true={required} title="required" class="slds-required"
+                >*</abbr
+            >
+            {label}
+        </label>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+        ></lightning-helptext>
+        <div class="avonni-flex">
+            <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                <button
+                    class={computedButtonClass}
+                    disabled={disabled}
+                    aria-expanded={computedAriaExpanded}
+                    accesskey={accessKey}
+                    aria-haspopup="true"
+                    onclick={handleButtonClick}
+                    onblur={handleBlur}
+                    onmousedown={handleButtonMouseDown}
+                    type="button"
+                >
+                    {menuLabel}
+                    <template if:true={menuIconName}>
+                        <lightning-icon
+                            icon-name={menuIconName}
+                            size={menuIconSize}
+                            class={iconClass}
+                        ></lightning-icon>
+                    </template>
+                    <template if:false={menuIconName}>
+                        <span class="slds-swatch"></span>
+                        <lightning-icon
+                            icon-name="utility:down"
+                            size="xx-small"
+                        ></lightning-icon>
+                    </template>
+                </button>
+                <template if:true={_dropdownOpened}>
+                    <div
+                        class={computedDropdownClass}
+                        onmousedown={handleDropdownMouseDown}
+                        onmouseup={handleDropdownMouseUp}
+                        onblur={handleBlur}
+                        tabindex="0"
+                    >
+                        <template if:true={isLoading}>
+                            <div class="avonni-spinner-container">
+                                <lightning-spinner size="small"></lightning-spinner>
+                            </div>
+                        </template>
+                        <template if:false={isLoading}>
+                            <div
+                                class="slds-popover__body"
+                                onprivateblur={handlePrivateBlur}
+                                onprivatefocus={handlePrivateFocus}
+                                onmouseover={cancelBlur}
+                                onmouseout={allowBlur}
+                                onchange={handlerChange}
+                            >
+                                <template if:true={isBase}>
+                                    <div class="slds-tabs_default">
+                                        <ul
+                                            class="slds-tabs_default__nav"
+                                            role="tablist"
+                                        >
+                                            <li
+                                                class="slds-tabs_default__item slds-is-active"
+                                                title="Default"
+                                                role="presentation"
+                                            >
+                                                <a
+                                                    id="default__item"
+                                                    class="slds-tabs_default__link"
+                                                    href="javascript:void(0);"
+                                                    role="tab"
+                                                    onclick={handlerTabClick}
+                                                    onblur={handlePrivateBlur}
+                                                    onfocus={handlePrivateFocus}
+                                                    >Default</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="slds-tabs_default__item"
+                                                title="Custom"
+                                                role="presentation"
+                                            >
+                                                <a
+                                                    id="custom__item"
+                                                    class="slds-tabs_default__link"
+                                                    href="javascript:void(0);"
+                                                    role="tab"
+                                                    onclick={handlerTabClick}
+                                                    onblur={handlePrivateBlur}
+                                                    onfocus={handlePrivateFocus}
+                                                    >Custom</a
+                                                >
+                                            </li>
+                                        </ul>
+                                        <div
+                                            if:true={isDefault}
+                                            class="slds-tabs_default__content"
+                                        >
+                                            <c-avonni-color-palette
+                                                colors={colors}
+                                                tile-height="25"
+                                                tile-width="25"
+                                                read-only={readOnly}
+                                            ></c-avonni-color-palette>
+                                        </div>
+                                        <div
+                                            if:false={isDefault}
+                                            class="slds-tabs_default__content"
+                                        >
+                                            <c-avonni-color-gradient
+                                                if:true={_dropdownVisible}
+                                                message-when-bad-input={messageWhenBadInput}
+                                                opacity={opacity}
+                                                value={value}
+                                                read-only={readOnly}
+                                            ></c-avonni-color-gradient>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template if:true={isCustom}>
+                                    <c-avonni-color-gradient
+                                        if:true={_dropdownVisible}
+                                        message-when-bad-input={messageWhenBadInput}
+                                        opacity={opacity}
+                                        value={value}
+                                        read-only={readOnly}
+                                    ></c-avonni-color-gradient>
+                                </template>
+                                <template if:true={isPredefined}>
+                                    <c-avonni-color-palette
+                                        colors={colors}
+                                        tile-height="25"
+                                        tile-width="25"
+                                        read-only={readOnly}
+                                    ></c-avonni-color-palette>
+                                </template>
+                            </div>
+                        </template>
+                        <template if:false={isLoading}>
+                            <footer class="slds-popover__footer">
+                                <div class="slds-color-picker__selector-footer">
+                                    <lightning-button
+                                        label="Cancel"
+                                        title="Cancel"
+                                        onclick={handlerCancel}
+                                    ></lightning-button>
+                                    <lightning-button
+                                        variant="brand"
+                                        class="slds-m-left_x-small"
+                                        label="Done"
+                                        title="Done"
+                                        onclick={handlerDone}
+                                    ></lightning-button>
+                                </div>
+                            </footer>
+                        </template>
+                    </div>
+                </template>
+            </div>
+            <lightning-input
+                if:false={hideColorInput}
+                type="text"
+                variant="label-hidden"
+                label="color"
+                value={value}
+                name={name}
+                onchange={handleInputColor}
+                disabled={disabledInput}
+            ></lightning-input>
+        </div>
+        <p if:true={showError} class="slds-form-error">
+            {messageWhenBadInput}
+        </p>
+    </div>
+</template>

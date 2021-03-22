@@ -1,0 +1,36 @@
+<template>
+    <li class="slds-progress__item">
+        <lightning-icon
+            if:true={iconName}
+            icon-name={iconName}
+            size="xx-small"
+            class="slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success"
+            onmouseenter={handleMouseEnter}
+            onmouseleave={handleMouseLeave}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            tabindex="0"
+        ></lightning-icon>
+        <div
+            if:false={iconName}
+            class="slds-progress__marker"
+            onmouseenter={handleMouseEnter}
+            onmouseleave={handleMouseLeave}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            tabindex="0"
+        >
+            <div class="avonni-marker"></div>
+        </div>
+        <div
+            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+        >
+            <template if:true={showSlot}>
+                <slot></slot>
+            </template>
+            <template if:false={showSlot}>
+                {label}
+            </template>
+        </div>
+    </li>
+</template>

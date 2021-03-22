@@ -1,0 +1,102 @@
+<template>
+    <fieldset class="slds-form-element" aria-required={required}>
+        <legend class="slds-form-element__legend slds-form-element__label">
+            <template if:true={required}>
+                <abbr class="slds-required" title="Required">*</abbr>
+            </template>
+            {label}
+        </legend>
+        <div class={elementControlClass}>
+            <template for:each={itemList} for:item="item">
+                <template if:true={item.key}>
+                    <div class={visualPickerClass} key={item.key}>
+                        <input
+                            type={type}
+                            id={item.value}
+                            value={item.value}
+                            name={name}
+                            disabled={item.disabled}
+                            onchange={handleChange}
+                        />
+                        <label for={item.value}>
+                            <span class={visualPickerTypeClass}>
+                                <template if:false={hideCheckMark}>
+                                    <span
+                                        if:true={isCoverable}
+                                        class={selectedClass}
+                                    >
+                                        <lightning-icon
+                                            icon-name="utility:check"
+                                            size="medium"
+                                            variant="inverse"
+                                        ></lightning-icon>
+                                    </span>
+                                </template>
+                                <span class={notSelectedClass}>
+                                    <template if:true={item.isTop}>
+                                        <lightning-icon
+                                            icon-name={item.figure.iconName}
+                                            size={item.iconSize}
+                                            alternative-text={item.figure.iconAlternativeText}
+                                            class={item.iconClass}
+                                            src={item.figure.iconSrc}
+                                        ></lightning-icon>
+                                    </template>
+                                    <span class={item.bodyClass}>
+                                        <template if:true={isVertical}>
+                                            <span class={textHeadingClass}
+                                                >{item.title}</span
+                                            >
+                                            <span class="slds-text-title"
+                                                >{item.description}</span
+                                            >
+                                        </template>
+                                        <template if:false={isVertical}>
+                                            <span class={textHeadingClass}
+                                                >{item.figure.title}</span
+                                            >
+                                            <span class="slds-text-title"
+                                                >{item.figure.description}</span
+                                            >
+                                        </template>
+                                    </span>
+                                    <template if:true={item.isBottom}>
+                                        <lightning-icon
+                                            icon-name={item.figure.iconName}
+                                            size={item.iconSize}
+                                            alternative-text={item.figure.iconAlternativeText}
+                                            class={item.iconClass}
+                                            src={item.figure.iconSrc}
+                                        ></lightning-icon>
+                                    </template>
+                                </span>
+                            </span>
+                            <span
+                                if:false={isVertical}
+                                class="slds-visual-picker__body"
+                            >
+                                <span class="slds-text-heading_small"
+                                    >{item.title}</span
+                                >
+                                <span class="slds-text-title"
+                                    >{item.description}</span
+                                >
+                            </span>
+                            <span
+                                if:false={isCoverable}
+                                class="slds-icon_container slds-visual-picker__text-check"
+                            >
+                                <lightning-icon
+                                    icon-name="utility:check"
+                                    size="x-small"
+                                    class="slds-icon-text-check"
+                                    variant="inverse"
+                                ></lightning-icon>
+                            </span>
+                        </label>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </fieldset>
+</template>

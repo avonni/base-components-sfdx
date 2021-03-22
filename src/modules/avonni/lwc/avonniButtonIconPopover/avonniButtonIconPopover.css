@@ -1,0 +1,66 @@
+.slds-popover {
+    position: absolute;
+    top: 100%;
+    margin-top: 0.5rem;
+}
+
+.slds-popover.slds-popover_small {
+    max-width: var(--lwc-sizeSmall, 15rem);
+}
+
+.slds-popover.slds-popover_medium {
+    min-width: var(--lwc-sizeSmall, 20rem);
+}
+
+.slds-popover.slds-popover_large {
+    min-width: var(--lwc-sizeLarge, 25rem);
+    max-width: 512px;
+}
+
+.slds-nubbin_top {
+    position: absolute;
+    top: 100%;
+    margin-top: 1rem;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.slds-nubbin_bottom {
+    position: absolute;
+    top: auto;
+    margin-bottom: 1rem;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.slds-nubbin_top-left {
+    position: absolute;
+    top: 100%;
+    margin-top: 1rem;
+    margin-left: -0.5rem;
+}
+
+.slds-nubbin_top-right {
+    position: absolute;
+    top: 100%;
+    margin-top: 1rem;
+    margin-right: -0.5rem;
+}
+
+.slds-nubbin_bottom-left {
+    position: absolute;
+    top: auto;
+    margin-bottom: 1rem;
+    margin-left: -0.5rem;
+}
+
+.slds-nubbin_bottom-right {
+    position: absolute;
+    top: auto;
+    margin-bottom: 1rem;
+    margin-right: -0.5rem;
+}
+
+div:focus {
+    outline: none;
+}

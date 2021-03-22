@@ -1,0 +1,74 @@
+.slds-input__button_decrement {
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    left: 0.75rem;
+    bottom: auto;
+}
+
+.slds-input__button_increment {
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    right: 0.75rem;
+    bottom: auto;
+}
+
+:host(.avonni-flex-container) {
+    display: flex;
+    flex-direction: row;
+}
+
+:host(.avonni-flex-container) .slds-form-element__control {
+    padding-left: 0.5rem;
+}
+
+:host(.avonni-flex-container) .slds-input__button_decrement,
+:host(.avonni-flex-container) .slds-input__button_increment {
+    position: absolute;
+    top: 15px;
+}
+
+:host(.avonni-flex-container) .slds-input__button_decrement {
+    left: 1.25rem;
+}
+
+:host(.avonni-flex-container) > label {
+    padding-top: 9px;
+}
+
+:host(.avonni-flex-container) > lightning-helptext {
+    padding-top: 5px;
+}
+
+.slds-form-element {
+    flex: 1;
+}
+
+.slds-form-element_horizontal {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.slds-form-element_stacked {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.slds-input__button_decrement {
+    z-index: 1000;
+}
+
+.slds-input__button_increment {
+    z-index: 1000;
+}
+
+.avonni-standart-top {
+    top: 38px;
+}
+
+.avonni-hidden-top {
+    top: 14px;
+}

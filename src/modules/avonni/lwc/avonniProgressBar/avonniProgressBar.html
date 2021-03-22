@@ -1,0 +1,95 @@
+<template>
+    <div class={computedSizing}>
+        <lightning-layout vertical-align="end">
+            <lightning-layout-item
+                if:true={showPositionLeft}
+                class="slds-p-bottom_x-small"
+            >
+                <span
+                    class="avonni-progress-bar-font-weight_large"
+                    aria-hidden="true"
+                >
+                    {value}% {valueLabel}
+                </span>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <lightning-layout
+                    horizontal-align="spread"
+                    class="slds-p-bottom_x-small"
+                >
+                    <lightning-layout-item>
+                        <span>{label}</span>
+                        <span
+                            if:true={showPositionTopLeft}
+                            aria-hidden="true"
+                            class="slds-p-left_xx-small avonni-progress-bar_value"
+                        >
+                            {value}% {valueLabel}
+                        </span>
+                    </lightning-layout-item>
+                    <lightning-layout-item if:true={showPositionTopRight}>
+                        <span
+                            class="avonni-progress-bar_value"
+                            aria-hidden="true"
+                        >
+                            {value}% {valueLabel}
+                        </span>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <div
+                    class={computedOuterClass}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow={value}
+                    role="progressbar"
+                >
+                    <span class={computedInnerClass} style={computedStyle}>
+                    </span>
+                    <span class="slds-assistive-text">{assistiveText}</span>
+                    <lightning-layout
+                        horizontal-align="spread"
+                        class="slds-p-top_x-small"
+                    >
+                        <lightning-layout-item
+                            if:true={showPositionBottomRight}
+                        >
+                            <span
+                                aria-hidden="true"
+                                class="avonni-progress-bar-value_bottom-right avonni-progress-bar_value"
+                            >
+                                {value}% {valueLabel}
+                            </span>
+                        </lightning-layout-item>
+                        <lightning-layout-item if:true={showPositionBottomLeft}>
+                            <span
+                                aria-hidden="true"
+                                class="avonni-progress-bar-value_bottom-left avonni-progress-bar_value"
+                            >
+                                {value}% {valueLabel}
+                            </span>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <template for:each={badges} for:item="badge">
+                        <c-avonni-primitive-progress-bar-badge
+                            key={badge.label}
+                            label={badge.label}
+                            value={badge.value}
+                            variant={badge.variant}
+                            border-style={badge.borderStyle}
+                            thickness={thickness}
+                            orientation={orientation}
+                        ></c-avonni-primitive-progress-bar-badge>
+                    </template>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item
+                if:true={showPositionRight}
+                class="slds-p-bottom_x-small"
+            >
+                <span class="avonni-progress-bar_value" aria-hidden="true">
+                    {value}% {valueLabel}
+                </span>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

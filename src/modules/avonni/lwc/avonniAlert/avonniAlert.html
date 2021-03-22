@@ -1,0 +1,27 @@
+<template>
+    <template if:false={hideAlert}>
+        <div class={variantClass}>
+            <lightning-icon
+                icon-name={iconName}
+                size="small"
+                class="slds-m-right_x-small"
+                variant={variantInverse}
+            ></lightning-icon>
+            <slot></slot>
+            <template
+                if:false={isDismissible}
+                class="slds-m-left_xx-small slds-notify__close"
+            >
+                <lightning-button-icon
+                    icon-name="utility:close"
+                    size="medium"
+                    onclick={closeAlert}
+                    variant="bare"
+                    icon-class={iconClass}
+                    alternative-text="Close"
+                    class="slds-notify__close"
+                ></lightning-button-icon>
+            </template>
+        </div>
+    </template>
+</template>

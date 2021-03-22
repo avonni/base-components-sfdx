@@ -1,0 +1,140 @@
+<template>
+    <label class="slds-form-element__label" for="input">
+        <span class="slds-slider-label">
+            <span class={computedLabelClass}>{label}</span>
+        </span>
+    </label>
+    <div if:true={isVertical} class="avonni-unit-container">
+        <lightning-formatted-number
+            value={max}
+            format-style={unit}
+            currency-code={unitAttributes.currencyCode}
+            currency-display-as={unitAttributes.currencyDisplayAs}
+            maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+            maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+            minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+            minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+            minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+        ></lightning-formatted-number>
+    </div>
+    <div class={computedContainerClass}>
+        <div class="avonni-container">
+            <div class="inverse-left">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <div class="slds-slider">
+                            <input
+                                type="range"
+                                min={min}
+                                max={calculateMax}
+                                step={step}
+                                value={valueLower}
+                                oninput={handleChangeLeft}
+                                class="slds-slider__range slider-left"
+                                disabled={disabled}
+                                onmousedown={showLeftBubble}
+                                onmouseup={hideLeftBubble}
+                            />
+                            <div if:true={pin} class={computedBubbleLeftClass}>
+                                <p>
+                                    <lightning-formatted-number
+                                        value={valueLower}
+                                        format-style={unit}
+                                        currency-code={unitAttributes.currencyCode}
+                                        currency-display-as={unitAttributes.currencyDisplayAs}
+                                        maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                                        maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                                        minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                                        minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                                        minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                    ></lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="inverse-right">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <div class="slds-slider">
+                            <input
+                                type="range"
+                                min={calculateMin}
+                                max={max}
+                                step={step}
+                                value={valueUpper}
+                                oninput={handleChangeRight}
+                                class="slds-slider__range slider-right"
+                                disabled={disabled}
+                                onmousedown={showRightBubble}
+                                onmouseup={hideRightBubble}
+                            />
+                            <div if:true={pin} class={computedBubbleRightClass}>
+                                <p>
+                                    <lightning-formatted-number
+                                        value={valueUpper}
+                                        format-style={unit}
+                                        currency-code={unitAttributes.currencyCode}
+                                        currency-display-as={unitAttributes.currencyDisplayAs}
+                                        maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                                        maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                                        minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                                        minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                                        minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                    ></lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div if:false={isVertical} class="avonni-unit-container">
+            <lightning-formatted-number
+                value={min}
+                format-style={unit}
+                currency-code={unitAttributes.currencyCode}
+                currency-display-as={unitAttributes.currencyDisplayAs}
+                maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+            ></lightning-formatted-number>
+            <lightning-formatted-number
+                value={max}
+                format-style={unit}
+                currency-code={unitAttributes.currencyCode}
+                currency-display-as={unitAttributes.currencyDisplayAs}
+                maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+            ></lightning-formatted-number>
+        </div>
+    </div>
+    <div if:true={isVertical} class="avonni-unit-container">
+        <lightning-formatted-number
+            value={min}
+            format-style={unit}
+            currency-code={unitAttributes.currencyCode}
+            currency-display-as={unitAttributes.currencyDisplayAs}
+            maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+            maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+            minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+            minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+            minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+        ></lightning-formatted-number>
+    </div>
+    <template if:true={_helpMessage}>
+        <div
+            id="message-id"
+            class="slds-form-element__help"
+            aria-live="assertive"
+        >
+            {_helpMessage}
+        </div>
+    </template>
+</template>

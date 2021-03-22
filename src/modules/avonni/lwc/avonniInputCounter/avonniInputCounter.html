@@ -1,0 +1,70 @@
+<template>
+    <template if:true={isInline}>
+        <label class="slds-form-element__label slds-no-flex">
+            <abbr if:true={required} title="required" class="slds-required">*</abbr>
+            {label}
+        </label>
+        <lightning-helptext if:true={fieldLevelHelp} content={fieldLevelHelp}></lightning-helptext>
+    </template>
+    <div class={formElementClass}>
+        <div class="slds-form-element__control">
+            <lightning-button-icon
+                if:false={readOnly}
+                icon-name="utility:ban"
+                size="medium"
+                title="Decrement counter"
+                onclick={decrementValue}
+                variant="bare"
+                alternative-text="Decrement counter"
+                class={buttonDecrementClass}
+                disabled={disabled}
+            ></lightning-button-icon>
+            <lightning-input
+                name={name}
+                label={label}
+                message-when-bad-input={messageWhenBadInput}
+                message-when-pattern-mismatch={messageWhenPatternMismatch}
+                message-when-range-overflow={messageWhenRangeOverflow}
+                message-when-range-underflow={messageWhenRangeUnderflow}
+                message-when-step-mismatch={messageWhenStepMismatch}
+                message-when-too-short={messageWhenTooShort}
+                message-when-too-long={messageWhenTooLong}
+                message-when-type-mismatch={messageWhenTypeMismatch}
+                message-when-value-missing={messageWhenValueMissing}
+                message-toggle-active={messageToggleActive}
+                message-toggle-inactive={messageToggleInactive}
+                aria-label={ariaLabel}
+                aria-controls={computedAriaControls}
+                aria-labelledby={computedAriaLabelledBy}
+                aria-describedby={computedAriaDescribedBy}
+                max={max}
+                min={min}
+                step={step}
+                value={value}
+                field-level-help={labelFieldLevelHelp}
+                accesskey={accessKey}
+                variant={labelVariant}
+                disabled={disabled}
+                readonly={readOnly}
+                required={required}
+                type="number"
+                placeholder="0"
+                class={inputClass}
+                onchange={handlerChange}
+                onfocus={handlerFocus}
+                onblur={handlerBlur}
+            ></lightning-input>
+            <lightning-button-icon
+                if:false={readOnly}
+                icon-name="utility:new"
+                size="medium"
+                title="Increment counter"
+                onclick={incrementValue}
+                variant="bare"
+                alternative-text="Increment counter"
+                class={buttonIncrementClass}
+                disabled={disabled}
+            ></lightning-button-icon>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,134 @@
+:host() .avonni-container {
+    position: relative;
+    display: flex;
+}
+
+:host(.avonni-flex-middle) .avonni-container {
+    align-items: center;
+}
+
+:host(.avonni-flex-bottom) .avonni-container {
+    align-items: flex-end;
+}
+
+.avonni-swiper-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    z-index: 1;
+}
+
+.avonni-swiper-container-3d {
+    perspective: 1200px;
+}
+
+.avonni-swiper-container-cube {
+    overflow: visible;
+}
+
+.avonni-swiper-container-flip {
+    overflow: visible;
+}
+
+.avonni-swiper-wrapper {
+    /* --speed: 0; */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    transition-property: transform;
+    box-sizing: content-box;
+    transform: translate3d(0px, 0px, 0px);
+    transition-duration: calc(var(--speed) * 1ms);
+}
+
+.avonni-swiper-container-3d .avonni-swiper-wrapper {
+    transform-style: preserve-3d;
+    transform: translate3d(0px, 0px, 0px) rotateX(0deg) rotateY(0deg);
+}
+
+:host(.avonni-swiper-container-vertical) .avonni-swiper-wrapper {
+    flex-direction: column;
+}
+
+.avonni-left-button {
+    padding-right: 0.5rem;
+}
+
+.avonni-right-button {
+    padding-left: 0.5rem;
+}
+
+:host(.avonni-button-inner) .avonni-left-button {
+    position: absolute;
+    z-index: 10;
+}
+
+:host(.avonni-button-inner) .avonni-right-button {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+}
+
+.avonni-fractions {
+    position: absolute;
+    padding: 6px;
+}
+
+.avonni-bullets {
+    position: absolute;
+    padding: 0.5rem;
+}
+
+.avonni-indicators-top-left {
+    top: 0;
+    left: 0;
+}
+
+.avonni-indicators-bottom-left {
+    bottom: 0;
+    left: 0;
+}
+
+.avonni-indicators-top-right {
+    top: 0;
+    right: 0;
+}
+
+.avonni-indicators-bottom-right {
+    bottom: 0;
+    right: 0;
+}
+
+.avonni-indicators-top-center {
+    top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.avonni-indicators-bottom-center {
+    bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.slds-progress-bar {
+    position: absolute;
+}
+
+.slds-carousel__indicators {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}

@@ -1,0 +1,15 @@
+<template>
+    <span class={chipClass}>
+        <template if:true={renderLeft}>
+            <span class="slds-badge__icon slds-badge__icon_left">
+                <slot name="left"></slot>
+            </span>
+        </template>
+        {label}
+        <template if:true={renderRight}>
+            <span class="slds-badge__icon slds-badge__icon_right">
+                <slot name="right"></slot>
+            </span>
+        </template>
+    </span>
+</template>

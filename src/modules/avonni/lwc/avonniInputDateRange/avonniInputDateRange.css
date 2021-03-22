@@ -1,0 +1,23 @@
+.avonni-date-range-container {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.avonni-date-range-container .slds-form-element {
+    padding-right: 0.5rem;
+}
+
+.avonni-label-container {
+    display: flex;
+    align-items: center;
+}
+
+.avonni-label-container p {
+    padding-top: var(--lwc-spacingXxSmall, 0.25rem);
+    padding-right: var(--lwc-spacingXxSmall, 0.25rem);
+}
+
+.slds-datepicker {
+    padding: 0.25rem;
+}

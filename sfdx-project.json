@@ -1,0 +1,11 @@
+{
+    "packageDirectories": [
+        {
+            "path": "src/modules/avonni",
+            "default": true
+        }
+    ],
+    "namespace": "",
+    "sfdcLoginUrl": "https://login.salesforce.com",
+    "sourceApiVersion": "50.0"
+}

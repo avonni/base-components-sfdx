@@ -1,0 +1,16 @@
+.slds-checkbox
+    [type='checkbox'][disabled]
+    + .slds-checkbox__label
+    .slds-checkbox_faux {
+    background-color: #ffffff;
+    margin-right: 0;
+}
+
+span {
+    font-weight: 600;
+    padding-right: 0.5rem;
+}
+
+.slds-form-element__control .slds-checkbox {
+    display: initial;
+}

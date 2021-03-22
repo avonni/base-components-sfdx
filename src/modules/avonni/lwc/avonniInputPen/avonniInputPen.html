@@ -1,0 +1,95 @@
+<template>
+    <div class="avonni-label">
+        <label if:true={label} class="slds-form-element__label slds-no-flex">
+            <abbr if:true={required} title="required" class="slds-required"
+                >*</abbr
+            >
+            {label}
+        </label>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+        ></lightning-helptext>
+    </div>
+    <div class="slds-form-element">
+        <div class="slds-form-element__control">
+            <div
+                class="slds-rich-text-editor slds-grid slds-grid_vertical slds-nowrap"
+            >
+                <div
+                    if:false={hideControls}
+                    role="toolbar"
+                    class="slds-rich-text-editor__toolbar slds-shrink-none"
+                >
+                    <ul class="slds-button-group-list">
+                        <li if:true={showPen}>
+                            <lightning-button-icon
+                                icon-name="utility:edit"
+                                variant="border-filled"
+                                alternative-text="Draw"
+                                title="Draw"
+                                onclick={setDraw}
+                                disabled={disabled}
+                            ></lightning-button-icon>
+                        </li>
+                        <li if:true={showErase}>
+                            <lightning-button-icon
+                                icon-name="utility:close"
+                                variant="border-filled"
+                                alternative-text="Erase"
+                                title="Erase"
+                                onclick={setErase}
+                                disabled={disabled}
+                            ></lightning-button-icon>
+                        </li>
+                        <li if:true={showClear}>
+                            <lightning-button-icon
+                                icon-name="utility:delete"
+                                variant="border-filled"
+                                alternative-text="Clear"
+                                title="Clear"
+                                onclick={clear}
+                                disabled={disabled}
+                            ></lightning-button-icon>
+                        </li>
+                    </ul>
+                    <ul class="slds-button-group-list">
+                        <li if:true={showSize}>
+                            <lightning-combobox
+                                class="avonni-combobox"
+                                name="size"
+                                label="Size"
+                                variant="label-hidden"
+                                dropdown-alignment="right"
+                                value={size}
+                                options={sizeList}
+                                onchange={handleSizeChange}
+                                disabled={disabled}
+                            >
+                            </lightning-combobox>
+                        </li>
+                    </ul>
+                    <ul class="slds-button-group-list">
+                        <li if:true={showColor}>
+                            <c-avonni-color-picker
+                                value={color}
+                                hide-color-input
+                                onchange={handleColorChange}
+                                disabled={disabled}
+                            ></c-avonni-color-picker>
+                        </li>
+                    </ul>
+                </div>
+                <div
+                    class="slds-rich-text-editor__textarea slds-grid"
+                    onmousedown={handleMouseDown}
+                    onmouseenter={handleMouseEnter}
+                    onmouseleave={handleMouseLeave}
+                >
+                    <canvas></canvas>
+                    <div class="avonni-cursor"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

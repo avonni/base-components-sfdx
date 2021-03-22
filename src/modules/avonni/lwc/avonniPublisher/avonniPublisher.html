@@ -1,0 +1,48 @@
+<template>
+    <div class="slds-media slds-comment slds-hint-parent">
+        <template if:true={showFigureSlot}>
+            <div class="slds-media__figure">
+                <slot name="figure"></slot>
+            </div>
+        </template>
+        <div class="slds-media__body">
+            <div class={publisherClass}>
+                <lightning-input
+                    if:false={isActive}
+                    class="slds-publisher__input"
+                    onfocus={focus}
+                    type="text"
+                    variant="label-hidden"
+                    placeholder={placeholder}
+                    disabled={disabled}
+                ></lightning-input>
+                <div>
+                    <lightning-input-rich-text
+                        if:true={isActive}
+                        value={value}
+                        placeholder={placeholder}
+                        variant="bottom-toolbar"
+                        onchange={handleChange}
+                        class="richTextPublisher"
+                    ></lightning-input-rich-text>
+                    <div class={actionsSectionClass}>
+                        <template if:true={isActive}>
+                            <template if:true={showActionsSlot}>
+                                <slot name="actions"></slot>
+                            </template>
+                        </template>
+                        <lightning-button
+                            if:true={renderButton}
+                            variant="brand"
+                            label={buttonLabel}
+                            title={buttonLabel}
+                            onclick={hanlerClick}
+                            disabled={buttonDisabled}
+                            class="slds-m-left_x-small"
+                        ></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

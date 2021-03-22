@@ -1,0 +1,109 @@
+lightning-input {
+    padding-left: 0.5rem;
+    width: 7rem;
+}
+
+button {
+    height: auto;
+    min-height: var(--lwc-squareIconMediumBoundary, 2rem);
+}
+
+div:focus {
+    outline: none;
+}
+
+.slds-form-element_stacked .slds-form-element {
+    padding-left: 0.5rem;
+}
+
+.slds-popover__body {
+    width: 16rem;
+}
+
+.slds-swatch {
+    min-width: 20px;
+    min-height: 20px;
+    margin-right: 0.25rem;
+    margin-left: 0.25rem;
+}
+
+.slds-tabs_default__content {
+    padding-bottom: 0;
+}
+
+.slds-form-error {
+    padding-top: 0.5rem;
+    color: #c23934;
+    font-size: 0.75rem;
+}
+
+.slds-nubbin_top {
+    position: absolute;
+    top: 100%;
+    margin-top: 1rem;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.slds-nubbin_bottom {
+    position: absolute;
+    top: auto;
+    margin-bottom: 1rem;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.slds-nubbin_top-left {
+    position: absolute;
+    top: 100%;
+    margin-top: 1rem;
+}
+
+.slds-nubbin_top-right {
+    position: absolute;
+    top: 100%;
+    margin-top: 1rem;
+}
+
+.slds-nubbin_bottom-left {
+    position: absolute;
+    top: auto;
+    margin-bottom: 1rem;
+}
+
+.slds-nubbin_bottom-right {
+    position: absolute;
+    top: auto;
+    margin-bottom: 1rem;
+}
+
+.avonni-flex {
+    display: flex;
+}
+
+.avonni-label-inline {
+    display: flex;
+    align-items: center;
+}
+
+.avonni-label-inline lightning-helptext {
+    padding-right: 0.25rem;
+}
+
+.slds-color-picker__selector {
+    padding: 0;
+}
+
+lightning-button {
+    display: grid;
+    width: 100%;
+}
+
+button:disabled {
+    background-color: #ecebea;
+}
+
+.avonni-spinner-container {
+    width: 10rem;
+    height: 4rem;
+}

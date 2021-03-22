@@ -1,0 +1,23 @@
+.avonni-progress-bar-vertical-size_x-small {
+    height: var(--lwc-sizeXSmall, 12rem);
+}
+
+.avonni-progress-bar-vertical-size_small {
+    height: var(--lwc-sizeSmall, 15rem);
+}
+
+.avonni-progress-bar-vertical-size_medium {
+    height: var(--lwc-sizeMedium, 20rem);
+}
+
+.avonni-progress-bar-vertical-size_large {
+    height: var(--lwc-sizeLarge, 25rem);
+}
+
+.avonni-progress-bar-vertical-size_full {
+    height: 100vh;
+}
+
+.avonni-progress-bar_value {
+    font-weight: var(--lwc-fontWeightBold, 700);
+}

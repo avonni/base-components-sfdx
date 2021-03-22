@@ -1,0 +1,14 @@
+.avonni-welcome-mat__tile-body-right {
+    border-left: 0;
+    border-right: var(--lwc-borderWidthThin, 1px) solid
+        var(--lwc-colorBorder, rgb(221, 219, 218));
+}
+
+.avonni-media__figure-right {
+    margin-left: 0.375rem;
+    margin-right: 0.375rem;
+}
+
+.slds-welcome-mat__tile_info-only .avonni-welcome-mat__tile-body-right {
+    border-right: 0;
+}

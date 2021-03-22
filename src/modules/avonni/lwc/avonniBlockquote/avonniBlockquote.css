@@ -1,0 +1,46 @@
+.blockquote-default.doc {
+    border-left-color: #080707;
+}
+.blockquote-brand.doc {
+    border-left-color: #0070d2;
+}
+.blockquote-warning.doc {
+    border-left-color: #d47500;
+}
+.blockquote-error.doc {
+    border-left-color: #c23934;
+}
+.blockquote-success.doc {
+    border-left-color: #027e46;
+}
+blockquote.doc {
+    background-color: #fafaf9;
+    font-size: 1rem;
+    font-weight: 300;
+    padding: 1rem;
+    margin: 0 0 1.5rem 0;
+    border: 1px solid #f2f2f2;
+    border-left-width: 0.125rem;
+}
+.doc {
+    color: #3e3e3c;
+}
+blockquote.doc .lead {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+.blockquote-default.doc .lead {
+    color: #080707;
+}
+.blockquote-brand.doc .lead {
+    color: #0070d2;
+}
+.blockquote-warning.doc .lead {
+    color: #d47500;
+}
+.blockquote-error.doc .lead {
+    color: #c23934;
+}
+.blockquote-success.doc .lead {
+    color: #027e46;
+}

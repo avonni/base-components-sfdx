@@ -1,0 +1,118 @@
+<template>
+    <lightning-button
+        if:true={label}
+        label={label}
+        disabled={disabled}
+        aria-expanded={computedAriaExpanded}
+        accesskey={accessKey}
+        value={value}
+        aria-haspopup="true"
+        icon-name={iconName}
+        variant={variant}
+        onclick={handleButtonClick}
+        onblur={handleBlur}
+        onfocus={handleFocus}
+        onmousedown={handleButtonMouseDown}
+    >
+    </lightning-button>
+
+    <lightning-button-icon
+        if:false={label}
+        disabled={disabled}
+        aria-expanded={computedAriaExpanded}
+        accesskey={accessKey}
+        value={value}
+        aria-haspopup="true"
+        icon-name={iconName}
+        variant={variant}
+        tooltip={tooltip}
+        onclick={handleButtonClick}
+        onblur={handleBlur}
+        onfocus={handleFocus}
+        onmousedown={handleButtonMouseDown}
+        alternative-text={alternativeText}
+    >
+    </lightning-button-icon>
+
+    <template if:true={_dropdownOpened}>
+        <div
+            class={computedDropdownClass}
+            onmousedown={handleDropdownMouseDown}
+            onmouseup={handleDropdownMouseUp}
+            onscroll={handleDropdownScroll}
+            onblur={handleBlur}
+            tabindex="0" 
+        >
+            <template if:true={isLoading}>
+                <lightning-spinner
+                    alternative-text={loadingStateAlternativeText}
+                    size="small"
+                ></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                <div class="slds-dropdown__list" role="menu">
+                    <template if:true={withSearch}>
+                        <div onkeyup={handleKeyUp}>
+                            <lightning-input
+                                name="enter-search"
+                                label="Search"
+                                variant="label-hidden"
+                                placeholder={searchInputPlaceholder}
+                                type="search"
+                                class="slds-m-around_small"
+                                onblur={handleBlur}
+                                onchange={clearFilter}
+                            ></lightning-input>
+                        </div>
+                    </template>
+                    <div class="slds-popover__body slds-p-horizontal_none">
+                        <slot></slot>
+                        <div
+                            if:true={showItems}
+                            class="slds-p-vertical_x-small slds-listbox slds-listbox_vertical slds-dropdown_length-5"
+                        >
+                            <template
+                                for:each={filteredItems}
+                                for:item="item"
+                                for:index="index"
+                            >
+                                <div
+                                    class="slds-listbox__item"
+                                    key={item.key}
+                                    id={index}
+                                    onclick={handleClick}
+                                >
+                                    <div
+                                        class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                        role="option"
+                                    >
+                                        <lightning-icon
+                                            icon-name={item.avatar.fallbackIconName}
+                                            size="small"
+                                            class="slds-media__figure"
+                                            alternative-text={item.avatar.alternativeText}
+                                            variant={variantInverse}
+                                        ></lightning-icon>
+                                        <span class="slds-media__body">
+                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">
+                                                {item.label}
+                                            </span>
+                                            <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">
+                                                {item.metaJoin}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <template if:true={showFooter}>
+                        <div class="slds-popover__footer">
+                            <slot name="footer"></slot>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </template>
+</template>

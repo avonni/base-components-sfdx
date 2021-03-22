@@ -1,0 +1,154 @@
+<template>
+    <div class="slds-carousel slds-scrollable_x">
+        <lightning-layout vertical-align="center">
+            <template if:false={hidePreviousNextPanelNavigation}>
+                <lightning-layout-item>
+                    <!-- Previous navigation -->
+                    <lightning-button-icon
+                        alternative-text={assistiveText.previousPanel}
+                        class="slds-m-right_medium slds-m-bottom_large avonni-carousel__nav-button"
+                        disabled={previousPanelNavigationDisabled}
+                        icon-name="utility:chevronleft"
+                        onclick={selectPreviousSibling}
+                        size="small"
+                        title={assistiveText.previousPanel}
+                        variant="border-filled"
+                    ></lightning-button-icon>
+                </lightning-layout-item>
+            </template>
+            <lightning-layout-item flexibility="auto">
+                <div class="slds-carousel__stage">
+                    <!-- Carousel panels -->
+                    <div class="slds-carousel__panels" style={panelStyle}>
+                        <template
+                            for:each={panelItems}
+                            for:item="panel"
+                            for:index="panelIndex"
+                        >
+                            <div
+                                class="avonni-carousel__panel"
+                                key={panel.key}
+                                aria-hidden={panel.ariaHidden}
+                                role="tabpanel"
+                                tabindex={panel.tabIndex}
+                            >
+                                <template
+                                    for:each={panel.items}
+                                    for:item="item"
+                                    for:index="itemIndex"
+                                >
+                                    <div
+                                        key={item.key}
+                                        class="slds-carousel__panel slds-p-horizontal_x-small"
+                                        style={carouselItemStyle}
+                                    >
+                                        <a
+                                            class="slds-carousel__panel-action slds-text-link_reset"
+                                            data-panel-index={panelIndex}
+                                            data-item-index={itemIndex}
+                                            href={item.href}
+                                            onclick={handleItemClicked}
+                                        >
+                                            <div class="slds-carousel__image">
+                                                <img
+                                                    src={item.src}
+                                                    alt={item.imageAssistiveText}
+                                                />
+                                            </div>
+                                            <div
+                                                class="slds-carousel__content avonni-carousel__content"
+                                            >
+                                                <h2
+                                                    class="slds-carousel__content-title"
+                                                >
+                                                    {item.heading}
+                                                </h2>
+                                                <p>{item.description}</p>
+                                                <template
+                                                    if:true={item.buttonLabel}
+                                                >
+                                                    <div
+                                                        class="slds-m-top_small"
+                                                    >
+                                                        <lightning-button
+                                                            label={item.buttonLabel}
+                                                            icon-name={item.buttonIconName}
+                                                            icon-position={item.buttonIconPosition}
+                                                            variant={item.buttonVariant}
+                                                            disabled={item.buttonDisabled}
+                                                        ></lightning-button>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                    <ul
+                        class="slds-carousel__indicators"
+                        role="tablist"
+                        onkeydown={keyDownHandler}
+                    >
+                        <!-- Pagination items -->
+                        <template
+                            for:each={paginationItems}
+                            for:item="paginationItem"
+                            for:index="paginationIndex"
+                        >
+                            <li
+                                key={paginationItem.key}
+                                class="slds-carousel__indicator"
+                                role="presentation"
+                                onclick={onPanelSelect}
+                                data-index={paginationIndex}
+                            >
+                                <a
+                                    id={paginationItem.id}
+                                    class={paginationItem.className}
+                                    href="javascript:void(0);"
+                                    role="tab"
+                                    tabindex={paginationItem.tabIndex}
+                                    aria-selected={paginationItem.ariaSelected}
+                                    title={paginationItem.tabTitle}
+                                >
+                                    <span class="slds-assistive-text"
+                                        >{paginationItem.tabTitle}</span
+                                    >
+                                </a>
+                            </li>
+                        </template>
+                    </ul>
+                    <!-- Autoplay button -->
+                    <template if:false={disableAutoScroll}>
+                        <lightning-button-icon
+                            alternative-text={assistiveText.autoplayButton}
+                            class="avonni-carousel__autoscroll-button"
+                            icon-name={autoScrollIcon}
+                            onclick={toggleAutoScroll}
+                            size="x-small"
+                            title={assistiveText.autoplayButton}
+                            variant="border-filled"
+                        ></lightning-button-icon>
+                    </template>
+                </div>
+            </lightning-layout-item>
+            <template if:false={hidePreviousNextPanelNavigation}>
+                <!-- Next navigation -->
+                <lightning-layout-item>
+                    <lightning-button-icon
+                        alternative-text={assistiveText.nextPanel}
+                        class="slds-m-left_medium slds-m-bottom_large avonni-carousel__nav-button"
+                        disabled={nextPanelNavigationDisabled}
+                        icon-name="utility:chevronright"
+                        onclick={selectNextSibling}
+                        size="small"
+                        title={assistiveText.nextPanel}
+                        variant="border-filled"
+                    ></lightning-button-icon>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

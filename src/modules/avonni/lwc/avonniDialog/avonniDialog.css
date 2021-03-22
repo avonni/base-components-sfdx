@@ -1,0 +1,7 @@
+.avonni-spinner {
+    position: relative;
+    display: inline-block;
+    height: 200px;
+    width: -webkit-fill-available;
+    width: -moz-fill-available;
+}

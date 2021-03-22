@@ -1,0 +1,44 @@
+:host(.avonni-reverse) .slds-rich-text-editor {
+    flex-direction: column-reverse;
+}
+
+:host(.avonni-reverse) .slds-rich-text-editor__toolbar {
+    border-bottom-left-radius: var(--lwc-borderRadiusMedium, 0.25rem);
+    border-bottom-right-radius: var(--lwc-borderRadiusMedium, 0.25rem);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: var(--lwc-borderWidthThin, 1px) solid
+        var(--lwc-colorBorder, rgb(221, 219, 218));
+    border-bottom: none;
+}
+
+:host(.avonni-disabled) .slds-rich-text-editor__textarea {
+    cursor: auto;
+}
+
+.slds-rich-text-editor__textarea {
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    background-color: #ffffff;
+    border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
+}
+
+.avonni-cursor {
+    height: calc(var(--size) * 1px);
+    width: calc(var(--size) * 1px);
+    border-radius: calc(var(--size) * 1px);
+    background-color: transparent;
+    box-shadow: #000 0px 0px 5px;
+    border: 2px solid var(--color);
+    position: absolute;
+    opacity: 0;
+}
+
+.avonni-combobox {
+    width: 80px;
+}
+
+.avonni-label {
+    padding: 0 0.25rem 0.25rem 0.25rem;
+}

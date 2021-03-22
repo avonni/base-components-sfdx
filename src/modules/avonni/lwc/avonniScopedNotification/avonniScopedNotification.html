@@ -1,0 +1,20 @@
+<template>
+    <div class={computedNotificationClass}>
+        <div if:true={iconName} class="slds-media__figure">
+            <lightning-icon
+                icon-name={iconName}
+                size={iconSize}
+                variant={computedIconVariant}
+            ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+            <template if:true={showTitle}>
+                <slot name="title"></slot>
+            </template>
+            <template if:false={showTitle}>
+                <p>{title}</p>
+            </template>
+            <slot></slot>
+        </div>
+    </div>
+</template>

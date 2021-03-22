@@ -1,0 +1,86 @@
+.avonni-input-toggle__faux_x-small {
+    height: 0.75rem;
+    width: 1.5rem;
+    margin-top: 0.45rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_x-small::before,
+.avonni-input-toggle__label
+    .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_x-small::after {
+    height: 0.5rem;
+    width: 0.5rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_x-small::after {
+    height: 0.45rem;
+    width: 0.3rem;
+    left: 0.2rem;
+    top: 0;
+}
+
+.avonni-input-toggle__faux_small {
+    height: 1rem;
+    width: 2rem;
+    margin-top: 0.3rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_small::before,
+.avonni-input-toggle__label
+    .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_small::after {
+    height: 0.75rem;
+    width: 0.75rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_small::after {
+    height: 0.55rem;
+    width: 0.4rem;
+    left: 0.3rem;
+    top: 0.05rem;
+}
+
+.avonni-input-toggle__faux_large {
+    height: 1.75rem;
+    width: 3.5rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_large::before,
+.avonni-input-toggle__label
+    .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_large::after {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_large::after {
+    height: 1rem;
+    width: 0.6rem;
+    left: 0.6rem;
+    top: 0.1rem;
+}
+
+.avonni-input-toggle__label
+    input:checked
+    + .slds-checkbox_faux_container
+    .avonni-input-toggle__faux_hide-mark::after {
+    display: none;
+}

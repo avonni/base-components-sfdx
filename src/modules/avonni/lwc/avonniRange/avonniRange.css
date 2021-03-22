@@ -1,0 +1,125 @@
+.slds-slider-label__label {
+    padding-bottom: 0.5rem;
+}
+.slds-slider__range {
+    background: #ecebea;
+    height: 4px;
+    outline: none;
+    transition: background 450ms ease-in;
+    -webkit-appearance: none;
+}
+
+.slds-slider__range::-webkit-slider-runnable-track {
+    background: none;
+    border-radius: 0px;
+}
+
+.slider-left {
+    border-radius: 4px 0 0 4px;
+}
+
+.slider-right {
+    border-radius: 0px 4px 4px 0px;
+}
+.avonni-container {
+    display: flex;
+}
+.avonni-container_x-small {
+    width: 12rem;
+}
+.avonni-container_small {
+    width: 15rem;
+}
+.avonni-container_medium {
+    width: 20rem;
+}
+.avonni-container_large {
+    width: 25rem;
+}
+.avonni-unit-container {
+    display: flex;
+    justify-content: space-between;
+    color: #3e3e3c;
+    padding-top: 0.5rem;
+    font-size: 0.75rem;
+}
+.avoni-vertical {
+    width: 24rem;
+    transform: rotate(-90deg);
+    top: 70px;
+    bottom: 0;
+    position: inherit;
+    height: 24rem;
+}
+
+.avonni-bubble {
+    opacity: 0;
+    position: absolute;
+    top: -50px;
+    z-index: 3;
+    background-color: #1a5296;
+    color: #fff;
+    height: 32px;
+    border-radius: 0.25rem;
+    -webkit-border-radius: 0.25rem;
+    width: fit-content;
+    min-width: 2rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    line-height: 32px;
+    white-space: nowrap;
+}
+
+.avonni-bubble:after {
+    position: absolute;
+    content: '';
+    left: 0;
+    border-radius: 19px;
+    top: 22px;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top-width: 19px;
+    border-top-style: solid;
+    border-top-color: #1a5296;
+}
+
+.avonni-bubble-vertical {
+    opacity: 0;
+    position: absolute;
+    top: 19px;
+    z-index: 3;
+    background-color: #1a5296;
+    color: #fff;
+    border-radius: .25rem;
+    -webkit-border-radius: .25rem;
+    height: auto;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    line-height: 32px;
+    white-space: nowrap;
+    transform-origin: 17% 57%;
+    transform: rotate(90deg);
+    min-width: 80px;
+}
+
+.avonni-bubble-vertical:after {
+    position: absolute;
+    content: "";
+    left: -18px;
+    border-radius: 19px;
+    top: 6px;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top-width: 19px;
+    border-top-style: solid;
+    border-top-color: #1a5296;
+    transform: rotate(90deg);
+}

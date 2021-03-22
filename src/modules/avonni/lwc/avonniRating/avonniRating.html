@@ -1,0 +1,43 @@
+<template>
+    <template if:true={label}>
+        <label class="slds-form-element__label">
+            {label}
+        </label>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+        ></lightning-helptext>
+    </template>
+    <div class="avonni-rating-container">
+        <span if:false={iconName} class="avonni-rating">
+            <template for:each={items} for:item="item">
+                <button
+                    class="slds-button slds-button_outline-brand"
+                    key={item}
+                    title={item}
+                    value={item}
+                    onclick={selectRating}
+                    disabled={disabled}
+                >
+                    {item}
+                </button>
+            </template>
+        </span>
+        <span if:true={iconName} class="avonni-rating">
+            <template for:each={items} for:item="item">
+                <lightning-button-icon
+                    icon-name={iconName}
+                    key={item}
+                    title={item}
+                    value={item}
+                    onclick={selectRating}
+                    disabled={disabled}
+                    variant="bare"
+                    size="large"
+                    class="avonni-icon"
+                ></lightning-button-icon>
+            </template>
+        </span>
+        <span if:true={showRating} class="rating">{value}/{max}</span>
+    </div>
+</template>

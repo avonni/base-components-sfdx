@@ -1,0 +1,19 @@
+<template>
+    <div class={progressRingClass}>
+        <div
+            class="slds-progress-ring__progress"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={value}
+        >
+            <svg viewBox="-1 -1 2 2">
+                <path fill={color} d={completeness}></path>
+            </svg>
+        </div>
+        <div class={progressRingContentClass}>
+            <span if:true={showValue} style={progressLabelStyles}>{value}%</span>
+        </div>
+        <div class={progressLabelClass}>{label}</div>
+    </div>
+</template>

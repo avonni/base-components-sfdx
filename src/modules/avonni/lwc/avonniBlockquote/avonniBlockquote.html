@@ -1,0 +1,22 @@
+<template>
+    <blockquote class={blockquoteClass}>
+        <div class="slds-grid slds-grid--vertical-align-center">
+            <lightning-icon
+                if:true={leftIcon}
+                icon-name={iconName}
+                size={iconSize}
+                class="slds-m-right_x-small"
+            ></lightning-icon>
+            <p class="doc lead">{title}</p>
+            <lightning-icon
+                if:true={rightIcon}
+                icon-name={iconName}
+                size={iconSize}
+                class="slds-m-left_x-small"
+            ></lightning-icon>
+        </div>
+        <p class="doc">
+            <slot></slot>
+        </p>
+    </blockquote>
+</template>

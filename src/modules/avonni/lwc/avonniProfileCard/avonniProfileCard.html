@@ -1,0 +1,53 @@
+<template>
+    <div class={computedMainContainerClass}>
+        <article class="slds-card">
+            <div class={computedContainerClass}>
+                <header class={computedHeaderClass}></header>
+                <div class={computedAvatarClass}>
+                    <div if:true={isError} class={isCircle}>
+                        <lightning-icon
+                            icon-name={avatarFallbackIconName}
+                            size="large"
+                            alternative-text={avatarAlternativeText}
+                        ></lightning-icon>
+                    </div>
+                    <img
+                        if:false={isError}
+                        class={isCircle}
+                        alt={avatarAlternativeText}
+                        src={avatarSrc}
+                        onerror={setFallbackIcon}
+                    />
+                    <template if:true={showAvatarActions}>
+                        <div class="avonni-avatar-actions">
+                            <slot name="avataractions"></slot>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="avonni-flex-container avonni-title-container">
+                    <template if:true={showHeaderSlot}>
+                        <slot name="header"></slot>
+                    </template>
+                    <template if:false={showHeaderSlot}>
+                        <span class="avonni-title">{title}</span>
+                        <span class="avonni-subtitle">{subtitle}</span>
+                    </template>
+                </div>
+                <template if:true={showActions}>
+                    <div class="avonni-actions">
+                        <slot name="actions"></slot>
+                    </div>
+                </template>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <slot></slot>
+            </div>
+            <template if:true={showFooter}>
+                <footer class="slds-card__footer">
+                    <slot name="footer"></slot>
+                </footer>
+            </template>
+        </article>
+    </div>
+</template>

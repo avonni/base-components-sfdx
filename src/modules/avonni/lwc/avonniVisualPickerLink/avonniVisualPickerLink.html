@@ -1,0 +1,63 @@
+<template>
+    <div class="slds-welcome-mat">
+        <div class={computedContainerClass}>
+            <a
+                href={href}
+                class="slds-media slds-box slds-box_link"
+                onclick={handleClick}
+            >
+                <div if:true={leftPosition} class={computedIconContainerClass}>
+                    <div class="slds-welcome-mat__tile-figure">
+                        <div class="slds-welcome-mat__tile-icon-container">
+                            <lightning-icon
+                                icon-name={iconName}
+                            ></lightning-icon>
+                            <lightning-icon
+                                icon-name="utility:check"
+                                alternative-text="Completed"
+                                variant="inverse"
+                                size="xx-small"
+                                class="slds-icon-action-check"
+                            ></lightning-icon>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-media__body">
+                    <div class={computedTileBodyClass}>
+                        <template if:true={showTitle}>
+                            <div class="slds-welcome-mat__tile-title">
+                                <slot name="title"></slot>
+                            </div>
+                        </template>
+                        <template if:false={showTitle}>
+                            <template if:true={title}>
+                                <h3 class="slds-welcome-mat__tile-title">
+                                    {title}
+                                </h3>
+                            </template>
+                        </template>
+                        <p class="slds-welcome-mat__tile-description">
+                            <slot></slot>
+                        </p>
+                    </div>
+                </div>
+                <div if:false={leftPosition} class={computedIconContainerClass}>
+                    <div class="slds-welcome-mat__tile-figure">
+                        <div class="slds-welcome-mat__tile-icon-container">
+                            <lightning-icon
+                                icon-name={iconName}
+                            ></lightning-icon>
+                            <lightning-icon
+                                icon-name="utility:check"
+                                alternative-text="Completed"
+                                variant="inverse"
+                                size="xx-small"
+                                class="slds-icon-action-check"
+                            ></lightning-icon>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,186 @@
+<template>
+    <template if:true={isClassic}>
+        <span class={avatarGroupClass}>
+            <span
+                class="slds-avatar slds-avatar-grouped slds-avatar-grouped__primary"
+                onclick={handlAvatarclick}
+                tabindex="0"
+            >
+                <img
+                    if:true={primaryItem.src}
+                    alt={primaryItem.alternativeText}
+                    title={primaryItem.alternativeText}
+                    src={primaryItem.src}
+                    data-item-id="0"
+                    data-type="show"
+                />
+                <abbr
+                    if:true={primaryItem.initials}
+                    class="slds-avatar__initials slds-avatar-grouped__initials"
+                    data-item-id="0"
+                    data-type="show"
+                    >{primaryItem.initials}
+                </abbr>
+                <lightning-icon
+                    if:true={primaryItem.fallbackIconName}
+                    class="slds-avatar-grouped__icon"
+                    icon-name={primaryItem.fallbackIconName}
+                    alternative-text={primaryItem.alternativeText}
+                    size={size}
+                    data-item-id="0"
+                    data-type="show"
+                ></lightning-icon>
+            </span>
+            <span
+                class="slds-avatar slds-avatar-grouped slds-avatar-grouped__secondary"
+                onclick={handlAvatarclick}
+                tabindex="0"
+            >
+                <img
+                    if:true={secondaryItem.src}
+                    alt={secondaryItem.alternativeText}
+                    title={secondaryItem.alternativeText}
+                    src={secondaryItem.src}
+                    data-item-id="1"
+                    data-type="show"
+                />
+                <abbr
+                    if:true={secondaryItem.initials}
+                    class="slds-avatar__initials slds-avatar-grouped__initials"
+                    data-item-id="1"
+                    data-type="show"
+                    >{secondaryItem.initials}
+                </abbr>
+                <lightning-icon
+                    if:true={secondaryItem.fallbackIconName}
+                    class="slds-avatar-grouped__icon"
+                    icon-name={secondaryItem.fallbackIconName}
+                    alternative-text={secondaryItem.alternativeText}
+                    size={size}
+                    data-item-id="1"
+                    data-type="show"
+                ></lightning-icon>
+            </span>
+        </span>
+    </template>
+    <template if:false={isClassic}>
+        <template for:each={listItems} for:item="item" for:index="index">
+            <template if:false={item.showMore}>
+                <template if:true={item.key}>
+                    <span
+                        class={avatarInlineClass}
+                        key={item.key}
+                        onclick={handlAvatarclick}
+                        onblur={handleBlur}
+                        tabindex="0"
+                    >
+                        <img
+                            if:true={item.src}
+                            alt={item.alternativeText}
+                            title={item.alternativeText}
+                            src={item.src}
+                            data-item-id={index}
+                            data-type="show"
+                        />
+                        <abbr
+                            if:true={item.initials}
+                            class="slds-avatar__initials slds-avatar-grouped__initials"
+                            data-item-id={index}
+                            data-type="show"
+                            >{item.initials}
+                        </abbr>
+                        <lightning-icon
+                            if:true={item.fallbackIconName}
+                            class="slds-avatar-grouped__icon"
+                            icon-name={item.fallbackIconName}
+                            alternative-text={item.alternativeText}
+                            size={size}
+                            data-item-id={index}
+                            data-type="show"
+                        ></lightning-icon>
+                    </span>
+                </template>
+            </template>
+            <template if:true={item.showMore}>
+                <div
+                    class="slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
+                    key={item.key}
+                >
+                    <span
+                        class={avatarInlinePlusClass}
+                        onclick={handlAvatarclick}
+                        onblur={handleBlur}
+                        tabindex="0"
+                    >
+                        <abbr
+                            if:true={item.initials}
+                            class="slds-avatar__initials slds-avatar-grouped__initials"
+                            data-item-id={index}
+                            data-type="show"
+                            >{item.initials}
+                        </abbr>
+                    </span>
+                    <template if:true={showPopever}>
+                        <div
+                            class="slds-dropdown slds-dropdown_left"
+                            onmouseenter={cancelBlur}
+                            onmouseleave={allowBlur}
+                        >
+                            <template
+                                for:each={listHiddenItems}
+                                for:item="item"
+                                for:index="index"
+                            >
+                                <div
+                                    key={item.key}
+                                    class="avonni-hidden-avatar-container"
+                                    onclick={handlAvatarclick}
+                                    data-item-id={index}
+                                    data-type="hidden"
+                                >
+                                    <span
+                                        class={avatarInlineClass}
+                                        data-item-id={index}
+                                        data-type="hidden"
+                                    >
+                                        <img
+                                            if:true={item.src}
+                                            alt={item.alternativeText}
+                                            title={item.alternativeText}
+                                            src={item.src}
+                                            data-item-id={index}
+                                            data-type="hidden"
+                                        />
+                                        <abbr
+                                            if:true={item.initials}
+                                            class="slds-avatar__initials slds-avatar-grouped__initials"
+                                            data-item-id={index}
+                                            data-type="hidden"
+                                            >{item.initials}
+                                        </abbr>
+                                        <lightning-icon
+                                            if:true={item.fallbackIconName}
+                                            class="slds-avatar-grouped__icon"
+                                            icon-name={item.fallbackIconName}
+                                            alternative-text={item.alternativeText}
+                                            size={size}
+                                            data-item-id={index}
+                                            data-type="hidden"
+                                        ></lightning-icon>
+                                    </span>
+                                    <p
+                                        onclick={handlAvatarclick}
+                                        data-item-id={index}
+                                        data-type="hidden"
+                                    >
+                                        {item.alternativeText}
+                                    </p>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+    </template>
+</template>

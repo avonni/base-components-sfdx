@@ -1,0 +1,17 @@
+<template>
+    <div class={mediaObjectClass}>
+        <template if:true={showFigureSlot}>
+            <div class="slds-media__figure">
+                <slot name="figure"></slot>
+            </div>
+        </template>
+        <div class="slds-media__body">
+            <slot></slot>
+        </div>
+        <template if:true={showFigureInverseSlot}>
+            <div class="slds-media__figure">
+                <slot name="figureInverse"></slot>
+            </div>
+        </template>
+    </div>
+</template>

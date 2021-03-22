@@ -1,0 +1,45 @@
+<template>
+    <div class="slds-welcome-mat">
+        <div class={computedContainerClass}>
+            <div class="slds-media">
+                <div if:true={leftPosition} class={computedIconContainerClass}>
+                    <div class="slds-welcome-mat__tile-figure">
+                        <div class="slds-welcome-mat__tile-icon-container">
+                            <lightning-icon
+                                icon-name={iconName}
+                            ></lightning-icon>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-media__body">
+                    <div class={computedTileBodyClass}>
+                        <template if:true={showTitle}>
+                            <h3 class="slds-welcome-mat__tile-title">
+                                <slot name="title"></slot>
+                            </h3>
+                        </template>
+                        <template if:false={showTitle}>
+                            <template if:true={title}>
+                                <div class="slds-welcome-mat__tile-title">
+                                    {title}
+                                </div>
+                            </template>
+                        </template>
+                        <p class="slds-welcome-mat__tile-description">
+                            <slot></slot>
+                        </p>
+                    </div>
+                </div>
+                <div if:false={leftPosition} class={computedIconContainerClass}>
+                    <div class="slds-welcome-mat__tile-figure">
+                        <div class="slds-welcome-mat__tile-icon-container">
+                            <lightning-icon
+                                icon-name={iconName}
+                            ></lightning-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

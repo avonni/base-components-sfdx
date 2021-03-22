@@ -1,0 +1,48 @@
+.avonni-rating:hover .avonni-active.avonni-continuous:not(:hover) {
+    border: 1px solid #1b5297;
+    background-color: #ffffff;
+    border-color: #1b5297;
+    color: #1b5297;
+    opacity: 0.85;
+}
+
+.avonni-rating:hover .avonni-active:hover {
+    border: 1px solid #ffffff;
+    background-color: #1b5297;
+    border-color: #1b5297;
+    color: #ffffff;
+    opacity: 1;
+}
+
+.avonni-active.avonni-continuous:hover,
+.avonni-active.avonni-continuous:hover ~ .avonni-active.avonni-continuous,
+.avonni-active.avonni-continuous:hover:before,
+.avonni-active.avonni-continuous:hover
+    ~ .avonni-active.avonni-continuous:before {
+    border: 1px solid #ffffff !important;
+    background-color: #1b5297 !important;
+    border-color: #1b5297 !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.avonni-rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    text-align: left;
+    width: fit-content;
+}
+
+button {
+    direction: initial;
+    margin-left: 1px !important;
+}
+
+.avonni-rating-container {
+    display: flex;
+    align-items: center;
+}
+
+.avonni-rating-container .rating {
+    padding-left: 1rem;
+}

@@ -1,0 +1,66 @@
+<template>
+    <div>
+        <lightning-layout if:true={showPositionTop}>
+            <lightning-layout-item size="12" class="slds-text-align_center">
+                <span
+                    if:true={showPositionTopLeft}
+                    class="avonni-progress-bar_value"
+                    aria-hidden="true"
+                >
+                    {value}% {valueLabel}
+                </span>
+                <span
+                    if:true={label}
+                    class="slds-p-right_xx-small slds-p-left_xx-small"
+                    >{label}</span
+                >
+                <span
+                    if:true={showPositionTopRight}
+                    class="avonni-progress-bar_value"
+                    aria-hidden="true"
+                >
+                    {value}% {valueLabel}
+                </span>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout>
+            <lightning-layout-item
+                size="12"
+                class={computedSizing}
+                style="display: flex; justify-content: center"
+            >
+                <div
+                    class={computedOuterClass}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow={value}
+                    role="progressbar"
+                >
+                    <span class={computedInnerClass} style={computedStyle}>
+                    </span>
+                    <span class="slds-assistive-text">{assistiveText}</span>
+                </div>
+                <div style="position: relative">
+                    <template for:each={badges} for:item="badge">
+                        <c-avonni-primitive-progress-bar-badge
+                            key={badge.label}
+                            label={badge.label}
+                            value={badge.value}
+                            variant={badge.variant}
+                            border-style={badge.borderStyle}
+                            thickness={thickness}
+                            orientation={orientation}
+                        ></c-avonni-primitive-progress-bar-badge>
+                    </template>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout if:true={showPositionBottom}>
+            <lightning-layout-item size="12" class="slds-text-align_center">
+                <span class="avonni-progress-bar_value" aria-hidden="true">
+                    {value}% {valueLabel}
+                </span>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>
