@@ -1,7 +1,7 @@
 {
     "packageDirectories": [
         {
-            "path": "src/modules/avonni",
+            "path": "src/modules/base",
             "default": true
         }
     ],
