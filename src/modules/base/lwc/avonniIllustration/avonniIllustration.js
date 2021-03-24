@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import SVG_URL from '@salesforce/resourceUrl/illustrationLibrary';
@@ -34,8 +34,8 @@ const validVariants = [
 
 export default class AvonniIllustration extends LightningElement {
     @api title;
-    @track _size = 'small';
-    @track _variant = 'text-only';
+    _size = 'small';
+    _variant = 'text-only';
 
     @api get variant() {
         return this._variant;

@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
@@ -10,12 +10,12 @@ export default class AvonniPublisher extends LightningElement {
     @api buttonLabel;
     @api submitAction;
 
-    @track _variant = 'base';
-    @track _disabled;
-    @track isActive = false;
-    @track _value;
-    @track showFigureSlot = true;
-    @track showActionsSlot = true;
+    _variant = 'base';
+    _disabled;
+    isActive = false;
+    _value;
+    showFigureSlot = true;
+    showActionsSlot = true;
 
     renderedCallback() {
         if (this.isActive) {

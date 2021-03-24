@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import visualPickerLink from './avonniVisualPickerLink.html';
@@ -11,10 +11,10 @@ export default class AvonniVisualPickerLink extends LightningElement {
     @api title;
     @api href;
 
-    @track _iconPosition = 'left';
-    @track _completed = false;
-    @track _infoOnly = false;
-    @track showTitle = true;
+    _iconPosition = 'left';
+    _completed = false;
+    _infoOnly = false;
+    showTitle = true;
 
     render() {
         return this._infoOnly ? visualPickerLinkInfoOnly : visualPickerLink;
