@@ -1,10 +1,15 @@
 <template>
     <template if:true={isInline}>
         <label class="slds-form-element__label slds-no-flex">
-            <abbr if:true={required} title="required" class="slds-required">*</abbr>
+            <abbr if:true={required} title="required" class="slds-required"
+                >*</abbr
+            >
             {label}
         </label>
-        <lightning-helptext if:true={fieldLevelHelp} content={fieldLevelHelp}></lightning-helptext>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+        ></lightning-helptext>
     </template>
     <div class={formElementClass}>
         <div class="slds-form-element__control">

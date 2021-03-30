@@ -418,7 +418,7 @@ export default class AvonniRange extends LightningElement {
                     '% - ' +
                     (rightProgressBubble * 0.16 + 8) +
                     'px)';
-            }, 1)
+            }, 1);
         }
     }
 
@@ -442,11 +442,11 @@ export default class AvonniRange extends LightningElement {
     reportValidity() {
         let helpMessage = '';
 
-        let leftInput = this._constraintLeft.reportValidity(message => {
+        let leftInput = this._constraintLeft.reportValidity((message) => {
             helpMessage = helpMessage + message;
         });
 
-        let rightInput = this._constraintRight.reportValidity(message => {
+        let rightInput = this._constraintRight.reportValidity((message) => {
             if (!leftInput) {
                 helpMessage = helpMessage + ', ';
             }

@@ -82,7 +82,7 @@ export default class AvonniDynamicMenu extends LightningElement {
         value.forEach((item, key) => {
             let cloneItem = Object.assign({}, item);
             cloneItem.metaJoin = cloneItem.meta.join(' • ');
-            cloneItem.key = `item-key-${key}`
+            cloneItem.key = `item-key-${key}`;
             result.push(cloneItem);
         });
 
@@ -90,7 +90,8 @@ export default class AvonniDynamicMenu extends LightningElement {
         this.filteredItems = result;
     }
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -101,7 +102,8 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
-    @api get menuAlignment() {
+    @api
+    get menuAlignment() {
         return this._menuAlignment;
     }
 
@@ -112,7 +114,8 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -120,7 +123,8 @@ export default class AvonniDynamicMenu extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api get isLoading() {
+    @api
+    get isLoading() {
         return this._isLoading;
     }
 
@@ -282,7 +286,7 @@ export default class AvonniDynamicMenu extends LightningElement {
 
     handleKeyUp(event) {
         let filter = event.target.value.toLowerCase();
-        this.filteredItems = this.items.filter(item => {
+        this.filteredItems = this.items.filter((item) => {
             return item.label.toLowerCase().indexOf(filter) > -1;
         });
     }

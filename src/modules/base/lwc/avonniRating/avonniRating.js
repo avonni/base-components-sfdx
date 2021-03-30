@@ -1,8 +1,21 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
-import { generateUniqueId } from 'c/utils';
+import { generateUniqueId, classSet } from 'c/utils';
 
-const validSelections = ['continuous', 'single'];
+const VALID_SELECTIONS = {
+    valid: ['continuous', 'single'],
+    default: 'continues'
+};
+
+const VALID_SIZES = {
+    valid: ['x-small', 'small', 'medium', 'large'],
+    default: 'large'
+};
+
+const VALID_LABEL_VARIANTS = {
+    valid: ['standard', 'label-inline', 'label-hidden', 'label-stacked'],
+    default: 'standard'
+};
 
 export default class AvonniRating extends LightningElement {
     @api label;
@@ -13,6 +26,8 @@ export default class AvonniRating extends LightningElement {
     _min = 1;
     _max = 5;
     _value;
+    _variant = 'standard';
+    _iconSize = 'large';
     _selection = 'continuous';
     _disabled;
     _readOnly;
@@ -32,14 +47,17 @@ export default class AvonniRating extends LightningElement {
                 const style = document.createElement('style');
                 style.innerText = `
                     .avonni-icon-selected .slds-button:disabled svg {fill: #a5a4a2;}
-                    .avonni-icon-selected svg {fill: #1b5297;}
+                    .avonni-icon-selected svg {fill: #1b5297 !important;}
                     .avonni-rating:hover .avonni-active-star.avonni-continuous-star:not(:hover) svg {
-                        fill: #706e6b;
+                        fill: #c9c7c5;
                         opacity: 0.85;
                     }
                     .avonni-rating:hover .avonni-active-star:hover svg{
                         fill: #1b5297;
                         opacity: 1;
+                    }
+                    .avonni-active-star.avonni-continuous-star svg {
+                        fill: #c9c7c5;
                     }
                     .avonni-active-star.avonni-continuous-star:hover svg,
                     .avonni-active-star.avonni-continuous-star:hover ~ .avonni-active-star.avonni-continuous-star svg {
@@ -50,6 +68,9 @@ export default class AvonniRating extends LightningElement {
                     .avonni-icon button:active, 
                     .avonni-icon button:focus {
                         box-shadow: none;
+                    }
+                    .avonni-icon.avonni-active-star svg {
+                        fill: #c9c7c5;
                     }
                 `;
                 selectedIcons.appendChild(style);
@@ -99,14 +120,39 @@ export default class AvonniRating extends LightningElement {
         }
     }
 
-    @api get selection() {
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            defaultValue: VALID_LABEL_VARIANTS.default,
+            validValues: VALID_LABEL_VARIANTS.valid
+        });
+    }
+
+    @api
+    get iconSize() {
+        return this._iconSize;
+    }
+
+    set iconSize(size) {
+        this._iconSize = normalizeString(size, {
+            defaultValue: VALID_SIZES.default,
+            validValues: VALID_SIZES.valid
+        });
+    }
+
+    @api
+    get selection() {
         return this._selection;
     }
 
     set selection(selection) {
         this._selection = normalizeString(selection, {
-            fallbackValue: 'continuous',
-            validValues: validSelections
+            fallbackValue: VALID_SELECTIONS.default,
+            validValues: VALID_SELECTIONS.valid
         });
 
         if (this.init) {
@@ -114,7 +160,8 @@ export default class AvonniRating extends LightningElement {
         }
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -126,7 +173,8 @@ export default class AvonniRating extends LightningElement {
         }
     }
 
-    @api get readOnly() {
+    @api
+    get readOnly() {
         return this._readOnly;
     }
 
@@ -138,7 +186,8 @@ export default class AvonniRating extends LightningElement {
         }
     }
 
-    @api get valueHidden() {
+    @api
+    get valueHidden() {
         return this._valueHidden;
     }
 
@@ -164,6 +213,23 @@ export default class AvonniRating extends LightningElement {
         return items.reverse();
     }
 
+    get computedContainerClass() {
+        return classSet()
+            .add({
+                'slds-form-element_stacked': this.variant === 'label-stacked',
+                'avonni-label-inline': this.variant === 'label-inline'
+            })
+            .toString();
+    }
+
+    get computedLegendClass() {
+        return classSet('slds-form-element__label slds-no-flex')
+            .add({
+                'slds-assistive-text': this.variant === 'label-hidden'
+            })
+            .toString();
+    }
+
     selectRating(event) {
         if (!this._readOnly) {
             this.value = Number(event.target.value);
@@ -180,7 +246,7 @@ export default class AvonniRating extends LightningElement {
     ratingRecalculation() {
         let buttons = this.template.querySelectorAll('button');
 
-        buttons.forEach(button => {
+        buttons.forEach((button) => {
             button.classList.remove('slds-button_outline-brand');
             button.classList.remove('slds-button_brand');
 
@@ -211,7 +277,7 @@ export default class AvonniRating extends LightningElement {
             'lightning-button-icon'
         );
 
-        iconButtons.forEach(button => {
+        iconButtons.forEach((button) => {
             button.classList.remove('avonni-icon-selected');
 
             if (this.selection === 'continuous') {

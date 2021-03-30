@@ -8,7 +8,8 @@ export default class AvonniExpandableSection extends LightningElement {
     _closed;
     _collapsable;
 
-    @api get closed() {
+    @api
+    get closed() {
         return this._closed;
     }
 
@@ -16,7 +17,8 @@ export default class AvonniExpandableSection extends LightningElement {
         this._closed = normalizeBoolean(value);
     }
 
-    @api get collapsable() {
+    @api
+    get collapsable() {
         return this._collapsable;
     }
 

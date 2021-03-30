@@ -29,7 +29,7 @@ export default class AvonniConfetti extends LightningElement {
     _variant = 'base';
     _name;
 
-    @api 
+    @api
     get variant() {
         return this._variant;
     }
@@ -196,7 +196,7 @@ export default class AvonniConfetti extends LightningElement {
             let ticks = Math.max(200, 500 * (timeLeft / 6000));
             skew = Math.max(0.8, skew - 0.001);
 
-            this.colors.forEach(color => {
+            this.colors.forEach((color) => {
                 // eslint-disable-next-line no-undef
                 confetti({
                     particleCount: 1,

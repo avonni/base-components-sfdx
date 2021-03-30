@@ -20,7 +20,7 @@ const units = {
     HOURS: { name: 'hour', threshold: 22 }, // hours to day
     DAYS: { name: 'day', threshold: 26 }, // days to month
     MONTHS: { name: 'month', threshold: 11 }, // months to year
-    YEARS: { name: 'year' },
+    YEARS: { name: 'year' }
 };
 
 const SECOND_TO_MILLISECONDS = 1000;
@@ -110,7 +110,7 @@ function format(locale, value, unit) {
     if ('Intl' in window && Intl.RelativeTimeFormat) {
         const formatter = new Intl.RelativeTimeFormat(locale, {
             style: 'long',
-            numeric: 'always',
+            numeric: 'always'
         });
         return formatter.format(value, unit);
     }

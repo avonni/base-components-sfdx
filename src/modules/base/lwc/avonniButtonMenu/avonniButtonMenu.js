@@ -78,7 +78,7 @@ export default class AvonniButtonMenu extends LightningElement {
             detail: {
                 callbacks: {
                     setOrder: this.setOrder.bind(this),
-                    setDeRegistrationCallback: deRegistrationCallback => {
+                    setDeRegistrationCallback: (deRegistrationCallback) => {
                         this._deRegistrationCallback = deRegistrationCallback;
                     }
                 }
@@ -338,7 +338,7 @@ export default class AvonniButtonMenu extends LightningElement {
         if (event.detail.type === 'submenu') {
             event.target.parentElement
                 .querySelectorAll('.avonni-submenu')
-                .forEach(submenu => {
+                .forEach((submenu) => {
                     submenu.close();
                 });
             if (!this._dropdownVisible) {
@@ -435,7 +435,7 @@ export default class AvonniButtonMenu extends LightningElement {
             this._rerenderFocus = !this._rerenderFocus;
 
             if (!this._dropdownVisible) {
-                this.querySelectorAll('.avonni-submenu').forEach(submenu => {
+                this.querySelectorAll('.avonni-submenu').forEach((submenu) => {
                     submenu.close();
                 });
             }
@@ -493,7 +493,7 @@ export default class AvonniButtonMenu extends LightningElement {
         if (event.target.classList.value.indexOf('avonni-submenu') === -1) {
             event.target.parentElement
                 .querySelectorAll('.avonni-submenu')
-                .forEach(submenu => {
+                .forEach((submenu) => {
                     submenu.close();
                 });
         }

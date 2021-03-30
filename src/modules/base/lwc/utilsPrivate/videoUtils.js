@@ -23,7 +23,7 @@ export function hasOnlyAllowedVideoIframes(htmlString) {
 
         return (
             iframesList.length > 0 &&
-            !iframesList.some(iframe => !isUrlAllowed(iframe.src))
+            !iframesList.some((iframe) => !isUrlAllowed(iframe.src))
         );
     }
     return false;

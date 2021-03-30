@@ -1,0 +1,39 @@
+<template>
+    <div class={computedOuterClass}>
+        <ol class="slds-progress__list">
+            <template for:each={steps} for:item="step">
+                <c-avonni-primitive-progress-step
+                    data-name="primitiveProgressStep"
+                    class="avonni-progress-step-position-relative"
+                    disabled-steps={disabledSteps}
+                    warning-steps={warningSteps}
+                    completed-steps={completedSteps}
+                    key={step.value}
+                    label={step.label}
+                    label-position={step.labelPosition}
+                    description={step.description}
+                    description-position={step.descriptionPosition}
+                    value={step.value}
+                    button-label={step.buttonLabel}
+                    button-name={step.buttonName}
+                    button-icon-name={step.buttonIconName}
+                    button-icon-position={step.buttonIconPosition}
+                    button-disabled={step.buttonDisabled}
+                    button-title={step.buttonTitle}
+                    button-variant={step.buttonVariant}
+                    popover-variant={step.popoverVariant}
+                    popover-icon-name={step.popoverIconName}
+                    popover-icon-src={step.popoverIconSrc}
+                    popover-icon-name-when-hover={step.popoverIconNameWhenHover}
+                    popover-icon-src-when-hover={step.popoverIconSrcWhenHover}
+                    popover-size={step.popoverSize}
+                    popover-ratio={step.popoverRatio}
+                    popover-label={step.popoverLabel}
+                    popover-description={step.popoverDescription}
+                    popover-hidden={step.popoverHidden}
+                    assistive-text={step.assistiveText}
+                ></c-avonni-primitive-progress-step>
+            </template>
+        </ol>
+    </div>
+</template>

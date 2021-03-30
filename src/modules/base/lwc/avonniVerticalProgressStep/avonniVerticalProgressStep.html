@@ -28,9 +28,7 @@
             <template if:true={showSlot}>
                 <slot></slot>
             </template>
-            <template if:false={showSlot}>
-                {label}
-            </template>
+            <template if:false={showSlot}> {label} </template>
         </div>
     </li>
 </template>

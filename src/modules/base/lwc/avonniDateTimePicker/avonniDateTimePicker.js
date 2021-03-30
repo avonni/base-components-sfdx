@@ -1,12 +1,12 @@
-/* eslint-disable no-unused-expressions */
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { FieldConstraintApi } from 'c/inputUtils';
-import TIME_ZONES from './timeZones.js';
+import { classSet } from 'c/utils';
+import TIME_ZONES from './avonniTimeZones.js';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const VARIANTS = ['daily', 'weekly'];
+const VARIANTS = ['daily', 'weekly', 'inline', 'timeline', 'monthly'];
 const TYPES = ['radio', 'checkbox'];
 const DATE_TIME_FORMAT = ['numeric', '2-digit'];
 const WEEKDAY_FORMAT = ['narrow', 'short', 'long'];
@@ -41,6 +41,7 @@ export default class AvonniDateTimePicker extends LightningElement {
     _dateFormatMonth;
     _dateFormatYear;
     _showEndTime;
+    _showDisabledDates;
     _type;
     _showTimeZone;
     _hideNavigation;
@@ -55,6 +56,8 @@ export default class AvonniDateTimePicker extends LightningElement {
     selectedTimeZone;
     helpMessage = null;
     datePickerValue;
+    dayClass = 'avonni-date-time-picker__day';
+    calendarDisabledDates = [];
 
     connectedCallback() {
         this._processValue();
@@ -64,9 +67,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.today = now;
         this.datePickerValue = now.toISOString();
 
-        this.today < this.min
-            ? this._setFirstWeekDay(this.min)
-            : this._setFirstWeekDay(this.today);
+        if (this.today < this.min) {
+            this._setFirstWeekDay(this.min);
+        } else {
+            this._setFirstWeekDay(this.today);
+        }
 
         // If no time format is provided, defaults to hour:minutes (0:00)
         // The default is set here so it is possible to have only the hour, minutes:seconds, etc.
@@ -78,17 +83,16 @@ export default class AvonniDateTimePicker extends LightningElement {
             this._timeFormatHour = 'numeric';
             this._timeFormatMinute = '2-digit';
         }
+
+        if (this.isMonthly) this._disableMonthlyCalendarDates();
+
         this._generateTable();
     }
 
     renderedCallback() {
-        // TODO:
-        // Show disabled dates in date picker
-        const element = this.template.querySelector('lightning-input');
-
-        if (element) {
-            this.template.querySelector('lightning-input').reportValidity();
-        }
+        // Show errors on date picker
+        const datePicker = this.template.querySelector('lightning-input');
+        if (datePicker) datePicker.reportValidity();
     }
 
     @api
@@ -107,6 +111,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._variant = normalizeString(value, {
             fallbackValue: 'daily',
             validValues: VARIANTS
+        });
+
+        this.dayClass = classSet('slds-text-align_center slds-grid').add({
+            'avonni-date-time-picker__day_inline': this._variant === 'inline',
+            'avonni-date-time-picker__day': this._variant !== 'inline'
         });
     }
 
@@ -282,6 +291,14 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     @api
+    get showDisabledDates() {
+        return this._showDisabledDates;
+    }
+    set showDisabledDates(boolean) {
+        this._showDisabledDates = normalizeBoolean(boolean);
+    }
+
+    @api
     get type() {
         return this._type;
     }
@@ -348,6 +365,18 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.reportValidity();
     }
 
+    _disableMonthlyCalendarDates() {
+        this.disabledDateTimes.forEach((disabledDateTime) => {
+            const type = typeof disabledDateTime;
+            const isNumber = type === 'number';
+            const isWeekDay =
+                type === 'string' && DAYS.indexOf(disabledDateTime) > -1;
+            if (isNumber || isWeekDay) {
+                this.calendarDisabledDates.push(disabledDateTime);
+            }
+        });
+    }
+
     // Returns a date object or null
     _processDate(value) {
         let date = null;
@@ -402,18 +431,18 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     _setFirstWeekDay(date) {
-        if (this.variant === 'daily') {
-            this.firstWeekDay = date;
-        } else {
+        if (this.variant === 'weekly') {
             const dateDay = date.getDate() - date.getDay();
             const dateTime = new Date(date).setDate(dateDay);
             this.firstWeekDay = new Date(dateTime);
+        } else {
+            this.firstWeekDay = date;
         }
     }
 
     _generateTable() {
         const processedTable = [];
-        const daysDisplayed = this.variant === 'daily' ? 1 : 7;
+        const daysDisplayed = this.variant === 'weekly' ? 7 : 1;
 
         for (let i = 0; i < daysDisplayed; i++) {
             const day = new Date(
@@ -422,10 +451,16 @@ export default class AvonniDateTimePicker extends LightningElement {
                 )
             );
 
+            const disabled =
+                this.disabled ||
+                (this.disabledDateTimes && this._isDisabled(day));
+
             // Create dayTime object
             const dayTime = {
                 key: i,
                 day: day,
+                disabled: disabled,
+                show: !disabled || this.showDisabledDates,
                 isToday:
                     this.today.toLocaleDateString() ===
                     day.toLocaleDateString(),
@@ -453,34 +488,62 @@ export default class AvonniDateTimePicker extends LightningElement {
 
     //  /!\ Changes the dayTime object passed as argument.
     _createTimeSlots(dayTime) {
-        const dayIsDisabled =
-            this.disabledDateTimes && this._isDisabled(dayTime.day);
-
         this._timeSlots.forEach((timeSlot) => {
+            // Add time to day
             const hour = parseInt(timeSlot.slice(0, 2), 10);
             const minutes = parseInt(timeSlot.slice(3, 5), 10);
             const seconds = parseInt(timeSlot.slice(6, 8), 10);
             const day = dayTime.day;
             day.setHours(hour, minutes, seconds, 0);
-            const time = day.getTime();
 
-            const timeIsSelected =
-                this._selectedDayTime && this._isSelected(time);
+            const timestamp = day.getTime();
 
-            if (timeIsSelected) dayTime.selected = true;
+            const selected =
+                this._selectedDayTime && this._isSelected(timestamp);
 
-            const timeIsDisabled =
-                this.disabledDateTimes &&
-                this._disabledFullDateTimes.indexOf(time) > -1;
+            if (selected) dayTime.selected = true;
 
-            dayTime.times.push({
+            const disabled =
+                dayTime.disabled ||
+                (this.disabledDateTimes &&
+                    this._disabledFullDateTimes.indexOf(timestamp) > -1);
+
+            const time = {
                 startTimeISO: day.toISOString(),
                 endTimeISO: new Date(
-                    time + this.timeSlotDuration
+                    timestamp + this.timeSlotDuration
                 ).toISOString(),
-                disabled: this.disabled || dayIsDisabled || timeIsDisabled,
-                selected: timeIsSelected
-            });
+                disabled: disabled,
+                selected: selected,
+                show: !disabled || this.showDisabledDates
+            };
+
+            // If the variant is 'timeline', pushes a two-level deep object into dayTime.times
+            // {
+            //     hour: ISO datetime,
+            //     times: [ time objects ]
+            // }
+            if (this.isTimeline) {
+                let timelineHour = new Date(day);
+                timelineHour.setHours(hour, 0, 0, 0);
+                timelineHour = timelineHour.toISOString();
+
+                const index = dayTime.times.findIndex(
+                    (timeObject) => timeObject.hour === timelineHour
+                );
+
+                if (index < 0) {
+                    dayTime.times.push({
+                        hour: timelineHour,
+                        times: [time]
+                    });
+                } else {
+                    dayTime.times[index].times.push(time);
+                }
+                // For other variants, pushes the time object directly into dayTime.times
+            } else {
+                dayTime.times.push(time);
+            }
         });
     }
 
@@ -493,16 +556,6 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     _isDisabled(dayObject) {
-        // TODO:
-        // Disable whole day from date.
-        //   Maybe pass an object to disable specific times, instead of passing a date with the right time?
-        //   => If a date object is given, disable whole day.
-        //   => If this object structure is given, disable only the specific time.
-        //   {
-        //       date: Date Object,
-        //       time: ISO time string
-        //   }
-
         // Remove time from the date object
         const day = new Date(new Date(dayObject).setHours(0, 0, 0, 0));
 
@@ -567,9 +620,9 @@ export default class AvonniDateTimePicker extends LightningElement {
         const firstDay = this.firstWeekDay.toLocaleString('default', options);
         const lastDay = this.lastWeekDay.toLocaleString('default', options);
 
-        return this.variant === 'daily'
-            ? `${firstWeekDay}, ${firstDay}`
-            : `${firstDay} - ${lastDay}`;
+        return this.variant === 'weekly'
+            ? `${firstDay} - ${lastDay}`
+            : `${firstWeekDay}, ${firstDay}`;
     }
 
     get firstWeekDayToString() {
@@ -592,6 +645,18 @@ export default class AvonniDateTimePicker extends LightningElement {
         return this.lastWeekDay >= this.max;
     }
 
+    get entirePeriodIsDisabled() {
+        return this.table.every((day) => day.disabled === true);
+    }
+
+    get isTimeline() {
+        return this.variant === 'timeline';
+    }
+
+    get isMonthly() {
+        return this.variant === 'monthly';
+    }
+
     handleTimeZoneChange(event) {
         this.selectedTimeZone = event.detail.value;
     }
@@ -603,7 +668,7 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     handlePrevNextClick(event) {
-        const dayRange = this.variant === 'daily' ? 1 : 7;
+        const dayRange = this.variant === 'weekly' ? 7 : 1;
         const direction = event.currentTarget.dataset.direction;
         const dayRangeSign = direction === 'next' ? dayRange : -dayRange;
         this.firstWeekDay = new Date(
@@ -615,18 +680,20 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.datePickerValue = this.firstWeekDay.toISOString();
     }
 
-    handleDatePickerChange(event) {
-        const dateString = event.currentTarget.value;
-        if (dateString) {
-            this.datePickerValue = dateString;
+    handleDateChange(event) {
+        const dateString = event.detail.value.match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
+        );
 
-            // Cut date string into pieces to make sure new date is created with current time zone
-            const year = parseInt(dateString.slice(0, 4), 10);
-            const month = parseInt(dateString.slice(5, 7), 10) - 1;
-            const day = parseInt(dateString.slice(8, 10), 10);
+        if (dateString) {
+            const year = dateString[1];
+            const month = dateString[2] - 1;
+            const day = dateString[3];
             const date = new Date(year, month, day);
+
             this._setFirstWeekDay(date);
             this._generateTable();
+            this.datePickerValue = date.toISOString();
         }
     }
 
@@ -639,13 +706,18 @@ export default class AvonniDateTimePicker extends LightningElement {
         // Select/unselect the date
         if (this.type === 'checkbox') {
             const valueIndex = this.value.indexOf(dateTimeISO);
-            valueIndex > -1
-                ? this._value.splice(valueIndex, 1)
-                : this._value.push(dateTimeISO);
+            if (valueIndex > -1) {
+                this._value.splice(valueIndex, 1);
+            } else {
+                this._value.push(dateTimeISO);
+            }
+
             const selectIndex = this._selectedDayTime.indexOf(date.getTime());
-            selectIndex > -1
-                ? this._selectedDayTime.splice(selectIndex, 1)
-                : this._selectedDayTime.push(date.getTime());
+            if (selectIndex > -1) {
+                this._selectedDayTime.splice(selectIndex, 1);
+            } else {
+                this._selectedDayTime.push(date.getTime());
+            }
         } else {
             this._value = this._value === dateTimeISO ? null : dateTimeISO;
             this._selectedDayTime =
@@ -660,7 +732,9 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value: this.type === 'checkbox' ? this.value.join() : this.value,
+                    value: Array.isArray(this.value)
+                        ? this.value.join()
+                        : this.value,
                     name: this.name
                 }
             })

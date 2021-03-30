@@ -1,28 +1,32 @@
 <template>
     <div class={sectionClass}>
         <lightning-button-icon
-            icon-name="utility:switch"
+            alternative-text="Open details"
+            icon-name={iconName}
             onclick={changeSectionStatus}
             variant="bare"
-            class="slds-button__icon slds-summary-detail__action-icon slds-m-right_x-small"
+            class="slds-button__icon slds-m-right_x-small"
+            aria-pressed={sectionIsOpen}
         ></lightning-button-icon>
-        <div>
+        <div class={bodyClass}>
             <div class="slds-summary-detail__title">
                 <div class="slds-grid">
-                    <h3
-                        if:true={title}
-                        class="slds-text-heading_small slds-truncate slds-p-right_small"
-                        title={title}
-                    >
-                        {title}
-                    </h3>
-                    <template if:false={title}>
-                        <slot name="title"></slot>
-                    </template>
+                    <div class={titleClass}>
+                        <h3
+                            if:true={title}
+                            class="slds-text-heading_small slds-truncate slds-p-right_small"
+                            title={title}
+                        >
+                            {title}
+                        </h3>
+                        <template if:false={title}>
+                            <slot name="title"></slot>
+                        </template>
+                    </div>
                     <slot name="actions"></slot>
                 </div>
             </div>
-            <div aria-hidden="true" class="slds-summary-detail__content">
+            <div aria-hidden="true" class={contentClass}>
                 <slot></slot>
             </div>
         </div>

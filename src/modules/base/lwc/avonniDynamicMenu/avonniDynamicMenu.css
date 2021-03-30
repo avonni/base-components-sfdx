@@ -26,6 +26,6 @@
     margin-right: -0.5rem;
 }
 
-div:focus{
+div:focus {
     outline: none;
 }

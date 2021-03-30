@@ -59,18 +59,20 @@ export default class AvonniColorPalette extends LightningElement {
             container.style.minHeight = `${containerMinHeight}px`;
         }
 
-        [...this.template.querySelectorAll('.slds-swatch')].forEach(element => {
-            if (this.disabled) {
-                element.style.backgroundColor = '#dddbda';
-            } else {
-                element.style.backgroundColor = element.parentElement.getAttribute(
-                    'item-color'
-                );
-            }
+        [...this.template.querySelectorAll('.slds-swatch')].forEach(
+            (element) => {
+                if (this.disabled) {
+                    element.style.backgroundColor = '#dddbda';
+                } else {
+                    element.style.backgroundColor = element.parentElement.getAttribute(
+                        'item-color'
+                    );
+                }
 
-            element.style.height = `${this.tileHeight}px`;
-            element.style.width = `${this.tileWidth}px`;
-        });
+                element.style.height = `${this.tileHeight}px`;
+                element.style.width = `${this.tileWidth}px`;
+            }
+        );
     }
 
     @api

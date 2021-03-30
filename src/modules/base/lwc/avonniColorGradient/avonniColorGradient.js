@@ -78,7 +78,8 @@ export default class AvonniColorGradient extends LightningElement {
         }
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -87,7 +88,7 @@ export default class AvonniColorGradient extends LightningElement {
 
         [
             ...this.template.querySelectorAll('.slds-color-picker__hue-slider')
-        ].forEach(element => {
+        ].forEach((element) => {
             element.style.background = this._disabled ? '#ecebea' : '';
         });
 
@@ -96,7 +97,8 @@ export default class AvonniColorGradient extends LightningElement {
         }
     }
 
-    @api get readOnly() {
+    @api
+    get readOnly() {
         return this._readOnly;
     }
 
@@ -104,7 +106,8 @@ export default class AvonniColorGradient extends LightningElement {
         this._readOnly = normalizeBoolean(value);
     }
 
-    @api get opacity() {
+    @api
+    get opacity() {
         return this._opacity;
     }
 
@@ -121,7 +124,7 @@ export default class AvonniColorGradient extends LightningElement {
     @api
     renderValue(color) {
         if (this.colorValue !== color) {
-            this.value = color;
+            this._value = color;
             this.colors = generateColors(this.value);
 
             if (this.opacity) {
@@ -468,7 +471,7 @@ export default class AvonniColorGradient extends LightningElement {
             .classList.remove('slds-has-error');
 
         [...this.template.querySelectorAll('.avonni-color-input')].forEach(
-            element => {
+            (element) => {
                 element.classList.remove('slds-has-error');
             }
         );

@@ -17,7 +17,7 @@ export default class AvonniSegment extends LightningElement {
                 .querySelector('slot')
                 .assignedElements();
 
-            buttons.forEach(button => {
+            buttons.forEach((button) => {
                 button.disableButton();
             });
         }

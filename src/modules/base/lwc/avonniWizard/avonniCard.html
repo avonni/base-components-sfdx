@@ -1,0 +1,64 @@
+<template>
+    <lightning-card if:true={showWizard} icon-name={iconName}>
+        <!-- Header -->
+        <div slot="title">
+            <template if:false={title}>
+                <slot name="title"></slot>
+            </template>
+            {title}
+            <template if:false={hideNavigation}>
+                <div if:true={indicatorInHeader} class="slds-m-top_small">
+                    <c-avonni-primitive-wizard-navigation
+                        position="header"
+                        indicator-position={indicatorPosition}
+                        current-step={currentStep}
+                        steps={steps}
+                        indicator-type={indicatorType}
+                        hide-indicator={hideIndicator}
+                        fraction-prefix-label={fractionPrefixLabel}
+                        fraction-label={fractionLabel}
+                    >
+                        <slot name="actions"></slot>
+                    </c-avonni-primitive-wizard-navigation>
+                </div>
+            </template>
+        </div>
+
+        <!-- Steps -->
+        <div class="slds-card__body slds-card__body_inner">
+            <p class="slds-text-color_error">{errorMessage}</p>
+            <slot onwizardstepregister={handleStepRegister}></slot>
+        </div>
+
+        <!-- Footer -->
+        <div slot="footer" if:false={hideNavigation}>
+            <c-avonni-primitive-wizard-navigation
+                position="footer"
+                onchange={handleChange}
+                current-step={currentStep}
+                steps={steps}
+                indicator-type={indicatorType}
+                indicator-position={indicatorPosition}
+                hide-indicator={hideIndicator}
+                button-previous-icon-name={buttonPreviousIconName}
+                button-previous-icon-position={buttonPreviousIconPosition}
+                button-previous-label={buttonPreviousLabel}
+                button-previous-variant={buttonPreviousVariant}
+                button-next-icon-name={buttonNextIconName}
+                button-next-icon-position={buttonNextIconPosition}
+                button-next-label={buttonNextLabel}
+                button-next-variant={buttonNextVariant}
+                button-finish-icon-name={buttonFinishIconName}
+                button-finish-icon-position={buttonFinishIconPosition}
+                button-finish-label={buttonFinishLabel}
+                button-finish-variant={buttonFinishVariant}
+                button-alignment-bump={buttonAlignmentBump}
+                action-position={actionPosition}
+                fraction-prefix-label={fractionPrefixLabel}
+                fraction-label={fractionLabel}
+            >
+                <slot name="actions"></slot>
+            </c-avonni-primitive-wizard-navigation>
+        </div>
+    </lightning-card>
+</template>

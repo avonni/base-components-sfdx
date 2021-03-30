@@ -46,7 +46,7 @@ export default class AvonniSplitterPane extends LightningElement {
             .assignedElements();
 
         if (slotElements.length > 0) {
-            slotElements.forEach(element => {
+            slotElements.forEach((element) => {
                 if (element.localName.indexOf('-splitter') > -1) {
                     element.classList.add('horizontal');
                 } else {

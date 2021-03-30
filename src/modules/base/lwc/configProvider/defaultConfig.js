@@ -13,9 +13,9 @@ function createStandAloneConfig() {
         },
         getOneConfig() {
             return {
-                densitySetting: '',
+                densitySetting: ''
             };
-        },
+        }
     };
 }
 

@@ -49,7 +49,9 @@
                     >
                         <template if:true={isLoading}>
                             <div class="avonni-spinner-container">
-                                <lightning-spinner size="small"></lightning-spinner>
+                                <lightning-spinner
+                                    size="small"
+                                ></lightning-spinner>
                             </div>
                         </template>
                         <template if:false={isLoading}>
@@ -117,6 +119,7 @@
                                         >
                                             <c-avonni-color-gradient
                                                 if:true={_dropdownVisible}
+                                                data-name="colorGradient"
                                                 message-when-bad-input={messageWhenBadInput}
                                                 opacity={opacity}
                                                 value={value}
@@ -128,6 +131,7 @@
                                 <template if:true={isCustom}>
                                     <c-avonni-color-gradient
                                         if:true={_dropdownVisible}
+                                        data-name="colorGradient"
                                         message-when-bad-input={messageWhenBadInput}
                                         opacity={opacity}
                                         value={value}
@@ -176,8 +180,6 @@
                 disabled={disabledInput}
             ></lightning-input>
         </div>
-        <p if:true={showError} class="slds-form-error">
-            {messageWhenBadInput}
-        </p>
+        <p if:true={showError} class="slds-form-error">{messageWhenBadInput}</p>
     </div>
 </template>

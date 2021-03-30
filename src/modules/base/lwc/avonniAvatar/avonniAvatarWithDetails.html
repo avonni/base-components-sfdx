@@ -1,6 +1,6 @@
 <template>
-    <div class="slds-media">
-        <div class="slds-media__figure">
+    <c-avonni-media-object inline={computedMediaObjectInline} class={mediaObjectClass}>
+        <div if:true={textPositionLeft} slot="figure-inverse">
             <c-avonni-avatar
                 hide-avatar-details="true"
                 alternative-text={alternativeText}
@@ -23,12 +23,33 @@
                 entity-position={entityPosition}
             ></c-avonni-avatar>
         </div>
-        <div class="slds-media__body">
-            <p class="slds-text-title_bold">{primaryText}</p>
-            <p class="avonni-avatar__light-text">{secondaryText}</p>
-            <p if:true={showTertiaryText} class="avonni-avatar__light-text">
-                {tertiaryText}
-            </p>
+        <div if:false={textPositionLeft} slot="figure">
+            <c-avonni-avatar
+                hide-avatar-details="true"
+                alternative-text={alternativeText}
+                fallback-icon-name={fallbackIconName}
+                initials={initials}
+                size={size}
+                src={src}
+                variant={variant}
+                status={status}
+                status-title={statusTitle}
+                status-position={statusPosition}
+                presence={presence}
+                presence-title={presenceTitle}
+                presence-position={presencePosition}
+                entity-icon-name={entityIconName}
+                entity-initials={entityInitials}
+                entity-variant={entityVariant}
+                entity-src={entitySrc}
+                entity-title={entityTitle}
+                entity-position={entityPosition}
+            ></c-avonni-avatar>
         </div>
-    </div>
+        <p class="slds-text-title_bold">{primaryText}</p>
+        <p class="avonni-avatar__light-text">{secondaryText}</p>
+        <p if:true={showTertiaryText} class="avonni-avatar__light-text">
+            {tertiaryText}
+        </p>
+    </c-avonni-media-object>
 </template>

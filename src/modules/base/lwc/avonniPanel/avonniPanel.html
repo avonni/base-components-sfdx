@@ -1,0 +1,30 @@
+<template>
+    <div class={computedOuterClass} aria-hidden="false">
+        <div class="slds-panel__header">
+            <h1
+                class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                title="Panel Header"
+            >
+                <template if:true={hasStringTitle}> {title} </template>
+                <template if:false={hasStringTitle}>
+                    <slot name="title"></slot>
+                </template>
+            </h1>
+            <lightning-button-icon
+                variant="bare"
+                icon-name="utility:close"
+                size="medium"
+                onclick={close}
+                class="slds-panel__close"
+            ></lightning-button-icon>
+        </div>
+        <template if:true={showPanelBodySlot}>
+            <div class="slds-panel__body">
+                <slot name="panel-body"></slot>
+            </div>
+        </template>
+        <div class="slds-m-around_small">
+            <slot></slot>
+        </div>
+    </div>
+</template>

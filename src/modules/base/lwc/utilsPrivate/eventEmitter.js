@@ -12,7 +12,7 @@ export class EventEmitter {
     }
 
     once(name, listener) {
-        const doOnce = function() {
+        const doOnce = function () {
             listener.apply(null, arguments);
             this.removeListener(name, doOnce);
         }.bind(this);
@@ -26,7 +26,7 @@ export class EventEmitter {
         let count = 0;
 
         if (listeners) {
-            listeners.forEach(listener => {
+            listeners.forEach((listener) => {
                 count += 1;
                 listener.apply(null, args);
             });

@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
-import qrcodeGeneration from './qrcodeGeneration.js';
+import qrcodeGeneration from './avonniQrcodeGeneration.js';
 
 const validEncodings = ['ISO_8859_1', 'UTF_8'];
 const validErrorCorrections = ['L', 'M', 'Q', 'H'];
@@ -243,7 +243,7 @@ export default class AvonniQrcode extends LightningElement {
                 let ctx = canvas.getContext('2d');
                 let img = new Image();
 
-                img.onload = function() {
+                img.onload = function () {
                     ctx.drawImage(this, 0, 0);
                 };
 

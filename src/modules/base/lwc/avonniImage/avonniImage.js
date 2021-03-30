@@ -90,7 +90,8 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
-    @api get block() {
+    @api
+    get block() {
         return this._block;
     }
 
@@ -98,7 +99,8 @@ export default class AvonniImage extends LightningElement {
         this._block = normalizeBoolean(value);
     }
 
-    @api get fluid() {
+    @api
+    get fluid() {
         return this._fluid;
     }
 
@@ -106,7 +108,8 @@ export default class AvonniImage extends LightningElement {
         this._fluid = normalizeBoolean(value);
     }
 
-    @api get fluidGrow() {
+    @api
+    get fluidGrow() {
         return this._fluidGrow;
     }
 
@@ -114,7 +117,8 @@ export default class AvonniImage extends LightningElement {
         this._fluidGrow = normalizeBoolean(value);
     }
 
-    @api get rounded() {
+    @api
+    get rounded() {
         return this._rounded;
     }
 
@@ -131,7 +135,8 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
-    @api get thumbnail() {
+    @api
+    get thumbnail() {
         return this._thumbnail;
     }
 
@@ -139,7 +144,8 @@ export default class AvonniImage extends LightningElement {
         this._thumbnail = normalizeBoolean(value);
     }
 
-    @api get left() {
+    @api
+    get left() {
         return this._left;
     }
 
@@ -147,7 +153,8 @@ export default class AvonniImage extends LightningElement {
         this._left = normalizeBoolean(value);
     }
 
-    @api get right() {
+    @api
+    get right() {
         return this._right;
     }
 
@@ -155,7 +162,8 @@ export default class AvonniImage extends LightningElement {
         this._right = normalizeBoolean(value);
     }
 
-    @api get center() {
+    @api
+    get center() {
         return this._center;
     }
 
@@ -163,7 +171,8 @@ export default class AvonniImage extends LightningElement {
         this._center = normalizeBoolean(value);
     }
 
-    @api get blank() {
+    @api
+    get blank() {
         return this._blank;
     }
 

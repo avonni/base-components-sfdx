@@ -1,10 +1,17 @@
 import { LightningElement, api } from 'lwc';
 import { keyCodes } from 'c/utilsPrivate';
+import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
 const INDICATOR_ACTION = 'slds-carousel__indicator-action';
+const INDICATOR_ACTION_SHADED =
+    'slds-carousel__indicator-action avonni-carousel-progress-indicator-shaded-inactive';
 const SLDS_ACTIVE = 'slds-is-active';
+const SLDS_ACTIVE_SHADED =
+    'slds-is-active avonni-carousel-progress-indicator-shaded-active';
 const FALSE_STRING = 'false';
 const TRUE_STRING = 'true';
+
+const VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
 
 const i18n = {
     nextPanel: 'Next Panel',
@@ -28,6 +35,8 @@ export default class AvonniCarousel extends LightningElement {
     _carouselItems = [];
     _itemsPerPanel = 1;
     _initialRender = true;
+    _indicatorVariant = 'base';
+    _hideIndicator = false;
 
     activeIndexPanel;
     autoScrollIcon = 'utility:play';
@@ -103,6 +112,27 @@ export default class AvonniCarousel extends LightningElement {
         this._itemsPerPanel = parseInt(number, 10);
     }
 
+    @api
+    get indicatorVariant() {
+        return this._indicatorVariant;
+    }
+
+    set indicatorVariant(variant) {
+        this._indicatorVariant = normalizeString(variant, {
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid
+        });
+    }
+
+    @api
+    get hideIndicator() {
+        return this._hideIndicator;
+    }
+
+    set hideIndicator(value) {
+        this._hideIndicator = normalizeBoolean(value);
+    }
+
     // Sets the width of each item, depending on the number of items per panel
     get carouselItemStyle() {
         const flexBasis = 100 / this.itemsPerPanel;
@@ -119,19 +149,39 @@ export default class AvonniCarousel extends LightningElement {
             : null;
     }
 
+    // Change the button position depending if hideIndicator is true or false
+    get computedAutoScrollAutoplayButton() {
+        return this._hideIndicator
+            ? 'avonni-carousel__autoscroll-button-without-indicator'
+            : 'avonni-carousel__autoscroll-button-with-indicator';
+    }
+
     initializePaginationItems(numberOfPanels) {
         for (let i = 0; i < numberOfPanels; i++) {
             const isItemActive = i === this.activeIndexPanel;
-            this.paginationItems.push({
-                key: i,
-                id: `pagination-item-${i}`,
-                className: isItemActive
-                    ? INDICATOR_ACTION + ' ' + SLDS_ACTIVE
-                    : INDICATOR_ACTION,
-                tabIndex: isItemActive ? '0' : '-1',
-                ariaSelected: isItemActive ? TRUE_STRING : FALSE_STRING,
-                tabTitle: `Tab ${i}`
-            });
+            if (this._indicatorVariant === 'base') {
+                this.paginationItems.push({
+                    key: i,
+                    id: `pagination-item-${i}`,
+                    className: isItemActive
+                        ? INDICATOR_ACTION + ' ' + SLDS_ACTIVE
+                        : INDICATOR_ACTION,
+                    tabIndex: isItemActive ? '0' : '-1',
+                    ariaSelected: isItemActive ? TRUE_STRING : FALSE_STRING,
+                    tabTitle: `Tab ${i}`
+                });
+            } else if (this._indicatorVariant === 'shaded') {
+                this.paginationItems.push({
+                    key: i,
+                    id: `pagination-item-${i}`,
+                    className: isItemActive
+                        ? INDICATOR_ACTION_SHADED + ' ' + SLDS_ACTIVE_SHADED
+                        : INDICATOR_ACTION_SHADED,
+                    tabIndex: isItemActive ? '0' : '-1',
+                    ariaSelected: isItemActive ? TRUE_STRING : FALSE_STRING,
+                    tabTitle: `Tab ${i}`
+                });
+            }
         }
     }
 
@@ -265,7 +315,13 @@ export default class AvonniCarousel extends LightningElement {
         activePanelItem.ariaHidden = FALSE_STRING;
         activePaginationItem.tabIndex = '0';
         activePaginationItem.ariaHidden = TRUE_STRING;
-        activePaginationItem.className = INDICATOR_ACTION + ' ' + SLDS_ACTIVE;
+        if (this._indicatorVariant === 'base') {
+            activePaginationItem.className =
+                INDICATOR_ACTION + ' ' + SLDS_ACTIVE;
+        } else if (this._indicatorVariant === 'shaded') {
+            activePaginationItem.className =
+                INDICATOR_ACTION_SHADED + ' ' + SLDS_ACTIVE_SHADED;
+        }
 
         this.panelStyle = `transform:translateX(-${panelIndex * 100}%);`;
         this.activeIndexPanel = panelIndex;
@@ -280,7 +336,11 @@ export default class AvonniCarousel extends LightningElement {
         activePanelItem.ariaHidden = TRUE_STRING;
         activePaginationItem.tabIndex = '-1';
         activePaginationItem.ariaSelected = FALSE_STRING;
-        activePaginationItem.className = INDICATOR_ACTION;
+        if (this._indicatorVariant === 'shaded') {
+            activePaginationItem.className = INDICATOR_ACTION_SHADED;
+        } else {
+            activePaginationItem.className = INDICATOR_ACTION;
+        }
     }
 
     selectPreviousSibling() {

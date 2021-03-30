@@ -12,8 +12,30 @@
     display: block;
 }
 
-.avonni-carousel__autoscroll-button {
+.avonni-carousel__autoscroll-button-with-indicator {
     position: absolute;
-    bottom: 0;
+    bottom: 10px;
     left: var(--lwc-spacingMedium, 1rem);
+}
+
+.avonni-carousel__autoscroll-button-without-indicator {
+    position: relative;
+    bottom: 10px;
+    left: var(--lwc-spacingMedium, 1rem);
+}
+
+.avonni-carousel-progress-indicator-shaded-active {
+    background-color: #dddbda;
+    border: #dddbda;
+}
+
+.avonni-carousel-progress-indicator-shaded-active:hover,
+.avonni-carousel-progress-indicator-shaded-active:focus {
+    background-color: #dddbda;
+    border: #dddbda;
+}
+
+.avonni-carousel-progress-indicator-shaded-inactive:focus {
+    background-color: #dddbda;
+    border: #dddbda;
 }

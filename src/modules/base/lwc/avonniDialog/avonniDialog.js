@@ -39,7 +39,8 @@ export default class AvonniDialog extends LightningElement {
         return this.template.querySelector('slot[name=footer]');
     }
 
-    @api get size() {
+    @api
+    get size() {
         return this._size;
     }
 
@@ -50,7 +51,8 @@ export default class AvonniDialog extends LightningElement {
         });
     }
 
-    @api get isLoading() {
+    @api
+    get isLoading() {
         return this._isLoading;
     }
 
@@ -58,7 +60,8 @@ export default class AvonniDialog extends LightningElement {
         this._isLoading = normalizeBoolean(value);
     }
 
-    @api get showDialog() {
+    @api
+    get showDialog() {
         return this._showDialog;
     }
 

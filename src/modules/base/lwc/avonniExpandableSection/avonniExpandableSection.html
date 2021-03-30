@@ -2,19 +2,23 @@
     <div class={sectionClass}>
         <h3 class={sectionTitleClass}>
             <template if:true={collapsable}>
-                <button class="slds-button slds-section__title-action" onclick={changeSectionStatus}>
+                <button
+                    class="slds-button slds-section__title-action"
+                    onclick={changeSectionStatus}
+                >
                     <lightning-icon
                         icon-name="utility:switch"
                         size="x-small"
                         class="slds-section__title-action-icon slds-button__icon slds-button__icon_left"
                     ></lightning-icon>
-                    <span class="slds-truncate" title={title}>
-                        {title}
-                    </span>
+                    <span class="slds-truncate" title={title}> {title} </span>
                 </button>
             </template>
             <template if:false={collapsable}>
-                <span class="slds-truncate slds-p-horizontal_small" title={title}>
+                <span
+                    class="slds-truncate slds-p-horizontal_small"
+                    title={title}
+                >
                     {title}
                 </span>
             </template>

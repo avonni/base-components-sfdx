@@ -2,7 +2,7 @@ import fetchSvg from './fetchSvg';
 import supportsSvg from './supportsSvg';
 
 const svgTagName = /svg/i;
-const isSvgElement = el => el && svgTagName.test(el.nodeName);
+const isSvgElement = (el) => el && svgTagName.test(el.nodeName);
 
 const requestCache = {};
 const symbolEls = {};
@@ -23,7 +23,7 @@ export function polyfill(el) {
             document.body.insertBefore(spritesEl, document.body.childNodes[0]);
         }
 
-        Array.from(el.getElementsByTagName('use')).forEach(use => {
+        Array.from(el.getElementsByTagName('use')).forEach((use) => {
             const src =
                 use.getAttribute('xlink:href') || use.getAttribute('href');
 
@@ -45,7 +45,7 @@ export function polyfill(el) {
                         requestCache[url] = fetchSvg(url);
                     }
 
-                    requestCache[url].then(svgContent => {
+                    requestCache[url].then((svgContent) => {
                         if (!svgFragments[url]) {
                             const svgFragment = document
                                 .createRange()

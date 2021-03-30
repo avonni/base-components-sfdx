@@ -1,0 +1,96 @@
+.avonni-progress-step-position-relative {
+    position: relative;
+}
+
+.slds-progress_horizontal .slds-progress__list {
+    min-height: 13rem;
+    display: inline-flex;
+}
+
+/* setting the progress bars */
+.slds-progress__item::before {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 40%;
+    left: 10px;
+    right: 0;
+    top: 33px;
+    background-color: #dddbda;
+}
+
+.slds-progress__item::after {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 45%;
+    left: 95px;
+    right: 0;
+    top: 33px;
+    background-color: #dddbda;
+    z-index: -1;
+}
+
+.slds-progress__item:last-child::after {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 45%;
+    left: 95px;
+    right: 0;
+    top: 33px;
+    background-color: transparent;
+    z-index: -1;
+}
+
+.slds-progress__item:first-child::before {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 45%;
+    left: 10px;
+    right: 0;
+    top: 33px;
+    background-color: transparent;
+}
+
+.slds-is-completed::before {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 45%;
+    left: 10px;
+    right: 0;
+    top: 33px;
+    background-color: #60b4ff;
+}
+
+.slds-is-completed::after {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 45%;
+    left: 95px;
+    right: 0;
+    top: 33px;
+    background-color: #60b4ff;
+    z-index: -1;
+}
+
+.slds-is-completed:last-child::before {
+    content: '';
+    display: block;
+    height: 2px;
+    position: absolute;
+    width: 45%;
+    left: 10px;
+    right: 0;
+    top: 33px;
+    background-color: #60b4ff;
+}

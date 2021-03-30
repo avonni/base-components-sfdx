@@ -139,10 +139,7 @@ export function colorType(value) {
 export function RGBToHex(rgb) {
     let sep = rgb.indexOf(',') > -1 ? ',' : ' ';
 
-    rgb = rgb
-        .substr(4)
-        .split(')')[0]
-        .split(sep);
+    rgb = rgb.substr(4).split(')')[0].split(sep);
 
     for (let i in rgb) {
         if (rgb.hasOwnProperty(i)) {
@@ -175,10 +172,7 @@ export function RGBToHex(rgb) {
 
 export function RGBAToHexA(rgba) {
     let sep = rgba.indexOf(',') > -1 ? ',' : ' ';
-    rgba = rgba
-        .substr(5)
-        .split(')')[0]
-        .split(sep);
+    rgba = rgba.substr(5).split(')')[0].split(sep);
     if (rgba.indexOf('/') > -1) {
         rgba.splice(3, 1);
     }
@@ -187,7 +181,7 @@ export function RGBAToHexA(rgba) {
         if (rgba.hasOwnProperty(i)) {
             if (rgba[i].indexOf('%') > -1) {
                 let p = rgba[i].substr(0, rgba[i].length - 1) / 100;
-    
+
                 if (i < 3) {
                     rgba[i] = Math.round(p * 255);
                 } else {
@@ -263,10 +257,7 @@ export function hexAToRGBA(h) {
 
 export function RGBToHSL(rgb) {
     let sep = rgb.indexOf(',') > -1 ? ',' : ' ';
-    rgb = rgb
-        .substr(4)
-        .split(')')[0]
-        .split(sep);
+    rgb = rgb.substr(4).split(')')[0].split(sep);
 
     for (let i in rgb) {
         if (rgb.hasOwnProperty(i)) {
@@ -315,10 +306,7 @@ export function RGBToHSL(rgb) {
 
 export function RGBAToHSLA(rgba) {
     let sep = rgba.indexOf(',') > -1 ? ',' : ' ';
-    rgba = rgba
-        .substr(5)
-        .split(')')[0]
-        .split(sep);
+    rgba = rgba.substr(5).split(')')[0].split(sep);
 
     if (rgba.indexOf('/') > -1) {
         rgba.splice(3, 1);
@@ -328,7 +316,7 @@ export function RGBAToHSLA(rgba) {
         if (rgba.hasOwnProperty(i)) {
             if (rgba[i].indexOf('%') > -1) {
                 let p = rgba[i].substr(0, rgba[i].length - 1) / 100;
-    
+
                 if (i < 3) {
                     rgba[i] = Math.round(p * 255);
                 } else {
@@ -377,10 +365,7 @@ export function RGBAToHSLA(rgba) {
 
 export function HSLToRGB(hsl) {
     let sep = hsl.indexOf(',') > -1 ? ',' : ' ';
-    hsl = hsl
-        .substr(4)
-        .split(')')[0]
-        .split(sep);
+    hsl = hsl.substr(4).split(')')[0].split(sep);
 
     let h = hsl[0];
     let s = hsl[1].substr(0, hsl[1].length - 1) / 100;
@@ -439,10 +424,7 @@ export function HSLToRGB(hsl) {
 
 export function HSLAToRGBA(hsla) {
     let sep = hsla.indexOf(',') > -1 ? ',' : ' ';
-    hsla = hsla
-        .substr(5)
-        .split(')')[0]
-        .split(sep);
+    hsla = hsla.substr(5).split(')')[0].split(sep);
 
     if (hsla.indexOf('/') > -1) {
         hsla.splice(3, 1);
@@ -609,10 +591,7 @@ export function hexAToHSLA(H) {
 
 export function HSLToHex(hsl) {
     let sep = hsl.indexOf(',') > -1 ? ',' : ' ';
-    hsl = hsl
-        .substr(4)
-        .split(')')[0]
-        .split(sep);
+    hsl = hsl.substr(4).split(')')[0].split(sep);
 
     let h = hsl[0];
     let s = hsl[1].substr(0, hsl[1].length - 1) / 100;
@@ -684,10 +663,7 @@ export function HSLToHex(hsl) {
 
 export function HSLAToHexA(hsla) {
     let sep = hsla.indexOf(',') > -1 ? ',' : ' ';
-    hsla = hsla
-        .substr(5)
-        .split(')')[0]
-        .split(sep);
+    hsla = hsla.substr(5).split(')')[0].split(sep);
 
     if (hsla.indexOf('/') > -1) {
         hsla.splice(3, 1);

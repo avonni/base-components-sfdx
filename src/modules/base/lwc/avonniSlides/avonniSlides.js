@@ -183,8 +183,9 @@ export default class AvonniSlides extends LightningElement {
                     let z = this.isVertical
                         ? this.slideHeight
                         : this.slideWidth;
-                    this.container.style.transformOrigin = `50% 50% -${z /
-                        2}px`;
+                    this.container.style.transformOrigin = `50% 50% -${
+                        z / 2
+                    }px`;
                     this.setSlideVisibility(this.slidePosition);
                 }
 
@@ -272,7 +273,7 @@ export default class AvonniSlides extends LightningElement {
             if (this.showDynamicBullets) {
                 this.template
                     .querySelectorAll('.slds-carousel__indicator-action')
-                    .forEach(bullet => {
+                    .forEach((bullet) => {
                         let slideId = Number(bullet.getAttribute('slide-id'));
                         let size = 0.5 / Math.abs(slideId - this.slide);
 
@@ -487,9 +488,9 @@ export default class AvonniSlides extends LightningElement {
     }
 
     get fractions() {
-        return `${
-            this.fractionPrefixLabel ? this.fractionPrefixLabel : ''
-        } ${this.slide + 1} ${this.fractionLabel} ${this.slides}`;
+        return `${this.fractionPrefixLabel ? this.fractionPrefixLabel : ''} ${
+            this.slide + 1
+        } ${this.fractionLabel} ${this.slides}`;
     }
 
     get slidePosition() {
@@ -749,7 +750,7 @@ export default class AvonniSlides extends LightningElement {
         let previusSlide = slide - 1 < 0 && !this.loop ? null : slide - 1;
         let nextSlide = slide + 1 < this.slides || this.loop ? slide + 1 : null;
 
-        this.slideList.forEach(element => {
+        this.slideList.forEach((element) => {
             element.style.visibility = 'hidden';
         });
 
@@ -864,7 +865,7 @@ export default class AvonniSlides extends LightningElement {
             ) {
                 this.container.style.setProperty('--speed', 0);
 
-                this.slideList.forEach(element => {
+                this.slideList.forEach((element) => {
                     element.style.setProperty('--speed', 0);
                 });
 
@@ -988,7 +989,7 @@ export default class AvonniSlides extends LightningElement {
         if (this.showBullets || this.showDynamicBullets) {
             this.template
                 .querySelectorAll('.slds-carousel__indicator-action')
-                .forEach(bullet => {
+                .forEach((bullet) => {
                     let slideId = Number(bullet.getAttribute('slide-id'));
 
                     if (this.slide === slideId) {
@@ -1053,7 +1054,7 @@ export default class AvonniSlides extends LightningElement {
     updateSpeed() {
         this.container.style.setProperty('--speed', this.speed);
 
-        this.slideList.forEach(element => {
+        this.slideList.forEach((element) => {
             element.style.setProperty('--speed', this.speed);
         });
     }
@@ -1070,7 +1071,7 @@ export default class AvonniSlides extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         setTimeout(() => {
             this.container.style.setProperty('--speed', 0);
-            this.slideList.forEach(element => {
+            this.slideList.forEach((element) => {
                 element.style.setProperty('--speed', 0);
             });
             this.updateSlides();

@@ -12,7 +12,7 @@ function resolveServiceApiProps(serviceAPI = {}) {
         getLocalizationService: serviceAPI.getLocalizationService,
         iconSvgTemplates: serviceAPI.iconSvgTemplates,
         getOneConfig:
-            serviceAPI.getInitializer && serviceAPI.getInitializer('oneConfig'),
+            serviceAPI.getInitializer && serviceAPI.getInitializer('oneConfig')
     };
     return Object.keys(serviceApiMap).reduce((seed, prop) => {
         if (serviceApiMap[prop] !== undefined) {
@@ -67,7 +67,7 @@ export function getIconSvgTemplates() {
 export function getOneConfig() {
     return (
         (PROVIDED_IMPL && PROVIDED_IMPL.getOneConfig) || {
-            densitySetting: '',
+            densitySetting: ''
         }
     );
 }

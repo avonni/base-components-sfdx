@@ -1,0 +1,81 @@
+<template>
+    <article if:true={showWizard}>
+        <!-- Header -->
+        <header>
+            <div class="slds-p-horizontal_medium slds-p-top_medium">
+                <c-avonni-media-object vertical-align="center">
+                    <template if:true={iconName}>
+                        <div slot="figure">
+                            <lightning-icon
+                                size="small"
+                                icon-name={iconName}
+                            ></lightning-icon>
+                        </div>
+                    </template>
+                    <template if:true={title}>
+                        <h1 class="slds-text-heading_small">{title}</h1>
+                    </template>
+                    <template if:false={title}>
+                        <slot name="title"></slot>
+                    </template>
+                </c-avonni-media-object>
+            </div>
+            <template if:false={hideNavigation}>
+                <div if:true={indicatorInHeader} class="slds-m-top_small">
+                    <c-avonni-primitive-wizard-navigation
+                        position="header"
+                        indicator-position={indicatorPosition}
+                        current-step={currentStep}
+                        steps={steps}
+                        indicator-type={indicatorType}
+                        hide-indicator={hideIndicator}
+                        fraction-prefix-label={fractionPrefixLabel}
+                        fraction-label={fractionLabel}
+                    >
+                        <slot name="actions"></slot>
+                    </c-avonni-primitive-wizard-navigation>
+                </div>
+            </template>
+        </header>
+
+        <!-- Steps -->
+        <main class="slds-p-around_medium">
+            <p class="slds-text-color_error">{errorMessage}</p>
+            <slot onwizardstepregister={handleStepRegister}></slot>
+        </main>
+
+        <!-- Footer -->
+        <footer
+            class="slds-p-horizontal_medium slds-p-bottom_medium"
+            if:false={hideNavigation}
+        >
+            <c-avonni-primitive-wizard-navigation
+                position="footer"
+                onchange={handleChange}
+                current-step={currentStep}
+                steps={steps}
+                indicator-type={indicatorType}
+                indicator-position={indicatorPosition}
+                hide-indicator={hideIndicator}
+                button-previous-icon-name={buttonPreviousIconName}
+                button-previous-icon-position={buttonPreviousIconPosition}
+                button-previous-label={buttonPreviousLabel}
+                button-previous-variant={buttonPreviousVariant}
+                button-next-icon-name={buttonNextIconName}
+                button-next-icon-position={buttonNextIconPosition}
+                button-next-label={buttonNextLabel}
+                button-next-variant={buttonNextVariant}
+                button-finish-icon-name={buttonFinishIconName}
+                button-finish-icon-position={buttonFinishIconPosition}
+                button-finish-label={buttonFinishLabel}
+                button-finish-variant={buttonFinishVariant}
+                button-alignment-bump={buttonAlignmentBump}
+                action-position={actionPosition}
+                fraction-prefix-label={fractionPrefixLabel}
+                fraction-label={fractionLabel}
+            >
+                <slot name="actions"></slot>
+            </c-avonni-primitive-wizard-navigation>
+        </footer>
+    </article>
+</template>

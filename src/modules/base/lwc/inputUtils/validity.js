@@ -19,7 +19,7 @@ const defaultLabels = {
     patternMismatch: 'Your entry does not match the allowed pattern.',
     rangeOverflow: 'The number is too high.',
     rangeUnderflow: 'The number is too low.',
-    stepMismatch: 'Your entry isn\'t a valid increment.',
+    stepMismatch: "Your entry isn't a valid increment.",
     tooLong: 'Your entry is too long.',
     tooShort: 'Your entry is too short.',
     typeMismatch: 'You have entered an invalid format.',
@@ -30,7 +30,7 @@ function resolveBestMatch(validity) {
     let validityState;
     if (validity && validity.valid === false) {
         validityState = 'badInput';
-        constraintsSortedByPriority.some(stateName => {
+        constraintsSortedByPriority.some((stateName) => {
             if (validity[stateName] === true) {
                 validityState = stateName;
                 return true;
@@ -210,7 +210,7 @@ export class FieldConstraintApiWithProxyInput {
     setInputAttributes(attributes) {
         this._attributes = attributes;
 
-        this._attributeUpdater = attributeNames => {
+        this._attributeUpdater = (attributeNames) => {
             if (!attributes) {
                 return;
             }
@@ -220,7 +220,7 @@ export class FieldConstraintApiWithProxyInput {
                     attributes[attributeNames]()
                 );
             } else {
-                attributeNames.forEach(attributeName => {
+                attributeNames.forEach((attributeName) => {
                     this._setAttribute(
                         attributeName,
                         attributes[attributeName]()
@@ -275,7 +275,7 @@ export class FieldConstraintApiWithProxyInput {
         if (!this._privateConstraintApi) {
             this._updateAllAttributes();
 
-            const computeConstraintWithProxyInput = constraintName => {
+            const computeConstraintWithProxyInput = (constraintName) => {
                 const constraintOverride = this._overrides[constraintName];
 
                 const isDisabledOrReadOnly =

@@ -284,7 +284,7 @@ export default class AvonniPagination extends LightningElement {
     setActiveButton() {
         [
             ...this.template.querySelectorAll('.avonni-pagination-button')
-        ].forEach(button => {
+        ].forEach((button) => {
             if (Number(button.value) === this.value) {
                 button.classList.add('avonni-button-active');
             } else {

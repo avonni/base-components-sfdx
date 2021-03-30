@@ -12,7 +12,7 @@
 const PAD0 = 0xec;
 const PAD1 = 0x11;
 
-export default class qrcodeGeneration {
+export default class AvonniqrcodeGeneration {
     constructor(typeNumber, errorCorrectionLevel) {
         this._typeNumber = typeNumber;
         this._errorCorrectionLevel =
@@ -24,7 +24,7 @@ export default class qrcodeGeneration {
 
         this.makeImpl = (test, maskPattern) => {
             this._moduleCount = this._typeNumber * 4 + 17;
-            this._modules = (function(moduleCount) {
+            this._modules = (function (moduleCount) {
                 let modules = new Array(moduleCount);
                 for (let row = 0; row < moduleCount; row += 1) {
                     modules[row] = new Array(moduleCount);
@@ -142,7 +142,7 @@ export default class qrcodeGeneration {
             }
         };
 
-        this.setupTypeNumber = test => {
+        this.setupTypeNumber = (test) => {
             let bits = QRUtil.getBCHTypeNumber(this._typeNumber);
 
             for (let i = 0; i < 18; i += 1) {
@@ -325,11 +325,13 @@ export default class qrcodeGeneration {
             }
 
             if (buffer.getLengthInBits() > totalDataCount * 8) {
-                throw 'code length overflow. (' +
+                throw (
+                    'code length overflow. (' +
                     buffer.getLengthInBits() +
                     '>' +
                     totalDataCount * 8 +
-                    ')';
+                    ')'
+                );
             }
 
             if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
@@ -503,10 +505,12 @@ export default class qrcodeGeneration {
                 Math.ceil(width * modCount),
                 Math.ceil(height * modCount)
             ];
-            obstructionCRStart = spans.map(s =>
+            obstructionCRStart = spans.map((s) =>
                 Math.floor(modCount / 2 - s / 2)
             );
-            obstructionCREnd = spans.map(s => Math.ceil(modCount / 2 + s / 2));
+            obstructionCREnd = spans.map((s) =>
+                Math.ceil(modCount / 2 + s / 2)
+            );
         }
 
         for (let r = 0; r < modCount; r += 1) {
@@ -572,7 +576,7 @@ export default class qrcodeGeneration {
     }
 }
 
-export const stringToBytes = function(s) {
+export const stringToBytes = function (s) {
     let bytes = [];
     for (let i = 0; i < s.length; i += 1) {
         let c = s.charCodeAt(i);
@@ -606,7 +610,7 @@ const QRMaskPattern = {
     PATTERN111: 7
 };
 
-const QRUtil = (function() {
+const QRUtil = (function () {
     const PATTERN_POSITION_TABLE = [
         [],
         [6, 18],
@@ -670,7 +674,7 @@ const QRUtil = (function() {
 
     let _this = {};
 
-    let getBCHDigit = function(data) {
+    let getBCHDigit = function (data) {
         let digit = 0;
         while (data !== 0) {
             digit += 1;
@@ -679,7 +683,7 @@ const QRUtil = (function() {
         return digit;
     };
 
-    _this.getBCHTypeInfo = function(data) {
+    _this.getBCHTypeInfo = function (data) {
         let d = data << 10;
         while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
             d ^= G15 << (getBCHDigit(d) - getBCHDigit(G15));
@@ -687,7 +691,7 @@ const QRUtil = (function() {
         return ((data << 10) | d) ^ G15_MASK;
     };
 
-    _this.getBCHTypeNumber = function(data) {
+    _this.getBCHTypeNumber = function (data) {
         let d = data << 12;
         while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
             d ^= G18 << (getBCHDigit(d) - getBCHDigit(G18));
@@ -695,42 +699,42 @@ const QRUtil = (function() {
         return (data << 12) | d;
     };
 
-    _this.getPatternPosition = function(typeNumber) {
+    _this.getPatternPosition = function (typeNumber) {
         return PATTERN_POSITION_TABLE[typeNumber - 1];
     };
 
-    _this.getMaskFunction = function(maskPattern) {
+    _this.getMaskFunction = function (maskPattern) {
         switch (maskPattern) {
             case QRMaskPattern.PATTERN000:
-                return function(i, j) {
+                return function (i, j) {
                     return (i + j) % 2 === 0;
                 };
             case QRMaskPattern.PATTERN001:
-                return function(i, _) {
+                return function (i, _) {
                     return i % 2 === 0;
                 };
             case QRMaskPattern.PATTERN010:
-                return function(i, j) {
+                return function (i, j) {
                     return j % 3 === 0;
                 };
             case QRMaskPattern.PATTERN011:
-                return function(i, j) {
+                return function (i, j) {
                     return (i + j) % 3 === 0;
                 };
             case QRMaskPattern.PATTERN100:
-                return function(i, j) {
+                return function (i, j) {
                     return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
                 };
             case QRMaskPattern.PATTERN101:
-                return function(i, j) {
+                return function (i, j) {
                     return ((i * j) % 2) + ((i * j) % 3) === 0;
                 };
             case QRMaskPattern.PATTERN110:
-                return function(i, j) {
+                return function (i, j) {
                     return (((i * j) % 2) + ((i * j) % 3)) % 2 === 0;
                 };
             case QRMaskPattern.PATTERN111:
-                return function(i, j) {
+                return function (i, j) {
                     return (((i * j) % 3) + ((i + j) % 2)) % 2 === 0;
                 };
 
@@ -739,7 +743,7 @@ const QRUtil = (function() {
         }
     };
 
-    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+    _this.getErrorCorrectPolynomial = function (errorCorrectLength) {
         let a = qrPolynomial([1], 0);
         for (let i = 0; i < errorCorrectLength; i += 1) {
             a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0));
@@ -747,7 +751,7 @@ const QRUtil = (function() {
         return a;
     };
 
-    _this.getLengthInBits = function(mode, type) {
+    _this.getLengthInBits = function (mode, type) {
         if (1 <= type && type < 10) {
             switch (mode) {
                 case QRMode.MODE_NUMBER:
@@ -792,7 +796,7 @@ const QRUtil = (function() {
         }
     };
 
-    _this.getLostPoint = function(qrcode) {
+    _this.getLostPoint = function (qrcode) {
         let moduleCount = qrcode.getModuleCount();
 
         let lostPoint = 0;
@@ -893,7 +897,7 @@ const QRUtil = (function() {
     return _this;
 })();
 
-let QRMath = (function() {
+let QRMath = (function () {
     let EXP_TABLE = new Array(256);
     let LOG_TABLE = new Array(256);
 
@@ -913,7 +917,7 @@ let QRMath = (function() {
 
     let _this = {};
 
-    _this.glog = function(n) {
+    _this.glog = function (n) {
         if (n < 1) {
             throw 'glog(' + n + ')';
         }
@@ -921,7 +925,7 @@ let QRMath = (function() {
         return LOG_TABLE[n];
     };
 
-    _this.gexp = function(n) {
+    _this.gexp = function (n) {
         while (n < 0) {
             n += 255;
         }
@@ -941,7 +945,7 @@ function qrPolynomial(num, shift) {
         throw num.length + '/' + shift;
     }
 
-    let _num = (function() {
+    let _num = (function () {
         let offset = 0;
         while (offset < num.length && num[offset] === 0) {
             offset += 1;
@@ -955,15 +959,15 @@ function qrPolynomial(num, shift) {
 
     let _this = {};
 
-    _this.getAt = function(index) {
+    _this.getAt = function (index) {
         return _num[index];
     };
 
-    _this.getLength = function() {
+    _this.getLength = function () {
         return _num.length;
     };
 
-    _this.multiply = function(e) {
+    _this.multiply = function (e) {
         let num = new Array(_this.getLength() + e.getLength() - 1);
 
         for (let i = 0; i < _this.getLength(); i += 1) {
@@ -977,7 +981,7 @@ function qrPolynomial(num, shift) {
         return qrPolynomial(num, 0);
     };
 
-    _this.mod = function(e) {
+    _this.mod = function (e) {
         if (_this.getLength() - e.getLength() < 0) {
             return _this;
         }
@@ -999,7 +1003,7 @@ function qrPolynomial(num, shift) {
     return _this;
 }
 
-const QRRSBlock = (function() {
+const QRRSBlock = (function () {
     let RS_BLOCK_TABLE = [
         // L
         // M
@@ -1247,7 +1251,7 @@ const QRRSBlock = (function() {
         [20, 45, 15, 61, 46, 16]
     ];
 
-    let qrRSBlock = function(totalCount, dataCount) {
+    let qrRSBlock = function (totalCount, dataCount) {
         let _this = {};
         _this.totalCount = totalCount;
         _this.dataCount = dataCount;
@@ -1256,7 +1260,7 @@ const QRRSBlock = (function() {
 
     let _this = {};
 
-    let getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+    let getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
         switch (errorCorrectionLevel) {
             case QRErrorCorrectionLevel.L:
                 return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
@@ -1271,14 +1275,16 @@ const QRRSBlock = (function() {
         }
     };
 
-    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+    _this.getRSBlocks = function (typeNumber, errorCorrectionLevel) {
         let rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
 
         if (typeof rsBlock == 'undefined') {
-            throw 'bad rs block @ typeNumber:' +
+            throw (
+                'bad rs block @ typeNumber:' +
                 typeNumber +
                 '/errorCorrectionLevel:' +
-                errorCorrectionLevel;
+                errorCorrectionLevel
+            );
         }
 
         let length = rsBlock.length / 3;
@@ -1301,32 +1307,32 @@ const QRRSBlock = (function() {
     return _this;
 })();
 
-let qrBitBuffer = function() {
+let qrBitBuffer = function () {
     let _buffer = [];
     let _length = 0;
 
     let _this = {};
 
-    _this.getBuffer = function() {
+    _this.getBuffer = function () {
         return _buffer;
     };
 
-    _this.getAt = function(index) {
+    _this.getAt = function (index) {
         let bufIndex = Math.floor(index / 8);
         return ((_buffer[bufIndex] >>> (7 - (index % 8))) & 1) === 1;
     };
 
-    _this.put = function(num, length) {
+    _this.put = function (num, length) {
         for (let i = 0; i < length; i += 1) {
             _this.putBit(((num >>> (length - i - 1)) & 1) === 1);
         }
     };
 
-    _this.getLengthInBits = function() {
+    _this.getLengthInBits = function () {
         return _length;
     };
 
-    _this.putBit = function(bit) {
+    _this.putBit = function (bit) {
         let bufIndex = Math.floor(_length / 8);
         if (_buffer.length <= bufIndex) {
             _buffer.push(0);
@@ -1342,7 +1348,7 @@ let qrBitBuffer = function() {
     return _this;
 };
 
-const generateByte = function(data, mode) {
+const generateByte = function (data, mode) {
     let _mode = QRMode.MODE_8BIT_BYTE;
     let _bytes;
 
@@ -1354,15 +1360,15 @@ const generateByte = function(data, mode) {
 
     let _this = {};
 
-    _this.getMode = function() {
+    _this.getMode = function () {
         return _mode;
     };
 
-    _this.getLength = function(_) {
+    _this.getLength = function (_) {
         return _bytes.length;
     };
 
-    _this.write = function(buffer) {
+    _this.write = function (buffer) {
         for (let i = 0; i < _bytes.length; i += 1) {
             buffer.put(_bytes[i], 8);
         }

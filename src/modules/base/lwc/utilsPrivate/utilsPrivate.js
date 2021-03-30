@@ -31,7 +31,7 @@ export {
     RGBtoHSV,
     HSVToHSL
 } from './colorUtils';
-export { getChartColors } from './chartColorPalette'
+export { getChartColors } from './chartColorPalette';
 export {
     keyCodes,
     runActionOnBufferedTypedCharacters,
@@ -50,7 +50,7 @@ export function synchronizeAttrs(element, values) {
         return;
     }
     const attributes = Object.keys(values);
-    attributes.forEach(attribute => {
+    attributes.forEach((attribute) => {
         smartSetAttribute(element, attribute, values[attribute]);
     });
 }
@@ -121,14 +121,14 @@ export function getZIndexBaseline() {
 }
 
 export function timeout(interval) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         setTimeout(resolve, interval);
     });
 }
 
 export function animationFrame() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         window.requestAnimationFrame(resolve);
     });

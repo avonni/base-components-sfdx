@@ -1,0 +1,73 @@
+<template>
+    <c-avonni-dialog show-dialog={showWizard} onclosedialog={handleCloseDialog}>
+        <!-- Header -->
+        <div slot="title">
+            <div
+                class="slds-grid slds-grid_vertical-align-center slds-grid_align-center"
+            >
+                <lightning-icon
+                    if:true={iconName}
+                    icon-name={iconName}
+                    size="small"
+                    class="slds-m-right_small"
+                >
+                </lightning-icon>
+                <template if:false={title}>
+                    <slot name="title"></slot>
+                </template>
+                {title}
+            </div>
+            <template if:false={hideNavigation}>
+                <div if:true={indicatorInHeader} class="slds-m-top_small">
+                    <c-avonni-primitive-wizard-navigation
+                        position="header"
+                        indicator-position={indicatorPosition}
+                        current-step={currentStep}
+                        steps={steps}
+                        indicator-type={indicatorType}
+                        hide-indicator={hideIndicator}
+                        fraction-prefix-label={fractionPrefixLabel}
+                        fraction-label={fractionLabel}
+                    >
+                        <slot name="actions"></slot>
+                    </c-avonni-primitive-wizard-navigation>
+                </div>
+            </template>
+        </div>
+
+        <!-- Steps -->
+        <p class="slds-text-color_error">{errorMessage}</p>
+        <slot onwizardstepregister={handleStepRegister}></slot>
+
+        <!-- Footer -->
+        <div slot="footer" if:false={hideNavigation}>
+            <c-avonni-primitive-wizard-navigation
+                position="footer"
+                onchange={handleChange}
+                current-step={currentStep}
+                steps={steps}
+                indicator-type={indicatorType}
+                indicator-position={indicatorPosition}
+                hide-indicator={hideIndicator}
+                button-previous-icon-name={buttonPreviousIconName}
+                button-previous-icon-position={buttonPreviousIconPosition}
+                button-previous-label={buttonPreviousLabel}
+                button-previous-variant={buttonPreviousVariant}
+                button-next-icon-name={buttonNextIconName}
+                button-next-icon-position={buttonNextIconPosition}
+                button-next-label={buttonNextLabel}
+                button-next-variant={buttonNextVariant}
+                button-finish-icon-name={buttonFinishIconName}
+                button-finish-icon-position={buttonFinishIconPosition}
+                button-finish-label={buttonFinishLabel}
+                button-finish-variant={buttonFinishVariant}
+                button-alignment-bump={buttonAlignmentBump}
+                action-position={actionPosition}
+                fraction-prefix-label={fractionPrefixLabel}
+                fraction-label={fractionLabel}
+            >
+                <slot name="actions"></slot>
+            </c-avonni-primitive-wizard-navigation>
+        </div>
+    </c-avonni-dialog>
+</template>

@@ -5,7 +5,6 @@ import { classSet } from 'c/utils';
 const validVariants = ['base', 'comment'];
 
 export default class AvonniPublisher extends LightningElement {
-    
     @api placeholder;
     @api buttonLabel;
     @api submitAction;
@@ -98,8 +97,8 @@ export default class AvonniPublisher extends LightningElement {
         }
     }
 
-    handleChange(e) {
-        this.value = e.detail.value;
+    handleChange(event) {
+        this.value = event.detail.value;
     }
 
     hanlerClick() {

@@ -1,8 +1,5 @@
 <template>
-    <label
-        class="slds-checkbox_toggle slds-grid avonni-input-toggle__label"
-        for="avonni-input-toggle"
-    >
+    <label class={computedWrapperClass} for="avonni-input-toggle">
         <template if:true={required}>
             <abbr class="slds-required" title={i18n.required}>*</abbr>
         </template>
@@ -35,7 +32,6 @@
             <span class="slds-checkbox_off">{messageToggleInactive}</span>
         </span>
     </label>
-
     <template if:false={valid}>
         <div
             id="help-message"

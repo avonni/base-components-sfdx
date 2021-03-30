@@ -1,6 +1,9 @@
 .avonni-input-toggle__faux_x-small {
     height: 0.75rem;
     width: 1.5rem;
+}
+/* Align vertically toggle when label is inline */
+label.slds-grid .avonni-input-toggle__faux_x-small {
     margin-top: 0.45rem;
 }
 
@@ -28,6 +31,9 @@
 .avonni-input-toggle__faux_small {
     height: 1rem;
     width: 2rem;
+}
+/* Align vertically toggle when label is inline */
+label.slds-grid .avonni-input-toggle__faux_small {
     margin-top: 0.3rem;
 }
 

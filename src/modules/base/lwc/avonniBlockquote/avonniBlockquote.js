@@ -14,7 +14,8 @@ export default class AvonniBlockquote extends LightningElement {
     _iconPosition = 'left';
     _iconSize = 'small';
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -25,7 +26,8 @@ export default class AvonniBlockquote extends LightningElement {
         });
     }
 
-    @api get iconPosition() {
+    @api
+    get iconPosition() {
         return this._iconPosition;
     }
 
@@ -36,7 +38,8 @@ export default class AvonniBlockquote extends LightningElement {
         });
     }
 
-    @api get iconSize() {
+    @api
+    get iconSize() {
         return this._iconSize;
     }
 

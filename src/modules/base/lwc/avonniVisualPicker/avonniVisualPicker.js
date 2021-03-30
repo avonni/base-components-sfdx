@@ -27,7 +27,7 @@ export default class AvonniVisualPicker extends LightningElement {
         const inputs = this.template.querySelectorAll('input');
 
         if (inputs) {
-            Array.from(inputs).forEach(item => {
+            Array.from(inputs).forEach((item) => {
                 if (this._value.indexOf(item.value) > -1) {
                     item.checked = true;
                 }
@@ -37,7 +37,7 @@ export default class AvonniVisualPicker extends LightningElement {
 
     @api
     get value() {
-        return this._value
+        return this._value;
     }
 
     set value(value) {
@@ -46,7 +46,7 @@ export default class AvonniVisualPicker extends LightningElement {
         const inputs = this.template.querySelectorAll('input');
 
         if (inputs) {
-            Array.from(inputs).forEach(item => {
+            Array.from(inputs).forEach((item) => {
                 if (this._value.indexOf(item.value) > -1) {
                     item.checked = true;
                 }
@@ -137,7 +137,7 @@ export default class AvonniVisualPicker extends LightningElement {
             let cloneItem = Object.assign({}, item);
             let iconPosition = cloneItem.figure.iconPosition;
 
-            cloneItem.key = `visual-picker-key-${index}`
+            cloneItem.key = `visual-picker-key-${index}`;
 
             if (this.disabled) {
                 cloneItem.disabled = true;
@@ -310,7 +310,7 @@ export default class AvonniVisualPicker extends LightningElement {
         if (this._variant === 'coverable' && this._hideCheckMark) {
             const labels = this.template.querySelectorAll('label');
 
-            labels.forEach(label => {
+            labels.forEach((label) => {
                 let icon = label.querySelector('lightning-icon');
                 if (label.previousSibling.checked) {
                     icon.variant = 'inverse';
@@ -322,8 +322,8 @@ export default class AvonniVisualPicker extends LightningElement {
 
         const inputs = this.template.querySelectorAll('input');
         const value = Array.from(inputs)
-            .filter(input => input.checked)
-            .map(input => input.value);
+            .filter((input) => input.checked)
+            .map((input) => input.value);
 
         this._value = value;
 

@@ -37,11 +37,11 @@ div[c-splitter_splitter] .splitter-orientation-vertical[c-splitter_splitter] {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: .75rem;
-    min-height: .75rem;
+    height: 0.75rem;
+    min-height: 0.75rem;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;    
+    user-select: none;
     background: #fff;
     border-radius: 0;
     border: 1px solid #dddbda;
@@ -60,8 +60,8 @@ div[c-splitter_splitter] .splitter-orientation-vertical[c-splitter_splitter] {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    width: .75rem;
-    min-width: .75rem;
+    width: 0.75rem;
+    min-width: 0.75rem;
     background: #fff;
     border-radius: 0;
     border: 1px solid #dddbda;

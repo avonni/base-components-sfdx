@@ -23,13 +23,13 @@ export default class AvonniSplitter extends LightningElement {
             let isStatic = false;
             let separatorName = '';
 
-            slotElements.forEach(element => {
+            slotElements.forEach((element) => {
                 if (element.localName.indexOf('-splitter-pane') > -1) {
                     containerComponents++;
                 }
             });
 
-            slotElements.forEach(element => {
+            slotElements.forEach((element) => {
                 const nextElement = element.nextSibling;
 
                 if (element.localName.indexOf('-splitter-pane') > -1) {
@@ -266,7 +266,7 @@ export default class AvonniSplitter extends LightningElement {
 
         this.template
             .querySelectorAll('.splitter-orientation-horizontal')
-            .forEach(element => {
+            .forEach((element) => {
                 element.style.height = `${element.offsetHeight}px`;
             });
 
@@ -394,14 +394,14 @@ export default class AvonniSplitter extends LightningElement {
                         '.slot-' +
                             first.getAttribute('slot-id') +
                             ' .horizontal'
-                    ).forEach(element => {
+                    ).forEach((element) => {
                         element.changeHeight(firstDelta);
                     });
                     this.querySelectorAll(
                         '.slot-' +
                             second.getAttribute('slot-id') +
                             ' .horizontal'
-                    ).forEach(element => {
+                    ).forEach((element) => {
                         element.changeHeight(secondDelta);
                     });
                 }

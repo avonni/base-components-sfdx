@@ -35,7 +35,7 @@ export default class AvonniInputPen extends LightningElement {
     cursor;
 
     connectedCallback() {
-        this.sizeList = [...Array(100).keys()].slice(1).map(x => {
+        this.sizeList = [...Array(100).keys()].slice(1).map((x) => {
             return { label: `${x}px`, value: x };
         });
 
@@ -260,7 +260,7 @@ export default class AvonniInputPen extends LightningElement {
 
         if (this.value.indexOf('data:image/') === 0) {
             let img = new Image();
-            img.onload = function() {
+            img.onload = function () {
                 this.ctx.drawImage(img, 0, 0);
             }.bind(this);
             img.src = this.value;

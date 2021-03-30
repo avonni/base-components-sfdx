@@ -7,7 +7,8 @@ import {
     normalizeString
 } from 'c/utilsPrivate';
 
-import { generateUniqueId, classSet } from 'c/utils';
+import { classSet } from 'c/utils';
+import { generateUniqueId } from 'c/utils';
 
 const validVariants = [
     'standard',
@@ -125,7 +126,8 @@ export default class AvonniColorPicker extends LightningElement {
         this.initSwatchColor();
     }
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -136,7 +138,8 @@ export default class AvonniColorPicker extends LightningElement {
         });
     }
 
-    @api get type() {
+    @api
+    get type() {
         return this._type;
     }
 
@@ -147,7 +150,8 @@ export default class AvonniColorPicker extends LightningElement {
         });
     }
 
-    @api get menuVariant() {
+    @api
+    get menuVariant() {
         return this._menuVariant;
     }
 
@@ -158,18 +162,20 @@ export default class AvonniColorPicker extends LightningElement {
         });
     }
 
-    @api get menuIconSize() {
+    @api
+    get menuIconSize() {
         return this._menuIconSize;
     }
 
     set menuIconSize(size) {
         this._menuIconSize = normalizeString(size, {
-            fallbackValue: 'medium',
+            fallbackValue: 'x-small',
             validValues: validMenuIconSizes
         });
     }
 
-    @api get menuAlignment() {
+    @api
+    get menuAlignment() {
         return this._menuAlignment;
     }
 
@@ -180,7 +186,8 @@ export default class AvonniColorPicker extends LightningElement {
         });
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -188,7 +195,8 @@ export default class AvonniColorPicker extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api get isLoading() {
+    @api
+    get isLoading() {
         return this._isLoading;
     }
 
@@ -196,7 +204,8 @@ export default class AvonniColorPicker extends LightningElement {
         this._isLoading = normalizeBoolean(value);
     }
 
-    @api get readOnly() {
+    @api
+    get readOnly() {
         return this._readOnly;
     }
 
@@ -204,7 +213,8 @@ export default class AvonniColorPicker extends LightningElement {
         this._readOnly = normalizeBoolean(value);
     }
 
-    @api get required() {
+    @api
+    get required() {
         return this._required;
     }
 
@@ -212,7 +222,8 @@ export default class AvonniColorPicker extends LightningElement {
         this._required = normalizeBoolean(value);
     }
 
-    @api get hideColorInput() {
+    @api
+    get hideColorInput() {
         return this._hideColorInput;
     }
 
@@ -220,7 +231,8 @@ export default class AvonniColorPicker extends LightningElement {
         this._hideColorInput = normalizeBoolean(value);
     }
 
-    @api get menuNubbin() {
+    @api
+    get menuNubbin() {
         return this._menuNubbin;
     }
 
@@ -228,7 +240,8 @@ export default class AvonniColorPicker extends LightningElement {
         this._menuNubbin = normalizeBoolean(value);
     }
 
-    @api get opacity() {
+    @api
+    get opacity() {
         return this._opacity;
     }
 
@@ -434,8 +447,9 @@ export default class AvonniColorPicker extends LightningElement {
                     '.slds-swatch'
                 ).style.background = this.value;
             }
+
             let gradientPalette = this.template.querySelector(
-                'c-avonni-color-gradient'
+                '[data-name="colorGradient"]'
             );
 
             if (gradientPalette) {
@@ -451,7 +465,9 @@ export default class AvonniColorPicker extends LightningElement {
     handlerCancel() {
         this.newValue = '';
 
-        let gradientPalette = this.template.querySelector('c-avonni-color-gradient');
+        let gradientPalette = this.template.querySelector(
+            '[data-name="colorGradient"]'
+        );
 
         if (gradientPalette) {
             gradientPalette.renderValue(this.value);
@@ -493,7 +509,7 @@ export default class AvonniColorPicker extends LightningElement {
     handlerTabClick(event) {
         event.preventDefault();
 
-        [...this.template.querySelectorAll('a')].forEach(tab => {
+        [...this.template.querySelectorAll('a')].forEach((tab) => {
             if (tab.id === event.target.id) {
                 tab.parentElement.classList.add('slds-is-active');
                 this.isDefault = tab.parentElement.title === 'Default';
@@ -556,7 +572,7 @@ export default class AvonniColorPicker extends LightningElement {
             this.value = color;
 
             let gradientPalette = this.template.querySelector(
-                'c-avonni-color-gradient'
+                '[data-name="colorGradient"]'
             );
 
             if (gradientPalette) {

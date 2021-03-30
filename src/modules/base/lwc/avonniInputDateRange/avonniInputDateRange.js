@@ -392,8 +392,12 @@ export default class AvonniInputDateRange extends LightningElement {
             });
         }
 
-        startDate = this.startDateString ? new Date(startDate).toISOString() : startDate;
-        endDate = this.endDateString ? new Date(endDate).toISOString() : endDate;
+        startDate = this.startDateString
+            ? new Date(startDate).toISOString()
+            : startDate;
+        endDate = this.endDateString
+            ? new Date(endDate).toISOString()
+            : endDate;
 
         this.dispatchEvent(
             new CustomEvent('change', {

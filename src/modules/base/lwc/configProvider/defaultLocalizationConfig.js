@@ -6,7 +6,7 @@ import {
     removeTimeZoneSuffix,
     STANDARD_TIME_FORMAT,
     STANDARD_DATE_FORMAT,
-    TIME_SEPARATOR,
+    TIME_SEPARATOR
 } from 'c/iso8601Utils';
 import Duration from './defaultDurationConfig';
 
@@ -22,24 +22,24 @@ const MONTH_NAMES = [
     'September',
     'October',
     'November',
-    'December',
+    'December'
 ];
 const DATE_FORMAT = {
     short: 'M/d/yyyy',
     medium: 'MMM d, yyyy',
-    long: 'MMMM d, yyyy',
+    long: 'MMMM d, yyyy'
 };
 const TIME_FORMAT = {
     short: 'h:mm a',
     medium: 'h:mm:ss a',
-    long: 'h:mm:ss a',
+    long: 'h:mm:ss a'
 };
 
 // The parseTime method normalizes the time format so that minor deviations are accepted
 const TIME_FORMAT_SIMPLE = {
     short: 'h:m a',
     medium: 'h:m:s a',
-    long: 'h:m:s a',
+    long: 'h:m:s a'
 };
 
 // Only works with dates and iso strings
@@ -220,7 +220,7 @@ function getNumberFormat() {
                 `The current environment does not support large numbers and the original value of ${value} will be returned.`
             );
             return value;
-        },
+        }
     };
 }
 
@@ -424,5 +424,5 @@ export default {
     translateFromLocalizedDigits,
     getNumberFormat,
     duration,
-    displayDuration,
+    displayDuration
 };

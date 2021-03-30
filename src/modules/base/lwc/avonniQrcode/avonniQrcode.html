@@ -1,4 +1,4 @@
 <template>
-    <div if:true={renderAsSvg} class="qrcode" lwc:dom="manual"></div>
+    <span if:true={renderAsSvg} class="qrcode" lwc:dom="manual"></span>
     <canvas if:false={renderAsSvg}></canvas>
 </template>

@@ -1,31 +1,24 @@
-.avonni-date-time-picker__table {
-    display: flex;
-}
-
 .avonni-date-time-picker__label {
     float: none;
 }
 
 .avonni-date-time-picker__day {
-    display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    text-align: center;
+}
+
+.avonni-date-time-picker__day_inline {
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .avonni-date-time-picker__day-label {
-    padding: var(--lwc-spacingMedium, 1rem);
     text-transform: uppercase;
     color: var(--lwc-colorTextPlaceholder, #706e6b);
 }
 
 .avonni-date-time-picker__day-label[data-today='true'] {
     color: var(--lwc-colorTextBrand, #1589ee);
-}
-
-.avonni-date-time-picker__day-label,
-.avonni-date-time-picker__time {
-    flex: 1 1 auto;
 }
 
 .avonni-date-time-picker__time {
@@ -35,8 +28,6 @@
 .avonni-date-time-picker__time-button {
     border: 1px solid var(--lwc-colorBorder, #dddbda);
     width: 100%;
-    padding: var(--lwc-spacingMedium, 1rem);
-    background-color: #fff;
 }
 
 .avonni-date-time-picker__time-button:disabled {
@@ -47,4 +38,26 @@
 .avonni-date-time-picker__time-button[aria-selected='true'] {
     border-color: #0070d2;
     background-color: #d8edff;
+}
+
+.avonni-date-time-picker__timeline-hour-col {
+    min-width: var(--lwc-sizeXxSmall, 6rem);
+    position: relative;
+    z-index: 1;
+    margin: 2px;
+}
+
+.avonni-date-time-picker__timeline-hour-col::before {
+    content: '';
+    border: 1px dashed var(--lwc-colorBorder, #dddbda);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
+}
+
+.avonni-date-time-picker__timeline .avonni-date-time-picker__time-button {
+    min-width: var(--lwc-sizeXxSmall, 6rem);
 }

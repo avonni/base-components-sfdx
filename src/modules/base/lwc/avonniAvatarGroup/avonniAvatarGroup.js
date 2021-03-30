@@ -2,22 +2,49 @@ import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { normalizeString } from 'c/utilsPrivate';
 
-const validSizes = ['x-small', 'small', 'medium', 'large'];
-const validVariants = ['stack', 'grid'];
+const validSizes = [
+    'x-small',
+    'small',
+    'medium',
+    'large',
+    'x-large',
+    'xx-large'
+];
+const validLayouts = ['stack', 'grid', 'list'];
+
+const validVariants = ['empty', 'square', 'circle'];
+
+const validButtonIconPositions = ['left', 'right'];
+
+const validButtonVariants = [
+    'neutral',
+    'base',
+    'brand',
+    'brand-outline',
+    'destructive',
+    'destructive-text',
+    'inverse',
+    'success'
+];
 
 export default class AvonniAvatarGroup extends LightningElement {
+    @api listButtonLabel = 'Show more';
+    @api listButtonIconName;
+
     _items = [];
     _maxCount;
     _size = 'medium';
-    _variant = 'stack';
+    _layout = 'stack';
     _allowBlur = false;
-    showPopever = false;
+    _listButtonVariant;
+    _listButtonIconPosition;
+    showPopover = false;
     hiddenItems = [];
 
     renderedCallback() {
         if (!this.isClassic) {
             let avatars = this.template.querySelectorAll(
-                '.avonni-avatar-in-line'
+                '.avonni-avatar-group_in-line'
             );
 
             avatars.forEach((avatar, index) => {
@@ -55,13 +82,46 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
+    @api get layout() {
+        return this._layout;
+    }
+
+    set layout(value) {
+        this._layout = normalizeString(value, {
+            fallbackValue: 'stack',
+            validValues: validLayouts
+        });
+    }
+
+    @api get listButtonVariant() {
+        return this._listButtonVariant;
+    }
+
+    set listButtonVariant(value) {
+        this._listButtonVariant = normalizeString(value, {
+            fallbackValue: 'neutral',
+            validValues: validButtonVariants
+        });
+    }
+
+    @api get listButtonIconPosition() {
+        return this._listButtonIconPosition;
+    }
+
+    set listButtonIconPosition(value) {
+        this._listButtonIconPosition = normalizeString(value, {
+            fallbackValue: 'left',
+            validValues: validButtonIconPositions
+        });
+    }
+
     @api get variant() {
         return this._variant;
     }
 
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: 'stack',
+            fallbackValue: 'square',
             validValues: validVariants
         });
     }
@@ -88,7 +148,7 @@ export default class AvonniAvatarGroup extends LightningElement {
         let items = JSON.parse(JSON.stringify(this.items));
 
         if (isNaN(maxCount)) {
-            maxCount = this.variant === 'stack' ? 5 : 11;
+            maxCount = this.layout === 'stack' ? 5 : 11;
         }
 
         if (length > maxCount) {
@@ -113,7 +173,7 @@ export default class AvonniAvatarGroup extends LightningElement {
         let items = JSON.parse(JSON.stringify(this.items));
 
         if (isNaN(maxCount)) {
-            maxCount = this.variant === 'stack' ? 5 : 11;
+            maxCount = this.layout === 'stack' ? 5 : 11;
         }
 
         if (length > maxCount) {
@@ -129,38 +189,50 @@ export default class AvonniAvatarGroup extends LightningElement {
     }
 
     get avatarGroupClass() {
-        return classSet('slds-avatar-group')
+        return classSet('slds-avatar-group avonni-avatar-group__avatar')
             .add({
                 'slds-avatar-group_x-small': this.size === 'x-small',
                 'slds-avatar-group_small': this.size === 'small',
                 'slds-avatar-group_medium': this.size === 'medium',
-                'slds-avatar-group_large': this.size === 'large'
+                'slds-avatar-group_large': this.size === 'large',
+                'avonni-avatar-group_x-large': this.size === 'x-large',
+                'avonni-avatar-group_xx-large': this.size === 'xx-large',
+                'avonni-avatar-group_circle': this.variant === 'circle'
             })
             .toString();
     }
 
     get avatarInlineClass() {
-        return classSet('avonni-avatar')
+        return classSet('avonni-avatar-group__avatar')
             .add({
-                'avonni-avatar-in-line': this.variant === 'stack',
-                'avonni-avatar-grid': this.variant === 'grid'
+                'avonni-avatar-group_in-line': this.layout === 'stack'
             })
             .add(`avonni-avatar-${this.size}`)
             .toString();
     }
 
     get avatarInlinePlusClass() {
-        return classSet('avonni-avatar avonni-avatar-plus')
+        return classSet('avonni-avatar-group__avatar avonni-avatar-group__plus')
             .add({
-                'avonni-avatar-in-line': this.variant === 'stack',
-                'avonni-avatar-grid': this.variant === 'grid'
+                'avonni-avatar-group_in-line': this.layout === 'stack'
             })
             .add(`avonni-avatar-${this.size}`)
             .toString();
     }
 
+    get avatarWrapperClass() {
+        return classSet('avonni-avatar-group__avatar-container').add({
+            'slds-show': this.layout === 'list',
+            'avonni-avatar-group_circle': this.variant === 'circle'
+        });
+    }
+
     get isClassic() {
-        return this.variant === 'stack' && this.items.length === 2;
+        return this.layout === 'stack' && this.items.length === 2;
+    }
+
+    get isNotList() {
+        return !(this.layout === 'list');
     }
 
     allowBlur() {
@@ -176,12 +248,14 @@ export default class AvonniAvatarGroup extends LightningElement {
             return;
         }
 
-        this.showPopever = false;
+        this.showPopover = false;
     }
 
-    handlAvatarclick(event) {
-        let itemId = event.target.dataset.itemId;
-        let type = event.target.dataset.type;
+    handleAvatarClick(event) {
+        if (event.type === 'keyup' && event.key !== 'Enter') return;
+
+        const itemId = event.target.dataset.itemId;
+        const type = event.target.dataset.type;
         let item;
 
         if (type === 'show') {
@@ -191,7 +265,8 @@ export default class AvonniAvatarGroup extends LightningElement {
         }
 
         if (item.showMore) {
-            this.showPopever = true;
+            this.showPopover = true;
+            this.template.querySelector('.slds-dropdown-trigger').focus();
             this.allowBlur();
         } else {
             this.dispatchEvent(
@@ -204,7 +279,7 @@ export default class AvonniAvatarGroup extends LightningElement {
                 })
             );
 
-            this.showPopever = false;
+            this.showPopover = false;
             this.cancelBlur();
         }
     }

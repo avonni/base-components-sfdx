@@ -2,17 +2,17 @@
 /* eslint-disable vars-on-top */
 /* eslint-disable no-unused-expressions */
 // canvas-confetti v0.2.1 built on 2019-04-28T18:34:51.101Z
-!(function(window, module) {
+!(function (window, module) {
     // source content
-    (function() {
-        var frame = (function() {
+    (function () {
+        var frame = (function () {
             return (
                 window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
                 window.oRequestAnimationFrame ||
                 window.msRequestAnimationFrame ||
-                function(cb) {
+                function (cb) {
                     window.setTimeout(cb, 1000 / 60);
                 }
             );
@@ -200,7 +200,7 @@
                 width = height = null;
             }
 
-            var prom = promise(function(resolve) {
+            var prom = promise(function (resolve) {
                 function onDone() {
                     if (allowResize) {
                         window.removeEventListener('resize', onResize);
@@ -219,7 +219,7 @@
 
                     context.clearRect(0, 0, width, height);
 
-                    animatingFettis = animatingFettis.filter(function(fetti) {
+                    animatingFettis = animatingFettis.filter(function (fetti) {
                         return updateFetti(context, fetti);
                     });
 
@@ -238,7 +238,7 @@
             }
 
             return {
-                addFettis: function(fettis) {
+                addFettis: function (fettis) {
                     animatingFettis = animatingFettis.concat(fettis);
 
                     return prom;
@@ -311,7 +311,7 @@
                     fettis,
                     isLibCanvas,
                     isLibCanvas || allowResize,
-                    function() {
+                    function () {
                         animationObj = null;
 
                         if (isLibCanvas) {

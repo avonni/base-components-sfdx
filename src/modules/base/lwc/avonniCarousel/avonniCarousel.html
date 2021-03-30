@@ -93,6 +93,7 @@
                     >
                         <!-- Pagination items -->
                         <template
+                            if:false={hideIndicator}
                             for:each={paginationItems}
                             for:item="paginationItem"
                             for:index="paginationIndex"
@@ -124,7 +125,7 @@
                     <template if:false={disableAutoScroll}>
                         <lightning-button-icon
                             alternative-text={assistiveText.autoplayButton}
-                            class="avonni-carousel__autoscroll-button"
+                            class={computedAutoScrollAutoplayButton}
                             icon-name={autoScrollIcon}
                             onclick={toggleAutoScroll}
                             size="x-small"

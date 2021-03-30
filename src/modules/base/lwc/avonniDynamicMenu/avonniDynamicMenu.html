@@ -41,7 +41,7 @@
             onmouseup={handleDropdownMouseUp}
             onscroll={handleDropdownScroll}
             onblur={handleBlur}
-            tabindex="0" 
+            tabindex="0"
         >
             <template if:true={isLoading}>
                 <lightning-spinner
@@ -87,6 +87,7 @@
                                         role="option"
                                     >
                                         <lightning-icon
+                                            if:true={item.avatar}
                                             icon-name={item.avatar.fallbackIconName}
                                             size="small"
                                             class="slds-media__figure"
@@ -94,10 +95,14 @@
                                             variant={variantInverse}
                                         ></lightning-icon>
                                         <span class="slds-media__body">
-                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">
+                                            <span
+                                                class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                            >
                                                 {item.label}
                                             </span>
-                                            <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">
+                                            <span
+                                                class="slds-listbox__option-meta slds-listbox__option-meta_entity"
+                                            >
                                                 {item.metaJoin}
                                             </span>
                                         </span>

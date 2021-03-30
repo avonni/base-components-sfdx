@@ -1,5 +1,8 @@
 <template>
     <div class={progressRingClass}>
+        <template if:false={showPositionBottom}>
+            <div class={progressTitleClassTop}>{title}</div>
+        </template>
         <div
             class="slds-progress-ring__progress"
             role="progressbar"
@@ -12,8 +15,13 @@
             </svg>
         </div>
         <div class={progressRingContentClass}>
-            <span if:true={showValue} style={progressLabelStyles}>{value}%</span>
+            <span if:true={showValue} style={progressValueStyles}
+                >{value}%</span
+            >
+            <span if:true={label} class={progressLabelClass}> {label}</span>
         </div>
-        <div class={progressLabelClass}>{label}</div>
+        <template if:true={showPositionBottom}>
+            <div class={progressTitleClass}>{title}</div>
+        </template>
     </div>
 </template>

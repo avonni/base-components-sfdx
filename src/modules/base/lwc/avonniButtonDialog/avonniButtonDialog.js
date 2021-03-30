@@ -22,7 +22,8 @@ export default class AvonniButtonDialog extends LightningElement {
     _variant = 'neutral';
     _iconPosition = 'left';
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -33,7 +34,8 @@ export default class AvonniButtonDialog extends LightningElement {
         });
     }
 
-    @api get iconPosition() {
+    @api
+    get iconPosition() {
         return this._iconPosition;
     }
 
@@ -44,7 +46,8 @@ export default class AvonniButtonDialog extends LightningElement {
         });
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 

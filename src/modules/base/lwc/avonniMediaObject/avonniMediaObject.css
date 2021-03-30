@@ -5,3 +5,35 @@
 .avonni-media-object-display-inline {
     display: inline-block;
 }
+
+.avonni-media-object-display-inline .slds-media__figure {
+    margin: 0;
+}
+
+.avonni-media-object-display-inline.slds-media .slds-media__figure {
+    margin-bottom: 0.75rem;
+}
+
+.avonni-media-object-display-inline.slds-media.slds-media_small
+    .slds-media__figure {
+    margin-bottom: 0.25rem;
+}
+
+.avonni-media-object-display-inline.slds-media.slds-media_large
+    .slds-media__figure {
+    margin-bottom: 1.5rem;
+}
+
+.avonni-media-object-display-inline.slds-media .slds-media__figure_reverse {
+    margin-top: 0.75rem;
+}
+
+.avonni-media-object-display-inline.slds-media.slds-media_small
+    .slds-media__figure_reverse {
+    margin-top: 0.25rem;
+}
+
+.avonni-media-object-display-inline.slds-media.slds-media_large
+    .slds-media__figure_reverse {
+    margin-top: 1.5rem;
+}

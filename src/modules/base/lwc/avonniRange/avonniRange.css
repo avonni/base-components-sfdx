@@ -95,8 +95,8 @@
     z-index: 3;
     background-color: #1a5296;
     color: #fff;
-    border-radius: .25rem;
-    -webkit-border-radius: .25rem;
+    border-radius: 0.25rem;
+    -webkit-border-radius: 0.25rem;
     height: auto;
     min-height: 2rem;
     align-items: center;
@@ -112,7 +112,7 @@
 
 .avonni-bubble-vertical:after {
     position: absolute;
-    content: "";
+    content: '';
     left: -18px;
     border-radius: 19px;
     top: 6px;

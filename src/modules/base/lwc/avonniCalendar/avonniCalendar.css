@@ -13,6 +13,18 @@ th {
     cursor: default;
 }
 
+.avonni-marked-cell::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    background: #bf0201;
+    border-radius: var(--lwc-borderRadiusCircle, 50%);
+    position: absolute;
+    top: 4px;
+    right: 2px;
+}
+
 .slds-day_adjacent-month {
     color: #adadad;
 }

@@ -81,7 +81,8 @@ export default class AvonniButtonPopover extends LightningElement {
         return this.template.querySelector('slot[name=footer]');
     }
 
-    @api get popoverSize() {
+    @api
+    get popoverSize() {
         return this._popoverSize;
     }
 
@@ -92,7 +93,8 @@ export default class AvonniButtonPopover extends LightningElement {
         });
     }
 
-    @api get iconPosition() {
+    @api
+    get iconPosition() {
         return this._iconPosition;
     }
 
@@ -103,7 +105,8 @@ export default class AvonniButtonPopover extends LightningElement {
         });
     }
 
-    @api get placement() {
+    @api
+    get placement() {
         return this._placement;
     }
 
@@ -114,7 +117,8 @@ export default class AvonniButtonPopover extends LightningElement {
         });
     }
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -125,7 +129,8 @@ export default class AvonniButtonPopover extends LightningElement {
         });
     }
 
-    @api get triggers() {
+    @api
+    get triggers() {
         return this._triggers;
     }
 
@@ -136,7 +141,8 @@ export default class AvonniButtonPopover extends LightningElement {
         });
     }
 
-    @api get popoverVariant() {
+    @api
+    get popoverVariant() {
         return this._popoverVariant;
     }
 
@@ -147,7 +153,8 @@ export default class AvonniButtonPopover extends LightningElement {
         });
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -155,7 +162,8 @@ export default class AvonniButtonPopover extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api get isLoading() {
+    @api
+    get isLoading() {
         return this._isLoading;
     }
 
@@ -240,7 +248,7 @@ export default class AvonniButtonPopover extends LightningElement {
     handleMouseLeave() {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         setTimeout(
-            function() {
+            function () {
                 if (
                     !this._cancelBlur &&
                     this._triggers === 'hover' &&
@@ -276,7 +284,7 @@ export default class AvonniButtonPopover extends LightningElement {
     handleMouseLeaveBody() {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         setTimeout(
-            function() {
+            function () {
                 if (
                     !this._cancelBlur &&
                     this._triggers === 'hover' &&

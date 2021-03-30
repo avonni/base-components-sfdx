@@ -23,7 +23,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     _size = 'medium';
     _variant = 'border';
 
-    @api get size() {
+    @api
+    get size() {
         return this._size;
     }
 
@@ -34,7 +35,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
         });
     }
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -45,7 +47,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
         });
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 

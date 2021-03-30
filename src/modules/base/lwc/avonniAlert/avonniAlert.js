@@ -13,7 +13,8 @@ export default class AvonniAlert extends LightningElement {
     _textured = false;
     _isDismissible = false;
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -24,7 +25,8 @@ export default class AvonniAlert extends LightningElement {
         });
     }
 
-    @api get textured() {
+    @api
+    get textured() {
         return this._textured;
     }
 
@@ -32,7 +34,8 @@ export default class AvonniAlert extends LightningElement {
         this._textured = normalizeBoolean(value);
     }
 
-    @api get isDismissible() {
+    @api
+    get isDismissible() {
         return this._isDismissible;
     }
 

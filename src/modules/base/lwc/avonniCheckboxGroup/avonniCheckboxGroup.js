@@ -49,7 +49,7 @@ export default class AvonniCheckboxGroup extends LightningElement {
 
     synchronizeA11y() {
         const inputs = this.template.querySelectorAll('input');
-        Array.prototype.slice.call(inputs).forEach(input => {
+        Array.prototype.slice.call(inputs).forEach((input) => {
             synchronizeAttrs(input, {
                 'aria-describedby': this.computedUniqueHelpElementId
             });
@@ -73,7 +73,8 @@ export default class AvonniCheckboxGroup extends LightningElement {
         this.synchronizeA11y();
     }
 
-    @api get value() {
+    @api
+    get value() {
         return this._value;
     }
 
@@ -81,21 +82,24 @@ export default class AvonniCheckboxGroup extends LightningElement {
         this._value = value;
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled || false;
     }
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api get required() {
+    @api
+    get required() {
         return this._required || false;
     }
     set required(value) {
         this._required = normalizeBoolean(value);
     }
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant || VARIANT.STANDARD;
     }
 
@@ -104,7 +108,8 @@ export default class AvonniCheckboxGroup extends LightningElement {
         this.updateClassList();
     }
 
-    @api get type() {
+    @api
+    get type() {
         return this._type;
     }
 
@@ -126,7 +131,7 @@ export default class AvonniCheckboxGroup extends LightningElement {
     get transformedOptions() {
         const { options, value } = this;
         if (Array.isArray(options)) {
-            return options.map(option => ({
+            return options.map((option) => ({
                 label: option.label,
                 value: option.value,
                 id: `checkbox-${this.itemIndex++}`,
@@ -136,7 +141,8 @@ export default class AvonniCheckboxGroup extends LightningElement {
         return [];
     }
 
-    @api get validity() {
+    @api
+    get validity() {
         return this._constraint.validity;
     }
 
@@ -147,7 +153,7 @@ export default class AvonniCheckboxGroup extends LightningElement {
 
     @api
     reportValidity() {
-        return this._constraint.reportValidity(message => {
+        return this._constraint.reportValidity((message) => {
             this._helpMessage = message;
         });
     }
@@ -199,8 +205,8 @@ export default class AvonniCheckboxGroup extends LightningElement {
 
         const checkboxes = this.template.querySelectorAll('input');
         const value = Array.from(checkboxes)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
 
         this._value = value;
 

@@ -153,7 +153,6 @@ export default class AvonniInputCounter extends LightningElement {
         return this.ariaDescribedBy || null;
     }
 
-
     @api
     setCustomValidity() {
         this.template.querySelector('lightning-input').setCustomValidity();
@@ -203,7 +202,7 @@ export default class AvonniInputCounter extends LightningElement {
 
     updateValue(value) {
         [...this.template.querySelectorAll('lightning-input')].forEach(
-            element => {
+            (element) => {
                 element.value = value;
             }
         );

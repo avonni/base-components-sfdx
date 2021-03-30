@@ -1,0 +1,122 @@
+<template>
+    <lightning-layout
+        vertical-align="center"
+        multiple-rows="true"
+        pull-to-boundary="small"
+    >
+        <!-- Previous button -->
+        <lightning-layout-item
+            if:false={hidePreviousButton}
+            class={previousButtonColClass}
+        >
+            <lightning-button
+                icon-name={buttonPreviousIconName}
+                icon-position={buttonPreviousIconPosition}
+                label={buttonPreviousLabel}
+                variant={buttonPreviousVariant}
+                data-action="previous"
+                onclick={handleButtonClick}
+                class="slds-m-right_xx-small slds-m-left_small"
+            ></lightning-button>
+        </lightning-layout-item>
+
+        <!-- Indicator -->
+        <lightning-layout-item
+            flexibility="auto"
+            class={progressColClass}
+            padding="horizontal-small"
+        >
+            <template if:true={showIndicator}>
+                <!-- Progress indicator -->
+                <template if:true={showProgressIndicator}>
+                    <lightning-progress-indicator
+                        current-step={currentStep}
+                        type={progressIndicatorType}
+                        variant={progressIndicatorVariant}
+                    >
+                        <template for:each={steps} for:item="step">
+                            <lightning-progress-step
+                                key={step.name}
+                                label={step.label}
+                                value={step.name}
+                            ></lightning-progress-step>
+                        </template>
+                    </lightning-progress-indicator>
+                </template>
+
+                <!-- Bullets -->
+                <template if:true={showBulletIndicator}>
+                    <ul
+                        class="slds-carousel__indicators slds-text-align_center slds-m-top_small"
+                        aria-label="Progress indicator"
+                    >
+                        <template for:each={steps} for:item="step">
+                            <li
+                                key={step.name}
+                                class="slds-carousel__indicator"
+                            >
+                                <span
+                                    class={step.bulletClass}
+                                    title={step.label}
+                                    aria-selected={step.selected}
+                                >
+                                    <span class="slds-assistive-text"
+                                        >{step.label}</span
+                                    >
+                                </span>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+
+                <!-- Fraction indicator -->
+                <template if:true={showFractionIndicator}>
+                    <p>
+                        {fractionPrefixLabel} {fractionCurrentStep}
+                        {fractionLabel} {fractionTotalSteps}
+                    </p>
+                </template>
+                <!-- Bar indicator -->
+                <template if:true={showBarIndicator}>
+                    <lightning-progress-bar
+                        value={progressBarValue}
+                        size="large"
+                    ></lightning-progress-bar>
+                </template>
+            </template>
+        </lightning-layout-item>
+        <!-- Actions slot and Next/Finish buttons -->
+        <lightning-layout-item class={actionsNextFinishButtonColClass}>
+            <lightning-layout class="slds-m-right_small">
+                <lightning-layout-item class={actionsSlotColClass}>
+                    <slot></slot>
+                </lightning-layout-item>
+                <lightning-layout-item
+                    if:false={hideNextFinishButton}
+                    class={nextFinishButtonColClass}
+                >
+                    <lightning-button
+                        if:false={lastStep}
+                        icon-name={buttonNextIconName}
+                        icon-position={buttonNextIconPosition}
+                        label={buttonNextLabel}
+                        data-action="next"
+                        variant={buttonNextVariant}
+                        onclick={handleButtonClick}
+                        class="slds-m-left_xx-small"
+                    ></lightning-button>
+                    <lightning-button
+                        if:true={lastStep}
+                        icon-name={buttonFinishIconName}
+                        icon-position={buttonFinishIconPosition}
+                        data-action="finish"
+                        label={buttonFinishLabel}
+                        variant={buttonFinishVariant}
+                        onclick={handleButtonClick}
+                        class="slds-m-left_xx-small"
+                    ></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

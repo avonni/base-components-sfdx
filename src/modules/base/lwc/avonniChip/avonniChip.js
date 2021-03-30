@@ -31,7 +31,8 @@ export default class AvonniChip extends LightningElement {
         }
     }
 
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -42,7 +43,8 @@ export default class AvonniChip extends LightningElement {
         });
     }
 
-    @api get outline() {
+    @api
+    get outline() {
         return this._outline;
     }
 

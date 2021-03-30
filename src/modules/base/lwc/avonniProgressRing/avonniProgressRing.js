@@ -19,7 +19,7 @@ export default class AvonniProgressRing extends LightningElement {
     _variant = 'base';
     _hideIcon = false;
 
-    @api 
+    @api
     get direction() {
         return this._direction;
     }
@@ -31,7 +31,7 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
-    @api 
+    @api
     get size() {
         return this._size;
     }
@@ -43,7 +43,7 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
-    @api 
+    @api
     get value() {
         return this._value;
     }
@@ -58,7 +58,7 @@ export default class AvonniProgressRing extends LightningElement {
         }
     }
 
-    @api 
+    @api
     get variant() {
         return this._variant;
     }
@@ -70,7 +70,7 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
-    @api 
+    @api
     get hideIcon() {
         return this._hideIcon;
     }

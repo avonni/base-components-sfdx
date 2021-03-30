@@ -1,100 +1,112 @@
-.avonni-avatar {
+.avonni-avatar-group__avatar {
     display: inline-block;
     position: relative;
-    vertical-align: top;
-    background: transparent;
-    padding: 0px;
     transition: transform 0.1s ease-out 0s;
-    border: 1px solid rgb(255, 255, 255);
-    line-height: 0;
-    border-radius: 50%;
-    background: #34becd;
-    overflow: hidden;
-    color: rgb(255, 255, 255);
+    --avonni-c-avatar-color-border: #fff;
+    --avonni-c-avatar-sizing-border: 1px;
     cursor: pointer;
 }
 
-.avonni-avatar-x-small {
-    width: 1.25rem;
-    height: 1.25rem;
-    min-width: 1.25rem;
-    min-height: 1.25rem;
-    font-size: 6px;
+.avonni-avatar-group_x-large {
+    width: 4.5rem;
+    height: 4.5rem;
+}
+.avonni-avatar-group_x-large .slds-avatar-grouped__primary {
+    width: 58px;
+    height: 58px;
+}
+.avonni-avatar-group_x-large .slds-avatar-grouped__secondary {
+    width: 35px;
+    height: 35px;
+}
+.avonni-avatar-group_xx-large {
+    width: 5.5rem;
+    height: 5.5rem;
+}
+.avonni-avatar-group_xx-large .slds-avatar-grouped__primary {
+    width: 72px;
+    height: 72px;
+}
+.avonni-avatar-group_xx-large .slds-avatar-grouped__secondary {
+    width: 43px;
+    height: 43px;
 }
 
-.avonni-avatar-small {
-    width: 1.5rem;
-    height: 1.5rem;
-    min-width: 1.5rem;
-    min-height: 1.5rem;
-    font-size: 7.5px;
-}
-
-.avonni-avatar-medium {
-    width: 2rem;
-    height: 2rem;
-    min-width: 2rem;
-    min-height: 2rem;
-    font-size: 10px;
-}
-
-.avonni-avatar-large {
-    width: 3rem;
-    height: 3rem;
-    min-width: 3rem;
-    min-height: 3rem;
-    font-size: 14px;
-}
-
-.avonni-avatar-in-line.avonni-avatar-x-small {
+.avonni-avatar-group_in-line.avonni-avatar-x-small {
     margin-left: -4px;
 }
 
-.avonni-avatar-in-line.avonni-avatar-small {
+.avonni-avatar-group_in-line.avonni-avatar-small {
     margin-left: -6px;
 }
 
-.avonni-avatar-in-line.avonni-avatar-medium {
+.avonni-avatar-group_in-line.avonni-avatar-medium {
     margin-left: -8px;
 }
 
-.avonni-avatar-in-line.avonni-avatar-large {
+.avonni-avatar-group_in-line.avonni-avatar-large {
     margin-left: -10px;
 }
 
-.avonni-avatar-in-line:first-child:not(.avonni-avatar-plus) {
+.avonni-avatar-group_in-line.avonni-avatar-x-large {
+    margin-left: -12px;
+}
+
+.avonni-avatar-group_in-line.avonni-avatar-xx-large {
+    margin-left: -14px;
+}
+
+.avonni-avatar-group__avatar-container:first-child:not(.avonni-avatar-group__plus) {
     margin-left: 0px;
 }
 
-.avonni-hidden-avatar-container {
+/* List layouts (visible or in hidden dropdown) --- */
+.avonni-avatar-group__avatar-container.slds-show .avonni-avatar-group__avatar {
+    display: block;
+}
+.avonni-avatar-group__avatar-container.slds-show,
+.avonni-avatar-group__hidden-avatar-container {
+    padding: 0.5rem 0.75rem;
+}
+.avonni-avatar-group__avatar-container.slds-show:hover,
+.avonni-avatar-group__hidden-avatar-container:hover {
+    background-color: rgb(240, 240, 240);
+}
+.avonni-avatar-group__hidden-avatar-container {
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 0.5rem 0.75rem;
 }
-
-.avonni-hidden-avatar-container p {
+.avonni-avatar-group__hidden-avatar-container p {
     padding-left: 0.5rem;
     white-space: nowrap;
     cursor: pointer;
 }
-
-.avonni-hidden-avatar-container:hover {
-    background-color: rgb(240, 240, 240);
-}
-
 .slds-dropdown {
     overflow-y: auto;
     max-height: 200px;
 }
+.avonni-avatar-group__list-button + .slds-dropdown {
+    margin-left: 0.75rem;
+}
+/* --- */
 
+/* Outline --- */
 .slds-avatar:focus,
-.avonni-avatar:focus {
+.avonni-avatar-group__avatar:focus,
+.slds-avatar-grouped:focus {
     outline: none;
     box-shadow: rgb(53, 125, 219) 0 0 0 2px !important;
 }
+.avonni-avatar-group__avatar .slds-avatar-grouped {
+    border-radius: var(--lwc-borderRadiusMedium, 0.3rem);
+}
+.avonni-avatar-group_circle:not(.slds-show) .avonni-avatar-group__avatar,
+.avonni-avatar-group_circle .slds-avatar-grouped {
+    border-radius: var(--lwc-BorderRadiusCircle, 50%);
+}
+/* --- */
 
-.slds-avatar,
-.slds-avatar__initials {
-    cursor: pointer;
+.avonni-avatar-group__plus {
+    color: #fff;
 }

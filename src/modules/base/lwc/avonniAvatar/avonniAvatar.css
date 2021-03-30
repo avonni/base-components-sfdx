@@ -7,6 +7,12 @@
     border-color: var(--avonni-c-avatar-color-border, transparent);
     border-width: var(--avonni-c-avatar-sizing-border, 0);
 }
+/* If the avatar is in a group, the cursor changes for a pointer */
+:host(.avonni-avatar-group__avatar) .slds-avatar,
+:host(.avonni-avatar-group__avatar) .slds-avatar__initials {
+    cursor: pointer;
+}
+
 /**
 * Size
 */
@@ -41,6 +47,12 @@
     height: 100%;
     width: 100%;
     border-radius: 0;
+}
+/* If the avatar is in a group, the size is set by the parent */
+:host(.slds-avatar-grouped) .avonni-avatar,
+:host(.slds-avatar-grouped) .slds-avatar {
+    width: 100%;
+    height: 100%;
 }
 /**
 * Positionning

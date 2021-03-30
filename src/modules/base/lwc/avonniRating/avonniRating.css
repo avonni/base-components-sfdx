@@ -46,3 +46,16 @@ button {
 .avonni-rating-container .rating {
     padding-left: 1rem;
 }
+
+.slds-form-element_stacked .slds-form-element {
+    padding-left: 0.5rem;
+}
+
+.avonni-label-inline {
+    display: flex;
+    align-items: center;
+}
+
+.avonni-label-inline lightning-helptext {
+    padding-right: 0.25rem;
+}

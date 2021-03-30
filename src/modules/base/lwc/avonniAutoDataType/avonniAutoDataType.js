@@ -36,7 +36,10 @@ export default class AvonniAutoDataType extends LightningElement {
 
     get value() {
         if (this.isBoolean) {
-            return this.card[this.fieldName] === 'true' || this.card[this.fieldName];
+            return (
+                this.card[this.fieldName] === 'true' ||
+                this.card[this.fieldName]
+            );
         }
 
         return this.card[this.fieldName];

@@ -8,6 +8,15 @@
     background: #dddbda;
 }
 
+.avonni-progress-ring-with-title-top {
+    top: 35px;
+}
+
+.avonni-progress-title-position-top {
+    position: absolute;
+    width: 100%;
+}
+
 .avonni-progress-x-small {
     height: 26px;
     width: 26px;
@@ -41,6 +50,7 @@
 .avonni-progress-content {
     position: absolute;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: rgb(255, 255, 255);
@@ -91,22 +101,200 @@
     font-size: 30px;
 }
 
-.avonni-progress-label-x-small {
+.avonni-progress-title-x-small {
     font-size: 6px;
 }
 
-.avonni-progress-label-small {
+.avonni-progress-title-top-x-small {
+    font-size: 6px;
+    top: -12px;
+}
+
+.avonni-progress-title-small {
     font-size: 10px;
 }
 
-.avonni-progress-label-medium {
+.avonni-progress-title-top-small {
+    font-size: 10px;
+    top: -21px;
+}
+
+.avonni-progress-title-medium {
     font-size: 19px;
 }
 
-.avonni-progress-label-large {
+.avonni-progress-title-top-medium {
+    font-size: 19px;
+    top: -39px;
+}
+
+.avonni-progress-title-large {
     font-size: 26px;
 }
 
-.avonni-progress-label-x-large {
+.avonni-progress-title-top-large {
+    font-size: 26px;
+    top: -48px;
+}
+
+.avonni-progress-title-x-large {
     font-size: 30px;
+}
+
+.avonni-progress-title-top-x-large {
+    font-size: 30px;
+    top: -52px;
+}
+
+.avonni-progress-thickness-x-small {
+    left: 3px;
+    bottom: 3px;
+    top: 3px;
+    right: 3px;
+}
+
+.avonni-progress-thickness-x-small-size-x-small {
+    left: 1px;
+    bottom: 1px;
+    top: 1px;
+    right: 1px;
+}
+
+.avonni-progress-thickness-x-small-size-small {
+    left: 2px;
+    bottom: 2px;
+    top: 2px;
+    right: 2px;
+}
+
+.avonni-progress-thickness-small {
+    left: 6px;
+    bottom: 6px;
+    top: 6px;
+    right: 6px;
+}
+
+.avonni-progress-thickness-small-size-x-small {
+    left: 2px;
+    bottom: 2px;
+    top: 2px;
+    right: 2px;
+}
+
+.avonni-progress-thickness-small-size-small {
+    left: 4px;
+    bottom: 4px;
+    top: 4px;
+    right: 4px;
+}
+
+.avonni-progress-thickness-small-size-large {
+    left: 8px;
+    bottom: 8px;
+    top: 8px;
+    right: 8px;
+}
+
+.avonni-progress-thickness-small-size-x-large {
+    left: 10px;
+    bottom: 10px;
+    top: 10px;
+    right: 10px;
+}
+
+.avonni-progress-thickness-large {
+    left: 12px;
+    bottom: 12px;
+    top: 12px;
+    right: 12px;
+}
+
+.avonni-progress-thickness-large-size-x-small {
+    left: 5px;
+    bottom: 5px;
+    top: 5px;
+    right: 5px;
+    font-size: 5px;
+}
+
+.avonni-progress-thickness-large-size-small {
+    left: 7px;
+    bottom: 7px;
+    top: 7px;
+    right: 7px;
+}
+
+.avonni-progress-thickness-large-size-large {
+    left: 16px;
+    bottom: 16px;
+    top: 16px;
+    right: 16px;
+}
+
+.avonni-progress-thickness-large-size-x-large {
+    left: 20px;
+    bottom: 20px;
+    top: 20px;
+    right: 20px;
+}
+
+.avonni-progress-thickness-x-large {
+    left: 15px;
+    bottom: 15px;
+    top: 15px;
+    right: 15px;
+}
+
+.avonni-progress-thickness-x-large-size-x-small {
+    left: 6px;
+    bottom: 6px;
+    top: 6px;
+    right: 6px;
+    font-size: 4px;
+}
+
+.avonni-progress-thickness-x-large-size-small {
+    left: 8px;
+    bottom: 8px;
+    top: 8px;
+    right: 8px;
+}
+
+.avonni-progress-thickness-x-large-size-large {
+    left: 19px;
+    bottom: 19px;
+    top: 19px;
+    right: 19px;
+}
+
+.avonni-progress-thickness-x-large-size-x-large {
+    left: 23px;
+    bottom: 23px;
+    top: 23px;
+    right: 23px;
+}
+
+.avonni-progress-label-style {
+    font-weight: normal;
+    color: #706e6b;
+}
+
+.avonni-progress-label-style-x-small {
+    font-size: 3px;
+}
+
+.avonni-progress-label-style-small {
+    font-size: 5px;
+}
+
+.avonni-progress-label-style-medium {
+    font-size: 12px;
+}
+
+.avonni-progress-label-style-large {
+    font-size: 14px;
+}
+
+.avonni-progress-label-style-x-large {
+    font-size: 16px;
 }

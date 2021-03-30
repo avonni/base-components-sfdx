@@ -5,11 +5,7 @@ import {
     normalizeString
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
-import {
-    FieldConstraintApi,
-    normalizeVariant,
-    VARIANT
-} from 'c/inputUtils';
+import { FieldConstraintApi, normalizeVariant, VARIANT } from 'c/inputUtils';
 
 const i18n = {
     required: 'required'
@@ -168,6 +164,13 @@ export default class AvonniInputToggle extends LightningElement {
         return i18n;
     }
 
+    get computedWrapperClass() {
+        return classSet('slds-checkbox_toggle avonni-input-toggle__label').add({
+            'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
+            'slds-grid': this.variant === VARIANT.LABEL_INLINE
+        });
+    }
+
     get computedFauxToggleClass() {
         return classSet('slds-checkbox_faux').add({
             'avonni-input-toggle__faux_x-small': this.size === 'x-small',
@@ -197,9 +200,6 @@ export default class AvonniInputToggle extends LightningElement {
 
     updateClassList() {
         classListMutation(this.classList, {
-            'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
-            'slds-form-element_horizontal':
-                this.variant === VARIANT.LABEL_INLINE,
             'slds-has-error': !this.valid
         });
     }
