@@ -91,33 +91,33 @@
             </template>
         </div>
         <template if:true={isRecordHomeVariant}>
-            <template if:false={itemsIsEmpty}>
+            <template if:false={fieldsIsEmpty}>
                 <div
                     class="slds-page-header__row slds-page-header__row_gutters"
                 >
                     <div class="slds-page-header__col-details">
                         <ul class="slds-page-header__detail-row">
-                            <template for:each={items} for:item="item">
+                            <template for:each={fields} for:item="field">
                                 <li
                                     class="slds-page-header__detail-block"
-                                    key={item.label}
+                                    key={field.label}
                                 >
                                     <div
                                         class="slds-text-title slds-truncate"
-                                        title={item.label}
+                                        title={field.label}
                                     >
-                                        {item.label}
+                                        {field.label}
                                     </div>
                                     <div
                                         class="slds-truncate"
-                                        title={item.value}
+                                        title={field.value}
                                     >
-                                        <c-avonni-primitive-page-header-item
-                                            item={item}
-                                            label={item.label}
-                                            value={item.value}
-                                            type={item.type}
-                                        ></c-avonni-primitive-page-header-item>
+                                        <c-avonni-primitive-page-header-field
+                                            field={field}
+                                            label={field.label}
+                                            value={field.value}
+                                            type={field.type}
+                                        ></c-avonni-primitive-page-header-field>
                                     </div>
                                 </li>
                             </template>
@@ -125,7 +125,7 @@
                     </div>
                 </div>
             </template>
-            <template if:true={itemsIsEmpty}>
+            <template if:true={fieldsIsEmpty}>
                 <slot name="details"></slot>
             </template>
         </template>

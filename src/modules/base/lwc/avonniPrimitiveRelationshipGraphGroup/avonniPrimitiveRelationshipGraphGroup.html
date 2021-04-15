@@ -1,0 +1,126 @@
+<template>
+    <div class={wrapperClass} tabindex="-1">
+        <c-avonni-summary-detail
+            full-width="true"
+            remove-body-indentation="true"
+            shrink-icon-name={shrinkIconName}
+            expand-icon-name={expandIconName}
+            ontoggle={handleToggle}
+            closed={closed}
+            hide-icon={isEmpty}
+        >
+            <c-avonni-media-object slot="title">
+                <template if:true={hasAvatar}>
+                    <c-avonni-avatar
+                        slot="figure"
+                        alternative-text={label}
+                        fallback-icon-name={avatarFallbackIconName}
+                        src={avatarSrc}
+                        hide-avatar-details="true"
+                        size="small"
+                    ></c-avonni-avatar>
+                </template>
+                <h2 class="slds-truncate group-title">
+                    <a if:true={href} href={href}>{title}</a>
+                    <span if:false={href}>{title}</span>
+                </h2>
+                <!-- Top actions -->
+                <div slot="figure-inverse" if:true={topActions}>
+                    <template if:true={hasMoreThanOneAction}>
+                        <lightning-button-menu
+                            alternative-text="Show menu"
+                            icon-size="small"
+                            menu-alignment="right"
+                            variant={buttonMenuVariant}
+                        >
+                            <template for:each={actions} for:item="action">
+                                <lightning-menu-item
+                                    key={action.name}
+                                    value={action.name}
+                                    label={action.label}
+                                    onclick={handleActionClick}
+                                    disabled={action.disabled}
+                                    prefix-icon-name={action.iconName}
+                                ></lightning-menu-item>
+                            </template>
+                        </lightning-button-menu>
+                    </template>
+                    <template if:false={hasMoreThanOneAction}>
+                        <template for:each={actions} for:item="action">
+                            <div
+                                key={action.name}
+                                class="slds-m-bottom_xx-small"
+                            >
+                                <button
+                                    class={actionButtonClass}
+                                    disabled={action.disabled}
+                                    onclick={handleActionClick}
+                                    value={action.name}
+                                >
+                                    <lightning-icon
+                                        if:true={action.iconName}
+                                        icon-name={action.iconName}
+                                        class="slds-current-color slds-m-right_x-small"
+                                        size="xx-small"
+                                    ></lightning-icon>
+                                    {action.label}
+                                </button>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+            </c-avonni-media-object>
+
+            <!-- Items -->
+            <template if:true={items}>
+                <template for:each={items} for:item="item">
+                    <c-avonni-primitive-relationship-graph-item
+                        onselect={handleSelect}
+                        onactionclick={dispatchActionClickEvent}
+                        key={item.name}
+                        label={item.label}
+                        name={item.name}
+                        avatar-src={item.avatarSrc}
+                        avatar-fallback-icon-name={item.avatarFallbackIconName}
+                        href={item.href}
+                        content-data={item.data}
+                        groups={item.groups}
+                        hide-default-actions={item.hideDefaultActions}
+                        custom-actions={item.actions}
+                        selected={item.selected}
+                        active-selection={item.activeSelection}
+                        theme={itemTheme}
+                        default-actions={itemActions}
+                        variant={variant}
+                    ></c-avonni-primitive-relationship-graph-item>
+                </template>
+            </template>
+
+            <!-- Bottom actions -->
+            <template if:true={actions}>
+                <template if:false={topActions}>
+                    <template for:each={actions} for:item="action">
+                        <div key={action.name} class="slds-m-bottom_xx-small">
+                            <button
+                                name={action.name}
+                                class={actionButtonClass}
+                                disabled={action.disabled}
+                                onclick={handleActionClick}
+                                value={action.name}
+                                variant={buttonVariant}
+                            >
+                                <lightning-icon
+                                    if:true={action.iconName}
+                                    icon-name={action.iconName}
+                                    class="slds-current-color slds-m-right_x-small"
+                                    size="xx-small"
+                                ></lightning-icon>
+                                {action.label}
+                            </button>
+                        </div>
+                    </template>
+                </template>
+            </template>
+        </c-avonni-summary-detail>
+    </div>
+</template>

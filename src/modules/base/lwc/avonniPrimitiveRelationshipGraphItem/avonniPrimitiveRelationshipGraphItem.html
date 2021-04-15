@@ -1,0 +1,64 @@
+<template>
+    <div
+        class={wrapperClass}
+        onclick={handleClick}
+        onkeyup={handleClick}
+        tabindex="0"
+        role="button"
+        aria-expanded={ariaExpanded}
+    >
+        <!-- Avatar / Title / Actions -->
+        <c-avonni-media-object vertical-align="center">
+            <template if:true={hasAvatar}>
+                <c-avonni-avatar
+                    slot="figure"
+                    alternative-text={label}
+                    fallback-icon-name={avatarFallbackIconName}
+                    src={avatarSrc}
+                    hide-avatar-details="true"
+                    size="small"
+                ></c-avonni-avatar>
+            </template>
+            <div class="slds-text-heading_small slds-truncate">
+                <a if:true={href} href={href}>{label}</a>
+                <span if:false={href}>{label}</span>
+            </div>
+            <div slot="figure-inverse" if:true={actions}>
+                <lightning-button-menu
+                    alternative-text="Show menu"
+                    icon-size="small"
+                    menu-alignment="right"
+                    variant={buttonMenuVariant}
+                >
+                    <template for:each={actions} for:item="action">
+                        <lightning-menu-item
+                            key={action.name}
+                            value={action.name}
+                            label={action.label}
+                            onclick={handleActionClick}
+                            disabled={action.disabled}
+                            prefix-icon-name={action.iconName}
+                            class="slds-text-color_default"
+                        ></lightning-menu-item>
+                    </template>
+                </lightning-button-menu>
+            </div>
+        </c-avonni-media-object>
+        <!-- Data -->
+        <div class="slds-m-top_small" if:true={contentData}>
+            <dl class="slds-dl_horizontal">
+                <template for:each={contentData} for:item="data">
+                    <dt
+                        key={generateKey}
+                        class="slds-dl_horizontal__label slds-truncate"
+                    >
+                        {data.label}
+                    </dt>
+                    <dd key={generateKey} class="slds-dl_horizontal__detail">
+                        {data.value}
+                    </dd>
+                </template>
+            </dl>
+        </div>
+    </div>
+</template>

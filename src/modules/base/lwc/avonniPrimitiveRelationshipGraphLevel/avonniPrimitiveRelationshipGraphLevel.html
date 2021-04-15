@@ -1,0 +1,62 @@
+<template>
+    <div class={wrapperClass}>
+        <!-- Current level -->
+        <div class={currentLevelWrapperClass}>
+            <!-- Nested div necessary to calculate the level height/width -->
+            <div class={currentLevelClass}>
+                <template iterator:group={groups}>
+                    <c-avonni-primitive-relationship-graph-group
+                        onselect={handleSelect}
+                        oncloseactivegroup={handleCloseActiveGroup}
+                        onactionclick={dispatchActionClickEvent}
+                        onheightchange={handleGroupHeightChange}
+                        key={group.value.name}
+                        label={group.value.label}
+                        name={group.value.name}
+                        avatar-src={group.value.avatarSrc}
+                        avatar-fallback-icon-name={group.value.avatarFallbackIconName}
+                        href={group.value.href}
+                        items={group.value.items}
+                        expanded={group.value.expanded}
+                        hide-default-actions={group.value.hideDefaultActions}
+                        custom-actions={group.value.actions}
+                        selected={group.value.selected}
+                        shrink-icon-name={shrinkIconName}
+                        expand-icon-name={expandIconName}
+                        active-child={activeGroups}
+                        variant={variant}
+                        default-actions={groupActions}
+                        actions-position={groupActionsPosition}
+                        theme={groupTheme}
+                        item-actions={itemActions}
+                        item-theme={itemTheme}
+                        hide-items-count={hideItemsCount}
+                        is-first-child={group.first}
+                        class="slds-is-relative"
+                    ></c-avonni-primitive-relationship-graph-group>
+                </template>
+            </div>
+        </div>
+        <!-- Vertical line -->
+        <div class={lineClass} if:true={selectedGroups}></div>
+        <!-- Selected level -->
+        <div class="slds-grid" if:true={selectedGroups}>
+            <c-avonni-primitive-relationship-graph-level
+                onselect={dispatchSelectEvent}
+                onactionclick={dispatchActionClickEvent}
+                onheightchange={handleGroupHeightChange}
+                groups={selectedGroups}
+                variant={variant}
+                shrink-icon-name={shrinkIconName}
+                expand-icon-name={expandIconName}
+                active-groups={containsActiveItem}
+                group-actions={groupActions}
+                group-actions-position={groupActionsPosition}
+                group-theme={groupTheme}
+                item-actions={itemActions}
+                item-theme={itemTheme}
+                hide-items-count={hideItemsCount}
+            ></c-avonni-primitive-relationship-graph-level>
+        </div>
+    </div>
+</template>

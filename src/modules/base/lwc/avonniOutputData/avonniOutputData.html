@@ -1,8 +1,8 @@
 <template>
     <div>
-        <span>{label}:</span>
-        <templtae if:true={isBoolean}>
-            <templtae if:true={value}>
+        <span if:true={label}>{label}:</span>
+        <template if:true={isBoolean}>
+            <template if:true={value}>
                 <span class="slds-checkbox">
                     <input
                         type="checkbox"
@@ -19,8 +19,8 @@
                         <span class="slds-checkbox_faux"></span>
                     </label>
                 </span>
-            </templtae>
-            <templtae if:false={value}>
+            </template>
+            <template if:false={value}>
                 <span class="slds-checkbox">
                     <input
                         type="checkbox"
@@ -33,9 +33,9 @@
                         <span class="slds-checkbox_faux"></span>
                     </label>
                 </span>
-            </templtae>
-        </templtae>
-        <templtae if:true={isCurrency}>
+            </template>
+        </template>
+        <template if:true={isCurrency}>
             <lightning-formatted-number
                 value={value}
                 format-style="currency"
@@ -47,8 +47,8 @@
                 minimum-significant-digits={typeAttributes.minimumSignificantDigits}
                 maximum-significant-digits={typeAttributes.maximumSignificantDigits}
             ></lightning-formatted-number>
-        </templtae>
-        <templtae if:true={isDate}>
+        </template>
+        <template if:true={isDate}>
             <lightning-formatted-date-time
                 value={value}
                 day={typeAttributes.day}
@@ -63,27 +63,27 @@
                 weekday={typeAttributes.weekday}
                 year={typeAttributes.year}
             ></lightning-formatted-date-time>
-        </templtae>
-        <templtae if:true={isDateLocal}>
+        </template>
+        <template if:true={isDateLocal}>
             <lightning-formatted-date-time
                 value={value}
                 day={typeAttributes.day}
                 month={typeAttributes.month}
                 year={typeAttributes.year}
             ></lightning-formatted-date-time>
-        </templtae>
-        <templtae if:true={isEmail}>
+        </template>
+        <template if:true={isEmail}>
             <lightning-formatted-email
                 value={value}
             ></lightning-formatted-email>
-        </templtae>
-        <templtae if:true={isLocation}>
+        </template>
+        <template if:true={isLocation}>
             <lightning-formatted-location
                 latitude={typeAttributes.latitude}
                 longitude={typeAttributes.longitude}
             ></lightning-formatted-location>
-        </templtae>
-        <templtae if:true={isNumber}>
+        </template>
+        <template if:true={isNumber}>
             <lightning-formatted-number
                 value={value}
                 minimum-integer-digits={typeAttributes.minimumIntegerDigits}
@@ -92,8 +92,8 @@
                 minimum-significant-digits={typeAttributes.minimumSignificantDigits}
                 maximum-significant-digits={typeAttributes.maximumSignificantDigits}
             ></lightning-formatted-number>
-        </templtae>
-        <templtae if:true={isPercent}>
+        </template>
+        <template if:true={isPercent}>
             <lightning-formatted-number
                 value={value}
                 format-style="percent"
@@ -103,24 +103,24 @@
                 minimum-significant-digits={typeAttributes.minimumSignificantDigits}
                 maximum-significant-digits={typeAttributes.maximumSignificantDigits}
             ></lightning-formatted-number>
-        </templtae>
-        <templtae if:true={isPhone}>
+        </template>
+        <template if:true={isPhone}>
             <lightning-formatted-phone
                 value={value}
             ></lightning-formatted-phone>
-        </templtae>
-        <templtae if:true={isText}>
+        </template>
+        <template if:true={isText}>
             <lightning-formatted-text
                 value={value}
                 linkify={typeAttributes.linkify}
             ></lightning-formatted-text>
-        </templtae>
-        <templtae if:true={isUrl}>
+        </template>
+        <template if:true={isUrl}>
             <lightning-formatted-url
                 value={value}
                 tooltip={typeAttributes.tooltip}
                 target={typeAttributes.target}
             ></lightning-formatted-url>
-        </templtae>
+        </template>
     </div>
 </template>

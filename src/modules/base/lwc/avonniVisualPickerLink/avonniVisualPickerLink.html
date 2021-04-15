@@ -6,22 +6,27 @@
                 class="slds-media slds-box slds-box_link"
                 onclick={handleClick}
             >
-                <div if:true={leftPosition} class={computedIconContainerClass}>
-                    <div class="slds-welcome-mat__tile-figure">
-                        <div class="slds-welcome-mat__tile-icon-container">
-                            <lightning-icon
-                                icon-name={iconName}
-                            ></lightning-icon>
-                            <lightning-icon
-                                icon-name="utility:check"
-                                alternative-text="Completed"
-                                variant="inverse"
-                                size="xx-small"
-                                class="slds-icon-action-check"
-                            ></lightning-icon>
+                <template if:true={iconName}>
+                    <div
+                        if:true={leftPosition}
+                        class={computedIconContainerClass}
+                    >
+                        <div class="slds-welcome-mat__tile-figure">
+                            <div class="slds-welcome-mat__tile-icon-container">
+                                <lightning-icon
+                                    icon-name={iconName}
+                                ></lightning-icon>
+                                <lightning-icon
+                                    icon-name="utility:check"
+                                    alternative-text="Completed"
+                                    variant="inverse"
+                                    size="xx-small"
+                                    class="slds-icon-action-check"
+                                ></lightning-icon>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
                 <div class="slds-media__body">
                     <div class={computedTileBodyClass}>
                         <template if:true={showTitle}>
@@ -41,22 +46,27 @@
                         </p>
                     </div>
                 </div>
-                <div if:false={leftPosition} class={computedIconContainerClass}>
-                    <div class="slds-welcome-mat__tile-figure">
-                        <div class="slds-welcome-mat__tile-icon-container">
-                            <lightning-icon
-                                icon-name={iconName}
-                            ></lightning-icon>
-                            <lightning-icon
-                                icon-name="utility:check"
-                                alternative-text="Completed"
-                                variant="inverse"
-                                size="xx-small"
-                                class="slds-icon-action-check"
-                            ></lightning-icon>
+                <template if:true={iconName}>
+                    <div
+                        if:false={leftPosition}
+                        class={computedIconContainerClass}
+                    >
+                        <div class="slds-welcome-mat__tile-figure">
+                            <div class="slds-welcome-mat__tile-icon-container">
+                                <lightning-icon
+                                    icon-name={iconName}
+                                ></lightning-icon>
+                                <lightning-icon
+                                    icon-name="utility:check"
+                                    alternative-text="Completed"
+                                    variant="inverse"
+                                    size="xx-small"
+                                    class="slds-icon-action-check"
+                                ></lightning-icon>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
             </a>
         </div>
     </div>

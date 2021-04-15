@@ -12,10 +12,7 @@
         <input
             id="avonni-input-toggle"
             accesskey={accessKey}
-            aria-controls={ariaControls}
-            aria-describedby={ariaDescribedBy}
             aria-label={ariaLabel}
-            aria-labelled-by={ariaLabelledBy}
             checked={checked}
             disabled={disabled}
             name={name}
@@ -26,7 +23,11 @@
             type="checkbox"
             value={value}
         />
-        <span class="slds-checkbox_faux_container" aria-live="assertive">
+        <span
+            class="slds-checkbox_faux_container"
+            aria-live="assertive"
+            data-toggle-description
+        >
             <span class={computedFauxToggleClass}></span>
             <span class="slds-checkbox_on">{messageToggleActive}</span>
             <span class="slds-checkbox_off">{messageToggleInactive}</span>
@@ -39,7 +40,7 @@
             data-help-message
             role="alert"
         >
-            {messageWhenValueMissing}
+            {helpMessage}
         </div>
     </template>
 </template>

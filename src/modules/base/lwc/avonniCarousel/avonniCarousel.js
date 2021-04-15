@@ -1,6 +1,10 @@
 import { LightningElement, api } from 'lwc';
 import { keyCodes } from 'c/utilsPrivate';
-import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
+import {
+    normalizeBoolean,
+    normalizeString,
+    normalizeArray
+} from 'c/utilsPrivate';
 
 const INDICATOR_ACTION = 'slds-carousel__indicator-action';
 const INDICATOR_ACTION_SHADED =
@@ -13,10 +17,18 @@ const TRUE_STRING = 'true';
 
 const VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
 
+const DEFAULT_ITEMS_PER_PANEL = 1;
+const DEFAULT_SCROLL_DURATION = 5;
+const DEFAULT_ASSISTIVE_TEXT_AUTOPLAY_BUTTON = 'Start / Stop auto-play';
+const DEFAULT_ASSISTIVE_TEXT_PREVIOUS_PANEL = 'Previous Panel';
+const DEFAULT_ASSISTIVE_TEXT_NEXT_PANEL = 'Next Panel';
+const DEFAULT_AUTOCROLL_PLAY_ICON = 'utility:play';
+const DEFAULT_AUTOCROLL_PAUSE_ICON = 'utility:pause';
+
 const i18n = {
-    nextPanel: 'Next Panel',
-    previousPanel: 'Previous Panel',
-    autoplayButton: 'Start / Stop auto-play'
+    nextPanel: DEFAULT_ASSISTIVE_TEXT_NEXT_PANEL,
+    previousPanel: DEFAULT_ASSISTIVE_TEXT_PREVIOUS_PANEL,
+    autoplayButton: DEFAULT_ASSISTIVE_TEXT_AUTOPLAY_BUTTON
 };
 
 export default class AvonniCarousel extends LightningElement {
@@ -25,7 +37,7 @@ export default class AvonniCarousel extends LightningElement {
     @api disableAutoScroll;
     @api hidePreviousNextPanelNavigation;
     @api isInfinite;
-    @api scrollDuration = 5;
+    @api scrollDuration = DEFAULT_SCROLL_DURATION;
 
     _assistiveText = {
         nextPanel: i18n.nextPanel,
@@ -33,13 +45,13 @@ export default class AvonniCarousel extends LightningElement {
         autoplayButton: i18n.autoplayButton
     };
     _carouselItems = [];
-    _itemsPerPanel = 1;
+    _itemsPerPanel = DEFAULT_ITEMS_PER_PANEL;
     _initialRender = true;
-    _indicatorVariant = 'base';
+    _indicatorVariant = VARIANTS.default;
     _hideIndicator = false;
 
     activeIndexPanel;
-    autoScrollIcon = 'utility:play';
+    autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
     autoScrollTimeOut;
     autoScrollOn;
     panelItems = [];
@@ -71,12 +83,13 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     set assistiveText(value) {
+        const text = typeof value === 'object' && value !== null ? value : {};
         this._assistiveText = {
             autoplayButton:
-                value.autoplayButton || this._assistiveText.autoplayButton,
-            nextPanel: value.nextPanel || this._assistiveText.nextPanel,
+                text.autoplayButton || DEFAULT_ASSISTIVE_TEXT_AUTOPLAY_BUTTON,
+            nextPanel: text.nextPanel || DEFAULT_ASSISTIVE_TEXT_NEXT_PANEL,
             previousPanel:
-                value.previousPanel || this._assistiveText.previousPanel
+                text.previousPanel || DEFAULT_ASSISTIVE_TEXT_PREVIOUS_PANEL
         };
     }
 
@@ -85,7 +98,8 @@ export default class AvonniCarousel extends LightningElement {
         return this._carouselItems;
     }
 
-    set items(allItems) {
+    set items(value) {
+        const allItems = normalizeArray(value);
         allItems.forEach((item) => {
             this._carouselItems.push({
                 key: item.id,
@@ -108,7 +122,9 @@ export default class AvonniCarousel extends LightningElement {
         return this._itemsPerPanel;
     }
 
-    set itemsPerPanel(number) {
+    set itemsPerPanel(value) {
+        const number =
+            typeof value === 'number' ? value : DEFAULT_ITEMS_PER_PANEL;
         this._itemsPerPanel = parseInt(number, 10);
     }
 
@@ -233,7 +249,7 @@ export default class AvonniCarousel extends LightningElement {
         );
 
         this.autoScrollOn = true;
-        this.autoScrollIcon = 'utility:pause';
+        this.autoScrollIcon = DEFAULT_AUTOCROLL_PAUSE_ICON;
     }
 
     startAutoScroll() {
@@ -244,7 +260,7 @@ export default class AvonniCarousel extends LightningElement {
     cancelAutoScrollTimeOut() {
         clearTimeout(this.autoScrollTimeOut);
         this.autoScrollOn = false;
-        this.autoScrollIcon = 'utility:play';
+        this.autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
     }
 
     handleItemClicked(event) {
@@ -312,6 +328,8 @@ export default class AvonniCarousel extends LightningElement {
         const activePaginationItem = this.paginationItems[panelIndex];
         const activePanelItem = this.panelItems[panelIndex];
 
+        if (!activePaginationItem || !activePanelItem) return;
+
         activePanelItem.ariaHidden = FALSE_STRING;
         activePaginationItem.tabIndex = '0';
         activePaginationItem.ariaHidden = TRUE_STRING;
@@ -332,6 +350,8 @@ export default class AvonniCarousel extends LightningElement {
             this.activeIndexPanel
         ];
         const activePanelItem = this.panelItems[this.activeIndexPanel];
+
+        if (!activePaginationItem || !activePanelItem) return;
 
         activePanelItem.ariaHidden = TRUE_STRING;
         activePaginationItem.tabIndex = '-1';

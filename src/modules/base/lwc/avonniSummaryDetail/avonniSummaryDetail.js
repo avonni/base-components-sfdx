@@ -13,54 +13,68 @@ export default class AvonniSummaryDetail extends LightningElement {
     _expandIconName = 'utility:chevronright';
     _fullWidth;
     _closed;
+    _hideIcon;
 
     connectedCallback() {
-        if (this.fullWidth) {
-            this.titleClass = 'slds-col';
-            this.bodyClass = 'slds-col';
-        }
+        this.titleClass = classSet('avonni-min-width_0').add({
+            'slds-col': this.fullWidth
+        });
 
-        this.contentClass = classSet('slds-summary-detail__content')
-            .add({
-                'avonni-summary-detail__content_no-indent': this
-                    .removeBodyIndentation
-            })
-            .toString();
+        this.bodyClass = classSet('avonni-min-width_0').add({
+            'slds-col': this.fullWidth
+        });
+
+        this.contentClass = classSet('slds-summary-detail__content').add({
+            'content_no-indent': this.removeBodyIndentation && !this.hideIcon
+        });
     }
 
-    @api get shrinkIconName() {
+    @api
+    get shrinkIconName() {
         return this._shrinkIconName;
     }
     set shrinkIconName(name) {
-        this._shrinkIconName = name;
+        this._shrinkIconName = (typeof name === 'string' && name.trim()) || '';
     }
 
-    @api get expandIconName() {
+    @api
+    get expandIconName() {
         return this._expandIconName;
     }
     set expandIconName(name) {
-        this._expandIconName = name;
+        this._expandIconName = (typeof name === 'string' && name.trim()) || '';
     }
 
-    @api get fullWidth() {
+    @api
+    get fullWidth() {
         return this._fullWidth;
     }
     set fullWidth(boolean) {
         this._fullWidth = normalizeBoolean(boolean);
     }
 
-    @api get removeBodyIndentation() {
+    @api
+    get removeBodyIndentation() {
         return this._removeBodyIndentation;
     }
     set removeBodyIndentation(boolean) {
         this._removeBodyIndentation = normalizeBoolean(boolean);
     }
 
-    @api get closed() {
+    @api
+    get closed() {
         return this._closed;
     }
     set closed(value) {
         this._closed = normalizeBoolean(value);
+    }
+
+    @api
+    get hideIcon() {
+        return this._hideIcon;
+    }
+    set hideIcon(value) {
+        this._hideIcon = normalizeBoolean(value);
     }
 
     get sectionIsOpen() {
@@ -81,5 +95,13 @@ export default class AvonniSummaryDetail extends LightningElement {
 
     changeSectionStatus() {
         this._closed = !this._closed;
+
+        this.dispatchEvent(
+            new CustomEvent('toggle', {
+                detail: {
+                    closed: this._closed
+                }
+            })
+        );
     }
 }

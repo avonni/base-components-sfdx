@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeString, normalizeArray } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
 const TYPES = { valid: ['base', 'arrow'], default: 'base' };
@@ -57,7 +57,7 @@ export default class AvonniProgressIndicator extends LightningElement {
     }
 
     set steps(value) {
-        this._steps = Array.isArray(value) ? value : [];
+        this._steps = normalizeArray(value);
     }
 
     get computedOuterClass() {

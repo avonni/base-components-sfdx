@@ -41,8 +41,14 @@ const TEXT_POSITION = {
     default: 'right'
 };
 
+const DEFAULT_ALTERNATIVE_TEXT = 'Avatar';
+const DEFAULT_ENTITY_TITLE = 'Entity';
+const DEFAULT_PRESENCE_TITLE = 'Presence';
+const DEFAULT_STATUS_TITLE = 'Status';
+
 export default class AvonniAvatar extends LightningElement {
     @api entityInitials;
+    @api entityIconName;
     @api fallbackIconName;
     @api initials;
     @api primaryText;
@@ -51,29 +57,26 @@ export default class AvonniAvatar extends LightningElement {
 
     avatarClass;
     entityClass;
-    _entityIconCategory;
-    _entityIconName;
     presenceClass;
     statusComputed;
     wrapperClass;
     mediaObjectClass;
     fallbackIconClass;
 
-    _alternativeText = 'Avatar';
-    _entityIconFullName;
+    _alternativeText = DEFAULT_ALTERNATIVE_TEXT;
     _entityPosition = POSITION.entityDefault;
     _entitySrc;
-    _entityTitle = 'Entity';
+    _entityTitle = DEFAULT_ENTITY_TITLE;
     _entityVariant = VARIANT.default;
     _hideAvatarDetails;
     _presence = PRESENCE.default;
     _presencePosition = POSITION.presenceDefault;
-    _presenceTitle = 'Presence';
+    _presenceTitle = DEFAULT_PRESENCE_TITLE;
     _size = SIZE.default;
     _src = '';
     _status = STATUS.default;
     _statusPosition = POSITION.statusDefault;
-    _statusTitle = 'Status';
+    _statusTitle = DEFAULT_STATUS_TITLE;
     _variant = VARIANT.default;
     _textPosition = TEXT_POSITION.default;
 
@@ -111,7 +114,8 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     set alternativeText(value) {
-        this._alternativeText = value || this._alternativeText;
+        this._alternativeText =
+            typeof value === 'string' ? value.trim() : DEFAULT_ALTERNATIVE_TEXT;
     }
 
     @api
@@ -184,7 +188,8 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     set statusTitle(value) {
-        this._statusTitle = value || this._statusTitle;
+        this._statusTitle =
+            typeof value === 'string' ? value.trim() : DEFAULT_STATUS_TITLE;
         this._computeStatus();
     }
 
@@ -237,24 +242,13 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     set presenceTitle(value) {
-        this._presenceTitle = value || this._presenceTitle;
+        this._presenceTitle =
+            typeof value === 'string' ? value.trim() : DEFAULT_PRESENCE_TITLE;
     }
 
     /**
      * Entity
      */
-    @api
-    get entityIconName() {
-        return this._entityIconFullName;
-    }
-
-    set entityIconName(value) {
-        this._entityIconFullName = value;
-        if (value) {
-            this._entityIconCategory = value.split(':')[0];
-            this._entityIconName = value.split(':')[1];
-        }
-    }
 
     @api
     get entityPosition() {
@@ -284,7 +278,8 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     set entityTitle(value) {
-        this._entityTitle = value || this._entityTitle;
+        this._entityTitle =
+            (typeof value === 'string' && value.trim()) || DEFAULT_ENTITY_TITLE;
     }
 
     @api
@@ -311,6 +306,10 @@ export default class AvonniAvatar extends LightningElement {
 
     get groupedAvatar() {
         return this.template.host.classList.contains('slds-avatar-grouped');
+    }
+
+    get showAvatar() {
+        return this.src || this.initials || this.fallbackIconName;
     }
 
     get showInitials() {
@@ -445,15 +444,15 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     _computeEntityClasses() {
-        const {
-            entityVariant,
-            entityPosition,
-            _entityIconCategory,
-            _entityIconName
-        } = this;
+        const { entityVariant, entityPosition, entityIconName } = this;
+
+        const iconFullName =
+            typeof entityIconName === 'string' ? entityIconName.trim() : ':';
+        const iconCategory = iconFullName.split(':')[0];
+        const iconName = iconFullName.split(':')[1];
 
         this.entityClass = classSet(
-            `slds-avatar slds-current-color avonni-avatar__entity slds-icon-${_entityIconCategory}-${_entityIconName}`
+            `slds-avatar slds-current-color avonni-avatar__entity slds-icon-${iconCategory}-${iconName}`
         )
             .add({
                 'avonni-avatar_top-right': entityPosition === 'top-right',

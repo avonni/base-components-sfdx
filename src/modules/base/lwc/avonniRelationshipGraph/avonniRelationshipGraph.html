@@ -1,0 +1,62 @@
+<template>
+    <!-- Root avatar / title -->
+    <div class={headerClass}>
+        <c-avonni-media-object vertical-align="center" inline={inlineHeader}>
+            <c-avonni-avatar
+                if:true={hasAvatar}
+                slot="figure"
+                alternative-text={label}
+                fallback-icon-name={avatarFallbackIconName}
+                src={avatarSrc}
+                hide-avatar-details="true"
+            ></c-avonni-avatar>
+            <h1 class="slds-text-heading_small">
+                <a if:true={href} href={href}>{label}</a>
+                <span if:false={href}>{label}</span>
+            </h1>
+        </c-avonni-media-object>
+    </div>
+
+    <div if:true={actions} class={actionsClass}>
+        <template for:each={actions} for:item="action">
+            <div key={action.name}>
+                <button
+                    name={action.name}
+                    class={actionButtonClass}
+                    disabled={action.disabled}
+                    onclick={handleActionClick}
+                    value={action.name}
+                >
+                    <lightning-icon
+                        if:true={action.iconName}
+                        icon-name={action.iconName}
+                        class="slds-current-color slds-m-right_x-small"
+                        size="xx-small"
+                    ></lightning-icon>
+                    {action.label}
+                </button>
+            </div>
+        </template>
+    </div>
+
+    <div class={wrapperClass}>
+        <div class={lineClass}></div>
+
+        <!-- Levels -->
+        <c-avonni-primitive-relationship-graph-level
+            onselect={dispatchSelectEvent}
+            onactionclick={dispatchActionClickEvent}
+            onheightchange={handleLevelHeightChange}
+            groups={processedGroups}
+            variant={variant}
+            shrink-icon-name={shrinkIconName}
+            expand-icon-name={expandIconName}
+            group-actions={groupActions}
+            group-actions-position={groupActionsPosition}
+            group-theme={groupTheme}
+            item-actions={itemActions}
+            item-theme={itemTheme}
+            hide-items-count={hideItemsCount}
+        ></c-avonni-primitive-relationship-graph-level>
+    </div>
+</template>

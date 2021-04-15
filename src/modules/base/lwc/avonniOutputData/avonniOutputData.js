@@ -15,13 +15,12 @@ const validTypes = [
     'url'
 ];
 
-export default class AvonniAutoDataType extends LightningElement {
-    @api card = {};
+export default class AvonniOutputData extends LightningElement {
     @api label;
-    @api fieldName;
     @api typeAttributes = {};
 
     _type = 'text';
+    _value;
 
     @api get type() {
         return this._type;
@@ -34,15 +33,16 @@ export default class AvonniAutoDataType extends LightningElement {
         });
     }
 
-    get value() {
+    @api get value() {
         if (this.isBoolean) {
-            return (
-                this.card[this.fieldName] === 'true' ||
-                this.card[this.fieldName]
-            );
+            return this._value === 'true' || this._value;
         }
 
-        return this.card[this.fieldName];
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
     }
 
     get isBoolean() {

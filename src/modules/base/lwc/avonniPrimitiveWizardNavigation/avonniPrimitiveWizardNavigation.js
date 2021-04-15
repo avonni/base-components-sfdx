@@ -1,25 +1,38 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 
-const HORIZONTAL_POSITIONS = ['left', 'right'];
-const BUTTON_VARIANTS = [
-    'bare',
-    'neutral',
-    'brand',
-    'brand-outline',
-    'inverse',
-    'destructive',
-    'destructive-text',
-    'success'
-];
-const INDICATOR_TYPES = [
-    'base',
-    'base-shaded',
-    'path',
-    'bullet',
-    'fractions',
-    'bar'
-];
+const POSITIONS = {
+    valid: ['left', 'right'],
+    defaultButtonPreviousIcon: 'left',
+    defaultButtonNextIcon: 'left',
+    defaultButtonFinishIcon: 'left',
+    defaultAction: 'left'
+};
+const BUTTON_VARIANTS = {
+    valid: [
+        'bare',
+        'neutral',
+        'brand',
+        'brand-outline',
+        'inverse',
+        'destructive',
+        'destructive-text',
+        'success'
+    ],
+    defaultButtonPrevious: 'neutral',
+    defaultButtonNext: 'neutral',
+    defaultButtonFinish: 'neutral'
+};
+const INDICATOR_TYPES = {
+    valid: ['base', 'base-shaded', 'path', 'bullet', 'fractions', 'bar'],
+    default: 'base'
+};
+
+const DEFAULT_BUTTON_PREVIOUS_LABEL = 'Previous';
+const DEFAULT_BUTTON_NEXT_LABEL = 'Next';
+const DEFAULT_BUTTON_FINISH_LABEL = 'Finish';
+const DEFAULT_FRACTION_PREFIX_LABEL = 'Step';
+const DEFAULT_FRACTION_LABEL = 'of';
 
 export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     @api position;
@@ -28,24 +41,24 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     @api buttonNextIconName;
     @api buttonFinishIconName;
 
-    _steps;
+    _steps = [];
     _currentStep;
-    _rendered;
-    _indicatorType;
-    _hideIndicator;
-    _buttonPreviousIconPosition;
-    _buttonPreviousLabel;
-    _buttonPreviousVariant;
-    _buttonNextIconPosition;
-    _buttonNextLabel;
-    _buttonNextVariant;
-    _buttonFinishIconPosition;
-    _buttonFinishLabel;
-    _buttonFinishVariant;
+    _rendered = false;
+    _indicatorType = INDICATOR_TYPES.default;
+    _hideIndicator = false;
+    _buttonPreviousIconPosition = POSITIONS.defaultButtonPreviousIcon;
+    _buttonPreviousLabel = DEFAULT_BUTTON_PREVIOUS_LABEL;
+    _buttonPreviousVariant = BUTTON_VARIANTS.defaultButtonPrevious;
+    _buttonNextIconPosition = POSITIONS.defaultButtonNextIcon;
+    _buttonNextLabel = DEFAULT_BUTTON_NEXT_LABEL;
+    _buttonNextVariant = BUTTON_VARIANTS.defaultButtonNext;
+    _buttonFinishIconPosition = POSITIONS.defaultButtonFinishIcon;
+    _buttonFinishLabel = DEFAULT_BUTTON_FINISH_LABEL;
+    _buttonFinishVariant = BUTTON_VARIANTS.defaultButtonFinish;
     _buttonAlignmentBump;
-    _actionPosition;
-    _fractionPrefixLabel;
-    _fractionLabel;
+    _actionPosition = POSITIONS.defaultAction;
+    _fractionPrefixLabel = DEFAULT_FRACTION_PREFIX_LABEL;
+    _fractionLabel = DEFAULT_FRACTION_LABEL;
 
     lastStep;
     progressIndicatorVariant = 'base';
@@ -136,7 +149,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
 
     _updateSteps() {
-        const currentStepIndex = this.currentStepIndex;
+        const currentStepIndex =
+            this.currentStepIndex > -1 ? this.currentStepIndex : 0;
         const currentStep = this.steps[currentStepIndex];
 
         // Update buttons if they are visible
@@ -219,7 +233,7 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         return this._currentStep;
     }
     set currentStep(name) {
-        this._currentStep = name;
+        this._currentStep = (typeof name === 'string' && name.trim()) || '';
 
         if (this._rendered && this.steps) this._updateSteps();
     }
@@ -230,8 +244,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set indicatorType(type) {
         this._indicatorType = normalizeString(type, {
-            fallbackValue: 'base',
-            validValues: INDICATOR_TYPES
+            fallbackValue: INDICATOR_TYPES.default,
+            validValues: INDICATOR_TYPES.valid
         });
     }
 
@@ -249,8 +263,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set buttonPreviousIconPosition(position) {
         this._buttonPreviousIconPosition = normalizeString(position, {
-            fallbackValue: 'left',
-            validValues: HORIZONTAL_POSITIONS
+            fallbackValue: POSITIONS.defaultButtonPreviousIcon,
+            validValues: POSITIONS.valid
         });
     }
 
@@ -259,7 +273,9 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         return this._buttonPreviousLabel;
     }
     set buttonPreviousLabel(label) {
-        this._buttonPreviousLabel = label || 'Previous';
+        this._buttonPreviousLabel =
+            (typeof label === 'string' && label.trim()) ||
+            DEFAULT_BUTTON_PREVIOUS_LABEL;
     }
 
     @api
@@ -268,8 +284,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set buttonPreviousVariant(variant) {
         this._buttonPreviousVariant = normalizeString(variant, {
-            fallbackValue: 'neutral',
-            validValues: BUTTON_VARIANTS
+            fallbackValue: BUTTON_VARIANTS.defaultButtonPrevious,
+            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -279,8 +295,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set buttonNextIconPosition(position) {
         this._buttonNextIconPosition = normalizeString(position, {
-            fallbackValue: 'left',
-            validValues: HORIZONTAL_POSITIONS
+            fallbackValue: POSITIONS.defaultButtonNextIcon,
+            validValues: POSITIONS.valid
         });
     }
 
@@ -289,7 +305,9 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         return this._buttonNextLabel;
     }
     set buttonNextLabel(label) {
-        this._buttonNextLabel = label || 'Next';
+        this._buttonNextLabel =
+            (typeof label === 'string' && label.trim()) ||
+            DEFAULT_BUTTON_NEXT_LABEL;
     }
 
     @api
@@ -298,8 +316,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set buttonNextVariant(variant) {
         this._buttonNextVariant = normalizeString(variant, {
-            fallbackValue: 'neutral',
-            validValues: BUTTON_VARIANTS
+            fallbackValue: BUTTON_VARIANTS.defaultButtonNext,
+            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -309,8 +327,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set buttonFinishIconPosition(position) {
         this._buttonFinishIconPosition = normalizeString(position, {
-            fallbackValue: 'left',
-            validValues: HORIZONTAL_POSITIONS
+            fallbackValue: POSITIONS.defaultButtonFinishIcon,
+            validValues: POSITIONS.valid
         });
     }
 
@@ -319,7 +337,9 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         return this._buttonFinishLabel;
     }
     set buttonFinishLabel(label) {
-        this._buttonFinishLabel = label || 'Finish';
+        this._buttonFinishLabel =
+            (typeof label === 'string' && label.trim()) ||
+            DEFAULT_BUTTON_FINISH_LABEL;
     }
 
     @api
@@ -328,8 +348,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set buttonFinishVariant(variant) {
         this._buttonFinishVariant = normalizeString(variant, {
-            fallbackValue: 'neutral',
-            validValues: BUTTON_VARIANTS
+            fallbackValue: BUTTON_VARIANTS.defaultButtonFinish,
+            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -340,7 +360,7 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     set buttonAlignmentBump(position) {
         this._buttonAlignmentBump = normalizeString(position, {
             fallbackValue: null,
-            validValues: HORIZONTAL_POSITIONS
+            validValues: POSITIONS.valid
         });
     }
 
@@ -350,8 +370,8 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     }
     set actionPosition(position) {
         this._actionPosition = normalizeString(position, {
-            fallbackValue: 'left',
-            validValues: HORIZONTAL_POSITIONS
+            fallbackValue: POSITIONS.defaultAction,
+            validValues: POSITIONS.valid
         });
     }
 
@@ -360,7 +380,9 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         return this._fractionPrefixLabel;
     }
     set fractionPrefixLabel(prefix) {
-        this._fractionPrefixLabel = prefix || 'Step';
+        this._fractionPrefixLabel =
+            (typeof label === 'string' && prefix.trim()) ||
+            DEFAULT_FRACTION_PREFIX_LABEL;
     }
 
     @api
@@ -368,7 +390,9 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         return this._fractionLabel;
     }
     set fractionLabel(label) {
-        this._fractionLabel = label || 'of';
+        this._fractionLabel =
+            (typeof label === 'string' && label.trim()) ||
+            DEFAULT_FRACTION_LABEL;
     }
 
     handleButtonClick(event) {

@@ -1,5 +1,5 @@
 <template>
-    <div class={computedOuterClass}>
+    <div class={computedOuterClass} if:true={steps}>
         <ol class="slds-progress__list">
             <template for:each={steps} for:item="step">
                 <c-avonni-primitive-progress-step

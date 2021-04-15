@@ -52,30 +52,30 @@
                 <slot name="actions"></slot>
             </div>
         </template>
-        <template if:true={items}>
+        <template if:true={fields}>
             <ul class="slds-page-header__detail-list">
-                <template for:each={items} for:item="item">
-                    <li key={item.label} class="slds-page-header__detail-item">
+                <template for:each={fields} for:item="field">
+                    <li key={field.label} class="slds-page-header__detail-item">
                         <div
                             class="slds-text-title slds-truncate"
-                            title={item.label}
+                            title={field.label}
                         >
-                            {item.label}
+                            {field.label}
                         </div>
-                        <div title={item.value}>
-                            <c-avonni-primitive-page-header-item
-                                item={item}
-                                label={item.label}
-                                value={item.value}
-                                type={item.type}
+                        <div title={field.value}>
+                            <c-avonni-primitive-page-header-field
+                                field={field}
+                                label={field.label}
+                                value={field.value}
+                                type={field.type}
                             >
-                            </c-avonni-primitive-page-header-item>
+                            </c-avonni-primitive-page-header-field>
                         </div>
                     </li>
                 </template>
             </ul>
         </template>
-        <template if:false={items}>
+        <template if:false={fields}>
             <slot name="details"></slot>
         </template>
     </div>

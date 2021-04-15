@@ -102,7 +102,7 @@ export default class AvonniProgressRing extends LightningElement {
     }
 
     get d() {
-        const fillPercent = this._value / 100;
+        const fillPercent = this._value / 100 || 0;
         const filldrain = this.direction === 'drain' ? 1 : 0;
         const inverter = this.direction === 'drain' ? 1 : -1;
         const islong = fillPercent > 0.5 ? 1 : 0;

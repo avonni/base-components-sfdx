@@ -1,57 +1,137 @@
 import { LightningElement, api } from 'lwc';
 import {
     classListMutation,
+    ContentMutation,
+    synchronizeAttrs,
+    getRealDOMId,
     normalizeBoolean,
-    normalizeString
+    normalizeString,
+    normalizeAriaAttribute
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
-import { FieldConstraintApi, normalizeVariant, VARIANT } from 'c/inputUtils';
+import {
+    FieldConstraintApiWithProxyInput,
+    normalizeVariant,
+    VARIANT
+} from 'c/inputUtils';
 
 const i18n = {
     required: 'required'
 };
 
+const ARIA_CONTROLS = 'aria-controls';
+const ARIA_DESCRIBEDBY = 'aria-describedby';
+const ARIA_LABELEDBY = 'aria-labelledby';
+
 const validSizes = ['x-small', 'small', 'medium', 'large'];
 
 export default class AvonniInputToggle extends LightningElement {
     @api accessKey;
-    @api ariaControls;
-    @api ariaDescribedBy;
     @api ariaLabel;
-    @api ariaLabelledBy;
     @api fieldLevelHelp;
-    @api label = 'Toggle Label';
+    @api label;
     @api messageToggleActive = 'Active';
     @api messageToggleInactive = 'Inactive';
     @api name;
-    @api value = '';
+    @api value;
 
+    _ariaControls;
+    _ariaDescribedBy;
     _checked;
     _disabled;
     _hideMark = false;
-    _invalidMessage = 'Complete this field';
+    _messageWhenValueMissing;
     _readOnly;
     _required;
     _size = 'medium';
     _variant;
 
-    _connected;
-    _helpMessage = null;
+    _rendered;
+    helpMessage;
     valid = true;
 
+    constructor() {
+        super();
+        this.ariaObserver = new ContentMutation(this);
+    }
+
     connectedCallback() {
-        this._connected = true;
         this.classList.add('slds-form-element');
         this.updateClassList();
+    }
+
+    renderedCallback() {
+        if (!this._rendered) this._rendered = true;
+        this._synchronizeA11y();
+    }
+
+    _synchronizeA11y() {
+        const input = this.template.querySelector('input');
+
+        if (input) {
+            synchronizeAttrs(input, {
+                [ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
+                [ARIA_CONTROLS]: this.computedAriaControls,
+                [ARIA_LABELEDBY]: this.computedAriaLabelledBy
+            });
+        }
+    }
+
+    @api
+    get ariaControls() {
+        return this._ariaControls;
+    }
+    set ariaControls(references) {
+        this._ariaControls = normalizeAriaAttribute(references);
+        this.ariaObserver.link(
+            'input',
+            'aria-controls',
+            this._ariaControls,
+            '[data-aria]'
+        );
+    }
+
+    @api
+    get ariaDescribedBy() {
+        return this._ariaDescribedBy;
+    }
+
+    set ariaDescribedBy(references) {
+        this._ariaDescribedBy = normalizeAriaAttribute(references);
+        this.ariaObserver.link(
+            'input',
+            'aria-describedby',
+            this._ariaDescribedBy,
+            '[data-aria]'
+        );
+    }
+
+    @api
+    get ariaLabelledBy() {
+        return this._ariaLabelledBy;
+    }
+
+    set ariaLabelledBy(references) {
+        this._ariaLabelledBy = normalizeAriaAttribute(references);
+        this.ariaObserver.link(
+            'input',
+            'aria-labelledby',
+            this._ariaLabelledBy,
+            '[data-aria]'
+        );
     }
 
     @api
     get checked() {
         return this._checked;
     }
-
     set checked(value) {
         this._checked = normalizeBoolean(value);
+
+        if (this._rendered) {
+            this._inputElement.checked = this._checked;
+        }
+        this._updateProxyInputAttributes('checked');
     }
 
     @api
@@ -72,11 +152,13 @@ export default class AvonniInputToggle extends LightningElement {
 
     @api
     get messageWhenValueMissing() {
-        return this._invalidMessage;
+        return this._messageWhenValueMissing;
     }
 
     set messageWhenValueMissing(value) {
-        this._invalidMessage = value || 'Complete this field';
+        this._messageWhenValueMissing = normalizeString(value, {
+            toLowerCase: false
+        });
     }
 
     @api
@@ -95,6 +177,7 @@ export default class AvonniInputToggle extends LightningElement {
 
     set required(value) {
         this._required = normalizeBoolean(value);
+        this._updateProxyInputAttributes('required');
     }
 
     @api
@@ -126,7 +209,7 @@ export default class AvonniInputToggle extends LightningElement {
 
     @api
     blur() {
-        if (this._connected) {
+        if (this._rendered) {
             this.template.querySelector('input').blur();
         }
     }
@@ -138,7 +221,7 @@ export default class AvonniInputToggle extends LightningElement {
 
     @api
     focus() {
-        if (this._connected) {
+        if (this._rendered) {
             this.template.querySelector('input').focus();
         }
     }
@@ -146,7 +229,7 @@ export default class AvonniInputToggle extends LightningElement {
     @api
     reportValidity() {
         return this._constraint.reportValidity((message) => {
-            this._helpMessage = message;
+            this.helpMessage = this.messageWhenValueMissing || message;
         });
     }
 
@@ -165,7 +248,7 @@ export default class AvonniInputToggle extends LightningElement {
     }
 
     get computedWrapperClass() {
-        return classSet('slds-checkbox_toggle avonni-input-toggle__label').add({
+        return classSet('slds-checkbox_toggle label').add({
             'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
             'slds-grid': this.variant === VARIANT.LABEL_INLINE
         });
@@ -173,10 +256,10 @@ export default class AvonniInputToggle extends LightningElement {
 
     get computedFauxToggleClass() {
         return classSet('slds-checkbox_faux').add({
-            'avonni-input-toggle__faux_x-small': this.size === 'x-small',
-            'avonni-input-toggle__faux_small': this.size === 'small',
-            'avonni-input-toggle__faux_large': this.size === 'large',
-            'avonni-input-toggle__faux_hide-mark': this.hideMark === true
+            'faux_x-small': this.size === 'x-small',
+            faux_small: this.size === 'small',
+            faux_large: this.size === 'large',
+            'faux_hide-mark': this.hideMark === true
         });
     }
 
@@ -189,13 +272,78 @@ export default class AvonniInputToggle extends LightningElement {
         });
     }
 
+    get computedUniqueHelpElementId() {
+        return getRealDOMId(this.template.querySelector('[data-help-message]'));
+    }
+
+    get computedUniqueToggleElementDescribedById() {
+        const toggle = this.template.querySelector('[data-toggle-description]');
+        return getRealDOMId(toggle);
+    }
+
+    get computedAriaDescribedBy() {
+        const ariaValues = [];
+
+        if (this.messageWhenValueMissing) {
+            ariaValues.push(this.computedUniqueHelpElementId);
+        }
+
+        if (this.isTypeToggle) {
+            ariaValues.push(this.computedUniqueToggleElementDescribedById);
+        }
+
+        if (this.ariaDescribedBy) {
+            ariaValues.push(this.ariaDescribedBy);
+        }
+
+        return normalizeAriaAttribute(ariaValues);
+    }
+
+    get computedAriaControls() {
+        const ariaValues = [];
+
+        if (this.ariaControls) {
+            ariaValues.push(this.ariaControls);
+        }
+
+        return normalizeAriaAttribute(ariaValues);
+    }
+
+    get computedAriaLabelledBy() {
+        const ariaValues = [];
+
+        if (this.ariaLabelledBy) {
+            ariaValues.push(this.ariaLabelledBy);
+        }
+
+        return normalizeAriaAttribute(ariaValues);
+    }
+
+    get _inputElement() {
+        return this.template.querySelector('input');
+    }
+
     get _constraint() {
         if (!this._constraintApi) {
-            this._constraintApi = new FieldConstraintApi(() => this, {
-                checked: () => this.checked
-            });
+            this._constraintApi = new FieldConstraintApiWithProxyInput(
+                () => this
+            );
+
+            this._constraintApiProxyInputUpdater = this._constraintApi.setInputAttributes(
+                {
+                    type: () => 'checkbox',
+                    checked: () => this.checked,
+                    required: () => this.required
+                }
+            );
         }
         return this._constraintApi;
+    }
+
+    _updateProxyInputAttributes(attributes) {
+        if (this._constraintApiProxyInputUpdater) {
+            this._constraintApiProxyInputUpdater(attributes);
+        }
     }
 
     updateClassList() {
@@ -214,7 +362,13 @@ export default class AvonniInputToggle extends LightningElement {
     }
 
     handleChange(event) {
-        this._checked = event.target.checked;
+        if (this.readOnly) {
+            this._inputElement.checked = this.checked;
+            return;
+        }
+
+        this._checked = this._inputElement.checked;
+        this._updateProxyInputAttributes('checked');
 
         this.dispatchEvent(
             new CustomEvent('change', {

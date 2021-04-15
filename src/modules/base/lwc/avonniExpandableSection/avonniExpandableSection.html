@@ -1,7 +1,7 @@
 <template>
     <div class={sectionClass}>
         <h3 class={sectionTitleClass}>
-            <template if:true={collapsable}>
+            <template if:true={collapsible}>
                 <button
                     class="slds-button slds-section__title-action"
                     onclick={changeSectionStatus}
@@ -14,7 +14,7 @@
                     <span class="slds-truncate" title={title}> {title} </span>
                 </button>
             </template>
-            <template if:false={collapsable}>
+            <template if:false={collapsible}>
                 <span
                     class="slds-truncate slds-p-horizontal_small"
                     title={title}

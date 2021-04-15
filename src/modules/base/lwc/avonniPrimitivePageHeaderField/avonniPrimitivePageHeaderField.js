@@ -62,8 +62,8 @@ const STANDARD_TYPES = {
     location: true
 };
 
-export default class AvonniPrimitivePageHeaderItem extends LightningElement {
-    @api item;
+export default class AvonniPrimitivePageHeaderField extends LightningElement {
+    @api field;
     @api label;
     @api value;
 
@@ -71,7 +71,9 @@ export default class AvonniPrimitivePageHeaderItem extends LightningElement {
     computedTypeAttribute;
 
     connectedCallback() {
-        this.computedTypeAttribute = this.computeItemTypeAttributes(this.item);
+        this.computedTypeAttribute = this.computeFieldTypeAttributes(
+            this.field
+        );
     }
 
     @api
@@ -145,10 +147,10 @@ export default class AvonniPrimitivePageHeaderItem extends LightningElement {
         return typeof value === 'object' && value !== null;
     }
 
-    // gives an object of all the diffent typeAttributes for a chosen Item
-    getTypeAttributesValues(item) {
-        if (this.isObjectLike(item.typeAttributes)) {
-            return item.typeAttributes;
+    // gives an object of all the diffent typeAttributes for a chosen Field
+    getTypeAttributesValues(field) {
+        if (this.isObjectLike(field.typeAttributes)) {
+            return field.typeAttributes;
         }
         return {};
     }
@@ -169,10 +171,10 @@ export default class AvonniPrimitivePageHeaderItem extends LightningElement {
             : [];
     }
 
-    // gives an object of all the computed TypeAttributes for every item
-    computeItemTypeAttributes(item) {
-        const attributesNames = this.getAttributesNames(item.type);
-        const typeAttributesValues = this.getTypeAttributesValues(item);
+    // gives an object of all the computed TypeAttributes for every Field
+    computeFieldTypeAttributes(field) {
+        const attributesNames = this.getAttributesNames(field.type);
+        const typeAttributesValues = this.getTypeAttributesValues(field);
 
         return attributesNames.reduce((attrs, attrName, index) => {
             const typeAttributeName = `typeAttribute${index}`;

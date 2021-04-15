@@ -71,7 +71,8 @@ export default class AvonniVisualPickerLink extends LightningElement {
         return classSet('slds-welcome-mat__tile-body')
             .add({
                 'avonni-welcome-mat__tile-body-right':
-                    this._iconPosition === 'right'
+                    this._iconPosition === 'right',
+                'avonni-welcome-mat__tile-no-icon': !this.iconName
             })
             .toString();
     }

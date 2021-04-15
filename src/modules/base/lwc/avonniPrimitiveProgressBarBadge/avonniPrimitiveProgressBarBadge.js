@@ -32,13 +32,15 @@ export default class AvonniPrimitiveProgressBarBadge extends LightningElement {
     }
 
     set value(value) {
-        if (value <= 0) {
-            this._value = 0;
-        } else if (value > 100) {
-            this._value = 100;
-        } else {
-            this._value = value;
-        }
+        if (typeof value === 'number') {
+            if (value <= 0) {
+                this._value = 0;
+            } else if (value > 100) {
+                this._value = 100;
+            } else {
+                this._value = value;
+            }
+        } else this._value = 0;
     }
 
     @api

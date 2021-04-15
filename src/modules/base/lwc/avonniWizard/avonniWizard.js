@@ -29,9 +29,11 @@ export default class AvonniWizard extends LightningElement {
     @api fractionPrefixLabel;
     @api fractionLabel;
 
-    _variant;
-    _indicatorPosition;
+    _variant = 'base';
+    _hideNavigation = false;
+    _indicatorPosition = 'footer';
     _currentStep;
+    _initialCurrentStep;
 
     steps = [];
     showWizard = true;
@@ -66,9 +68,11 @@ export default class AvonniWizard extends LightningElement {
         });
 
         // If no current step was given, set current step to first step
-        if (this.currentStepIndex === -1) {
-            this._currentStep = this.steps[0].name;
-        }
+        const stepNames = this.steps.map((step) => step.name);
+        const index = stepNames.indexOf(this._initialCurrentStep);
+        this._currentStep =
+            index === -1 ? this.steps[0].name : this.steps[index].name;
+
         this._updateStepDisplay();
     }
 
@@ -93,7 +97,8 @@ export default class AvonniWizard extends LightningElement {
         return this._currentStep;
     }
     set currentStep(name) {
-        this._currentStep = name;
+        this._currentStep = (typeof name === 'string' && name.trim()) || '';
+        this._initialCurrentStep = this._currentStep;
     }
 
     @api
