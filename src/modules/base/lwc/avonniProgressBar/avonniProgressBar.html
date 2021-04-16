@@ -69,16 +69,19 @@
                             </span>
                         </lightning-layout-item>
                     </lightning-layout>
-                    <template for:each={badges} for:item="badge">
-                        <c-avonni-primitive-progress-bar-badge
-                            key={badge.label}
-                            label={badge.label}
-                            value={badge.value}
-                            variant={badge.variant}
-                            border-style={badge.borderStyle}
+                    <template
+                        for:each={referenceLines}
+                        for:item="referenceLine"
+                    >
+                        <c-avonni-primitive-progress-bar-reference-line
+                            key={referenceLine.label}
+                            label={referenceLine.label}
+                            value={referenceLine.value}
+                            variant={referenceLine.variant}
+                            border-style={referenceLine.borderStyle}
                             thickness={thickness}
                             orientation={orientation}
-                        ></c-avonni-primitive-progress-bar-badge>
+                        ></c-avonni-primitive-progress-bar-reference-line>
                     </template>
                 </div>
             </lightning-layout-item>

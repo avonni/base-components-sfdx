@@ -6,18 +6,9 @@ export default class AvonniVerticalProgressStep extends LightningElement {
     _value;
     iconName;
     contentInLine = false;
-    showSlot = true;
 
     connectedCallback() {
         this.classList.add('slds-progress__item');
-    }
-
-    renderedCallback() {
-        if (this.slotItems) {
-            this.showSlot =
-                this.slotItems.assignedElements().length !== 0 ||
-                this.slotItems.assignedNodes().length !== 0;
-        }
     }
 
     @api

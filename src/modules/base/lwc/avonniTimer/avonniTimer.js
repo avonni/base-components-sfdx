@@ -16,17 +16,26 @@ const validTypes = ['count-up', 'count-down'];
 const validIconPositions = ['left', 'right'];
 const validFormats = ['hh:mm:ss', 'mm:ss', 'hh:mm', 'hh', 'mm', 'ss'];
 
+const DEFAULT_VALUE = 0;
+const DEFAULT_DURATION = 1;
+const DEFAULT_VARIANT = 'neutral';
+const DEFAULT_TYPE = 'count-up';
+const DEFAULT_ICON_POSITION = 'left';
+const DEFAULT_FORMAT = 'hh:mm:ss';
+const DEFAULT_AUTO_START = false;
+const DEFAULT_REPEAT = false;
+
 export default class AvonniTimer extends LightningElement {
     @api iconName;
 
-    _value = 0;
-    _duration = 1;
-    _variant = 'neutral';
-    _type = 'count-up';
-    _iconPosition = 'left';
-    _format = 'hh:mm:ss';
-    _autoStart = false;
-    _repeat = false;
+    _value = DEFAULT_VALUE;
+    _duration = DEFAULT_DURATION;
+    _variant = DEFAULT_VARIANT;
+    _type = DEFAULT_TYPE;
+    _iconPosition = DEFAULT_ICON_POSITION;
+    _format = DEFAULT_FORMAT;
+    _autoStart = DEFAULT_AUTO_START;
+    _repeat = DEFAULT_REPEAT;
 
     step;
     play = false;
@@ -42,7 +51,8 @@ export default class AvonniTimer extends LightningElement {
     }
 
     set value(value) {
-        this._value = Number(value / 1000);
+        this._value =
+            typeof value === 'number' ? Number(value / 1000) : DEFAULT_VALUE;
     }
 
     @api
@@ -51,10 +61,14 @@ export default class AvonniTimer extends LightningElement {
     }
 
     set duration(value) {
-        if (value > 86400000) {
-            this._duration = 86400;
+        if (typeof value === 'number') {
+            if (value > 86400000) {
+                this._duration = 86400;
+            } else {
+                this._duration = value / 1000;
+            }
         } else {
-            this._duration = value / 1000;
+            this._duration = DEFAULT_DURATION;
         }
     }
 
@@ -228,13 +242,13 @@ export default class AvonniTimer extends LightningElement {
     @api
     stop() {
         this.play = false;
-        this.value = 0;
+        this._value = 0;
         this.dispatchTimerStop();
     }
 
     @api
     reset() {
-        this.value = 0;
+        this._value = 0;
         this.dispatchTimerReset();
     }
 
@@ -334,7 +348,7 @@ export default class AvonniTimer extends LightningElement {
     clearCurrentInterval() {
         clearInterval(this.interval);
         this.interval = null;
-        this.value = 0;
+        this._value = 0;
         this.dispatchTimerStop();
     }
 

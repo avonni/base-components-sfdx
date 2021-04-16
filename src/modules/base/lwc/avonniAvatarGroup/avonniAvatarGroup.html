@@ -1,13 +1,12 @@
 <template>
     <template if:true={isClassic}>
         <span class={avatarGroupClass}>
-            <c-avonni-avatar
+            <c-avonni-primitive-avatar
                 alternative-text={primaryItem.alternativeText}
                 fallback-icon-name={primaryItem.fallbackIconName}
                 initials={primaryItem.initials}
                 src={primaryItem.src}
                 variant={variant}
-                hide-avatar-details="true"
                 size={size}
                 status={primaryItem.status}
                 status-title={primaryItem.statusTitle}
@@ -27,14 +26,13 @@
                 role="button"
                 onkeyup={handleAvatarClick}
                 tabindex="0"
-            ></c-avonni-avatar>
-            <c-avonni-avatar
+            ></c-avonni-primitive-avatar>
+            <c-avonni-primitive-avatar
                 alternative-text={secondaryItem.alternativeText}
                 fallback-icon-name={secondaryItem.fallbackIconName}
                 initials={secondaryItem.initials}
                 src={secondaryItem.src}
                 variant={variant}
-                hide-avatar-details="true"
                 size={size}
                 status={secondaryItem.status}
                 status-title={secondaryItem.statusTitle}
@@ -54,7 +52,7 @@
                 role="button"
                 onkeyup={handleAvatarClick}
                 tabindex="0"
-            ></c-avonni-avatar>
+            ></c-avonni-primitive-avatar>
         </span>
     </template>
     <template if:false={isClassic}>
@@ -105,11 +103,10 @@
                 >
                     <template if:true={isNotList}>
                         <span class={avatarWrapperClass}>
-                            <c-avonni-avatar
+                            <c-avonni-primitive-avatar
                                 initials={item.initials}
                                 variant={variant}
                                 fallback-icon-name="standard:macros"
-                                hide-avatar-details="true"
                                 size={size}
                                 data-item-id={index}
                                 data-type="show"
@@ -118,7 +115,7 @@
                                 tabindex="0"
                                 role="button"
                                 onkeyup={handleAvatarClick}
-                            ></c-avonni-avatar>
+                            ></c-avonni-primitive-avatar>
                         </span>
                     </template>
                     <template if:false={isNotList}>
@@ -152,13 +149,12 @@
                                     data-item-id={index}
                                     data-type="hidden"
                                 >
-                                    <c-avonni-avatar
+                                    <c-avonni-primitive-avatar
                                         alternative-text={item.alternativeText}
                                         fallback-icon-name={item.fallbackIconName}
                                         initials={item.initials}
                                         src={item.src}
                                         variant={variant}
-                                        hide-avatar-details="true"
                                         size={size}
                                         status={item.status}
                                         status-title={item.statusTitle}
@@ -178,7 +174,7 @@
                                         role="button"
                                         onkeyup={handleAvatarClick}
                                         tabindex="0"
-                                    ></c-avonni-avatar>
+                                    ></c-avonni-primitive-avatar>
                                     <p
                                         onclick={handleAvatarClick}
                                         data-item-id={index}

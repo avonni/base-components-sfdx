@@ -2,5 +2,5 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>50.0</apiVersion>
     <isExposed>false</isExposed>
-    <masterLabel>Avonni Primitive Progress Bar Badge</masterLabel>
+    <masterLabel>Avonni Primitive Progress Bar Reference Line</masterLabel>
 </LightningComponentBundle>

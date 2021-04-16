@@ -17,18 +17,24 @@ const VALID_LABEL_VARIANTS = {
     default: 'standard'
 };
 
+const DEFAULT_MIN = 1;
+const DEFAULT_MAX = 5;
+const DEFAULT_VARIANT = 'standard';
+const DEFAULT_ICON_SIZE = 'large';
+const DEFAULT_SELECTION = 'continuous';
+
 export default class AvonniRating extends LightningElement {
     @api label;
     @api fieldLevelHelp;
     @api name = generateUniqueId();
     @api iconName;
 
-    _min = 1;
-    _max = 5;
+    _min = DEFAULT_MIN;
+    _max = DEFAULT_MAX;
     _value;
-    _variant = 'standard';
-    _iconSize = 'large';
-    _selection = 'continuous';
+    _variant = DEFAULT_VARIANT;
+    _iconSize = DEFAULT_ICON_SIZE;
+    _selection = DEFAULT_SELECTION;
     _disabled;
     _readOnly;
     _valueHidden;
@@ -87,7 +93,7 @@ export default class AvonniRating extends LightningElement {
     }
 
     set min(value) {
-        this._min = Number(value);
+        this._min = typeof value === 'number' ? Number(value) : DEFAULT_MIN;
 
         if (this.init) {
             this.ratingRecalculation();
@@ -100,7 +106,7 @@ export default class AvonniRating extends LightningElement {
     }
 
     set max(value) {
-        this._max = Number(value);
+        this._max = typeof value === 'number' ? Number(value) : DEFAULT_MAX;
 
         if (this.init) {
             this.ratingRecalculation();
@@ -232,10 +238,10 @@ export default class AvonniRating extends LightningElement {
 
     selectRating(event) {
         if (!this._readOnly) {
-            this.value = Number(event.target.value);
+            this._value = Number(event.target.value);
 
             const selectedEvent = new CustomEvent('change', {
-                detail: this.value
+                detail: this._value
             });
             this.dispatchEvent(selectedEvent);
 

@@ -1,0 +1,74 @@
+<template>
+    <div class={wrapperClass} if:true={showAvatar}>
+        <!-- Main avatar -->
+        <div class={avatarClass}>
+            <!-- Image -->
+            <img
+                if:true={src}
+                src={src}
+                onerror={handleImageError}
+                alt={alternativeText}
+                title={alternativeText}
+            />
+            <!-- Initials -->
+            <abbr
+                if:true={showInitials}
+                class={computedInitialsClass}
+                title={alternativeText}
+                >{initials}</abbr
+            >
+            <!-- Fallback icon -->
+            <lightning-icon
+                class={fallbackIconClass}
+                size={size}
+                if:true={showIcon}
+                icon-name={fallbackIconName}
+                alternative-text={alternativeText}
+                title={alternativeText}
+            ></lightning-icon>
+        </div>
+        <!-- Presence -->
+        <div
+            if:true={presence}
+            class={presenceClass}
+            title={presenceTitle}
+            aria-label={presenceTitle}
+        ></div>
+        <!-- Status -->
+        <template if:true={status}>
+            <c-avonni-primitive-icon
+                class={statusComputed.class}
+                icon-name={statusComputed.iconName}
+                title={statusComputed.title}
+            ></c-avonni-primitive-icon>
+            <span class="slds-assistive-text">{statusComputed.title}</span>
+        </template>
+        <!-- Entity -->
+        <div if:true={showEntity} class={entityClass}>
+            <!-- Image -->
+            <img
+                if:true={entitySrc}
+                src={entitySrc}
+                onerror={handleImageError}
+                alt={entityTitle}
+                title={entityTitle}
+            />
+            <!-- Initials -->
+            <abbr
+                if:true={entityInitials}
+                class={computedEntityInitialsClass}
+                title={entityTitle}
+                >{entityInitials}</abbr
+            >
+            <!-- Fallback icon -->
+            <template if:true={showEntityIcon}>
+                <c-avonni-primitive-icon
+                    class="avonni-avatar__entity-icon"
+                    icon-name={entityIconName}
+                    title={entityTitle}
+                ></c-avonni-primitive-icon>
+                <span class="slds-assistive-text">{entityTitle}</span>
+            </template>
+        </div>
+    </div>
+</template>

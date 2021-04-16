@@ -7,6 +7,15 @@ const validTypes = ['radio', 'checkbox'];
 const validSizes = ['xx-small', 'x-small', 'small', 'medium', 'large'];
 const validRatio = ['1-by-1', '4-by-3', '16-by-9'];
 
+const DEFAULT_VARIANT = 'non-coverable';
+const DEFAULT_TYPE = 'radio';
+const DEFAULT_SIZE = 'medium';
+const DEFAULT_REQUIRED = false;
+const DEFAULT_DISABLED = false;
+const DEFAULT_HIDE_BORDER = false;
+const DEFAULT_HIDE_CHECK_MARK = false;
+const DEFAULT_RATIO = '1-by-1';
+
 export default class AvonniVisualPicker extends LightningElement {
     @api label;
     @api items = [];
@@ -14,14 +23,14 @@ export default class AvonniVisualPicker extends LightningElement {
     @api name = generateUniqueId();
 
     _value = [];
-    _variant = 'non-coverable';
-    _type = 'radio';
-    _size = 'medium';
-    _required = false;
-    _disabled = false;
-    _hideBorder = false;
-    _hideCheckMark = false;
-    _ratio = '1-by-1';
+    _variant = DEFAULT_VARIANT;
+    _type = DEFAULT_TYPE;
+    _size = DEFAULT_SIZE;
+    _required = DEFAULT_REQUIRED;
+    _disabled = DEFAULT_DISABLED;
+    _hideBorder = DEFAULT_HIDE_BORDER;
+    _hideCheckMark = DEFAULT_HIDE_CHECK_MARK;
+    _ratio = DEFAULT_RATIO;
 
     renderedCallback() {
         const inputs = this.template.querySelectorAll('input');
@@ -45,7 +54,7 @@ export default class AvonniVisualPicker extends LightningElement {
 
         const inputs = this.template.querySelectorAll('input');
 
-        if (inputs) {
+        if (inputs && this._value) {
             Array.from(inputs).forEach((item) => {
                 if (this._value.indexOf(item.value) > -1) {
                     item.checked = true;

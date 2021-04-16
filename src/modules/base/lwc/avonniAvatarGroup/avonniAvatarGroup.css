@@ -2,8 +2,8 @@
     display: inline-block;
     position: relative;
     transition: transform 0.1s ease-out 0s;
-    --avonni-c-avatar-color-border: #fff;
-    --avonni-c-avatar-sizing-border: 1px;
+    --avonni-avatar-color-border: #fff;
+    --avonni-avatar-sizing-border: 1px;
     cursor: pointer;
 }
 

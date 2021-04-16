@@ -10,7 +10,6 @@ export default class AvonniAlert extends LightningElement {
 
     hideAlert;
     _variant = 'base';
-    _textured = false;
     _isDismissible = false;
 
     @api
@@ -23,15 +22,6 @@ export default class AvonniAlert extends LightningElement {
             fallbackValue: 'base',
             validValues: validVariants
         });
-    }
-
-    @api
-    get textured() {
-        return this._textured;
-    }
-
-    set textured(value) {
-        this._textured = normalizeBoolean(value);
     }
 
     @api
@@ -57,8 +47,7 @@ export default class AvonniAlert extends LightningElement {
                 'slds-theme_info': this.variant === 'base',
                 'slds-theme_error': this.variant === 'error',
                 'slds-theme_offline': this.variant === 'offline',
-                'slds-theme_warning': this.variant === 'warning',
-                'slds-theme_alert-texture': this.textured
+                'slds-theme_warning': this.variant === 'warning'
             })
             .toString();
     }

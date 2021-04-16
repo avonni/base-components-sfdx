@@ -25,10 +25,10 @@
         <div
             class="slds-progress__item_content slds-grid slds-grid_align-spread"
         >
-            <template if:true={showSlot}>
+            <div class="slds-truncate">{label}</div>
+            <div>
                 <slot></slot>
-            </template>
-            <template if:false={showSlot}> {label} </template>
+            </div>
         </div>
     </li>
 </template>

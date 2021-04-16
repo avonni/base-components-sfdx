@@ -1,0 +1,270 @@
+.avonni-avatar {
+    display: inline-block;
+    line-height: 0;
+}
+.avonni-avatar .slds-avatar:first-child {
+    border-style: solid;
+    border-color: var(--avonni-c-avatar-color-border, transparent);
+    border-width: var(--avonni-c-avatar-sizing-border, 0);
+}
+/* If the avatar is in a group, the cursor changes for a pointer */
+:host(.avonni-avatar-group__avatar) .slds-avatar,
+:host(.avonni-avatar-group__avatar) .slds-avatar__initials {
+    cursor: pointer;
+}
+
+/**
+* Size
+*/
+.avonni-avatar_xx-small .slds-avatar {
+    font-size: 0.6rem;
+    height: 0.875rem;
+    width: 0.875rem;
+}
+.slds-avatar_x-small .slds-avatar,
+.slds-avatar_small .slds-avatar,
+.slds-avatar_medium .slds-avatar,
+.slds-avatar_large .slds-avatar {
+    width: inherit;
+    height: inherit;
+    font-size: inherit;
+}
+.avonni-avatar_x-large .slds-avatar {
+    font-size: 1.25rem;
+    width: 56px;
+    height: 56px;
+}
+.avonni-avatar_xx-large .slds-avatar {
+    font-size: 1.5rem;
+    width: 72px;
+    height: 72px;
+}
+/* Makes the icon container size grow with the avatar */
+.avonni-avatar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+}
+/* If the avatar is in a group, the size is set by the parent */
+:host(.slds-avatar-grouped) .avonni-avatar,
+:host(.slds-avatar-grouped) .slds-avatar {
+    width: 100%;
+    height: 100%;
+}
+/**
+* Positionning
+*/
+.avonni-avatar_square .avonni-avatar_top-right {
+    top: -4px;
+    right: -4px;
+}
+.avonni-avatar_square .avonni-avatar_top-left {
+    top: -4px;
+    left: -4px;
+}
+.avonni-avatar_square .avonni-avatar_bottom-right {
+    bottom: -4px;
+    right: -4px;
+}
+.avonni-avatar_square .avonni-avatar_bottom-left {
+    bottom: -4px;
+    left: -4px;
+}
+.avonni-avatar_circle .avonni-avatar_top-right {
+    top: -3px;
+    right: -3px;
+}
+.avonni-avatar_circle .avonni-avatar_top-left {
+    top: -3px;
+    left: -3px;
+}
+.avonni-avatar_circle .avonni-avatar_bottom-right {
+    bottom: -3px;
+    right: -3px;
+}
+.avonni-avatar_circle .avonni-avatar_bottom-left {
+    bottom: -3px;
+    left: -3px;
+}
+/**
+* Status
+*/
+.avonni-avatar__status {
+    color: var(--lwc-colorTextInverse, #fff);
+    position: absolute;
+    border-radius: var(--lwc-borderRadiusCircle, 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    border-style: solid;
+    border-color: #fff;
+}
+.avonni-avatar__status_approved {
+    background-color: #04844b;
+}
+.avonni-avatar__status_locked {
+    color: #514f4d;
+    background-color: #ecebea;
+}
+.avonni-avatar__status_declined {
+    background-color: #c23934;
+}
+.avonni-avatar__status_unknown {
+    background-color: #706e6b;
+}
+.avonni-avatar_xx-small .avonni-avatar__status {
+    width: 8px;
+    height: 8px;
+    border-width: 1px;
+    margin: 1px;
+}
+.slds-avatar_x-small .avonni-avatar__status {
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+}
+.slds-avatar_small .avonni-avatar__status {
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+}
+.slds-avatar_medium .avonni-avatar__status {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}
+.slds-avatar_large .avonni-avatar__status {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+    padding: 2px;
+}
+.avonni-avatar_x-large .avonni-avatar__status {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+    padding: 3px;
+}
+.avonni-avatar_xx-large .avonni-avatar__status {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+    padding: 3px;
+}
+/**
+* Presence
+*/
+.avonni-avatar__presence {
+    position: absolute;
+    border-radius: var(--lwc-borderRadiusCircle, 50%);
+    border-style: solid;
+    border-color: #fff;
+}
+.avonni-avatar_xx-small .avonni-avatar__presence {
+    width: 8px;
+    height: 8px;
+    border-width: 1px;
+    margin: 1px;
+}
+.slds-avatar_x-small .avonni-avatar__presence {
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+}
+.slds-avatar_small .avonni-avatar__presence {
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+}
+.slds-avatar_medium .avonni-avatar__presence {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}
+.slds-avatar_large .avonni-avatar__presence {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+}
+.avonni-avatar_x-large .avonni-avatar__presence {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+.avonni-avatar_xx-large .avonni-avatar__presence {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+}
+.avonni-avatar__presence_online {
+    background-color: #04844b;
+}
+.avonni-avatar__presence_busy {
+    background-color: #bf0201;
+}
+.avonni-avatar__presence_focus {
+    background-color: #1589ee;
+}
+.avonni-avatar__presence_offline {
+    background-color: #3e3e3c;
+}
+.avonni-avatar__presence_blocked {
+    background-color: #ecebea;
+}
+.avonni-avatar__presence_away {
+    background-color: #ff9a3c;
+}
+/**
+* Entity
+*/
+.avonni-avatar__entity {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--lwc-colorTextInverse, #fff);
+}
+/* Makes the icon size change with its container's */
+.avonni-avatar__entity-icon {
+    display: flex;
+    width: inherit;
+}
+.avonni-avatar_xx-small .avonni-avatar__entity {
+    width: 8px;
+    height: 8px;
+    font-size: 0.1rem;
+}
+.slds-avatar_x-small .avonni-avatar__entity {
+    width: 10px;
+    height: 10px;
+    font-size: 0.1rem;
+}
+.slds-avatar_small .avonni-avatar__entity {
+    width: 12px;
+    height: 12px;
+    font-size: 0.1rem;
+}
+.slds-avatar_medium .avonni-avatar__entity {
+    width: 14px;
+    height: 14px;
+    font-size: 0.1rem;
+}
+.slds-avatar_large .avonni-avatar__entity {
+    width: 18px;
+    height: 18px;
+    font-size: 0.6rem;
+}
+.avonni-avatar_x-large .avonni-avatar__entity {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+}
+.avonni-avatar_xx-large .avonni-avatar__entity {
+    width: 24px;
+    height: 24px;
+    font-size: 0.6rem;
+}

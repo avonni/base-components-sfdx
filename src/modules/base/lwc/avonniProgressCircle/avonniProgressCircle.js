@@ -9,6 +9,7 @@ const SIZES = {
     default: 'medium'
 };
 const TITLE_POSITIONS = { valid: ['top', 'bottom'], default: 'bottom' };
+const DEFAULT_COLOR = '#1589ee';
 
 export default class AvonniProgressCircle extends LightningElement {
     @api title;
@@ -21,7 +22,7 @@ export default class AvonniProgressCircle extends LightningElement {
     _size = 'medium';
     _thickness = 'medium';
     _round = false;
-    _color = '#1589ee';
+    _color = DEFAULT_COLOR;
 
     @api
     get titlePosition() {
@@ -113,11 +114,18 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     set color(color) {
-        let styles = new Option().style;
-        styles.color = color;
+        if (typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
 
-        if (styles.color === color || this.isHexColor(color.replace('#', ''))) {
-            this._color = color;
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._color = color;
+            }
+        } else {
+            this._color = DEFAULT_COLOR;
         }
     }
 

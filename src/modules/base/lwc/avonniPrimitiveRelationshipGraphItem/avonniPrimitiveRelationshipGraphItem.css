@@ -17,7 +17,7 @@
     border: 0 solid transparent;
     border-left-width: 15px;
     border-bottom: 15px solid
-        var(--avonni-c-relationship-graph-children-indicator-color, #007add);
+        var(--avonni-relationship-graph-children-indicator-color, #007add);
     position: absolute;
     bottom: 0;
     right: 0;
@@ -27,7 +27,7 @@
 .item_horizontal.item_has-groups.item_is-selected::before {
     content: '';
     height: 2px;
-    background-color: var(--avonni-c-relationship-graph-line-color, #dddbda);
+    background-color: var(--avonni-relationship-graph-line-color, #dddbda);
     position: absolute;
     width: 50px;
     right: -50px;
@@ -36,15 +36,12 @@
 }
 
 .item_is-active {
-    border-color: var(
-        --avonni-c-relationship-graph-selected-line-color,
-        #0070d2
-    );
+    border-color: var(--avonni-relationship-graph-selected-line-color, #0070d2);
 }
 
 .item_horizontal.item_has-groups.item_is-active::before {
     background-color: var(
-        --avonni-c-relationship-graph-selected-line-color,
+        --avonni-relationship-graph-selected-line-color,
         #0070d2
     );
 }

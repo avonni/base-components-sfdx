@@ -207,23 +207,36 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     get showPen() {
-        return this.disabledButtons.indexOf('pen') === -1;
+        return (
+            !this.disabledButtons || this.disabledButtons.indexOf('pen') === -1
+        );
     }
 
     get showErase() {
-        return this.disabledButtons.indexOf('eraser') === -1;
+        return (
+            !this.disabledButtons ||
+            this.disabledButtons.indexOf('eraser') === -1
+        );
     }
 
     get showClear() {
-        return this.disabledButtons.indexOf('clear') === -1;
+        return (
+            !this.disabledButtons ||
+            this.disabledButtons.indexOf('clear') === -1
+        );
     }
 
     get showSize() {
-        return this.disabledButtons.indexOf('size') === -1;
+        return (
+            !this.disabledButtons || this.disabledButtons.indexOf('size') === -1
+        );
     }
 
     get showColor() {
-        return this.disabledButtons.indexOf('color') === -1;
+        return (
+            !this.disabledButtons ||
+            this.disabledButtons.indexOf('color') === -1
+        );
     }
 
     @api
@@ -250,7 +263,7 @@ export default class AvonniInputPen extends LightningElement {
 
     initSrc() {
         this.clear();
-        this.invalid = false;
+        this._invalid = false;
         this.template
             .querySelector('.slds-form-element')
             .classList.remove('slds-has-error');
@@ -258,14 +271,14 @@ export default class AvonniInputPen extends LightningElement {
             .querySelector('.slds-rich-text-editor')
             .classList.remove('slds-has-error');
 
-        if (this.value.indexOf('data:image/') === 0) {
+        if (this.value && this.value.indexOf('data:image/') === 0) {
             let img = new Image();
             img.onload = function () {
                 this.ctx.drawImage(img, 0, 0);
             }.bind(this);
             img.src = this.value;
         } else if (this.value) {
-            this.invalid = true;
+            this._invalid = true;
             this.template
                 .querySelector('.slds-form-element')
                 .classList.add('slds-has-error');
@@ -302,7 +315,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     handleColorChange(event) {
-        this.color = event.detail.hex;
+        this._color = event.detail.hex;
         if (this.cursor) {
             this.cursor.style.setProperty('--color', this.color);
         }
@@ -310,7 +323,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     handleSizeChange(event) {
-        this.size = Number(event.detail.value);
+        this._size = Number(event.detail.value);
         if (this.cursor) {
             this.cursor.style.setProperty('--size', this.size);
         }

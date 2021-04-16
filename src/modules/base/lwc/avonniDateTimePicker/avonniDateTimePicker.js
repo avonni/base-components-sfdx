@@ -89,32 +89,16 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.today = now;
         this.datePickerValue = now.toISOString();
 
-        if (this.today < this.min) {
-            this._setFirstWeekDay(this.min);
-        } else {
-            this._setFirstWeekDay(this.today);
-        }
+        const firstDay = this.today < this.min ? this.min : this.today;
+        this._setFirstWeekDay(firstDay);
 
         // If no time format is provided, defaults to hour:minutes (0:00)
         // The default is set here so it is possible to have only the hour, minutes:seconds, etc.
-        if (
-            !this.timeFormatHour &&
-            !this.timeFormatMinute &&
-            !this.timeFormatSecond
-        ) {
-            this._timeFormatHour = DATE_TIME_FORMAT.hourDefault;
-            this._timeFormatMinute = DATE_TIME_FORMAT.minuteDefault;
-        }
+        this._initTimeFormat();
 
         if (this.isMonthly) this._disableMonthlyCalendarDates();
 
         this._generateTable();
-    }
-
-    renderedCallback() {
-        // Show errors on date picker
-        const datePicker = this.template.querySelector('lightning-input');
-        if (datePicker) datePicker.reportValidity();
     }
 
     @api
@@ -139,6 +123,15 @@ export default class AvonniDateTimePicker extends LightningElement {
             'avonni-date-time-picker__day_inline': this._variant === 'inline',
             'avonni-date-time-picker__day': this._variant !== 'inline'
         });
+
+        if (this.isConnected) {
+            if (this._variant === 'monthly')
+                this._disableMonthlyCalendarDates();
+
+            const firstDay = this.today < this.min ? this.min : this.today;
+            this._setFirstWeekDay(firstDay);
+            this._generateTable();
+        }
     }
 
     @api
@@ -150,6 +143,8 @@ export default class AvonniDateTimePicker extends LightningElement {
         if (date) {
             this._max = new Date(date.setHours(0, 0, 0, 0));
         }
+
+        if (this.isConnected) this._generateTable();
     }
 
     @api
@@ -160,6 +155,12 @@ export default class AvonniDateTimePicker extends LightningElement {
         const date = this._processDate(value);
         if (date) {
             this._min = new Date(date.setHours(0, 0, 0, 0));
+        }
+
+        if (this.isConnected) {
+            const firstDay = this.today < this.min ? this.min : this.today;
+            this._setFirstWeekDay(firstDay);
+            this._generateTable();
         }
     }
 
@@ -174,9 +175,10 @@ export default class AvonniDateTimePicker extends LightningElement {
     set value(value) {
         this._value = value;
 
-        // First time validation is done through connectedCallback.
-        // If the value is changed after connexion, validation is run again.
-        if (this.isConnected) this._processValue();
+        if (this.isConnected) {
+            this._processValue();
+            this._generateTable();
+        }
     }
 
     @api
@@ -189,6 +191,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._startTime = isNaN(start.getTime())
             ? DEFAULT_START_TIME
             : start.getTime();
+
+        if (this.isConnected) {
+            this._initTimeSlots();
+            this._generateTable();
+        }
     }
 
     @api
@@ -199,6 +206,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         const end = new Date(`1970-01-01T${value}`);
         // Return end time in ms. Default value is 18:00.
         this._endTime = isNaN(end.getTime()) ? DEFAULT_END_TIME : end.getTime();
+
+        if (this.isConnected) {
+            this._initTimeSlots();
+            this._generateTable();
+        }
     }
 
     @api
@@ -225,6 +237,11 @@ export default class AvonniDateTimePicker extends LightningElement {
             durationMilliseconds > 0
                 ? durationMilliseconds
                 : DEFAULT_TIME_SLOT_DURATION;
+
+        if (this.isConnected) {
+            this._initTimeSlots();
+            this._generateTable();
+        }
     }
 
     @api
@@ -235,6 +252,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._timeFormatHour = normalizeString(value, {
             validValues: DATE_TIME_FORMAT.valid
         });
+
+        if (this.isConnected) {
+            this._initTimeFormat();
+            this._generateTable();
+        }
     }
 
     @api
@@ -255,6 +277,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._timeFormatMinute = normalizeString(value, {
             validValues: DATE_TIME_FORMAT.valid
         });
+
+        if (this.isConnected) {
+            this._initTimeFormat();
+            this._generateTable();
+        }
     }
 
     @api
@@ -265,6 +292,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._timeFormatSecond = normalizeString(value, {
             validValues: DATE_TIME_FORMAT.valid
         });
+
+        if (this.isConnected) {
+            this._initTimeFormat();
+            this._generateTable();
+        }
     }
 
     @api
@@ -276,6 +308,9 @@ export default class AvonniDateTimePicker extends LightningElement {
             fallbackValue: DATE_TIME_FORMAT.dayDefault,
             validValues: DATE_TIME_FORMAT.valid
         });
+
+        if (this.isConnected && this.variant === 'weekly')
+            this._generateTable();
     }
 
     @api
@@ -298,6 +333,9 @@ export default class AvonniDateTimePicker extends LightningElement {
             fallbackValue: WEEKDAY_FORMAT.default,
             validValues: WEEKDAY_FORMAT.valid
         });
+
+        if (this.isConnected && this.variant === 'weekly')
+            this._generateTable();
     }
 
     @api
@@ -324,6 +362,8 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
     set showDisabledDates(boolean) {
         this._showDisabledDates = normalizeBoolean(boolean);
+
+        if (this.isConnected) this._generateTable();
     }
 
     @api
@@ -335,6 +375,11 @@ export default class AvonniDateTimePicker extends LightningElement {
             fallbackValue: TYPES.default,
             validValues: TYPES.valid
         });
+
+        if (this.isConnected) {
+            this._processValue();
+            this._generateTable();
+        }
     }
 
     @api
@@ -391,6 +436,10 @@ export default class AvonniDateTimePicker extends LightningElement {
     @api
     showHelpMessageIfInvalid() {
         this.reportValidity();
+
+        // Show errors on date picker
+        const datePicker = this.template.querySelector('lightning-input');
+        if (datePicker) datePicker.reportValidity();
     }
 
     _disableMonthlyCalendarDates() {
@@ -456,6 +505,17 @@ export default class AvonniDateTimePicker extends LightningElement {
             currentTime = currentTime + this.timeSlotDuration;
         }
         this._timeSlots = timeSlots;
+    }
+
+    _initTimeFormat() {
+        if (
+            !this.timeFormatHour &&
+            !this.timeFormatMinute &&
+            !this.timeFormatSecond
+        ) {
+            this._timeFormatHour = DATE_TIME_FORMAT.hourDefault;
+            this._timeFormatMinute = DATE_TIME_FORMAT.minuteDefault;
+        }
     }
 
     _setFirstWeekDay(date) {

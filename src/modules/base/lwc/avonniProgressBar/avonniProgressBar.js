@@ -59,7 +59,7 @@ export default class AvonniProgressBar extends LightningElement {
     _value = 0;
     _showValue = false;
     _valuePosition = 'top-right';
-    _badges = [];
+    _referenceLines = [];
     _variant = 'base';
     _theme = 'base';
     _textured = false;
@@ -127,12 +127,12 @@ export default class AvonniProgressBar extends LightningElement {
     }
 
     @api
-    get badges() {
-        return this._badges;
+    get referenceLines() {
+        return this._referenceLines;
     }
 
-    set badges(value) {
-        this._badges = normalizeArray(value);
+    set referenceLines(value) {
+        this._referenceLines = normalizeArray(value);
     }
 
     @api

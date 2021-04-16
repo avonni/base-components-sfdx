@@ -6,17 +6,26 @@ const validEncodings = ['ISO_8859_1', 'UTF_8'];
 const validErrorCorrections = ['L', 'M', 'Q', 'H'];
 const validRenderAs = ['canvas', 'svg'];
 
+const DEFAULT_BORDER_WIDTH = 0;
+const DEFAULT_PADDING = 0;
+const DEFAULT_SIZE = 200;
+const DEFAULT_ENCODING = 'ISO_8859_1';
+const DEFAULT_ERROR_CORRECTION = 'L';
+const DEFAULT_RENDER_AS = '#svg';
+const DEFAULT_COLOR = '#000';
+const DEFAULT_BACKGROUND_COLOR = '#fff';
+
 export default class AvonniQrcode extends LightningElement {
-    _borderWidth = 0;
-    _padding = 0;
+    _borderWidth = DEFAULT_BORDER_WIDTH;
+    _padding = DEFAULT_PADDING;
     _value;
-    _size = 200;
-    _encoding = 'ISO_8859_1';
-    _errorCorrection = 'L';
-    _renderAs = 'svg';
-    _background = '#fff';
+    _size = DEFAULT_SIZE;
+    _encoding = DEFAULT_ENCODING;
+    _errorCorrection = DEFAULT_ERROR_CORRECTION;
+    _renderAs = DEFAULT_RENDER_AS;
+    _background = DEFAULT_BACKGROUND_COLOR;
     _borderColor;
-    _color = '#000';
+    _color = DEFAULT_COLOR;
 
     rendered = false;
 
@@ -31,7 +40,8 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set borderWidth(value) {
-        this._borderWidth = value;
+        this._borderWidth =
+            typeof value === 'number' ? value : DEFAULT_BORDER_WIDTH;
 
         if (this.rendered) {
             this.redraw();
@@ -44,7 +54,7 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set padding(value) {
-        this._padding = value;
+        this._padding = typeof value === 'number' ? value : DEFAULT_PADDING;
 
         if (this.rendered) {
             this.redraw();
@@ -71,7 +81,7 @@ export default class AvonniQrcode extends LightningElement {
 
     set size(value) {
         if ((!isNaN(value) && Number(value) < 1) || isNaN(value)) {
-            this._size = 200;
+            this._size = DEFAULT_SIZE;
         } else {
             this._size = Number(value);
         }
@@ -133,11 +143,18 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set background(color) {
-        let styles = new Option().style;
-        styles.color = color;
+        if (typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
 
-        if (styles.color === color || this.isHexColor(color.replace('#', ''))) {
-            this._background = color;
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._background = color;
+            }
+        } else {
+            this._background = DEFAULT_BACKGROUND_COLOR;
         }
 
         if (this.rendered) {
@@ -150,11 +167,16 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set borderColor(color) {
-        let styles = new Option().style;
-        styles.color = color;
+        if (typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
 
-        if (styles.color === color || this.isHexColor(color.replace('#', ''))) {
-            this._borderColor = color;
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._borderColor = color;
+            }
         }
 
         if (this.rendered) {
@@ -167,11 +189,18 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set color(color) {
-        let styles = new Option().style;
-        styles.color = color;
+        if (typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
 
-        if (styles.color === color || this.isHexColor(color.replace('#', ''))) {
-            this._color = color;
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._color = color;
+            }
+        } else {
+            this._color = DEFAULT_COLOR;
         }
 
         if (this.rendered) {

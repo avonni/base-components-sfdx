@@ -1,18 +1,16 @@
 /* Vertical line */
 .line_vertical {
-    border-right: 2px solid
-        var(--avonni-c-relationship-graph-line-color, #dddbda);
+    border-right: 2px solid var(--avonni-relationship-graph-line-color, #dddbda);
 }
 .line_horizontal {
     border-bottom: 2px solid
-        var(--avonni-c-relationship-graph-line-color, #dddbda);
+        var(--avonni-relationship-graph-line-color, #dddbda);
     margin-left: 10rem;
 }
 
 .actions::before {
     content: '';
-    border-right: 2px solid
-        var(--avonni-c-relationship-graph-line-color, #dddbda);
+    border-right: 2px solid var(--avonni-relationship-graph-line-color, #dddbda);
     position: absolute;
     left: var(--lwc-spacingMedium, 1rem);
     top: 0;
