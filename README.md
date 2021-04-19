@@ -58,7 +58,7 @@ We use the [Jest JavaScript Testing Framework](https://jestjs.io/docs/en/getting
 
 ## Contributing
 
-We are not accepting contributions at this time but you can share any ideas on our [roadmap](https://roadmap.avonnicomponents.com/tabs/8-ideas)
+We are not accepting contributions at this time but you can share any ideas on our [roadmap](https://roadmap.avonnicomponents.com/tabs/8-ideas).
 
 ## License
 
