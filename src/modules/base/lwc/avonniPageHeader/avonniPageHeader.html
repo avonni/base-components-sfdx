@@ -1,18 +1,63 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
 <template>
     <div class={computedOuterClass}>
         <div class="slds-page-header__row">
             <div class="slds-page-header__col-title">
                 <div class="slds-media">
-                    <div class="slds-media__figure">
-                        <div class={computedIconClass}>
-                            <c-avonni-primitive-icon
-                                svg-class="slds-icon slds-page-header__icon"
-                                icon-name={iconName}
-                                variant="bare"
-                            >
-                            </c-avonni-primitive-icon>
+                    <template if:true={iconName}>
+                        <div class="slds-media__figure">
+                            <div class={computedIconClass}>
+                                <c-avonni-primitive-icon
+                                    svg-class="slds-icon slds-page-header__icon"
+                                    icon-name={iconName}
+                                    variant="bare"
+                                >
+                                </c-avonni-primitive-icon>
+                            </div>
+                            <div class={computedMobileIconClass}>
+                                <c-avonni-primitive-icon
+                                    svg-class="slds-icon"
+                                    icon-name={iconName}
+                                    variant="bare"
+                                    size="large"
+                                >
+                                </c-avonni-primitive-icon>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                     <div class="slds-media__body">
                         <div class="slds-page-header__name">
                             <div class="slds-page-header__name-title">
@@ -62,7 +107,7 @@
                 </div>
             </div>
             <template if:true={showActions}>
-                <div class="slds-page-header__col-actions">
+                <div class="slds-page-header__col-actions slds-show_small">
                     <div class="slds-page-header__controls">
                         <div class="slds-page-header__control">
                             <slot name="actions"></slot>
@@ -75,7 +120,7 @@
             <div class="slds-page-header__col-meta">
                 <template if:false={isBaseVariant}>
                     <p class="slds-page-header__meta-text slds-truncate">
-                        <template if:true={hasStringInfo}> {info} </template>
+                        <template if:true={hasStringInfo}>{info}</template>
                         <template if:false={hasStringInfo}>
                             <slot name="info"></slot>
                         </template>
@@ -91,42 +136,16 @@
             </template>
         </div>
         <template if:true={isRecordHomeVariant}>
-            <template if:false={fieldsIsEmpty}>
+            <template if:true={showDetails}>
                 <div
                     class="slds-page-header__row slds-page-header__row_gutters"
                 >
                     <div class="slds-page-header__col-details">
-                        <ul class="slds-page-header__detail-row">
-                            <template for:each={fields} for:item="field">
-                                <li
-                                    class="slds-page-header__detail-block"
-                                    key={field.label}
-                                >
-                                    <div
-                                        class="slds-text-title slds-truncate"
-                                        title={field.label}
-                                    >
-                                        {field.label}
-                                    </div>
-                                    <div
-                                        class="slds-truncate"
-                                        title={field.value}
-                                    >
-                                        <c-avonni-primitive-page-header-field
-                                            field={field}
-                                            label={field.label}
-                                            value={field.value}
-                                            type={field.type}
-                                        ></c-avonni-primitive-page-header-field>
-                                    </div>
-                                </li>
-                            </template>
-                        </ul>
+                        <div class="slds-page-header__detail-row">
+                            <slot name="details"></slot>
+                        </div>
                     </div>
                 </div>
-            </template>
-            <template if:true={fieldsIsEmpty}>
-                <slot name="details"></slot>
             </template>
         </template>
     </div>

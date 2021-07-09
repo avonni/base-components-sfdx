@@ -1,3 +1,37 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
 <template>
     <c-avonni-dialog show-dialog={showWizard} onclosedialog={handleCloseDialog}>
         <!-- Header -->
@@ -20,47 +54,60 @@
             <template if:false={hideNavigation}>
                 <div if:true={indicatorInHeader} class="slds-m-top_small">
                     <c-avonni-primitive-wizard-navigation
-                        position="header"
+                        position="top"
                         indicator-position={indicatorPosition}
                         current-step={currentStep}
-                        steps={steps}
                         indicator-type={indicatorType}
                         hide-indicator={hideIndicator}
                         fraction-prefix-label={fractionPrefixLabel}
                         fraction-label={fractionLabel}
                     >
-                        <slot name="actions"></slot>
                     </c-avonni-primitive-wizard-navigation>
                 </div>
             </template>
         </div>
 
         <!-- Steps -->
-        <p class="slds-text-color_error">{errorMessage}</p>
-        <slot onwizardstepregister={handleStepRegister}></slot>
+        <div class={wrapperClass}>
+            <div class={mainColClass}>
+                <p class="slds-text-color_error">{errorMessage}</p>
+                <slot onwizardstepregister={handleStepRegister}></slot>
+            </div>
+            <div class={sideColClass} if:true={indicatorOnSide}>
+                <c-avonni-primitive-wizard-navigation
+                    position="side"
+                    onchange={handleChange}
+                    current-step={currentStep}
+                    indicator-type={indicatorType}
+                    indicator-position={indicatorPosition}
+                    hide-indicator={hideIndicator}
+                    fraction-prefix-label={fractionPrefixLabel}
+                    fraction-label={fractionLabel}
+                ></c-avonni-primitive-wizard-navigation>
+            </div>
+        </div>
 
         <!-- Footer -->
         <div slot="footer" if:false={hideNavigation}>
             <c-avonni-primitive-wizard-navigation
-                position="footer"
+                position="bottom"
                 onchange={handleChange}
                 current-step={currentStep}
-                steps={steps}
                 indicator-type={indicatorType}
                 indicator-position={indicatorPosition}
                 hide-indicator={hideIndicator}
-                button-previous-icon-name={buttonPreviousIconName}
-                button-previous-icon-position={buttonPreviousIconPosition}
-                button-previous-label={buttonPreviousLabel}
-                button-previous-variant={buttonPreviousVariant}
-                button-next-icon-name={buttonNextIconName}
-                button-next-icon-position={buttonNextIconPosition}
-                button-next-label={buttonNextLabel}
-                button-next-variant={buttonNextVariant}
-                button-finish-icon-name={buttonFinishIconName}
-                button-finish-icon-position={buttonFinishIconPosition}
-                button-finish-label={buttonFinishLabel}
-                button-finish-variant={buttonFinishVariant}
+                previous-button-icon-name={previousButtonIconName}
+                previous-button-icon-position={previousButtonIconPosition}
+                previous-button-label={previousButtonLabel}
+                previous-button-variant={previousButtonVariant}
+                next-button-icon-name={nextButtonIconName}
+                next-button-icon-position={nextButtonIconPosition}
+                next-button-label={nextButtonLabel}
+                next-button-variant={nextButtonVariant}
+                finish-button-icon-name={finishButtonIconName}
+                finish-button-icon-position={finishButtonIconPosition}
+                finish-button-label={finishButtonLabel}
+                finish-button-variant={finishButtonVariant}
                 button-alignment-bump={buttonAlignmentBump}
                 action-position={actionPosition}
                 fraction-prefix-label={fractionPrefixLabel}

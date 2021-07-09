@@ -1,27 +1,61 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
-const validVariants = [
-    'base',
-    'neutral',
-    'brand',
-    'brand-outline',
-    'destructive',
-    'destructive-text',
-    'inverse',
-    'success'
-];
+const BUTTON_VARIANTS = {
+    valid: [
+        'base',
+        'neutral',
+        'brand',
+        'brand-outline',
+        'destructive',
+        'destructive-text',
+        'inverse',
+        'success'
+    ],
+    default: 'neutral'
+};
 
-const validTypes = ['count-up', 'count-down'];
-const validIconPositions = ['left', 'right'];
-const validFormats = ['hh:mm:ss', 'mm:ss', 'hh:mm', 'hh', 'mm', 'ss'];
+const COUNT_TYPES = { valid: ['count-up', 'count-down'], default: 'count-up' };
+const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
+const TIME_FORMATS = {
+    valid: ['hh:mm:ss', 'mm:ss', 'hh:mm', 'hh', 'mm', 'ss'],
+    default: 'hh:mm:ss'
+};
 
 const DEFAULT_VALUE = 0;
 const DEFAULT_DURATION = 1;
-const DEFAULT_VARIANT = 'neutral';
-const DEFAULT_TYPE = 'count-up';
-const DEFAULT_ICON_POSITION = 'left';
-const DEFAULT_FORMAT = 'hh:mm:ss';
 const DEFAULT_AUTO_START = false;
 const DEFAULT_REPEAT = false;
 
@@ -30,10 +64,10 @@ export default class AvonniTimer extends LightningElement {
 
     _value = DEFAULT_VALUE;
     _duration = DEFAULT_DURATION;
-    _variant = DEFAULT_VARIANT;
-    _type = DEFAULT_TYPE;
-    _iconPosition = DEFAULT_ICON_POSITION;
-    _format = DEFAULT_FORMAT;
+    _variant = BUTTON_VARIANTS.default;
+    _type = COUNT_TYPES.default;
+    _iconPosition = ICON_POSITIONS.default;
+    _format = TIME_FORMATS.default;
     _autoStart = DEFAULT_AUTO_START;
     _repeat = DEFAULT_REPEAT;
 
@@ -78,8 +112,8 @@ export default class AvonniTimer extends LightningElement {
 
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: 'neutral',
-            validValues: validVariants
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -89,8 +123,8 @@ export default class AvonniTimer extends LightningElement {
 
     set type(value) {
         this._type = normalizeString(value, {
-            fallbackValue: 'count-up',
-            validValues: validTypes
+            fallbackValue: COUNT_TYPES.default,
+            validValues: COUNT_TYPES.valid
         });
     }
 
@@ -100,8 +134,8 @@ export default class AvonniTimer extends LightningElement {
 
     set iconPosition(value) {
         this._iconPosition = normalizeString(value, {
-            fallbackValue: 'left',
-            validValues: validIconPositions
+            fallbackValue: ICON_POSITIONS.default,
+            validValues: ICON_POSITIONS.valid
         });
     }
 
@@ -111,8 +145,8 @@ export default class AvonniTimer extends LightningElement {
 
     set format(value) {
         this._format = normalizeString(value, {
-            fallbackValue: 'hh:mm:ss',
-            validValues: validFormats
+            fallbackValue: TIME_FORMATS.default,
+            validValues: TIME_FORMATS.valid
         });
     }
 

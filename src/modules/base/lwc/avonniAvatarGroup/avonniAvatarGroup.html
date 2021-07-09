@@ -1,3 +1,37 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
 <template>
     <template if:true={isClassic}>
         <span class={avatarGroupClass}>
@@ -85,16 +119,73 @@
                             data-item-id={index}
                             data-type="show"
                             class={avatarInlineClass}
-                            onclick={handleAvatarClick}
-                            onblur={handleBlur}
                             role="button"
                             onkeyup={handleAvatarClick}
+                            tags={item.tags}
                             tabindex="0"
-                        ></c-avonni-avatar>
+                            onclick={handleAvatarClick}
+                        >
+                        </c-avonni-avatar>
                     </span>
                 </template>
             </template>
             <template if:true={item.showMore}>
+                <template if:true={showPopover}>
+                    <div
+                        key={item.key}
+                        class={hiddenListStyle}
+                        onmouseenter={cancelBlur}
+                        onmouseleave={allowBlur}
+                    >
+                        <template
+                            for:each={listHiddenItems}
+                            for:item="item"
+                            for:index="index"
+                        >
+                            <div
+                                key={item.key}
+                                class="avonni-avatar-group__hidden-avatar-container"
+                                onclick={handleAvatarClick}
+                                data-item-id={index}
+                                data-type="hidden"
+                                tabindex="0"
+                            >
+                                <c-avonni-primitive-avatar
+                                    alternative-text={item.alternativeText}
+                                    fallback-icon-name={item.fallbackIconName}
+                                    initials={item.initials}
+                                    src={item.src}
+                                    variant={variant}
+                                    size={size}
+                                    status={item.status}
+                                    status-title={item.statusTitle}
+                                    status-position={item.statusPosition}
+                                    presence={item.presence}
+                                    presence-title={item.presenceTitle}
+                                    presence-position={item.presencePosition}
+                                    entity-icon-name={item.entityIconName}
+                                    entity-initials={item.entityInitials}
+                                    entity-variant={item.entityVariant}
+                                    entity-src={item.entitySrc}
+                                    entity-position={item.entityPosition}
+                                    data-item-id={index}
+                                    data-type="hidden"
+                                    class={avatarInlineClass}
+                                    onclick={handleAvatarClick}
+                                    role="button"
+                                    onkeyup={handleAvatarClick}
+                                ></c-avonni-primitive-avatar>
+                                <p
+                                    onclick={handleAvatarClick}
+                                    data-item-id={index}
+                                    data-type="hidden"
+                                >
+                                    {item.alternativeText}
+                                </p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
                 <div
                     class="slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
                     key={item.key}
@@ -121,73 +212,35 @@
                     <template if:false={isNotList}>
                         <lightning-button
                             variant={listButtonVariant}
-                            label={listButtonLabel}
-                            icon-name={listButtonIconName}
-                            icon-position={listButtonIconPosition}
+                            label={currentlistButtonLabel}
+                            icon-name={currentListButtonIcon}
+                            icon-position={currentListButtonPosition}
                             data-item-id={index}
                             data-type="show"
-                            onclick={handleAvatarClick}
+                            onclick={toggleShowHiddenList}
                             tabindex="0"
-                            class="slds-m-top_small slds-m-left_small slds-show avonni-avatar-group__list-button"
+                            class="slds-m-top_small slds-m-bottom_small slds-m-left_small slds-show avonni-avatar-group__list-button"
                         ></lightning-button>
-                    </template>
-                    <template if:true={showPopover}>
-                        <div
-                            class="slds-dropdown slds-dropdown_left"
-                            onmouseenter={cancelBlur}
-                            onmouseleave={allowBlur}
-                        >
-                            <template
-                                for:each={listHiddenItems}
-                                for:item="item"
-                                for:index="index"
-                            >
-                                <div
-                                    key={item.key}
-                                    class="avonni-avatar-group__hidden-avatar-container"
-                                    onclick={handleAvatarClick}
-                                    data-item-id={index}
-                                    data-type="hidden"
-                                >
-                                    <c-avonni-primitive-avatar
-                                        alternative-text={item.alternativeText}
-                                        fallback-icon-name={item.fallbackIconName}
-                                        initials={item.initials}
-                                        src={item.src}
-                                        variant={variant}
-                                        size={size}
-                                        status={item.status}
-                                        status-title={item.statusTitle}
-                                        status-position={item.statusPosition}
-                                        presence={item.presence}
-                                        presence-title={item.presenceTitle}
-                                        presence-position={item.presencePosition}
-                                        entity-icon-name={item.entityIconName}
-                                        entity-initials={item.entityInitials}
-                                        entity-variant={item.entityVariant}
-                                        entity-src={item.entitySrc}
-                                        entity-position={item.entityPosition}
-                                        data-item-id={index}
-                                        data-type="hidden"
-                                        class={avatarInlineClass}
-                                        onclick={handleAvatarClick}
-                                        role="button"
-                                        onkeyup={handleAvatarClick}
-                                        tabindex="0"
-                                    ></c-avonni-primitive-avatar>
-                                    <p
-                                        onclick={handleAvatarClick}
-                                        data-item-id={index}
-                                        data-type="hidden"
-                                    >
-                                        {item.alternativeText}
-                                    </p>
-                                </div>
-                            </template>
-                        </div>
                     </template>
                 </div>
             </template>
+        </template>
+        <template if:true={actionIconName}>
+            <div class={actionButtonLayoutClass}>
+                <button
+                    type="button"
+                    title="ActionButton"
+                    onclick={actionClick}
+                    class={actionButtonClass}
+                >
+                    <lightning-icon
+                        icon-name={actionIconName}
+                        size={actionButtonIconSize}
+                        onclick={actionClick}
+                        class="slds-button slds-button_icon slds-current-color avonni-avatar-group__action-button"
+                    ></lightning-icon>
+                </button>
+            </div>
         </template>
     </template>
 </template>

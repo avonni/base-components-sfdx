@@ -1,27 +1,56 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 import { generateUniqueId, classSet } from 'c/utils';
 
-const VALID_SELECTIONS = {
+const RATING_SELECTIONS = {
     valid: ['continuous', 'single'],
-    default: 'continues'
+    default: 'continuous'
 };
 
-const VALID_SIZES = {
+const RATING_SIZES = {
     valid: ['x-small', 'small', 'medium', 'large'],
     default: 'large'
 };
 
-const VALID_LABEL_VARIANTS = {
+const LABEL_VARIANTS = {
     valid: ['standard', 'label-inline', 'label-hidden', 'label-stacked'],
     default: 'standard'
 };
 
 const DEFAULT_MIN = 1;
 const DEFAULT_MAX = 5;
-const DEFAULT_VARIANT = 'standard';
-const DEFAULT_ICON_SIZE = 'large';
-const DEFAULT_SELECTION = 'continuous';
 
 export default class AvonniRating extends LightningElement {
     @api label;
@@ -32,9 +61,9 @@ export default class AvonniRating extends LightningElement {
     _min = DEFAULT_MIN;
     _max = DEFAULT_MAX;
     _value;
-    _variant = DEFAULT_VARIANT;
-    _iconSize = DEFAULT_ICON_SIZE;
-    _selection = DEFAULT_SELECTION;
+    _variant = LABEL_VARIANTS.default;
+    _iconSize = RATING_SIZES.default;
+    _selection = RATING_SELECTIONS.default;
     _disabled;
     _readOnly;
     _valueHidden;
@@ -133,8 +162,8 @@ export default class AvonniRating extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            defaultValue: VALID_LABEL_VARIANTS.default,
-            validValues: VALID_LABEL_VARIANTS.valid
+            fallbackValue: LABEL_VARIANTS.default,
+            validValues: LABEL_VARIANTS.valid
         });
     }
 
@@ -145,8 +174,8 @@ export default class AvonniRating extends LightningElement {
 
     set iconSize(size) {
         this._iconSize = normalizeString(size, {
-            defaultValue: VALID_SIZES.default,
-            validValues: VALID_SIZES.valid
+            fallbackValue: RATING_SIZES.default,
+            validValues: RATING_SIZES.valid
         });
     }
 
@@ -157,8 +186,8 @@ export default class AvonniRating extends LightningElement {
 
     set selection(selection) {
         this._selection = normalizeString(selection, {
-            fallbackValue: VALID_SELECTIONS.default,
-            validValues: VALID_SELECTIONS.valid
+            fallbackValue: RATING_SELECTIONS.default,
+            validValues: RATING_SELECTIONS.valid
         });
 
         if (this.init) {
@@ -205,10 +234,6 @@ export default class AvonniRating extends LightningElement {
         return !this._valueHidden && this.value;
     }
 
-    get isNumber() {
-        return this._variant === 'number';
-    }
-
     get items() {
         let items = [];
 
@@ -241,7 +266,9 @@ export default class AvonniRating extends LightningElement {
             this._value = Number(event.target.value);
 
             const selectedEvent = new CustomEvent('change', {
-                detail: this._value
+                detail: {
+                    value: this._value
+                }
             });
             this.dispatchEvent(selectedEvent);
 

@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { normalizeArray } from 'c/utilsPrivate';
@@ -13,9 +45,8 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
     @api expandIconName;
     @api activeGroups;
     @api hideItemsCount;
-    @api activeSelection;
 
-    _groups;
+    _groups = [];
     _selectedGroups;
     _selectedItemName;
     _selectedItem;
@@ -48,10 +79,12 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
     @api
     get currentLevelHeight() {
         const currentLevel = this.currentLevel;
+        if (!currentLevel) return 0;
+
         const lastGroup = currentLevel.querySelector(
             'c-primitive-relationship-graph-group:last-child'
         );
-        if (!currentLevel || !lastGroup) return 0;
+        if (!lastGroup) return 0;
 
         const currentLevelHeight = currentLevel.offsetHeight;
         const lastGroupHeight = lastGroup.height;
@@ -61,6 +94,7 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
 
     @api
     get currentLevelWidth() {
+        if (!this.currentLevel) return 0;
         return this.currentLevel.getBoundingClientRect().width;
     }
 
@@ -172,17 +206,20 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
             const itemPosition = selectedItem.getBoundingClientRect();
 
             // Distance between the center of the selected item and the top of the first child group
+            // 24 is removed to compensate for the line not starting at the complete top of the level
             const itemHeight =
                 itemPosition.top +
                 itemPosition.height / 2 +
                 scroll -
-                currentLevelTop;
+                currentLevelTop -
+                24;
             // Distance between the top of the two boundary child groups
+
             const childHeight = child.currentLevelHeight;
 
             const height =
                 itemHeight > childHeight
-                    ? `calc(${itemHeight}px - 1.5rem)`
+                    ? `${itemHeight}px`
                     : `${childHeight}px`;
             line.setAttribute('style', `height: ${height};`);
         }
@@ -197,7 +234,8 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
             const selectedItem = selectedGroup.items.find(
                 (item) => item.selected
             );
-            if (selectedItem.groups) this._selectedGroups = selectedItem.groups;
+            if (selectedItem && selectedItem.groups)
+                this._selectedGroups = selectedItem.groups;
         }
     }
 

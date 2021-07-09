@@ -1,43 +1,76 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import {
     colorType,
     generateColors,
     observePosition,
     normalizeBoolean,
-    normalizeString
+    normalizeString,
+    normalizeArray
 } from 'c/utilsPrivate';
 
 import { classSet } from 'c/utils';
 import { generateUniqueId } from 'c/utils';
 
-const validVariants = [
+const validVariants = {valid: [
     'standard',
     'label-inline',
     'label-hidden',
     'label-stacked'
-];
+], default: 'standard'};
 
-const validTypes = ['base', 'custom', 'predefined'];
+const LABEL_TYPES = {valid: ['base', 'custom', 'predefined'], default: 'base'};
 
-const validMenuVariants = [
+const MENU_VARIANTS = {valid: [
     'bare',
     'container',
     'border',
     'border-filled',
     'bare-inverse',
     'border-inverse'
-];
+], default: 'border'};
 
-const validMenuIconSizes = ['xx-small', 'x-small', 'small', 'medium', 'large'];
+const MENU_ICON_SIZES = {valid: ['xx-small', 'x-small', 'small', 'medium', 'large'], default: 'x-small'};
 
-const validMenuAlignments = [
+const MENU_ALIGNMENTS = {valid: [
     'left',
     'center',
     'right',
     'bottom-left',
     'bottom-center',
     'bottom-right'
-];
+], default: 'left'};
 
 const DEFAULT_COLORS = [
     '#e3abec',
@@ -70,6 +103,8 @@ const DEFAULT_COLORS = [
     '#b85d0d'
 ];
 
+const DEFAULT_MESSAGE_WHEN_BAD_INPUT = 'Please ensure value is correct';
+
 export default class AvonniColorPicker extends LightningElement {
     @api accessKey;
     @api fieldLevelHelp;
@@ -77,22 +112,22 @@ export default class AvonniColorPicker extends LightningElement {
     @api name;
     @api menuIconName;
     @api menuLabel;
-    @api colors = DEFAULT_COLORS;
-    @api messageWhenBadInput = 'Please ensure value is correct';
 
     _value;
-    _variant = 'standard';
-    _type = 'base';
-    _menuVariant = 'border';
-    _menuIconSize = 'x-small';
-    _menuAlignment = 'left';
+    _variant = validVariants.default;
+    _type = LABEL_TYPES.default;
+    _menuVariant = MENU_VARIANTS.default;
+    _menuIconSize = MENU_ICON_SIZES.default;
+    _menuAlignment = MENU_ALIGNMENTS.default;
     _disabled = false;
     _isLoading = false;
     _readOnly = false;
     _required = false;
     _hideColorInput = false;
     _menuNubbin = false;
+    _colors = DEFAULT_COLORS;
     _opacity = false;
+    _messageWhenBadInput = DEFAULT_MESSAGE_WHEN_BAD_INPUT;
 
     _dropdownVisible = false;
     _dropdownOpened = false;
@@ -102,8 +137,6 @@ export default class AvonniColorPicker extends LightningElement {
     newValue;
 
     connectedCallback() {
-        this._connected = true;
-
         if (!this.name) {
             this.name = generateUniqueId();
         }
@@ -133,8 +166,8 @@ export default class AvonniColorPicker extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: 'standard',
-            validValues: validVariants
+            fallbackValue: validVariants.default,
+            validValues: validVariants.valid
         });
     }
 
@@ -145,8 +178,8 @@ export default class AvonniColorPicker extends LightningElement {
 
     set type(type) {
         this._type = normalizeString(type, {
-            fallbackValue: 'base',
-            validValues: validTypes
+            fallbackValue: LABEL_TYPES.default,
+            validValues: LABEL_TYPES.valid
         });
     }
 
@@ -157,8 +190,8 @@ export default class AvonniColorPicker extends LightningElement {
 
     set menuVariant(variant) {
         this._menuVariant = normalizeString(variant, {
-            fallbackValue: 'border',
-            validValues: validMenuVariants
+            fallbackValue: MENU_VARIANTS.default,
+            validValues: MENU_VARIANTS.valid
         });
     }
 
@@ -169,8 +202,8 @@ export default class AvonniColorPicker extends LightningElement {
 
     set menuIconSize(size) {
         this._menuIconSize = normalizeString(size, {
-            fallbackValue: 'x-small',
-            validValues: validMenuIconSizes
+            fallbackValue: MENU_ICON_SIZES.default,
+            validValues: MENU_ICON_SIZES.valid
         });
     }
 
@@ -181,8 +214,8 @@ export default class AvonniColorPicker extends LightningElement {
 
     set menuAlignment(value) {
         this._menuAlignment = normalizeString(value, {
-            fallbackValue: 'left',
-            validValues: validMenuAlignments
+            fallbackValue: MENU_ALIGNMENTS.default,
+            validValues: MENU_ALIGNMENTS.valid
         });
     }
 
@@ -223,6 +256,16 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     @api
+    get colors() {
+        return this._colors;
+    }
+
+    set colors(value) {
+        const colors = normalizeArray(value);
+        this._colors = colors.length > 0 ? colors : DEFAULT_COLORS;
+    }
+    
+    @api
     get hideColorInput() {
         return this._hideColorInput;
     }
@@ -247,6 +290,15 @@ export default class AvonniColorPicker extends LightningElement {
 
     set opacity(value) {
         this._opacity = normalizeBoolean(value);
+    }
+
+    @api
+    get messageWhenBadInput() {
+        return this._messageWhenBadInput;
+    }
+
+    set messageWhenBadInput(value) {
+        this._messageWhenBadInput = typeof value === 'string' ? value.trim() : DEFAULT_MESSAGE_WHEN_BAD_INPUT;
     }
 
     get isBase() {
@@ -275,7 +327,7 @@ export default class AvonniColorPicker extends LightningElement {
 
     @api
     focus() {
-        if (this._connected) {
+        if (this.isConnected) {
             this.focusOnButton();
         }
     }
@@ -619,7 +671,7 @@ export default class AvonniColorPicker extends LightningElement {
         if (this.isAutoAlignment() && this._dropdownVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
             setTimeout(() => {
-                if (this._connected) {
+                if (this.isConnected) {
                     observePosition(this, 300, this._boundingRect, () => {
                         this.close();
                     });

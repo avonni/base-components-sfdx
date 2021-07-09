@@ -1,15 +1,52 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import { generateUniqueId } from 'c/inputUtils';
 
-const validAligns = ['left', 'center', 'right', 'fill'];
+const PAGINATION_ALIGNS = {valid: ['left', 'center', 'right', 'fill'], default: 'left'};
+
+const DEFAULT_PER_PAGE = 20
+const DEFAULT_TOTAL_ROWS = 0
+const DEFAULT_ELLIPSIS_TEXT = '...';
+const DEFAULT_VALUE = 1
+const DEFAULT_LIMIT = 5
 
 export default class AvonniPagination extends LightningElement {
-    @api perPage = 20;
-    @api totalRows = 0;
-    @api ellipsisText = '...';
-    @api ellipsisClass;
+    @api perPage = DEFAULT_PER_PAGE;
+    @api totalRows = DEFAULT_TOTAL_ROWS;
+    @api ellipsisText = DEFAULT_ELLIPSIS_TEXT;
     @api firstButtonLabel;
     @api firstButtonIconName;
     @api previousButtonLabel;
@@ -17,11 +54,11 @@ export default class AvonniPagination extends LightningElement {
     @api lastButtonLabel;
     @api lastButtonIconName;
 
-    _value = 1;
-    _limit = 5;
+    _value = DEFAULT_VALUE;
+    _limit = DEFAULT_LIMIT;
     _nextButtonIconName;
     _previousButtonIconName;
-    _align = 'left';
+    _align = PAGINATION_ALIGNS.default;
     _disabled = false;
     init = false;
 
@@ -119,8 +156,8 @@ export default class AvonniPagination extends LightningElement {
 
     set align(align) {
         this._align = normalizeString(align, {
-            fallbackValue: 'left',
-            validValues: validAligns
+            fallbackValue: PAGINATION_ALIGNS.default,
+            validValues: PAGINATION_ALIGNS.valid
         });
     }
 

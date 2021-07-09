@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 .avonni-avatar-group__avatar {
     display: inline-block;
     position: relative;
@@ -11,6 +43,7 @@
     width: 4.5rem;
     height: 4.5rem;
 }
+
 .avonni-avatar-group_x-large .slds-avatar-grouped__primary {
     width: 58px;
     height: 58px;
@@ -19,10 +52,12 @@
     width: 35px;
     height: 35px;
 }
+
 .avonni-avatar-group_xx-large {
     width: 5.5rem;
     height: 5.5rem;
 }
+
 .avonni-avatar-group_xx-large .slds-avatar-grouped__primary {
     width: 72px;
     height: 72px;
@@ -32,27 +67,33 @@
     height: 43px;
 }
 
-.avonni-avatar-group_in-line.avonni-avatar-x-small {
+.avonni-avatar-group_in-line.avonni-avatar-x-small,
+.avonni-avatar-group_action-button-in-line.avonni-action-button-x-small {
     margin-left: -4px;
 }
 
-.avonni-avatar-group_in-line.avonni-avatar-small {
+.avonni-avatar-group_in-line.avonni-avatar-small,
+.avonni-avatar-group_action-button-in-line.avonni-action-button-small {
     margin-left: -6px;
 }
 
-.avonni-avatar-group_in-line.avonni-avatar-medium {
+.avonni-avatar-group_in-line.avonni-avatar-medium,
+.avonni-avatar-group_action-button-in-line.avonni-action-button-medium {
     margin-left: -8px;
 }
 
-.avonni-avatar-group_in-line.avonni-avatar-large {
+.avonni-avatar-group_in-line.avonni-avatar-large,
+.avonni-avatar-group_action-button-in-line.avonni-action-button-large {
     margin-left: -10px;
 }
 
-.avonni-avatar-group_in-line.avonni-avatar-x-large {
+.avonni-avatar-group_in-line.avonni-avatar-x-large,
+.avonni-avatar-group_action-button-in-line.avonni-action-button-x-large {
     margin-left: -12px;
 }
 
-.avonni-avatar-group_in-line.avonni-avatar-xx-large {
+.avonni-avatar-group_in-line.avonni-avatar-xx-large,
+.avonni-avatar-group_action-button-in-line.avonni-action-button-xx-large {
     margin-left: -14px;
 }
 
@@ -65,6 +106,7 @@
     display: block;
 }
 .avonni-avatar-group__avatar-container.slds-show,
+.avonni-avatar-group__action-button-list.slds-show,
 .avonni-avatar-group__hidden-avatar-container {
     padding: 0.5rem 0.75rem;
 }
@@ -94,7 +136,9 @@
 /* Outline --- */
 .slds-avatar:focus,
 .avonni-avatar-group__avatar:focus,
-.slds-avatar-grouped:focus {
+.slds-avatar-grouped:focus,
+.avonni-avatar-group__hidden-avatar-container:focus,
+.avonni-avatar-group__action-button:focus {
     outline: none;
     box-shadow: rgb(53, 125, 219) 0 0 0 2px !important;
 }
@@ -109,4 +153,65 @@
 
 .avonni-avatar-group__plus {
     color: #fff;
+}
+
+/* Action Button */
+.avonni-avatar-group__action-button-base-layout {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+.avonni-avatar-group__action-button-list {
+    display: block;
+}
+
+.avonni-avatar-group__action-button {
+    color: #42526e;
+    background-color: #e1e4e9;
+    border-width: 0px;
+    padding: 0px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.avonni-avatar-group__action-button_circle {
+    border-radius: var(--lwc-BorderRadiusCircle, 50%);
+}
+
+.avonni-avatar-group__action-button_square {
+    border-radius: var(--lwc-borderRadiusMedium, 0.3rem);
+}
+
+.avonni-avatar-group__action-button_xx-large {
+    width: 72px;
+    height: 72px;
+}
+.avonni-avatar-group__action-button_x-large {
+    width: 56px;
+    height: 56px;
+}
+.avonni-avatar-group__action-button_large {
+    width: 3rem;
+    height: 3rem;
+}
+.avonni-avatar-group__action-button_medium {
+    width: 2rem;
+    height: 2rem;
+}
+.avonni-avatar-group__action-button_small {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+.avonni-avatar-group__action-button_x-small {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.circleBorder {
+    border: 3px white solid;
+}
+
+.squareBorder {
+    border: 3px white solid;
+    border-radius: 5px;
 }

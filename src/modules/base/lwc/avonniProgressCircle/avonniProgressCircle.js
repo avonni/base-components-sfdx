@@ -1,27 +1,68 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
-import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
+import { normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const VARIANTS = { valid: ['standard', 'value-hidden'], default: 'standard' };
-const DIRECTIONS = { valid: ['fill', 'drain'], default: 'fill' };
-const SIZES = {
+const VALUE_VARIANTS = { valid: ['standard', 'value-hidden'], default: 'standard' };
+
+const PROGRESS_CIRCLE_DIRECTIONS = { valid: ['fill', 'drain'], default: 'fill' };
+
+const PROGRESS_CIRCLE_SIZES = {
     valid: ['x-small', 'small', 'medium', 'large', 'x-large'],
     default: 'medium'
 };
+
+const PROGRESS_CIRCLE_THICKNESSES = {
+    valid: ['x-small', 'small', 'medium', 'large', 'x-large'],
+    default: 'medium'
+};
+
 const TITLE_POSITIONS = { valid: ['top', 'bottom'], default: 'bottom' };
+
 const DEFAULT_COLOR = '#1589ee';
+const DEFAULT_VALUE = 0;
 
 export default class AvonniProgressCircle extends LightningElement {
     @api title;
     @api label;
 
-    _titlePosition = 'bottom';
-    _value = 0;
-    _variant = 'standard';
-    _direction = 'fill';
-    _size = 'medium';
-    _thickness = 'medium';
-    _round = false;
+    _titlePosition = TITLE_POSITIONS.default;
+    _value = DEFAULT_VALUE;
+    _variant = VALUE_VARIANTS.default;
+    _direction = PROGRESS_CIRCLE_DIRECTIONS.default;
+    _size = PROGRESS_CIRCLE_SIZES.default;
+    _thickness = PROGRESS_CIRCLE_THICKNESSES.default;
     _color = DEFAULT_COLOR;
 
     @api
@@ -58,8 +99,8 @@ export default class AvonniProgressCircle extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid
+            fallbackValue: VALUE_VARIANTS.default,
+            validValues: VALUE_VARIANTS.valid
         });
     }
 
@@ -70,8 +111,8 @@ export default class AvonniProgressCircle extends LightningElement {
 
     set direction(direction) {
         this._direction = normalizeString(direction, {
-            fallbackValue: DIRECTIONS.default,
-            validValues: DIRECTIONS.valid
+            fallbackValue: PROGRESS_CIRCLE_DIRECTIONS.default,
+            validValues: PROGRESS_CIRCLE_DIRECTIONS.valid
         });
     }
 
@@ -82,8 +123,8 @@ export default class AvonniProgressCircle extends LightningElement {
 
     set size(size) {
         this._size = normalizeString(size, {
-            fallbackValue: SIZES.default,
-            validValues: SIZES.valid
+            fallbackValue: PROGRESS_CIRCLE_SIZES.default,
+            validValues: PROGRESS_CIRCLE_SIZES.valid
         });
     }
 
@@ -94,18 +135,9 @@ export default class AvonniProgressCircle extends LightningElement {
 
     set thickness(thickness) {
         this._thickness = normalizeString(thickness, {
-            fallbackValue: SIZES.default,
-            validValues: SIZES.valid
+            fallbackValue: PROGRESS_CIRCLE_THICKNESSES.default,
+            validValues: PROGRESS_CIRCLE_THICKNESSES.valid
         });
-    }
-
-    @api
-    get round() {
-        return this._round;
-    }
-
-    set round(value) {
-        this._round = normalizeBoolean(value);
     }
 
     @api

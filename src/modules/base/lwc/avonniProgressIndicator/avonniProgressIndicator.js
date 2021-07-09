@@ -1,30 +1,92 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeArray } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const TYPES = { valid: ['base', 'arrow'], default: 'base' };
+const PROGRESS_INDICATOR_TYPES = { valid: ['base', 'arrow'], default: 'base' };
 
-const VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
+const INDICATOR_VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
 
 export default class AvonniProgressIndicator extends LightningElement {
     @api currentStep;
-    @api errorSteps = [];
-    @api warningSteps = [];
-    @api completedSteps = [];
-    @api disabledSteps = [];
 
-    _variant = 'base';
-    _type = 'base';
+    _completedSteps = [];
+    _disabledSteps = [];
+    _warningSteps = [];
+    _errorSteps = [];
+    _variant = PROGRESS_INDICATOR_TYPES.default;
+    _type = INDICATOR_VARIANTS.default;
     _initialRender = true;
+    _steps = [];
 
     renderedCallback() {
-        if (this._initialRender) {
-            this.updateErrorSteps();
-            this.updateWarningSteps();
-            this.updateCompletedSteps();
-            this.updateCurrentStep();
-        }
-        this._initialRender = false;
+        this.updateErrorSteps();
+        this.updateWarningSteps();
+        this.updateCompletedSteps();
+        this.updateCurrentStep();
+    }
+
+    @api
+    get completedSteps() {
+        return this._completedSteps;
+    }
+    set completedSteps(value) {
+        this._completedSteps = normalizeArray(value);
+    }
+
+    @api
+    get disabledSteps() {
+        return this._disabledSteps;
+    }
+    set disabledSteps(value) {
+        this._disabledSteps = normalizeArray(value);
+    }
+
+    @api
+    get warningSteps() {
+        return this._warningSteps;
+    }
+    set warningSteps(value) {
+        this._warningSteps = normalizeArray(value);
+    }
+
+    @api
+    get errorSteps() {
+        return this._errorSteps;
+    }
+    set errorSteps(value) {
+        this._errorSteps = normalizeArray(value);
     }
 
     @api
@@ -34,8 +96,8 @@ export default class AvonniProgressIndicator extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid
+            fallbackValue: INDICATOR_VARIANTS.default,
+            validValues: INDICATOR_VARIANTS.valid
         });
     }
 
@@ -46,8 +108,8 @@ export default class AvonniProgressIndicator extends LightningElement {
 
     set type(type) {
         this._type = normalizeString(type, {
-            fallbackValue: TYPES.default,
-            validValues: TYPES.valid
+            fallbackValue: PROGRESS_INDICATOR_TYPES.default,
+            validValues: PROGRESS_INDICATOR_TYPES.valid
         });
     }
 
@@ -72,16 +134,14 @@ export default class AvonniProgressIndicator extends LightningElement {
     // Set what type of step (active, completed, warning, error, disabled)
     getSteps() {
         return Array.from(
-            this.template.querySelectorAll(
-                '[data-name="primitiveProgressStep"]'
-            )
+            this.template.querySelectorAll('c-primitive-progress-step')
         );
     }
 
     updateCurrentStep() {
         const steps = this.getSteps();
         steps.forEach((step) => {
-            if (step.getAttribute('data-step') === this.currentStep) {
+            if (step.value === this.currentStep) {
                 step.classList.add('slds-is-active');
             }
         });
@@ -90,8 +150,8 @@ export default class AvonniProgressIndicator extends LightningElement {
     updateErrorSteps() {
         const steps = this.getSteps();
         steps.forEach((step) => {
-            Array.from(this.errorSteps).forEach((error) => {
-                if (step.getAttribute('data-step') === error) {
+            this.errorSteps.forEach((error) => {
+                if (step.value === error) {
                     step.setIcon('utility:error');
                     step.classList.add('slds-has-error');
                 }
@@ -102,8 +162,8 @@ export default class AvonniProgressIndicator extends LightningElement {
     updateWarningSteps() {
         const steps = this.getSteps();
         steps.forEach((step) => {
-            Array.from(this.warningSteps).forEach((warning) => {
-                if (step.getAttribute('data-step') === warning) {
+            this.warningSteps.forEach((warning) => {
+                if (step.value === warning) {
                     step.setIcon('utility:warning');
                     step.classList.add('slds-has-warning');
                     if (this._variant === 'shaded') {
@@ -118,12 +178,40 @@ export default class AvonniProgressIndicator extends LightningElement {
     updateCompletedSteps() {
         const steps = this.getSteps();
         steps.forEach((step) => {
-            Array.from(this.completedSteps).forEach((completed) => {
-                if (step.getAttribute('data-step') === completed) {
+            this.completedSteps.forEach((completed) => {
+                if (step.value === completed) {
                     step.setIcon('utility:success');
                     step.classList.add('slds-is-completed');
                 }
             });
         });
+    }
+
+    dispatchStepClick() {
+        this.dispatchEvent(new CustomEvent('stepclick'));
+    }
+
+    dispatchStepBlur() {
+        this.dispatchEvent(new CustomEvent('stepblur'));
+    }
+
+    dispatchStepFocus() {
+        this.dispatchEvent(new CustomEvent('stepfocus'));
+    }
+
+    dispatchStepMouseEnter() {
+        this.dispatchEvent(new CustomEvent('stepmouseenter'));
+    }
+
+    dispatchStepMouseLeave() {
+        this.dispatchEvent(new CustomEvent('stepmouseleave'));
+    }
+
+    dispatchStepButtonClick() {
+        this.dispatchEvent(new CustomEvent('stepbuttonclick'));
+    }
+
+    dispatchStepPopoverClick() {
+        this.dispatchEvent(new CustomEvent('steppopoverclick'));
     }
 }

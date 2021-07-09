@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import {
     normalizeString,
@@ -6,32 +38,46 @@ import {
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const VARIANTS = ['horizontal', 'vertical'];
-const THEMES = ['default', 'shade', 'inverse'];
-const POSITIONS = ['top', 'bottom'];
+const ITEM_THEMES = {
+    valid: ['default', 'shade', 'inverse'],
+    default: 'default'
+};
+
+const RELATIONSHIP_GRAPH_GROUP_VARIANTS = {
+    valid: ['horizontal', 'vertical'],
+    default: 'horizontal'
+};
+
+const ACTIONS_POSITIONS = {
+    valid: ['top', 'bottom'],
+    default: 'top'
+};
+
+const DEFAULT_SHRINK_ICON_NAME = 'utility:chevrondown';
+const DEFAULT_EXPAND_ICON_NAME = 'utility:chevronright';
 
 export default class AvonniRelationshipGraph extends LightningElement {
     @api label;
     @api avatarSrc;
     @api avatarFallbackIconName;
     @api href;
-    @api actions;
-    @api groups;
-    @api shrinkIconName = 'utility:chevrondown';
-    @api expandIconName = 'utility:chevronright';
+    @api shrinkIconName = DEFAULT_SHRINK_ICON_NAME;
+    @api expandIconName = DEFAULT_EXPAND_ICON_NAME;
 
     processedGroups;
     selectedItemPosition;
     inlineHeader;
 
-    _variant = 'horizontal';
+    _variant = RELATIONSHIP_GRAPH_GROUP_VARIANTS.default;
+    _actions = [];
     _selectedItemName;
     _selectedItem;
-    _groupActions;
-    _groupActionsPosition = 'top';
-    _groupTheme = 'default';
-    _itemActions;
-    _itemTheme = 'default';
+    _groups = [];
+    _groupActions = [];
+    _groupActionsPosition = ACTIONS_POSITIONS.default;
+    _groupTheme = ITEM_THEMES.default;
+    _itemActions = [];
+    _itemTheme = ITEM_THEMES.default;
     _hideItemsCount = false;
 
     connectedCallback() {
@@ -52,9 +98,17 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: 'horizontal',
-            validValues: VARIANTS
+            fallbackValue: RELATIONSHIP_GRAPH_GROUP_VARIANTS.default,
+            validValues: RELATIONSHIP_GRAPH_GROUP_VARIANTS.valid
         });
+    }
+
+    @api
+    get actions() {
+        return this._actions;
+    }
+    set actions(value) {
+        this._actions = normalizeArray(value);
     }
 
     @api
@@ -64,6 +118,20 @@ export default class AvonniRelationshipGraph extends LightningElement {
     set selectedItemName(name) {
         this._selectedItemName =
             (typeof name === 'string' && name.trim()) || '';
+
+        if (this.isConnected) this.updateSelection();
+    }
+
+    @api
+    get groups() {
+        return this._groups;
+    }
+    set groups(value) {
+        this._groups = normalizeArray(value);
+
+        if (this.isConnected) {
+            this.updateSelection();
+        }
     }
 
     @api
@@ -80,8 +148,8 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
     set groupActionsPosition(value) {
         this._groupActionsPosition = normalizeString(value, {
-            fallbackValue: 'top',
-            validValues: POSITIONS
+            fallbackValue: ACTIONS_POSITIONS.default,
+            validValues: ACTIONS_POSITIONS.valid
         });
     }
 
@@ -91,8 +159,8 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
     set groupTheme(value) {
         this._groupTheme = normalizeString(value, {
-            fallbackValue: 'default',
-            validValues: THEMES
+            fallbackValue: ITEM_THEMES.default,
+            validValues: ITEM_THEMES.valid
         });
     }
 
@@ -110,8 +178,8 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
     set itemTheme(value) {
         this._itemTheme = normalizeString(value, {
-            fallbackValue: 'default',
-            validValues: THEMES
+            fallbackValue: ITEM_THEMES.default,
+            validValues: ITEM_THEMES.valid
         });
     }
 
@@ -125,6 +193,10 @@ export default class AvonniRelationshipGraph extends LightningElement {
 
     get hasAvatar() {
         return this.avatarSrc || this.avatarFallbackIconName;
+    }
+
+    get hasActions() {
+        return this.actions.length > 0;
     }
 
     get childLevel() {
@@ -191,7 +263,7 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
 
     updateSelection() {
-        if (!this.groups) return;
+        if (!this.groups.length > 0) return;
 
         // Reset the selection and go through the tree with the new selection
         this._selectedItem = undefined;

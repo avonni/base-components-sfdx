@@ -1,0 +1,283 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <label if:true={label} class={computedLabelClass} for="combobox-input">
+        <template if:true={required}>
+            <abbr class="slds-required" title="Required">*</abbr>
+        </template>
+        {label}
+    </label>
+    <lightning-helptext
+        if:true={fieldLevelHelp}
+        content={fieldLevelHelp}
+    ></lightning-helptext>
+
+    <div class={computedDropdownTriggerClass}>
+        <div class={computedInputContainerClass} onclick={handleTriggerClick}>
+            <lightning-icon
+                if:true={showInputValueIcon}
+                class="slds-input__icon slds-input__icon_left"
+                icon-name={selectedOption.iconName}
+                size="x-small"
+                aria-hidden="true"
+            ></lightning-icon>
+
+            <!-- Selected option avatar -->
+            <c-avonni-avatar
+                if:true={showInputValueAvatar}
+                class="slds-combobox__input-entity-icon"
+                fallback-icon-name={selectedOption.avatarFallbackIconName}
+                src={selectedOption.avatarSrc}
+                aria-hidden="true"
+                hide-avatar-details="true"
+                size="x-small"
+            ></c-avonni-avatar>
+            <!-- Main input -->
+            <input
+                id="combobox-input"
+                class="slds-input slds-combobox__input"
+                type="text"
+                role="combobox"
+                aria-expanded={computedAriaExpanded}
+                aria-haspopup="listbox"
+                autocomplete="off"
+                name={name}
+                placeholder={placeholder}
+                disabled={inputIsDisabled}
+                readonly={hasNoSearch}
+                aria-readonly={readOnly}
+                aria-required={required}
+                aria-autocomplete={computedAriaAutocomplete}
+                aria-owns="dropdown-element"
+                value={inputValue}
+                onfocus={handleFocus}
+                onblur={handleBlur}
+                onkeydown={handleInputKeyDown}
+                oninput={handleInput}
+            />
+            <!-- Clear input icon -->
+            <button
+                if:true={showClearInputIcon}
+                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                onclick={handleClearInput}
+            >
+                <lightning-icon
+                    icon-name="utility:close"
+                    alternative-text="Remove selected option"
+                    size="x-small"
+                ></lightning-icon>
+            </button>
+            <!-- Right icon: down arrow or magnifying glass -->
+            <lightning-icon
+                if:false={showClearInputIcon}
+                class="slds-icon_container slds-input__icon slds-input__icon_right"
+                icon-name={inputIconName}
+                aria-hidden="true"
+                size="x-small"
+            ></lightning-icon>
+        </div>
+        <!-- Dropdown -->
+        <div
+            id="dropdown-element"
+            class={computedDropdownClass}
+            onmousedown={handleDropdownMouseDown}
+            onmouseup={handleDropdownMouseUp}
+        >
+            <!-- Loading spinner -->
+            <div if:true={isLoading} class="slds-p-around_large">
+                <lightning-spinner
+                    size="small"
+                    alternative-text={loadingStateAlternativeText}
+                ></lightning-spinner>
+            </div>
+            <ul
+                if:false={isLoading}
+                role="listbox"
+                aria-multiselectable={isMultiSelect}
+            >
+                <!-- Back to parent link -->
+                <li
+                    if:true={backLink}
+                    class={backLink.computedClass}
+                    id="backlink"
+                    role="option"
+                    onclick={handleBackLinkClick}
+                    onmouseenter={handleMouseEnter}
+                    data-name="backlink"
+                >
+                    <div class="slds-media__figure slds-listbox__option-icon">
+                        <lightning-icon
+                            icon-name={backLink.iconName}
+                            size="x-small"
+                            alternative-text="Back"
+                        ></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <span
+                            class="slds-listbox__option-text slds-listbox__option-text_entity"
+                            >{backLink.label}</span
+                        >
+                    </div>
+                </li>
+                <!-- Top actions -->
+                <template for:each={topActions} for:item="action">
+                    <li
+                        key={action.name}
+                        class={action.computedClass}
+                        id={action.name}
+                        role="option"
+                        aria-label="Action button"
+                        aria-disabled={action.computedAriaDisabled}
+                        data-name={action.name}
+                        onclick={handleActionClick}
+                        onmouseenter={handleMouseEnter}
+                    >
+                        <div
+                            if:true={action.iconName}
+                            class="slds-media__figure slds-listbox__option-icon"
+                        >
+                            <lightning-icon
+                                class="slds-current-color"
+                                icon-name={action.iconName}
+                                size="x-small"
+                                aria-hidden="true"
+                            ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <span
+                                class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                >{action.label}</span
+                            >
+                        </div>
+                    </li>
+                </template>
+                <!-- No search results -->
+                <li
+                    if:true={showNoSearchResultMessage}
+                    class="slds-listbox__option_plain"
+                    role="presentation"
+                >
+                    No matches found
+                </li>
+                <!-- Groups -->
+                <li>
+                    <template for:each={computedGroups} for:item="group">
+                        <c-avonni-primitive-combobox-group
+                            key={generateKey}
+                            name={group.name}
+                            label={group.label}
+                            options={group.options}
+                            groups={group.groups}
+                            remove-selected-options={removeSelectedOptions}
+                            onprivateoptionclick={handleOptionClick}
+                            onprivateoptionmouseenter={handleMouseEnter}
+                            onclick={focus}
+                        ></c-avonni-primitive-combobox-group>
+                    </template>
+                </li>
+                <!-- Bottom actions -->
+                <template for:each={bottomActions} for:item="action">
+                    <li
+                        key={action.name}
+                        class={action.computedClass}
+                        id={action.name}
+                        role="option"
+                        data-name={action.name}
+                        aria-disabled={action.computedAriaDisabled}
+                        onclick={handleActionClick}
+                        onmouseenter={handleMouseEnter}
+                    >
+                        <div
+                            if:true={action.iconName}
+                            class="slds-media__figure slds-listbox__option-icon"
+                        >
+                            <lightning-icon
+                                class="slds-current-color"
+                                icon-name={action.iconName}
+                                size="x-small"
+                                aria-hidden="true"
+                            ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <span
+                                class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                >{action.label}</span
+                            >
+                        </div>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Selected options -->
+    <ul
+        if:true={showSelectedOptions}
+        class="slds-grid slds-wrap slds-p-vertical_xx-small primitive-combobox__selected-options"
+        role="listbox"
+        aria-label={selectedOptionsAriaLabel}
+        aria-orientation="horizontal"
+    >
+        <template for:each={selectedOptions} for:item="option">
+            <li
+                key={option.value}
+                class="slds-m-right_xx-small"
+                role="presentation"
+            >
+                <lightning-pill
+                    label={option.label}
+                    variant="plain"
+                    name={option.value}
+                    role="option"
+                    tabindex="0"
+                    onremove={handleRemoveSelectedOption}
+                >
+                    <c-avonni-avatar
+                        if:true={option.hasAvatar}
+                        src={option.avatarSrc}
+                        fallback-icon-name={option.avatarFallbackIconName}
+                        hide-avatar-details="true"
+                        size="x-small"
+                    ></c-avonni-avatar>
+                </lightning-pill>
+            </li>
+        </template>
+    </ul>
+    <template if:true={showHelpMessage}>
+        <div class="slds-form-element__help" aria-live="assertive">
+            {helpMessage}
+        </div>
+    </template>
+</template>

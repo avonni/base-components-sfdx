@@ -1,0 +1,54 @@
+<template>
+    <div class="avonni-hero-banner-background-class" style={imgSrc}>
+        <div class={computedContentContainer}>
+            <div class="slds-grid avonni-hero-banner-justify_center">
+                <div class={computedWidthContainer} style={computedMaxWidth}>
+                    <div
+                        class="avonni-hero-banner-content"
+                        style={computedContentStyling}
+                    >
+                        <template if:true={caption}>
+                            <h1 class="avonni-hero-banner-caption-class">
+                                {caption}
+                            </h1>
+                        </template>
+                        <template if:true={title}>
+                            <h2 class="avonni-hero-banner-title-class">
+                                {title}
+                            </h2>
+                        </template>
+                        <template if:true={subtitle}>
+                            <p class="avonni-hero-banner-subtitle-class">
+                                {subtitle}
+                            </p>
+                        </template>
+                        <template if:true={hasButton}>
+                            <div class={computedButtonClass}>
+                                <div class="slds-grid">
+                                    <template if:true={primaryButtonLabel}>
+                                        <a
+                                            class="slds-button slds-truncate avonni-hero-banner-primary-button"
+                                            >{primaryButtonLabel}</a
+                                        >
+                                    </template>
+                                    <template if:true={hasButtons}>
+                                        <a
+                                            class="slds-button slds-truncate avonni-hero-banner-secondary-button"
+                                            >{secondaryButtonLabel}</a
+                                        >
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:true={showSlot}>
+                            <slot></slot>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <template if:true={showFooterSlot}>
+            <slot name="footer"></slot>
+        </template>
+    </div>
+</template>

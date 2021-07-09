@@ -1,22 +1,56 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const validVariants = [
+const PROGRESS_RING_VARIANTS = {valid: [
     'base',
     'active-step',
     'warning',
     'expired',
     'base-autocomplete'
-];
-const validDirections = ['fill', 'drain'];
-const validSizes = ['medium', 'large'];
+], default: 'base'};
+const PROGRESS_RING_DIRECTIONS = {valid: ['fill', 'drain'], default: 'fill'};
+const PROGRESS_RING_SIZES = {valid:['medium', 'large'], default: 'medium'};
+
+const DEFAULT_VALUE = 0
 
 export default class AvonniProgressRing extends LightningElement {
-    _direction = 'fill';
-    _size = 'medium';
-    _value = 0;
-    _variant = 'base';
+    _direction = PROGRESS_RING_DIRECTIONS.default;
+    _size = PROGRESS_RING_SIZES.default;
+    _value = DEFAULT_VALUE;
+    _variant = PROGRESS_RING_VARIANTS.default;
     _hideIcon = false;
 
     @api
@@ -26,8 +60,8 @@ export default class AvonniProgressRing extends LightningElement {
 
     set direction(direction) {
         this._direction = normalizeString(direction, {
-            fallbackValue: 'fill',
-            validValues: validDirections
+            fallbackValue: PROGRESS_RING_DIRECTIONS.default,
+            validValues: PROGRESS_RING_DIRECTIONS.valid
         });
     }
 
@@ -38,8 +72,8 @@ export default class AvonniProgressRing extends LightningElement {
 
     set size(size) {
         this._size = normalizeString(size, {
-            fallbackValue: 'medium',
-            validValues: validSizes
+            fallbackValue: PROGRESS_RING_SIZES.default,
+            validValues: PROGRESS_RING_SIZES.valid
         });
     }
 
@@ -65,8 +99,8 @@ export default class AvonniProgressRing extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: 'base',
-            validValues: validVariants
+            fallbackValue: PROGRESS_RING_VARIANTS.default,
+            validValues: PROGRESS_RING_VARIANTS.valid
         });
     }
 
@@ -120,7 +154,7 @@ export default class AvonniProgressRing extends LightningElement {
         if (this.variant === 'expired') {
             return 'Expired';
         }
-        if (this.isComplete) {
+        if (this._variant === 'base-autocomplete' && this._value === 100) {
             return 'Complete';
         }
         return undefined;

@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import {
@@ -6,30 +38,43 @@ import {
     observePosition
 } from 'c/utilsPrivate';
 
-const validPopoverSizes = ['small', 'medium', 'large'];
-const validPlacements = [
-    'auto',
-    'left',
-    'center',
-    'right',
-    'bottom-left',
-    'bottom-center',
-    'bottom-right'
-];
-const validVariants = [
-    'base',
-    'neutral',
-    'brand',
-    'brand-outline',
-    'destructive',
-    'destructive-text',
-    'inverse',
-    'success'
-];
+const POPOVER_SIZES = {
+    valid: ['small', 'medium', 'large'],
+    default: 'medium'
+};
+const POPOVER_PLACEMENTS = {
+    valid: [
+        'auto',
+        'left',
+        'center',
+        'right',
+        'bottom-left',
+        'bottom-center',
+        'bottom-right'
+    ],
+    default: 'left'
+};
+const BUTTON_VARIANTS = {
+    valid: [
+        'base',
+        'neutral',
+        'brand',
+        'brand-outline',
+        'destructive',
+        'destructive-text',
+        'inverse',
+        'success'
+    ],
+    default: 'neutral'
+};
 
-const validTriggers = ['click', 'hover', 'focus'];
-const validPopoverVariants = ['base', 'warning', 'error', 'walkthrough'];
-const validIconPositions = ['left', 'right'];
+const POPOVER_TRIGGERS = { valid: ['click', 'hover', 'focus'], default: 'click' };
+
+const POPOVER_VARIANTS = {
+    valid: ['base', 'warning', 'error', 'walkthrough'],
+    default: 'base'
+};
+const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 
 export default class AvonniButtonPopover extends LightningElement {
     @api accessKey;
@@ -40,28 +85,22 @@ export default class AvonniButtonPopover extends LightningElement {
 
     _disabled = false;
     _isLoading = false;
-    _iconPosition = 'left';
-    _popoverSize = 'medium';
-    _placement = 'left';
-    _variant = 'neutral';
-    _triggers = 'click';
-    _popoverVariant = 'base';
+    _iconPosition = ICON_POSITIONS.default;
+    _popoverSize = POPOVER_SIZES.default;
+    _placement = POPOVER_PLACEMENTS.default;
+    _variant = BUTTON_VARIANTS.default;
+    _triggers = POPOVER_TRIGGERS.default;
+    _popoverVariant = POPOVER_VARIANTS.default;
     popoverVisible = false;
     showTitle = true;
     showFooter = true;
     _boundingRect = {};
 
     connectedCallback() {
-        this._connected = true;
-
         this.classList.add(
             'slds-dropdown-trigger',
             'slds-dropdown-trigger_click'
         );
-    }
-
-    disconnectedCallback() {
-        this._connected = false;
     }
 
     renderedCallback() {
@@ -88,8 +127,8 @@ export default class AvonniButtonPopover extends LightningElement {
 
     set popoverSize(popoverSize) {
         this._popoverSize = normalizeString(popoverSize, {
-            fallbackValue: 'medium',
-            validValues: validPopoverSizes
+            fallbackValue: POPOVER_SIZES.default,
+            validValues: POPOVER_SIZES.valid
         });
     }
 
@@ -100,8 +139,8 @@ export default class AvonniButtonPopover extends LightningElement {
 
     set iconPosition(iconPosition) {
         this._iconPosition = normalizeString(iconPosition, {
-            fallbackValue: 'left',
-            validValues: validIconPositions
+            fallbackValue: ICON_POSITIONS.default,
+            validValues: ICON_POSITIONS.valid
         });
     }
 
@@ -112,8 +151,8 @@ export default class AvonniButtonPopover extends LightningElement {
 
     set placement(placement) {
         this._placement = normalizeString(placement, {
-            fallbackValue: 'left',
-            validValues: validPlacements
+            fallbackValue: POPOVER_PLACEMENTS.default,
+            validValues: POPOVER_PLACEMENTS.valid
         });
     }
 
@@ -124,8 +163,8 @@ export default class AvonniButtonPopover extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: 'border',
-            validValues: validVariants
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -136,8 +175,8 @@ export default class AvonniButtonPopover extends LightningElement {
 
     set triggers(triggers) {
         this._triggers = normalizeString(triggers, {
-            fallbackValue: 'click',
-            validValues: validTriggers
+            fallbackValue: POPOVER_TRIGGERS.default,
+            validValues: POPOVER_TRIGGERS.valid
         });
     }
 
@@ -148,8 +187,8 @@ export default class AvonniButtonPopover extends LightningElement {
 
     set popoverVariant(popoverVariant) {
         this._popoverVariant = normalizeString(popoverVariant, {
-            fallbackValue: 'base',
-            validValues: validPopoverVariants
+            fallbackValue: POPOVER_VARIANTS.default,
+            validValues: POPOVER_VARIANTS.valid
         });
     }
 
@@ -171,16 +210,20 @@ export default class AvonniButtonPopover extends LightningElement {
         this._isLoading = normalizeBoolean(value);
     }
 
+    get hasStringTitle() {
+        return !!this.title;
+    }
+
     @api
     click() {
-        if (this._connected) {
+        if (this.isConnected) {
             this.clickOnButton();
         }
     }
 
     @api
     focus() {
-        if (this._connected) {
+        if (this.isConnected) {
             this.focusOnButton();
         }
     }
@@ -343,7 +386,7 @@ export default class AvonniButtonPopover extends LightningElement {
         if (this.isAutoAlignment() && this.popoverVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
             setTimeout(() => {
-                if (this._connected) {
+                if (this.isConnected) {
                     observePosition(this, 300, this._boundingRect, () => {
                         this.close();
                     });

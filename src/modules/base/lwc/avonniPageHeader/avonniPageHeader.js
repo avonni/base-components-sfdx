@@ -1,11 +1,43 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
-import { normalizeString, normalizeArray } from 'c/utilsPrivate';
+import { normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import pageHeader from './avonniPageHeader.html';
 import pageHeaderVertical from './avonniPageHeaderVertical.html';
 import { computeSldsClass } from 'c/iconUtils';
 
-const VARIANTS = {
+const PAGE_HEADER_VARIANTS = {
     valid: ['base', 'object-home', 'record-home', 'record-home-vertical'],
     default: 'base'
 };
@@ -16,8 +48,7 @@ export default class AvonniPageHeader extends LightningElement {
     @api title;
     @api info;
 
-    _variant = 'base';
-    _fields = [];
+    _variant = PAGE_HEADER_VARIANTS.default;
     showTitle = true;
     showLabel = true;
     showActions = true;
@@ -85,18 +116,9 @@ export default class AvonniPageHeader extends LightningElement {
 
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid
+            fallbackValue: PAGE_HEADER_VARIANTS.default,
+            validValues: PAGE_HEADER_VARIANTS.valid
         });
-    }
-
-    @api
-    get fields() {
-        return this._fields;
-    }
-
-    set fields(value) {
-        this._fields = normalizeArray(value);
     }
 
     get computedOuterClass() {
@@ -109,7 +131,13 @@ export default class AvonniPageHeader extends LightningElement {
     }
 
     get computedIconClass() {
-        return classSet('slds-icon_container')
+        return classSet('slds-icon_container slds-show_small')
+            .add(computeSldsClass(this.iconName))
+            .toString();
+    }
+
+    get computedMobileIconClass() {
+        return classSet('slds-icon_container slds-hide_small')
             .add(computeSldsClass(this.iconName))
             .toString();
     }
@@ -138,7 +166,7 @@ export default class AvonniPageHeader extends LightningElement {
         return !!this.info;
     }
 
-    get fieldsIsEmpty() {
-        return this._fields.length === 0;
+    get showActionsOrDetails() {
+        return this.showActions || this.showDetails;
     }
 }

@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { keyCodes } from 'c/utilsPrivate';
 import {
@@ -15,7 +47,7 @@ const SLDS_ACTIVE_SHADED =
 const FALSE_STRING = 'false';
 const TRUE_STRING = 'true';
 
-const VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
+const INDICATOR_VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
 
 const DEFAULT_ITEMS_PER_PANEL = 1;
 const DEFAULT_SCROLL_DURATION = 5;
@@ -46,9 +78,10 @@ export default class AvonniCarousel extends LightningElement {
     };
     _carouselItems = [];
     _itemsPerPanel = DEFAULT_ITEMS_PER_PANEL;
-    _initialRender = true;
-    _indicatorVariant = VARIANTS.default;
+    _initialRender = false;
+    _indicatorVariant = INDICATOR_VARIANTS.default;
     _hideIndicator = false;
+    _carouselContentHeight = 6.625;
 
     activeIndexPanel;
     autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
@@ -63,12 +96,12 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     renderedCallback() {
-        if (this._initialRender) {
+        if (!this._initialRender) {
             if (!this.disableAutoScroll) {
-                this.setAutoScroll();
+                this.start();
             }
         }
-        this._initialRender = false;
+        this._initialRender = true;
     }
 
     @api
@@ -97,19 +130,23 @@ export default class AvonniCarousel extends LightningElement {
         allItems.forEach((item) => {
             this._carouselItems.push({
                 key: item.id,
-                heading: item.heading,
+                title: item.title,
                 description: item.description,
                 buttonLabel: item.buttonLabel || null,
                 buttonIconName: item.buttonIconName,
                 buttonIconPosition: item.buttonIconPosition,
                 buttonVariant: item.buttonVariant,
                 buttonDisabled: item.buttonDisabled,
-                imageAssistiveText: item.imageAssistiveText || item.heading,
+                secondaryButtonLabel: item.secondaryButtonLabel || null,
+                secondaryButtonIconName: item.secondaryButtonIconName,
+                secondaryButtonIconPosition: item.secondaryButtonIconPosition,
+                secondaryButtonVariant: item.secondaryButtonVariant,
+                secondaryButtonDisabled: item.secondaryButtonDisabled,
+                imageAssistiveText: item.imageAssistiveText || item.title,
                 href: item.href,
                 src: item.src
             });
         });
-
         if (this.isConnected) {
             this.initCarousel();
         }
@@ -133,9 +170,12 @@ export default class AvonniCarousel extends LightningElement {
 
     set indicatorVariant(variant) {
         this._indicatorVariant = normalizeString(variant, {
-            fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid
+            fallbackValue: INDICATOR_VARIANTS.default,
+            validValues: INDICATOR_VARIANTS.valid
         });
+        if (this.isConnected) {
+            this.initCarousel();
+        }
     }
 
     @api
@@ -228,7 +268,8 @@ export default class AvonniCarousel extends LightningElement {
         }%);`;
     }
 
-    setAutoScroll() {
+    @api
+    start() {
         const scrollDuration = parseInt(this.scrollDuration, 10) * 1000;
         const carouselPanelsLength = this.panelItems.length;
 
@@ -236,11 +277,11 @@ export default class AvonniCarousel extends LightningElement {
             this.activeIndexPanel === carouselPanelsLength - 1 &&
             (this.disableAutoRefresh || !this.isInfinite)
         ) {
-            this.cancelAutoScrollTimeOut();
+            this.pause();
             return;
         }
 
-        this.cancelAutoScrollTimeOut();
+        this.pause();
         this.autoScrollTimeOut = setTimeout(
             this.startAutoScroll.bind(this),
             scrollDuration
@@ -251,11 +292,12 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     startAutoScroll() {
-        this.selectNextSibling();
-        this.setAutoScroll();
+        this.next();
+        this.start();
     }
 
-    cancelAutoScrollTimeOut() {
+    @api
+    pause() {
         clearTimeout(this.autoScrollTimeOut);
         this.autoScrollOn = false;
         this.autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
@@ -268,7 +310,13 @@ export default class AvonniCarousel extends LightningElement {
         );
         const itemNumber = parseInt(event.currentTarget.dataset.itemIndex, 10);
         const itemData = this.panelItems[panelNumber].items[itemNumber];
-        this.dispatchEvent(new CustomEvent('itemclick', { detail: itemData }));
+        this.dispatchEvent(
+            new CustomEvent('itemclick', {
+                detail: {
+                    item: itemData
+                }
+            })
+        );
     }
 
     keyDownHandler(event) {
@@ -279,12 +327,12 @@ export default class AvonniCarousel extends LightningElement {
             event.preventDefault();
             event.stopPropagation();
 
-            this.cancelAutoScrollTimeOut();
+            this.pause();
             if (
                 this.activeIndexPanel < this.panelItems.length - 1 ||
                 this.isInfinite
             ) {
-                this.selectNextSibling();
+                this.next();
             }
         }
 
@@ -292,9 +340,9 @@ export default class AvonniCarousel extends LightningElement {
             event.preventDefault();
             event.stopPropagation();
 
-            this.cancelAutoScrollTimeOut();
+            this.pause();
             if (this.activeIndexPanel > 0 || this.isInfinite) {
-                this.selectPreviousSibling();
+                this.previous();
             }
         }
 
@@ -311,6 +359,17 @@ export default class AvonniCarousel extends LightningElement {
         indicatorActionsElements[this.activeIndexPanel].focus();
     }
 
+    initializeCarouselHeight() {
+        let carouselContentHeights = this.items.map((item) => {
+            return item.buttonLabel && item.secondaryButtonLabel
+                ? 12
+                : item.buttonLabel || item.secondaryButtonLabel
+                ? 8.5
+                : 6.625;
+        });
+        this._carouselContentHeight = Math.max(...carouselContentHeights);
+    }
+
     initCarousel() {
         const numberOfPanels = Math.ceil(
             this._carouselItems.length / this.itemsPerPanel
@@ -319,12 +378,13 @@ export default class AvonniCarousel extends LightningElement {
         this.initializeCurrentPanel(numberOfPanels);
         this.initializePaginationItems(numberOfPanels);
         this.initializePanels();
+        this.initializeCarouselHeight();
     }
 
     onPanelSelect(event) {
         const currentTarget = event.currentTarget;
         const itemIndex = parseInt(currentTarget.dataset.index, 10);
-        this.cancelAutoScrollTimeOut();
+        this.pause();
 
         if (this.activeIndexPanel !== itemIndex) {
             this.unselectCurrentPanel();
@@ -371,8 +431,19 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
-    selectPreviousSibling() {
-        this.cancelAutoScrollTimeOut();
+    @api
+    first() {
+        this.selectNewPanel(0);
+    }
+
+    @api
+    last() {
+        this.selectNewPanel(this.paginationItems.length - 1);
+    }
+
+    @api
+    previous() {
+        this.pause();
         this.unselectCurrentPanel();
         if (this.activeIndexPanel > 0) {
             this.activeIndexPanel -= 1;
@@ -382,8 +453,9 @@ export default class AvonniCarousel extends LightningElement {
         this.selectNewPanel(this.activeIndexPanel);
     }
 
-    selectNextSibling() {
-        this.cancelAutoScrollTimeOut();
+    @api
+    next() {
+        this.pause();
         this.unselectCurrentPanel();
         if (this.activeIndexPanel < this.paginationItems.length - 1) {
             this.activeIndexPanel += 1;
@@ -395,8 +467,10 @@ export default class AvonniCarousel extends LightningElement {
 
     toggleAutoScroll() {
         /*eslint no-unused-expressions: ["error", { "allowTernary": true }]*/
-        this.autoScrollOn
-            ? this.cancelAutoScrollTimeOut()
-            : this.setAutoScroll();
+        this.autoScrollOn ? this.pause() : this.start();
+    }
+
+    get computedCarouselContentSize() {
+        return `height: ${this._carouselContentHeight}rem`;
     }
 }

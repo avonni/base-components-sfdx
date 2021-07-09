@@ -1,17 +1,46 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
 import qrcodeGeneration from './avonniQrcodeGeneration.js';
 
-const validEncodings = ['ISO_8859_1', 'UTF_8'];
-const validErrorCorrections = ['L', 'M', 'Q', 'H'];
-const validRenderAs = ['canvas', 'svg'];
+const QR_ENCODINGS = {valid: ['ISO_8859_1', 'UTF_8'], default: 'ISO_8859_1'};
+const QR_ERROR_CORRECTIONS = {valid: ['L', 'M', 'Q', 'H'], default: 'L'};
+const QR_RENDER_AS = {valid: ['canvas', 'svg'], default: 'svg'};
 
 const DEFAULT_BORDER_WIDTH = 0;
 const DEFAULT_PADDING = 0;
 const DEFAULT_SIZE = 200;
-const DEFAULT_ENCODING = 'ISO_8859_1';
-const DEFAULT_ERROR_CORRECTION = 'L';
-const DEFAULT_RENDER_AS = '#svg';
 const DEFAULT_COLOR = '#000';
 const DEFAULT_BACKGROUND_COLOR = '#fff';
 
@@ -20,9 +49,9 @@ export default class AvonniQrcode extends LightningElement {
     _padding = DEFAULT_PADDING;
     _value;
     _size = DEFAULT_SIZE;
-    _encoding = DEFAULT_ENCODING;
-    _errorCorrection = DEFAULT_ERROR_CORRECTION;
-    _renderAs = DEFAULT_RENDER_AS;
+    _encoding = QR_ENCODINGS.default;
+    _errorCorrection = QR_ERROR_CORRECTIONS.default;
+    _renderAs = QR_RENDER_AS.default;
     _background = DEFAULT_BACKGROUND_COLOR;
     _borderColor;
     _color = DEFAULT_COLOR;
@@ -97,8 +126,8 @@ export default class AvonniQrcode extends LightningElement {
 
     set encoding(encoding) {
         this._encoding = normalizeString(encoding, {
-            fallbackValue: 'ISO_8859_1',
-            validValues: validEncodings,
+            fallbackValue: QR_ENCODINGS.default,
+            validValues: QR_ENCODINGS.valid,
             toLowerCase: false
         });
 
@@ -113,8 +142,8 @@ export default class AvonniQrcode extends LightningElement {
 
     set errorCorrection(value) {
         this._errorCorrection = normalizeString(value, {
-            fallbackValue: 'L',
-            validValues: validErrorCorrections,
+            fallbackValue: QR_ERROR_CORRECTIONS.default,
+            validValues: QR_ERROR_CORRECTIONS.valid,
             toLowerCase: false
         });
 
@@ -129,8 +158,8 @@ export default class AvonniQrcode extends LightningElement {
 
     set renderAs(value) {
         this._renderAs = normalizeString(value, {
-            fallbackValue: 'svg',
-            validValues: validRenderAs
+            fallbackValue: QR_RENDER_AS.default,
+            validValues: QR_RENDER_AS.valid
         });
 
         if (this.rendered) {
@@ -245,6 +274,7 @@ export default class AvonniQrcode extends LightningElement {
 
             if (this.renderAsSvg) {
                 let element = this.template.querySelector('.qrcode');
+                if (!element) return;
                 // eslint-disable-next-line @lwc/lwc/no-inner-html
                 element.innerHTML = svgCode;
 
@@ -253,6 +283,7 @@ export default class AvonniQrcode extends LightningElement {
                 element.firstElementChild.style.maxWidth = '100%';
             } else {
                 let canvas = this.template.querySelector('canvas');
+                if (!canvas) return;
 
                 if (this.size) {
                     canvas.width = this.size;

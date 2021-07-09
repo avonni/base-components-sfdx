@@ -1,15 +1,48 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
-import './confettiLib';
+import './avonniConfettiLib';
 
-const VALID_VARIANTS = [
+const CONFETTI_VARIANTS = {valid: [
     'base',
     'random-direction',
     'realistic',
     'fireworks',
     'snow',
     'pride'
-];
+], default: 'base'};
+
 const DEFAULT_COLORS = [
     '#529EE0',
     '#F0E442',
@@ -20,13 +53,19 @@ const DEFAULT_COLORS = [
     '#E287B2'
 ];
 
+const DEFAULT_ORIGIN_X = 0.5
+
+const DEFAULT_ORIGIN_Y = 0.5
+
+const DEFAULT_Z_INDEX = 100
+
 export default class AvonniConfetti extends LightningElement {
     @api colors = DEFAULT_COLORS;
-    @api originX = 0.5;
-    @api originY = 0.5;
-    @api zIndex = 100;
+    @api originX = DEFAULT_ORIGIN_X;
+    @api originY = DEFAULT_ORIGIN_Y;
+    @api zIndex = DEFAULT_Z_INDEX;
 
-    _variant = 'base';
+    _variant = CONFETTI_VARIANTS.default;
     _name;
 
     @api
@@ -36,8 +75,8 @@ export default class AvonniConfetti extends LightningElement {
 
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: 'base',
-            validValues: VALID_VARIANTS
+            fallbackValue: CONFETTI_VARIANTS.default,
+            validValues: CONFETTI_VARIANTS.valid
         });
     }
 

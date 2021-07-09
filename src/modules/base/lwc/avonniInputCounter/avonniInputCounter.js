@@ -1,13 +1,47 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const validVariants = [
+const LABEL_VARIANTS = {valid: [
     'standard',
     'label-inline',
     'label-hidden',
     'label-stacked'
-];
+], default: 'standard'};
+
+const DEFAULT_STEP = 1
 
 export default class AvonniInputCounter extends LightningElement {
     @api name;
@@ -17,25 +51,20 @@ export default class AvonniInputCounter extends LightningElement {
     @api messageWhenRangeOverflow;
     @api messageWhenRangeUnderflow;
     @api messageWhenStepMismatch;
-    @api messageWhenTooShort;
-    @api messageWhenTooLong;
-    @api messageWhenTypeMismatch;
     @api messageWhenValueMissing;
-    @api messageToggleActive;
-    @api messageToggleInactive;
     @api ariaLabel;
     @api ariaControls;
     @api ariaLabelledBy;
     @api ariaDescribedBy;
     @api max;
     @api min;
-    @api step = 1;
     @api value;
     @api fieldLevelHelp;
     @api accessKey;
 
-    _variant = 'standard';
+    _variant = LABEL_VARIANTS.default;
     _disabled;
+    _step = DEFAULT_STEP;
     _readOnly;
     _required;
     labelVariant;
@@ -65,8 +94,8 @@ export default class AvonniInputCounter extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: 'standard',
-            validValues: validVariants
+            fallbackValue: LABEL_VARIANTS.default,
+            validValues: LABEL_VARIANTS.valid
         });
 
         if (this._variant === 'label-inline') {
@@ -79,7 +108,8 @@ export default class AvonniInputCounter extends LightningElement {
         }
     }
 
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -87,15 +117,26 @@ export default class AvonniInputCounter extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api get readOnly() {
+    @api
+    get readOnly() {
         return this._readOnly;
     }
 
     set readOnly(value) {
         this._readOnly = normalizeBoolean(value);
     }
+    
+    @api
+    get step() {
+        return this._step;
+    }
 
-    @api get required() {
+    set step(value) {
+        this._step = typeof value === 'number' ? value : DEFAULT_STEP;
+    }
+
+    @api
+    get required() {
         return this._required;
     }
 

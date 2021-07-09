@@ -1,8 +1,46 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
-const validVariants = ['bottom-toolbar', 'top-toolbar'];
-const validModes = ['draw', 'erase'];
+const TOOLBAR_VARIANTS = {
+    valid: ['bottom-toolbar', 'top-toolbar'],
+    default: 'bottom-toolbar'
+};
+const PEN_MODES = { valid: ['draw', 'erase'], default: 'draw' };
+
+const DEFAULT_COLOR = '#000';
+const DEFAULT_SIZE = 2;
 
 export default class AvonniInputPen extends LightningElement {
     @api fieldLevelHelp;
@@ -10,10 +48,10 @@ export default class AvonniInputPen extends LightningElement {
     @api disabledButtons = [];
 
     _value;
-    _color = '#000';
-    _size = 2;
-    _variant = 'bottom-toolbar';
-    _mode = 'draw';
+    _color = DEFAULT_COLOR;
+    _size = DEFAULT_SIZE;
+    _variant = TOOLBAR_VARIANTS.default;
+    _mode = PEN_MODES.default;
     _disabled = false;
     _readOnly = false;
     _required = false;
@@ -125,8 +163,8 @@ export default class AvonniInputPen extends LightningElement {
 
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: 'bottom-toolbar',
-            validValues: validVariants
+            fallbackValue: TOOLBAR_VARIANTS.default,
+            validValues: TOOLBAR_VARIANTS.valid
         });
 
         if (this._variant === 'bottom-toolbar') {
@@ -142,8 +180,8 @@ export default class AvonniInputPen extends LightningElement {
 
     set mode(value) {
         this._mode = normalizeString(value, {
-            fallbackValue: 'draw',
-            validValues: validModes
+            fallbackValue: PEN_MODES.default,
+            validValues: PEN_MODES.valid
         });
         this.initCusrsorStyles();
     }
@@ -257,7 +295,7 @@ export default class AvonniInputPen extends LightningElement {
     setMode(modeName) {
         this._mode = normalizeString(modeName, {
             fallbackValue: this._mode,
-            validValues: validModes
+            validValues: PEN_MODES
         });
     }
 

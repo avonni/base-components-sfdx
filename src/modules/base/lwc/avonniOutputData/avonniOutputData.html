@@ -1,53 +1,49 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
 <template>
-    <div>
-        <span if:true={label}>{label}:</span>
-        <template if:true={isBoolean}>
-            <template if:true={value}>
-                <span class="slds-checkbox">
-                    <input
-                        type="checkbox"
-                        name="options"
-                        id="avonni-checkbox-checked"
-                        value="avonni-checkbox-checked"
-                        disabled
-                        checked
-                    />
-                    <label
-                        class="slds-checkbox__label"
-                        for="avonni-checkbox-checked"
-                    >
-                        <span class="slds-checkbox_faux"></span>
-                    </label>
-                </span>
-            </template>
-            <template if:false={value}>
-                <span class="slds-checkbox">
-                    <input
-                        type="checkbox"
-                        name="options"
-                        id="avonni-checkbox"
-                        value="avonni-checkbox"
-                        disabled
-                    />
-                    <label class="slds-checkbox__label" for="avonni-checkbox">
-                        <span class="slds-checkbox_faux"></span>
-                    </label>
-                </span>
-            </template>
+    <div if:true={label} class="slds-text-title slds-truncate" title={label}>
+        {label}
+    </div>
+    <div class="slds-truncate" title={value}>
+        <!-- Boolean -->
+        <template if:true={showBoolean}>
+            <lightning-icon size="x-small" icon-name="utility:check">
+            </lightning-icon>
         </template>
-        <template if:true={isCurrency}>
-            <lightning-formatted-number
-                value={value}
-                format-style="currency"
-                currency-code={typeAttributes.currencyCode}
-                currency-display-as={typeAttributes.currencyDisplayAs}
-                minimum-integer-digits={typeAttributes.minimumIntegerDigits}
-                minimum-fraction-digits={typeAttributes.minimumFractionDigits}
-                maximum-fraction-digits={typeAttributes.maximumFractionDigits}
-                minimum-significant-digits={typeAttributes.minimumSignificantDigits}
-                maximum-significant-digits={typeAttributes.maximumSignificantDigits}
-            ></lightning-formatted-number>
-        </template>
+
+        <!-- Date -->
         <template if:true={isDate}>
             <lightning-formatted-date-time
                 value={value}
@@ -64,28 +60,30 @@
                 year={typeAttributes.year}
             ></lightning-formatted-date-time>
         </template>
-        <template if:true={isDateLocal}>
-            <lightning-formatted-date-time
-                value={value}
-                day={typeAttributes.day}
-                month={typeAttributes.month}
-                year={typeAttributes.year}
-            ></lightning-formatted-date-time>
-        </template>
+
+        <!-- Email -->
         <template if:true={isEmail}>
             <lightning-formatted-email
                 value={value}
+                hide-icon={typeAttributes.hideIcon}
             ></lightning-formatted-email>
         </template>
+
+        <!-- Location -->
         <template if:true={isLocation}>
             <lightning-formatted-location
                 latitude={typeAttributes.latitude}
                 longitude={typeAttributes.longitude}
             ></lightning-formatted-location>
         </template>
+
+        <!-- Number (includes currency and percent) -->
         <template if:true={isNumber}>
             <lightning-formatted-number
                 value={value}
+                format-style={numberFormatStyle}
+                currency-code={typeAttributes.currencyCode}
+                currency-display-as={typeAttributes.currencyDisplayAs}
                 minimum-integer-digits={typeAttributes.minimumIntegerDigits}
                 minimum-fraction-digits={typeAttributes.minimumFractionDigits}
                 maximum-fraction-digits={typeAttributes.maximumFractionDigits}
@@ -93,33 +91,29 @@
                 maximum-significant-digits={typeAttributes.maximumSignificantDigits}
             ></lightning-formatted-number>
         </template>
-        <template if:true={isPercent}>
-            <lightning-formatted-number
-                value={value}
-                format-style="percent"
-                minimum-integer-digits={typeAttributes.minimumIntegerDigits}
-                minimum-fraction-digits={typeAttributes.minimumFractionDigits}
-                maximum-fraction-digits={typeAttributes.maximumFractionDigits}
-                minimum-significant-digits={typeAttributes.minimumSignificantDigits}
-                maximum-significant-digits={typeAttributes.maximumSignificantDigits}
-            ></lightning-formatted-number>
-        </template>
+
+        <!-- Phone -->
         <template if:true={isPhone}>
             <lightning-formatted-phone
                 value={value}
             ></lightning-formatted-phone>
         </template>
+
+        <!-- Text -->
         <template if:true={isText}>
             <lightning-formatted-text
                 value={value}
                 linkify={typeAttributes.linkify}
             ></lightning-formatted-text>
         </template>
+
+        <!-- URL -->
         <template if:true={isUrl}>
             <lightning-formatted-url
                 value={value}
                 tooltip={typeAttributes.tooltip}
                 target={typeAttributes.target}
+                label={typeAttributes.label}
             ></lightning-formatted-url>
         </template>
     </div>

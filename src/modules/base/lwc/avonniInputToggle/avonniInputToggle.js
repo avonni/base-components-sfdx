@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import {
     classListMutation,
@@ -23,15 +55,19 @@ const ARIA_CONTROLS = 'aria-controls';
 const ARIA_DESCRIBEDBY = 'aria-describedby';
 const ARIA_LABELEDBY = 'aria-labelledby';
 
-const validSizes = ['x-small', 'small', 'medium', 'large'];
+const INPUT_SIZES = {valid: ['x-small', 'small', 'medium', 'large'], default: 'medium'};
+
+const DEFAULT_MESSAGE_TOGGLE_ACTIVE = 'Active'
+const DEFAULT_MESSAGE_TOGGLE_INACTIVE = 'Inactive'
+
 
 export default class AvonniInputToggle extends LightningElement {
     @api accessKey;
     @api ariaLabel;
     @api fieldLevelHelp;
     @api label;
-    @api messageToggleActive = 'Active';
-    @api messageToggleInactive = 'Inactive';
+    @api messageToggleActive = DEFAULT_MESSAGE_TOGGLE_ACTIVE;
+    @api messageToggleInactive = DEFAULT_MESSAGE_TOGGLE_INACTIVE;
     @api name;
     @api value;
 
@@ -43,7 +79,7 @@ export default class AvonniInputToggle extends LightningElement {
     _messageWhenValueMissing;
     _readOnly;
     _required;
-    _size = 'medium';
+    _size = INPUT_SIZES.default;
     _variant;
 
     _rendered;
@@ -156,9 +192,7 @@ export default class AvonniInputToggle extends LightningElement {
     }
 
     set messageWhenValueMissing(value) {
-        this._messageWhenValueMissing = normalizeString(value, {
-            toLowerCase: false
-        });
+        this._messageWhenValueMissing = value;
     }
 
     @api
@@ -187,8 +221,8 @@ export default class AvonniInputToggle extends LightningElement {
 
     set size(toggleSize) {
         this._size = normalizeString(toggleSize, {
-            fallbackValue: 'medium',
-            validValues: validSizes
+            fallbackValue: INPUT_SIZES.default,
+            validValues: INPUT_SIZES.valid
         });
     }
 
@@ -353,12 +387,14 @@ export default class AvonniInputToggle extends LightningElement {
     }
 
     handleBlur() {
-        if (this.required && !this.checked) {
-            this.valid = false;
-        } else {
-            this.valid = true;
-        }
+        this.valid = !(this.required && !this.checked);
         this.updateClassList();
+
+        this.dispatchEvent(new CustomEvent('blur'));
+    }
+
+    handleFocus() {
+        this.dispatchEvent(new CustomEvent('focus'));
     }
 
     handleChange(event) {
@@ -372,7 +408,9 @@ export default class AvonniInputToggle extends LightningElement {
 
         this.dispatchEvent(
             new CustomEvent('change', {
-                detail: event.target.checked,
+                detail: {
+                    checked: event.target.checked
+                },
                 bubbles: true,
                 cancelable: false,
                 composed: true

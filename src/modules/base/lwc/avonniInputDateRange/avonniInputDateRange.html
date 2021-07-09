@@ -1,115 +1,158 @@
-<template>
-    <div class="avonni-label-container">
-        <abbr if:true={required} title="required" class="slds-required">*</abbr>
-        <p if:true={label}>{label}</p>
-        <lightning-helptext
-            if:true={fieldLevelHelp}
-            content={fieldLevelHelp}
-        ></lightning-helptext>
-    </div>
-    <div class="avonni-date-range-container">
-        <div class="slds-form-element">
-            <label
-                if:true={labelStartDate}
-                class="slds-form-element__label"
-                for="start-date"
-                >{labelStartDate}</label
-            >
-            <div
-                class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"
-            >
-                <input
-                    type="text"
-                    id="start-date"
-                    class="slds-input start-date"
-                    value={startDateString}
-                    onfocus={handleFocusStartDate}
-                    onblur={handleBlurStartDate}
-                    disabled={disabled}
-                />
-                <lightning-icon
-                    icon-name="utility:event"
-                    size="xx-small"
-                    class="slds-input__icon slds-input__icon_right"
-                ></lightning-icon>
-            </div>
-            <div
-                if:true={isOpenStartDate}
-                class="slds-datepicker slds-dropdown slds-dropdown_left"
-                onmouseenter={cancelBlurStartDate}
-                onmouseleave={allowBlurStartDate}
-            >
-                <c-avonni-calendar
-                    value={startDate}
-                    multi-value={endDate}
-                    onchange={handleChangeStartDate}
-                    onprivatefocus={handlePrivateFocusStartDate}
-                    onprivateblur={handlePrivateBlurStartDate}
-                ></c-avonni-calendar>
-            </div>
-        </div>
-        <lightning-input
-            if:true={showTime}
-            type="time"
-            name="start-time"
-            label="Start time"
-            variant="label-hidden"
-            value={startTime}
-            time-style={timeStyle}
-            onchange={handleChangeStartTime}
-            disabled={disabled}
-        ></lightning-input>
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
 
-        <div class="slds-form-element">
-            <label
-                if:true={labelEndDate}
-                class="slds-form-element__label"
-                for="end-date"
-                >{labelEndDate}</label
+<template>
+    <div class={computedWrapperClass}>
+        <div class={computedLabelClass}>
+            <abbr if:true={required} title="required" class="slds-required"
+                >*</abbr
             >
-            <div
-                class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"
-            >
-                <input
-                    type="text"
-                    id="end-date"
-                    class="slds-input end-date"
-                    value={endDateString}
-                    onfocus={handleFocusEndDate}
-                    onblur={handleBlurEndDate}
-                    disabled={disabled}
-                />
-                <lightning-icon
-                    icon-name="utility:event"
-                    size="xx-small"
-                    class="slds-input__icon slds-input__icon_right"
-                ></lightning-icon>
-            </div>
-            <div
-                if:true={isOpenEndDate}
-                class="slds-datepicker slds-dropdown slds-dropdown_left"
-                onmouseenter={cancelBlurEndDate}
-                onmouseleave={allowBlurEndDate}
-            >
-                <c-avonni-calendar
-                    value={endDate}
-                    multi-value={startDate}
-                    onchange={handleChangeEndDate}
-                    onprivatefocus={handlePrivateFocusEndDate}
-                    onprivateblur={handlePrivateBlurEndDate}
-                ></c-avonni-calendar>
-            </div>
+            <p if:true={label}>{label}</p>
+            <lightning-helptext
+                if:true={fieldLevelHelp}
+                content={fieldLevelHelp}
+            ></lightning-helptext>
         </div>
-        <lightning-input
-            if:true={showTime}
-            type="time"
-            name="end-time"
-            label="End time"
-            variant="label-hidden"
-            value={endTime}
-            time-style={timeStyle}
-            onchange={handleChangeEndTime}
-            disabled={disabled}
-        ></lightning-input>
+        <div class="avonni-date-range-container">
+            <div class="slds-form-element">
+                <label
+                    if:true={labelStartDate}
+                    class="slds-form-element__label"
+                    for="start-date"
+                    >{labelStartDate}</label
+                >
+                <div
+                    class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"
+                >
+                    <input
+                        type="text"
+                        id="start-date"
+                        class="slds-input start-date"
+                        value={startDateString}
+                        onfocus={handleFocusStartDate}
+                        onblur={handleBlurStartDate}
+                        disabled={disabled}
+                        aria-readonly={readOnly}
+                        readonly={readOnly}
+                    />
+                    <lightning-icon
+                        icon-name="utility:event"
+                        size="xx-small"
+                        class="slds-input__icon slds-input__icon_right"
+                    ></lightning-icon>
+                </div>
+                <div
+                    if:true={isOpenStartDate}
+                    class="slds-datepicker slds-dropdown slds-dropdown_left"
+                    onmouseenter={cancelBlurStartDate}
+                    onmouseleave={allowBlurStartDate}
+                >
+                    <c-avonni-calendar
+                        value={startDate}
+                        multi-value={endDate}
+                        onchange={handleChangeStartDate}
+                        onprivatefocus={handlePrivateFocusStartDate}
+                        onprivateblur={handlePrivateBlurStartDate}
+                    ></c-avonni-calendar>
+                </div>
+            </div>
+            <lightning-input
+                if:true={showTime}
+                type="time"
+                name="start-time"
+                label="Start time"
+                variant="label-hidden"
+                value={startTime}
+                time-style={timeStyle}
+                onchange={handleChangeStartTime}
+                disabled={disabled}
+                read-only={readOnly}
+            ></lightning-input>
+            <div class="slds-form-element">
+                <label
+                    if:true={labelEndDate}
+                    class="slds-form-element__label"
+                    for="end-date"
+                    >{labelEndDate}</label
+                >
+                <div
+                    class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"
+                >
+                    <input
+                        type="text"
+                        id="end-date"
+                        class="slds-input end-date"
+                        value={endDateString}
+                        onfocus={handleFocusEndDate}
+                        onblur={handleBlurEndDate}
+                        disabled={disabled}
+                        aria-readonly={readOnly}
+                        readonly={readOnly}
+                    />
+                    <lightning-icon
+                        icon-name="utility:event"
+                        size="xx-small"
+                        class="slds-input__icon slds-input__icon_right"
+                    ></lightning-icon>
+                </div>
+                <div
+                    if:true={isOpenEndDate}
+                    class="slds-datepicker slds-dropdown slds-dropdown_left"
+                    onmouseenter={cancelBlurEndDate}
+                    onmouseleave={allowBlurEndDate}
+                >
+                    <c-avonni-calendar
+                        value={endDate}
+                        multi-value={startDate}
+                        onchange={handleChangeEndDate}
+                        onprivatefocus={handlePrivateFocusEndDate}
+                        onprivateblur={handlePrivateBlurEndDate}
+                    ></c-avonni-calendar>
+                </div>
+            </div>
+            <lightning-input
+                if:true={showTime}
+                type="time"
+                name="end-time"
+                label="End time"
+                variant="label-hidden"
+                value={endTime}
+                time-style={timeStyle}
+                onchange={handleChangeEndTime}
+                disabled={disabled}
+                read-only={readOnly}
+            ></lightning-input>
+        </div>
     </div>
 </template>

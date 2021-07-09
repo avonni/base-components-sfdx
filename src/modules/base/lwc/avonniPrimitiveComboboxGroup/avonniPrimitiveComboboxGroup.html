@@ -1,0 +1,131 @@
+<!-- 
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <ul role="group" aria-label={label}>
+        <li
+            if:true={label}
+            role="presentation"
+            class="slds-listbox__item combobox__group-title"
+        >
+            <div
+                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                role="presentation"
+            >
+                <h3 class="slds-listbox__option-header" role="presentation">
+                    {label}
+                </h3>
+            </div>
+        </li>
+        <!-- Options -->
+        <template for:each={options} for:item="option">
+            <li
+                key={generateKey}
+                class={option.computedClass}
+                role="option"
+                aria-selected={option.selected}
+                data-value={option.value}
+                onclick={handleAction}
+                onmouseenter={handleAction}
+            >
+                <!-- Checkmark -->
+                <div
+                    if:false={removeSelectedOptions}
+                    class="slds-media__figure slds-listbox__option-icon"
+                >
+                    <lightning-icon
+                        if:true={option.showCheckmark}
+                        class={option.computedIconClass}
+                        icon-name={option.computedCheckmarkIconName}
+                        size="x-small"
+                        aria-hidden="true"
+                    ></lightning-icon>
+                </div>
+                <!-- Option data -->
+                <div class="slds-media__body">
+                    <div class="slds-media slds-media_center">
+                        <div
+                            if:true={option.hasAvatar}
+                            class="slds-media__figure slds-listbox__option-icon"
+                        >
+                            <c-avonni-avatar
+                                aria-hidden="true"
+                                size="small"
+                                src={option.avatarSrc}
+                                fallback-icon-name={option.avatarFallbackIconName}
+                                hide-avatar-details="true"
+                            ></c-avonni-avatar>
+                        </div>
+                        <div class="slds-media__body">
+                            <span
+                                class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                >{option.label}</span
+                            >
+                            <span
+                                if:true={option.secondaryText}
+                                class="slds-listbox__option-meta slds-listbox__option-meta_entity slds-truncate"
+                                >{option.secondaryText}</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chevron indicating children options -->
+                <div
+                    if:true={option.options.length}
+                    class="slds-media__figure slds-media__figure slds-media__figure_reverse"
+                >
+                    <lightning-icon
+                        icon-name="utility:chevronright"
+                        size="x-small"
+                        alternative-text="Open"
+                    ></lightning-icon>
+                </div>
+            </li>
+        </template>
+
+        <div class="slds-m-left_small">
+            <template for:each={groups} for:item="group">
+                <c-avonni-primitive-combobox-group
+                    key={generateKey}
+                    name={group.name}
+                    label={group.label}
+                    options={group.options}
+                    remove-selected-options={removeSelectedOptions}
+                    groups={group.groups}
+                ></c-avonni-primitive-combobox-group>
+            </template>
+        </div>
+    </ul>
+</template>

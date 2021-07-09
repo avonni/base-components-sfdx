@@ -1,20 +1,57 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { classSet, generateUniqueId } from 'c/utils';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
-const validVariants = ['coverable', 'non-coverable', 'vertical'];
-const validTypes = ['radio', 'checkbox'];
-const validSizes = ['xx-small', 'x-small', 'small', 'medium', 'large'];
-const validRatio = ['1-by-1', '4-by-3', '16-by-9'];
+const VISUAL_PICKER_VARIANTS = {
+    valid: ['coverable', 'non-coverable', 'vertical'],
+    default: 'non-coverable'
+};
+const INPUT_TYPES = { valid: ['radio', 'checkbox'], default: 'radio' };
+const VISUAL_PICKER_SIZES = {
+    valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
+    default: 'medium'
+};
+const VISUAL_PICKER_RATIOS = {
+    valid: ['1-by-1', '4-by-3', '16-by-9'],
+    default: '1-by-1'
+};
 
-const DEFAULT_VARIANT = 'non-coverable';
-const DEFAULT_TYPE = 'radio';
-const DEFAULT_SIZE = 'medium';
 const DEFAULT_REQUIRED = false;
 const DEFAULT_DISABLED = false;
 const DEFAULT_HIDE_BORDER = false;
 const DEFAULT_HIDE_CHECK_MARK = false;
-const DEFAULT_RATIO = '1-by-1';
 
 export default class AvonniVisualPicker extends LightningElement {
     @api label;
@@ -23,14 +60,14 @@ export default class AvonniVisualPicker extends LightningElement {
     @api name = generateUniqueId();
 
     _value = [];
-    _variant = DEFAULT_VARIANT;
-    _type = DEFAULT_TYPE;
-    _size = DEFAULT_SIZE;
+    _variant = VISUAL_PICKER_VARIANTS.default;
+    _type = INPUT_TYPES.default;
+    _size = VISUAL_PICKER_SIZES.default;
     _required = DEFAULT_REQUIRED;
     _disabled = DEFAULT_DISABLED;
     _hideBorder = DEFAULT_HIDE_BORDER;
     _hideCheckMark = DEFAULT_HIDE_CHECK_MARK;
-    _ratio = DEFAULT_RATIO;
+    _ratio = VISUAL_PICKER_RATIOS.default;
 
     renderedCallback() {
         const inputs = this.template.querySelectorAll('input');
@@ -69,8 +106,8 @@ export default class AvonniVisualPicker extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: 'non-coverable',
-            validValues: validVariants
+            fallbackValue: VISUAL_PICKER_VARIANTS.default,
+            validValues: VISUAL_PICKER_VARIANTS.valid
         });
     }
 
@@ -80,8 +117,8 @@ export default class AvonniVisualPicker extends LightningElement {
 
     set type(type) {
         this._type = normalizeString(type, {
-            fallbackValue: 'radio',
-            validValues: validTypes
+            fallbackValue: INPUT_TYPES.default,
+            validValues: INPUT_TYPES.valid
         });
     }
 
@@ -91,8 +128,8 @@ export default class AvonniVisualPicker extends LightningElement {
 
     set size(size) {
         this._size = normalizeString(size, {
-            fallbackValue: 'medium',
-            validValues: validSizes
+            fallbackValue: VISUAL_PICKER_SIZES.default,
+            validValues: VISUAL_PICKER_SIZES.valid
         });
     }
 
@@ -102,8 +139,8 @@ export default class AvonniVisualPicker extends LightningElement {
 
     set ratio(ratio) {
         this._ratio = normalizeString(ratio, {
-            fallbackValue: '1-by-1',
-            validValues: validRatio
+            fallbackValue: VISUAL_PICKER_RATIOS.default,
+            validValues: VISUAL_PICKER_RATIOS.valid
         });
     }
 
@@ -339,7 +376,7 @@ export default class AvonniVisualPicker extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value
+                    value: value.toString()
                 }
             })
         );

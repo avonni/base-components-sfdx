@@ -1,0 +1,301 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div role="group" aria-labelledby="group-label" class={computedOuterClass}>
+        <div id="group-label" class={computedGroupLabelClass}>
+            <template if:true={required}>
+                <abbr class="slds-required" title={i18n.required}>*</abbr>
+            </template>
+            {label}
+        </div>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+        ></lightning-helptext>
+        <div class="slds-form-element__control">
+            <div
+                class="avonni-dual-listbox-list"
+                onfocusin={handleFocus}
+                onfocusout={handleBlur}
+            >
+                <div class={computedListboxColumnsClass}>
+                    <span
+                        class="slds-form-element__label"
+                        id="source-list-label"
+                        >{sourceLabel}</span
+                    >
+                    <div
+                        if:true={searchEngine}
+                        class="avonni-dual-listbox-search-engine"
+                    >
+                        <lightning-input
+                            id="search-input"
+                            name="search"
+                            label=" "
+                            variant="label-hidden"
+                            type="search"
+                            onchange={handleSearch}
+                        ></lightning-input>
+                    </div>
+                    <div
+                        class={computedListboxSourceContainerClass}
+                        style={sourceHeight}
+                        ondragover={handleDragOverSource}
+                        ondragleave={handleDragLeaveSource}
+                    >
+                        <ul
+                            data-source-list
+                            id="source-list"
+                            aria-describedby="keyboard-interacton"
+                            aria-labelledby="source-list-label"
+                            aria-multiselectable="true"
+                            class="slds-listbox slds-listbox_vertical source-list"
+                            role="listbox"
+                            aria-disabled={ariaDisabled}
+                        >
+                            <template
+                                for:each={computedSourceList}
+                                for:item="option"
+                                for:index="index"
+                            >
+                                <li
+                                    key={option.value}
+                                    role="presentation"
+                                    class={computedListItemClass}
+                                    data-role="source"
+                                >
+                                    <div
+                                        class={option.classList}
+                                        aria-selected={option.selected}
+                                        role="option"
+                                        tabindex={option.tabIndex}
+                                        data-index={index}
+                                        data-value={option.value}
+                                        data-type={computedSourceListId}
+                                        onclick={handleOptionClick}
+                                        onkeydown={handleOptionKeyDown}
+                                        draggable={draggable}
+                                        ondragstart={handleDragStartSource}
+                                        ondragend={handleDragEndSource}
+                                    >
+                                        <div class="slds-media__figure">
+                                            <c-avonni-avatar
+                                                fallback-icon-name={option.iconName}
+                                                src={option.src}
+                                                initials={option.initials}
+                                                size={option.iconSize}
+                                                variant={option.variant}
+                                                primary-text={option.primaryText}
+                                                secondary-text={option.secondaryText}
+                                            ></c-avonni-avatar>
+                                        </div>
+                                        <template if:false={option.description}>
+                                            <span class="slds-media__body">
+                                                <span
+                                                    class="slds-truncate"
+                                                    title={option.label}
+                                                    >{option.label}</span
+                                                >
+                                            </span>
+                                        </template>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                        <div if:true={isLoading}>
+                            <lightning-spinner
+                                size="small"
+                                class="slds-spinner_container"
+                                alternative-text={i18n.loadingText}
+                            ></lightning-spinner>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="avonni-dual-listbox-list__column avonni-dual-listbox-buttons-centered"
+                >
+                    <lightning-button-icon
+                        class="button"
+                        icon-name={addButtonIconName}
+                        size={buttonSize}
+                        variant={buttonVariant}
+                        onclick={handleRightButtonClick}
+                        disabled={moveButtonsDisabled}
+                        title={addButtonLabel}
+                        alternative-text={addButtonLabel}
+                    >
+                    </lightning-button-icon>
+                    <lightning-button-icon
+                        class="button"
+                        icon-name={removeButtonIconName}
+                        size={buttonSize}
+                        variant={buttonVariant}
+                        onclick={handleLeftButtonClick}
+                        disabled={moveButtonsDisabled}
+                        title={removeButtonLabel}
+                        alternative-text={removeButtonLabel}
+                    >
+                    </lightning-button-icon>
+                </div>
+                <div class={computedListboxColumnsClass}>
+                    <span
+                        class="slds-form-element__label"
+                        id="selected-list-label"
+                        >{selectedLabel}</span
+                    >
+                    <div
+                        class={computedListboxSelectedContainerClass}
+                        style={selectedHeight}
+                        ondragover={handleDragOverSelected}
+                        ondragleave={handleDragLeaveSelected}
+                    >
+                        <ul
+                            data-selected-list
+                            id="selected-list"
+                            aria-describedby="keyboard-interacton"
+                            aria-labelledby="selected-list-label"
+                            aria-multiselectable="true"
+                            class="slds-listbox slds-listbox_vertical"
+                            role="listbox"
+                            aria-disabled={ariaDisabled}
+                        >
+                            <template
+                                for:each={computedSelectedList}
+                                for:item="option"
+                                for:index="index"
+                            >
+                                <li
+                                    key={option.value}
+                                    role="presentation"
+                                    class={computedListItemClass}
+                                    data-role="selected"
+                                >
+                                    <div
+                                        class={option.classList}
+                                        aria-selected={option.selected}
+                                        role="option"
+                                        tabindex={option.tabIndex}
+                                        data-index={index}
+                                        data-value={option.value}
+                                        data-type={computedSelectedListId}
+                                        onclick={handleOptionClick}
+                                        onkeydown={handleOptionKeyDown}
+                                        draggable={draggable}
+                                        ondragstart={handleDragStartSelected}
+                                        ondragend={handleDragEndSelected}
+                                        ondragover={handleDragOver}
+                                    >
+                                        <div class="slds-media__figure">
+                                            <c-avonni-avatar
+                                                fallback-icon-name={option.iconName}
+                                                src={option.src}
+                                                initials={option.initials}
+                                                size={option.iconSize}
+                                                variant={option.variant}
+                                                primary-text={option.primaryText}
+                                                secondary-text={option.secondaryText}
+                                            ></c-avonni-avatar>
+                                        </div>
+                                        <template if:false={option.description}>
+                                            <span class="slds-media__body">
+                                                <span
+                                                    class="slds-truncate"
+                                                    title={option.label}
+                                                    >{option.label}</span
+                                                >
+                                            </span>
+                                        </template>
+                                        <template if:true={option.isLocked}>
+                                            <span
+                                                class="slds-media__figure slds-media__figure_reverse"
+                                            >
+                                                <lightning-icon
+                                                    icon-name="utility:lock"
+                                                    size="x-small"
+                                                    alternative-text={computedLockAssistiveText}
+                                                ></lightning-icon>
+                                            </span>
+                                        </template>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                        <template if:true={isSelectedBoxEmpty}>
+                            <span>{selectedPlaceholder}</span>
+                        </template>
+                    </div>
+                </div>
+                <template if:false={disableReordering}>
+                    <div
+                        class="avonni-dual-listbox-list__column avonni-dual-listbox-buttons-centered"
+                    >
+                        <lightning-button-icon
+                            class="button"
+                            icon-name={upButtonIconName}
+                            size={buttonSize}
+                            variant={buttonVariant}
+                            onclick={handleUpButtonClick}
+                            disabled={_upButtonDisabled}
+                            title={upButtonLabel}
+                            alternative-text={upButtonLabel}
+                        >
+                        </lightning-button-icon>
+                        <lightning-button-icon
+                            class="button"
+                            icon-name={downButtonIconName}
+                            size={buttonSize}
+                            variant={buttonVariant}
+                            onclick={handleDownButtonClick}
+                            disabled={_downButtonDisabled}
+                            title={downButtonLabel}
+                            alternative-text={downButtonLabel}
+                        >
+                        </lightning-button-icon>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <template if:true={errorMessage}>
+            <div
+                id="error-message"
+                class="slds-has-error slds-form-element__help"
+                aria-live="assertive"
+                role="alert"
+            >
+                {errorMessage}
+            </div>
+        </template>
+    </div>
+</template>

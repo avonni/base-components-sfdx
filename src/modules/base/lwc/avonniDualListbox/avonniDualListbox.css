@@ -1,0 +1,149 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+.avonni-dual-listbox-list {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    clear: left;
+}
+
+.avonni-dual-listbox-list__column {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.avonni-dual-listbox-buttons-centered .button {
+    margin: var(--lwc-spacingSmall, 0.75rem) 0;
+}
+
+.avonni-dual-listbox-buttons-centered {
+    justify-content: center;
+    margin: var(--lwc-spacingMedium, 1rem);
+}
+
+.avonni-dual-listbox-list__column_responsive_small {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 1 15rem;
+    flex: 0 1 15rem;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    overflow: hidden;
+    min-width: 6rem;
+}
+
+.avonni-dual-listbox-list__column_responsive_medium {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 1 20rem;
+    flex: 0 1 20rem;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    overflow: hidden;
+    min-width: 6rem;
+}
+
+.avonni-dual-listbox-list__column_responsive_large {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 1 25rem;
+    flex: 0 1 25rem;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    overflow: hidden;
+    min-width: 6rem;
+}
+
+.avonni-dual-listbox-list__column_responsive
+    .avonni-dual-listbox-list__options {
+    width: auto;
+    max-width: 100%;
+}
+
+.avonni-dual-listbox-search-engine {
+    position: relative;
+    top: 3px;
+    background: #ffffff;
+    border-radius: 0.25rem 0.25rem 0 0;
+    border: 1px solid #dddbda;
+    padding: var(--lwc-spacingXSmall, 0.5rem) !important;
+}
+
+.avonni-dual-listbox-selected-list-with-search {
+    margin-top: 3px;
+}
+
+.avonni-dual-listbox-option-is-selected {
+    padding: 0;
+    color: var(--lwc-colorTextIconDefault, rgb(112, 110, 107));
+}
+
+.avonni-dual-listbox-option-is-selected.slds-dueling-list__options
+    [aria-selected='true'] {
+    background: #edeceb;
+    color: var(--lwc-colorTextIconDefault, rgb(112, 110, 107));
+}
+
+.avonni-dual-listbox-option-border_bottom {
+    border-bottom: var(--lwc-borderWidthThin, 1px) solid
+        var(--lwc-colorBorder, rgb(221, 219, 218));
+}
+
+.avonni-dual-listbox-empty-column {
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avonni-dual-listbox-list-item-min_height {
+    min-height: 41px;
+}
+
+.avonni-dual-listbox-size_small {
+    width: var(--lwc-sizeSmall, 15rem);
+}
+
+.avonni-dual-listbox-size_medium {
+    width: var(--lwc-sizeMedium, 20rem);
+}
+
+.avonni-dual-listbox-size_large {
+    width: var(--lwc-sizeLarge, 25rem);
+}
+
+.avonni-dual-listbox-dragging {
+    opacity: 0.2;
+}

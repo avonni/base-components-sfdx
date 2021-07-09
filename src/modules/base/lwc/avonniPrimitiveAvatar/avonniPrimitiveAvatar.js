@@ -1,9 +1,41 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { normalizeString } from 'c/utilsPrivate';
 import { computeSldsClass } from 'c/iconUtils';
 
-const SIZE = {
+const AVATAR_SIZES = {
     valid: [
         'xx-small',
         'x-small',
@@ -15,7 +47,7 @@ const SIZE = {
     ],
     default: 'medium'
 };
-const VARIANT = {
+const AVATAR_VARIANTS = {
     valid: ['circle', 'square'],
     default: 'square'
 };
@@ -23,7 +55,7 @@ const STATUS = {
     valid: ['approved', 'locked', 'declined', 'unknown'],
     default: null
 };
-const POSITION = {
+const POSITIONS = {
     valid: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
     presenceDefault: 'bottom-right',
     statusDefault: 'top-right',
@@ -53,19 +85,19 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
     fallbackIconClass;
 
     _alternativeText = DEFAULT_ALTERNATIVE_TEXT;
-    _entityPosition = POSITION.entityDefault;
+    _entityPosition = POSITIONS.entityDefault;
     _entitySrc;
     _entityTitle = DEFAULT_ENTITY_TITLE;
-    _entityVariant = VARIANT.default;
+    _entityVariant = AVATAR_VARIANTS.default;
     _presence = PRESENCE.default;
-    _presencePosition = POSITION.presenceDefault;
+    _presencePosition = POSITIONS.presenceDefault;
     _presenceTitle = DEFAULT_PRESENCE_TITLE;
-    _size = SIZE.default;
+    _size = AVATAR_SIZES.default;
     _src = '';
     _status = STATUS.default;
-    _statusPosition = POSITION.statusDefault;
+    _statusPosition = POSITIONS.statusDefault;
     _statusTitle = DEFAULT_STATUS_TITLE;
-    _variant = VARIANT.default;
+    _variant = AVATAR_VARIANTS.default;
 
     /**
      * Main avatar logic
@@ -96,8 +128,8 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     set size(value) {
         this._size = normalizeString(value, {
-            fallbackValue: SIZE.default,
-            validValues: SIZE.valid
+            fallbackValue: AVATAR_SIZES.default,
+            validValues: AVATAR_SIZES.valid
         });
         this._updateClassList();
     }
@@ -118,8 +150,8 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     set variant(value) {
         this._variant = normalizeString(value, {
-            fallbackValue: VARIANT.default,
-            validValues: VARIANT.valid
+            fallbackValue: AVATAR_VARIANTS.default,
+            validValues: AVATAR_VARIANTS.valid
         });
         this._updateClassList();
     }
@@ -159,8 +191,8 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     set statusPosition(value) {
         this._statusPosition = normalizeString(value, {
-            fallbackValue: POSITION.statusDefault,
-            validValues: POSITION.valid
+            fallbackValue: POSITIONS.statusDefault,
+            validValues: POSITIONS.valid
         });
         this._computeStatus();
     }
@@ -189,8 +221,8 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     set presencePosition(value) {
         this._presencePosition = normalizeString(value, {
-            fallbackValue: POSITION.presenceDefault,
-            validValues: POSITION.valid
+            fallbackValue: POSITIONS.presenceDefault,
+            validValues: POSITIONS.valid
         });
         this._computePresenceClasses();
     }
@@ -216,8 +248,8 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     set entityPosition(value) {
         this._entityPosition = normalizeString(value, {
-            fallbackValue: POSITION.entityDefault,
-            validValues: POSITION.valid
+            fallbackValue: POSITIONS.entityDefault,
+            validValues: POSITIONS.valid
         });
         this._computeEntityClasses();
     }
@@ -248,8 +280,8 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     set entityVariant(value) {
         this._entityVariant = normalizeString(value, {
-            fallbackValue: VARIANT.default,
-            validValues: VARIANT.valid
+            fallbackValue: AVATAR_VARIANTS.default,
+            validValues: AVATAR_VARIANTS.valid
         });
         this._computeEntityClasses();
     }

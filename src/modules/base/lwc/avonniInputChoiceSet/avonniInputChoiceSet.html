@@ -1,0 +1,133 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <fieldset aria-required={required}>
+        <legend class={computedLegendClass}>
+            <template if:true={required}>
+                <abbr class="slds-required" title={i18n.required}>*</abbr>
+            </template>
+            {label}
+        </legend>
+
+        <div class="slds-form-element__control">
+            <div class={computedButtonClass}>
+                <template for:each={transformedOptions} for:item="option">
+                    <span
+                        class={computedCheckboxContainerClass}
+                        key={option.value}
+                    >
+                        <input
+                            type={computedInputType}
+                            name={name}
+                            id={option.id}
+                            checked={option.isChecked}
+                            value={option.value}
+                            disabled={disabled}
+                            onclick={handleClick}
+                            onchange={handleChange}
+                            onfocus={handleFocus}
+                            onblur={handleBlur}
+                        />
+
+                        <label class={computedLabelClass} for={option.id}>
+                            <span>
+                                <template if:true={checkboxVariant}>
+                                    <div>
+                                        <c-avonni-media-object
+                                            vertical-align="center"
+                                            size="small"
+                                        >
+                                            <div
+                                                slot="figure"
+                                                class={computedCheckboxShapeClass}
+                                            ></div>
+                                            <div>
+                                                <div
+                                                    if:true={option.isIconBottomRight}
+                                                    class="slds-form-element__label"
+                                                >
+                                                    {option.label}
+                                                </div>
+                                                <lightning-icon
+                                                    if:true={option.iconName}
+                                                    class="slds-m-right_x-small"
+                                                    icon-name={option.iconName}
+                                                    size="x-small"
+                                                ></lightning-icon>
+                                                <div
+                                                    if:true={option.isIconTopLeft}
+                                                    class="slds-form-element__label"
+                                                >
+                                                    {option.label}
+                                                </div>
+                                            </div>
+                                        </c-avonni-media-object>
+                                    </div>
+                                </template>
+
+                                <template if:false={checkboxVariant}>
+                                    <div class="slds-p-horizontal_small">
+                                        <span
+                                            if:true={option.isIconBottomRight}
+                                            class={option.computedLabelButtonClass}
+                                            >{option.label}</span
+                                        >
+                                        <lightning-icon
+                                            variant={option.computedVariantButton}
+                                            if:true={option.iconName}
+                                            class={option.computedIconButtonClass}
+                                            icon-name={option.iconName}
+                                            size="x-small"
+                                        ></lightning-icon>
+                                        <span
+                                            if:true={option.isIconTopLeft}
+                                            class={option.computedLabelButtonClass}
+                                            >{option.label}</span
+                                        >
+                                    </div>
+                                </template>
+                            </span>
+                        </label>
+                    </span>
+                </template>
+            </div>
+        </div>
+        <template if:true={_helpMessage}>
+            <div id="helptext" data-helptext class="slds-form-element__help">
+                {_helpMessage}
+            </div>
+        </template>
+    </fieldset>
+</template>

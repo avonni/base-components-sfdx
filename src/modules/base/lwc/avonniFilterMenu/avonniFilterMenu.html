@@ -1,0 +1,161 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="slds-is-relative">
+        <button
+            class={computedButtonClass}
+            disabled={disabled}
+            aria-expanded={computedAriaExpanded}
+            aria-haspopup="true"
+            title={title}
+            accesskey={accessKey}
+            value={value}
+            type="button"
+            onclick={handleButtonClick}
+            onblur={handleButtonBlur}
+            onfocus={handleButtonFocus}
+            onmousedown={handleButtonMouseDown}
+            onkeydown={handleKeyDown}
+        >
+            {label}
+            <c-avonni-primitive-icon
+                icon-name={iconName}
+                svg-class="slds-button__icon"
+                variant="bare"
+            ></c-avonni-primitive-icon>
+            <template if:true={computedShowDownIcon}>
+                <c-avonni-primitive-icon
+                    icon-name="utility:down"
+                    svg-class="slds-button__icon slds-button__icon_x-small slds-m-left_xx-small"
+                    variant="bare"
+                ></c-avonni-primitive-icon>
+            </template>
+            <span class="slds-assistive-text">{alternativeText}</span>
+        </button>
+        <template if:true={dropdownOpened}>
+            <div
+                class={computedDropdownClass}
+                onprivateselect={handlePrivateSelect}
+                onprivateblur={handlePrivateBlur}
+                onprivatefocus={handlePrivateFocus}
+                onmousedown={handleDropdownMouseDown}
+                onclick={handleDropdownClick}
+                onmouseout={allowBlur}
+            >
+                <template if:true={isLoading}>
+                    <lightning-spinner
+                        size="small"
+                        alternative-text={loadingStateAlternativeText}
+                    ></lightning-spinner>
+                </template>
+                <template if:false={isLoading}>
+                    <div class="slds-dropdown__list" role="menu">
+                        <lightning-input
+                            if:true={showSearchBox}
+                            class="slds-p-around_small"
+                            label={searchInputPlaceholder}
+                            placeholder={searchInputPlaceholder}
+                            variant="label-hidden"
+                            type="search"
+                            disabled={disabled}
+                            is-loading={isLoading}
+                            value={searchTerm}
+                            autocomplete="off"
+                            onchange={handleSearch}
+                            onblur={handlePrivateBlur}
+                            onfocus={handlePrivateFocus}
+                            onkeydown={handleKeyDown}
+                        ></lightning-input>
+                        <div class={computedItemListClass}>
+                            <template
+                                for:each={computedItems}
+                                for:item="item"
+                                for:index="index"
+                            >
+                                <lightning-menu-item
+                                    if:false={item.hidden}
+                                    key={item.value}
+                                    label={item.label}
+                                    value={item.value}
+                                    icon-name={item.iconName}
+                                    prefix-icon-name={item.prefixIconName}
+                                    checked={item.checked}
+                                    disabled={item.disabled}
+                                    tab-index={item.tabindex}
+                                    data-index={index}
+                                    onkeydown={handleKeyDown}
+                                >
+                                </lightning-menu-item>
+                            </template>
+                        </div>
+                        <lightning-menu-divider
+                            if:false={hideApplyResetButtons}
+                        ></lightning-menu-divider>
+                        <div
+                            if:false={hideApplyResetButtons}
+                            class="slds-p-horizontal_small slds-p-bottom_x-small slds-text-align_right"
+                        >
+                            <lightning-button
+                                class="slds-m-right_x-small"
+                                variant="base"
+                                label={resetButtonLabel}
+                                title={resetButtonLabel}
+                                onfocus={handlePrivateFocus}
+                                onblur={handlePrivateBlur}
+                                onclick={handleResetClick}
+                                onkeydown={handleKeyDown}
+                            ></lightning-button>
+                            <lightning-button
+                                variant="brand"
+                                label={applyButtonLabel}
+                                title={applyButtonLabel}
+                                onfocus={handlePrivateFocus}
+                                onblur={handlePrivateBlur}
+                                onclick={handleApplyClick}
+                                onkeydown={handleKeyDown}
+                            ></lightning-button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+    <div if:true={showSelectedItems} class="slds-m-top_x-small">
+        <lightning-pill-container
+            items={selectedItems}
+            onitemremove={handleSelectedItemRemove}
+        ></lightning-pill-container>
+    </div>
+</template>

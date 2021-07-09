@@ -1,37 +1,46 @@
 <template>
     <div class="slds-page-header slds-page-header_vertical">
         <div class="slds-media slds-media_center">
-            <div class="slds-media__figure">
-                <div class={computedIconClass}>
-                    <c-avonni-primitive-icon
-                        svg-class="slds-icon slds-page-header__icon"
-                        icon-name={iconName}
-                        variant="bare"
-                    >
-                    </c-avonni-primitive-icon>
+            <template if:true={iconName}>
+                <div class="slds-media__figure">
+                    <div class={computedIconClass}>
+                        <c-avonni-primitive-icon
+                            svg-class="slds-icon slds-page-header__icon"
+                            icon-name={iconName}
+                            variant="bare"
+                        >
+                        </c-avonni-primitive-icon>
+                    </div>
+                    <div class={computedMobileIconClass}>
+                        <c-avonni-primitive-icon
+                            svg-class="slds-icon"
+                            icon-name={iconName}
+                            variant="bare"
+                            size="large"
+                        >
+                        </c-avonni-primitive-icon>
+                    </div>
                 </div>
-            </div>
+            </template>
             <div class="slds-media__body">
                 <div class="slds-page-header__name">
                     <div class="slds-page-header__name-title">
-                        <h1>
-                            <template if:false={hasStringLabel}>
-                                <slot name="label"></slot>
+                        <template if:false={hasStringLabel}>
+                            <slot name="label"></slot>
+                        </template>
+                        <template if:true={hasStringLabel}>
+                            <span>{label}</span>
+                        </template>
+                        <span
+                            class="slds-page-header__title slds-hyphenate slds-truncate"
+                        >
+                            <template if:true={hasStringTitle}>
+                                {title}
                             </template>
-                            <template if:true={hasStringLabel}>
-                                <span>{label}</span>
+                            <template if:false={hasStringTitle}>
+                                <slot name="title"></slot>
                             </template>
-                            <span
-                                class="slds-page-header__title slds-hyphenate slds-truncate"
-                            >
-                                <template if:true={hasStringTitle}>
-                                    {title}
-                                </template>
-                                <template if:false={hasStringTitle}>
-                                    <slot name="title"></slot>
-                                </template>
-                            </span>
-                        </h1>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -41,42 +50,25 @@
                 </div>
             </template>
         </div>
-        <p class="slds-page-header__meta-text slds-truncate">
+        <p
+            class="slds-page-header__meta-text slds-truncate slds-m-top_xx-small"
+        >
             <template if:true={hasStringInfo}> {info} </template>
             <template if:false={hasStringInfo}>
                 <slot name="info"></slot>
             </template>
         </p>
-        <template if:true={showActions}>
-            <div class="slds-page-header__controls">
-                <slot name="actions"></slot>
-            </div>
-        </template>
-        <template if:true={fields}>
-            <ul class="slds-page-header__detail-list">
-                <template for:each={fields} for:item="field">
-                    <li key={field.label} class="slds-page-header__detail-item">
-                        <div
-                            class="slds-text-title slds-truncate"
-                            title={field.label}
-                        >
-                            {field.label}
-                        </div>
-                        <div title={field.value}>
-                            <c-avonni-primitive-page-header-field
-                                field={field}
-                                label={field.label}
-                                value={field.value}
-                                type={field.type}
-                            >
-                            </c-avonni-primitive-page-header-field>
-                        </div>
-                    </li>
+        <template if:true={showActionsOrDetails}>
+            <div
+                class="slds-page-header__controls avonni-page-header-flex_column"
+            >
+                <template if:true={showActions}>
+                    <slot name="actions"></slot>
                 </template>
-            </ul>
-        </template>
-        <template if:false={fields}>
-            <slot name="details"></slot>
+                <template if:true={showDetails}>
+                    <slot name="details"></slot>
+                </template>
+            </div>
         </template>
     </div>
 </template>

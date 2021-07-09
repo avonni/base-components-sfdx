@@ -1,26 +1,67 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
-const validVariants = [
-    'base',
-    'neutral',
-    'brand',
-    'brand-outline',
-    'destructive',
-    'destructive-text',
-    'inverse',
-    'success'
-];
-const validIconPositions = ['left', 'right'];
+const BUTTON_VARIANTS = {
+    valid: [
+        'base',
+        'neutral',
+        'brand',
+        'brand-outline',
+        'destructive',
+        'destructive-text',
+        'inverse',
+        'success'
+    ],
+    default: 'neutral'
+};
+const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 
 export default class AvonniButtonDialog extends LightningElement {
     @api accessKey;
     @api label;
     @api iconName;
+    @api alternativeText;
 
-    _disabled;
-    _variant = 'neutral';
-    _iconPosition = 'left';
+    _disabled = false;
+    _variant = BUTTON_VARIANTS.default;
+    _iconPosition = ICON_POSITIONS.default;
+    _dialogSlot;
+
+    renderedCallback() {
+        this._dialogSlot = this.template.querySelector('slot');
+    }
 
     @api
     get variant() {
@@ -29,8 +70,8 @@ export default class AvonniButtonDialog extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: 'border',
-            validValues: validVariants
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -41,8 +82,8 @@ export default class AvonniButtonDialog extends LightningElement {
 
     set iconPosition(iconPosition) {
         this._iconPosition = normalizeString(iconPosition, {
-            fallbackValue: 'left',
-            validValues: validIconPositions
+            fallbackValue: ICON_POSITIONS.default,
+            validValues: ICON_POSITIONS.valid
         });
     }
 
@@ -56,16 +97,32 @@ export default class AvonniButtonDialog extends LightningElement {
     }
 
     @api
-    click() {
-        let dialogSlot = this.template.querySelector('slot');
-
-        if (dialogSlot.assignedElements().length !== 0) {
-            dialogSlot.assignedElements()[0].show();
+    show() {
+        if (this._dialogSlot.assignedElements().length !== 0) {
+            this._dialogSlot.assignedElements()[0].show();
         }
+        this.dispatchEvent(new CustomEvent('show'));
+    }
+
+    @api
+    hide() {
+        if (this._dialogSlot.assignedElements().length !== 0) {
+            this._dialogSlot.assignedElements()[0].hide();
+        }
+        this.dispatchEvent(new CustomEvent('hide'));
+    }
+
+    @api
+    click() {
+        if (this._dialogSlot.assignedElements().length !== 0) {
+            this._dialogSlot.assignedElements()[0].show();
+        }
+        this.dispatchEvent(new CustomEvent('click'));
     }
 
     @api
     focus() {
-        this.template.querySelector('button').focus();
+        this.template.querySelector('lightning-button').focus();
+        this.dispatchEvent(new CustomEvent('focus'));
     }
 }

@@ -1,9 +1,53 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { parseDateTime } from 'c/internationalizationLibrary';
+import { classSet } from 'c/utils';
 
-const validTypes = ['date', 'datetime'];
-const validDateStyle = ['short', 'medium', 'long'];
+const DATE_TYPES = {
+    valid: ['date', 'datetime'],
+    default: 'date'
+};
+const DATE_STYLES = {
+    valid: ['short', 'medium', 'long'],
+    defaultDate: 'medium',
+    defaultTime:'short'
+};
+const LABEL_VARIANTS = {
+    valid: ['standard', 'label-hidden', 'label-inline', 'label-stacked'],
+    default: 'standard'
+};
 
 export default class AvonniInputDateRange extends LightningElement {
     @api fieldLevelHelp;
@@ -12,14 +56,16 @@ export default class AvonniInputDateRange extends LightningElement {
     @api labelEndDate;
 
     _timezone;
-    _startDate = '';
-    _endDate = '';
+    _startDate;
+    _endDate;
 
-    _dateStyle = 'medium';
-    _timeStyle = 'short';
-    _type = 'date';
+    _dateStyle = DATE_STYLES.defaultDate;
+    _timeStyle = DATE_STYLES.defaultTime;
+    _type = DATE_TYPES.default;
     _disabled = false;
     _required = false;
+    _readOnly = false;
+    _variant = LABEL_VARIANTS.default;
 
     startTime;
     endTime;
@@ -61,42 +107,46 @@ export default class AvonniInputDateRange extends LightningElement {
         this.initEndtDate();
     }
 
-    @api get dateStyle() {
+    @api 
+    get dateStyle() {
         return this._dateStyle;
     }
 
     set dateStyle(value) {
         this._dateStyle = normalizeString(value, {
-            fallbackValue: 'medium',
-            validValues: validDateStyle
+            fallbackValue: DATE_STYLES.defaultDate,
+            validValues: DATE_STYLES.valid
         });
     }
 
-    @api get timeStyle() {
+    @api 
+    get timeStyle() {
         return this._timeStyle;
     }
 
     set timeStyle(value) {
         this._timeStyle = normalizeString(value, {
-            fallbackValue: 'medium',
-            validValues: validDateStyle
+            fallbackValue: DATE_STYLES.defaultTime,
+            validValues: DATE_STYLES.valid
         });
     }
 
-    @api get type() {
+    @api 
+    get type() {
         return this._type;
     }
 
     set type(type) {
         this._type = normalizeString(type, {
-            fallbackValue: 'date',
-            validValues: validTypes
+            fallbackValue: DATE_TYPES.default,
+            validValues: DATE_TYPES.valid
         });
         this.initStartDate();
         this.initEndtDate();
     }
 
-    @api get disabled() {
+    @api 
+    get disabled() {
         return this._disabled;
     }
 
@@ -104,12 +154,34 @@ export default class AvonniInputDateRange extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api get required() {
+    @api 
+    get readOnly() {
+        return this._readOnly;
+    }
+
+    set readOnly(value) {
+        this._readOnly = normalizeBoolean(value);
+    }
+
+    @api 
+    get required() {
         return this._required;
     }
 
     set required(value) {
         this._required = normalizeBoolean(value);
+    }
+
+    @api 
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: LABEL_VARIANTS.default,
+            validValues: LABEL_VARIANTS.valid
+        });
     }
 
     get showTime() {
@@ -134,6 +206,19 @@ export default class AvonniInputDateRange extends LightningElement {
         }
 
         return dateStr;
+    }
+
+    get computedLabelClass() {
+        return classSet('avonni-label-container').add({
+            'slds-assistive-text': this.variant === 'label-hidden',
+            'slds-m-right_small': this.variant === 'label-inline'
+        }).toString();
+    }
+
+    get computedWrapperClass() {
+        return classSet().add({
+            'slds-grid': this.variant === 'label-inline'
+        }).toString();
     }
 
     @api
@@ -202,13 +287,21 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     handleChangeStartDate(event) {
-        this.startDate = new Date(event.detail.value);
+        // Date format received is: YYYY-MM-DD
+        const date = event.detail.value.split('-');
+        const year = Number(date[0]);
+        const month = Number(date[1]) - 1;
+        const day = Number(date[2]);
+
+        this.startDate = new Date(year, month, day);
         event.stopPropagation();
         this._cancelBlurStartDate = false;
         this.handleBlurStartDate();
     }
 
     handleFocusStartDate() {
+        if (this.readOnly) return;
+
         this.allowBlurStartDate();
 
         if (!this.isOpenStartDate) {
@@ -279,13 +372,21 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     handleChangeEndDate(event) {
-        this.endDate = new Date(event.detail.value);
+        // Date format received is: YYYY-MM-DD
+        const date = event.detail.value.split('-');
+        const year = Number(date[0]);
+        const month = Number(date[1]) - 1;
+        const day = Number(date[2]);
+        
+        this.endDate = new Date(year, month, day);
         event.stopPropagation();
         this._cancelBlurEndDate = false;
         this.handleBlurEndDate();
     }
 
     handleFocusEndDate() {
+        if (this.readOnly) return;
+        
         this.allowBlurEndDate();
 
         if (!this.isOpenEndDate) {

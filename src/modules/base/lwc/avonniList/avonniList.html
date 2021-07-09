@@ -1,0 +1,180 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <p if:true={label} class="slds-text-heading_small">{label}</p>
+    <span
+        id="instructions"
+        class="slds-assistive-text"
+        aria-live="assertive"
+        lwc:dom="manual"
+    ></span>
+
+    <span if:true={alternativeText} class="slds-assistive-text"
+        >{alternativeText}</span
+    >
+
+    <ul class={computedListClass} role={menuRole}>
+        <template for:each={computedItems} for:item="item" for:index="index">
+            <li
+                key={item.label}
+                class={computedItemClass}
+                onmousedown={dragStart}
+                onmousemove={drag}
+                onmouseup={dragEnd}
+                ontouchstart={dragStart}
+                ontouchmove={drag}
+                ontouchend={dragEnd}
+                onkeydown={handleKeyDown}
+                data-index={index}
+                data-position="0"
+                role={itemRole}
+                tabindex={tabindex}
+                aria-label={item.label}
+                aria-describedby="instructions"
+            >
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <lightning-icon
+                        if:true={showIconLeft}
+                        class="icon-left"
+                        icon-name={sortableIconName}
+                        size="x-small"
+                    ></lightning-icon>
+                    <c-avonni-avatar
+                        if:true={item.avatarSrc}
+                        class="slds-m-horizontal_x-small"
+                        fallback-icon-name={item.avatarFallbackIconName}
+                        src={item.avatarSrc}
+                        size="small"
+                        hide-avatar-details="true"
+                    ></c-avonni-avatar>
+                    <div class="slds-col slds-truncate">
+                        <div
+                            class="slds-grid slds-grid-align-center slds-truncate slds-no-space slds-margin-bottom_xx-small"
+                        >
+                            <template if:true={item.href}>
+                                <a href={item.href}>{item.label}</a>
+                            </template>
+                            <template if:false={item.href}>
+                                <h3>{item.label}</h3>
+                            </template>
+                            <div if:true={item.icons} class="slds-no-flex">
+                                <template for:each={item.icons} for:item="icon">
+                                    <lightning-icon
+                                        key={icon.title}
+                                        icon-name={icon.iconName}
+                                        alternative-text={icon.alternativeText}
+                                        title={icon.title}
+                                        size="x-small"
+                                        class="slds-p-left_x-small"
+                                    ></lightning-icon>
+                                </template>
+                            </div>
+                        </div>
+                        <p
+                            if:true={item.description}
+                            class="slds-text-body_regular slds-line-clamp_x-small description-text"
+                        >
+                            {item.description}
+                        </p>
+                        <ul
+                            if:true={item.infos.length}
+                            class="slds-list_horizontal slds-has-dividers_left slds-has-block-links"
+                        >
+                            <template for:each={item.infos} for:item="info">
+                                <li key={info.label} class="slds-item">
+                                    <a href={info.href}>{info.label}</a>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                    <lightning-icon
+                        if:true={showIconRight}
+                        class="slds-m-right_x-small icon-right"
+                        icon-name={sortableIconName}
+                        size="x-small"
+                    ></lightning-icon>
+                    <div
+                        if:true={actions.length}
+                        class="slds-media slds-media_small"
+                    >
+                        <lightning-button-menu
+                            if:true={hasMultipleActions}
+                            class="slds-m-right_none"
+                            menu-alignment="right"
+                            icon-size="x-small"
+                            ontouchstart={handleButtonMenuTouchStart}
+                        >
+                            <template
+                                for:each={computedActions}
+                                for:item="action"
+                            >
+                                <lightning-menu-item
+                                    key={action.name}
+                                    value={action.name}
+                                    label={action.label}
+                                    disabled={action.disabled}
+                                    icon-name={action.iconName}
+                                ></lightning-menu-item>
+                            </template>
+                        </lightning-button-menu>
+                        <template if:false={hasMultipleActions}>
+                            <lightning-button
+                                if:true={firstAction.label}
+                                class="slds-m-right_none"
+                                ontouchstart={handleButtonMenuTouchStart}
+                                key={firstAction.name}
+                                value={firstAction.name}
+                                label={firstAction.label}
+                                disabled={firstAction.disabled}
+                                icon-name={firstAction.iconName}
+                            ></lightning-button>
+                            <lightning-button-icon
+                                if:false={firstAction.label}
+                                class="slds-m-right_none"
+                                size="x-small"
+                                ontouchstart={handleButtonMenuTouchStart}
+                                key={firstAction.name}
+                                value={firstAction.name}
+                                disabled={firstAction.disabled}
+                                icon-name={firstAction.iconName}
+                                variant="bare"
+                            ></lightning-button-icon>
+                        </template>
+                    </div>
+                </div>
+            </li>
+        </template>
+    </ul>
+</template>

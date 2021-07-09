@@ -1,0 +1,89 @@
+<template>
+    <div class="slds-m-bottom_x-small" if:true={showSelectedItems}>
+        <lightning-pill-container
+            items={selectedItems}
+            onitemremove={handleSelectedItemRemove}
+        ></lightning-pill-container>
+    </div>
+    <div
+        class="slds-form-element__legend slds-float_none slds-truncate slds-is-relative"
+        title={title}
+    >
+        <lightning-icon
+            if:true={computedShowDownIcon}
+            icon-name={iconName}
+            size={iconSize}
+            class="slds-m-right_x-small"
+        ></lightning-icon>
+        {label}
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            content={fieldLevelHelp}
+            class="slds-m-left_xx-small slds-is-absolute"
+            style="top: -0.25rem"
+        ></lightning-helptext>
+    </div>
+
+    <template if:true={isLoading}>
+        <lightning-menu-divider></lightning-menu-divider>
+        <div
+            class="slds-is-relative slds-p-around_medium slds-show_inline-block"
+        >
+            <lightning-spinner
+                size="small"
+                alternative-text={loadingStateAlternativeText}
+            ></lightning-spinner>
+        </div>
+    </template>
+    <template if:false={isLoading}>
+        <lightning-menu-divider
+            if:false={showSearchBox}
+        ></lightning-menu-divider>
+        <lightning-input
+            if:true={showSearchBox}
+            class="slds-p-vertical_x-small"
+            label={searchInputPlaceholder}
+            placeholder={searchInputPlaceholder}
+            variant="label-hidden"
+            type="search"
+            disabled={disabled}
+            is-loading={isLoading}
+            value={searchTerm}
+            autocomplete="off"
+            onchange={handleSearch}
+        ></lightning-input>
+        <lightning-checkbox-group
+            class="slds-p-bottom_xx-small"
+            accesskey={accessKey}
+            disabled={disabled}
+            label={label}
+            variant="label-hidden"
+            options={checkboxComputedItems}
+            value={value}
+            onchange={handleCheckboxChange}
+        ></lightning-checkbox-group>
+        <lightning-menu-divider
+            if:false={hideApplyResetButtons}
+        ></lightning-menu-divider>
+        <div
+            if:false={hideApplyResetButtons}
+            class="slds-p-horizontal_small slds-p-bottom_x-small slds-text-align_right"
+        >
+            <lightning-button
+                class="slds-m-right_x-small"
+                variant="base"
+                label={resetButtonLabel}
+                title={resetButtonLabel}
+                onclick={handleResetClick}
+                disabled={disabled}
+            ></lightning-button>
+            <lightning-button
+                variant="brand"
+                label={applyButtonLabel}
+                title={applyButtonLabel}
+                onclick={handleApplyClick}
+                disabled={disabled}
+            ></lightning-button>
+        </div>
+    </template>
+</template>
