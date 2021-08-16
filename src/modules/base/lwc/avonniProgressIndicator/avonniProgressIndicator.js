@@ -38,7 +38,19 @@ const PROGRESS_INDICATOR_TYPES = { valid: ['base', 'arrow'], default: 'base' };
 
 const INDICATOR_VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
 
+/**
+ * @class
+ * @descriptor avonni-progress-indicator
+ * @storyId example-progress-indicator--base-with-popover-hidden
+ * @public
+ */
 export default class AvonniProgressIndicator extends LightningElement {
+    /**
+     * Set current-step to match the value attribute of one of progress-step components.
+     *
+     * @type {string}
+     * @public
+     */
     @api currentStep;
 
     _completedSteps = [];
@@ -57,6 +69,12 @@ export default class AvonniProgressIndicator extends LightningElement {
         this.updateCurrentStep();
     }
 
+    /**
+     * All completed steps values.
+     *
+     * @type {string[]}
+     * @public
+     */
     @api
     get completedSteps() {
         return this._completedSteps;
@@ -65,6 +83,12 @@ export default class AvonniProgressIndicator extends LightningElement {
         this._completedSteps = normalizeArray(value);
     }
 
+    /**
+     * All disabled steps values.
+     *
+     * @type {string[]}
+     * @public
+     */
     @api
     get disabledSteps() {
         return this._disabledSteps;
@@ -73,6 +97,12 @@ export default class AvonniProgressIndicator extends LightningElement {
         this._disabledSteps = normalizeArray(value);
     }
 
+    /**
+     * All warning steps values.
+     *
+     * @type {string[]}
+     * @public
+     */
     @api
     get warningSteps() {
         return this._warningSteps;
@@ -81,6 +111,12 @@ export default class AvonniProgressIndicator extends LightningElement {
         this._warningSteps = normalizeArray(value);
     }
 
+    /**
+     * All error steps values.
+     *
+     * @type {string[]}
+     * @public
+     */
     @api
     get errorSteps() {
         return this._errorSteps;
@@ -89,6 +125,14 @@ export default class AvonniProgressIndicator extends LightningElement {
         this._errorSteps = normalizeArray(value);
     }
 
+    /**
+     * Changes the appearance of the progress indicator for the base type only.
+     * Valid values are base or shaded. The shaded variant adds a light gray border to the step indicators.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get variant() {
         return this._variant;
@@ -101,6 +145,13 @@ export default class AvonniProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Changes the visual pattern of the indicator. Valid values are base.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get type() {
         return this._type;
@@ -113,6 +164,12 @@ export default class AvonniProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Array of steps attributes.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get steps() {
         return this._steps;
@@ -122,6 +179,11 @@ export default class AvonniProgressIndicator extends LightningElement {
         this._steps = normalizeArray(value);
     }
 
+    /**
+     * Computed Outer class styling.
+     *
+     * @type {string}
+     */
     get computedOuterClass() {
         return classSet('slds-progress slds-progress_horizontal')
             .add({
@@ -131,13 +193,20 @@ export default class AvonniProgressIndicator extends LightningElement {
             .toString();
     }
 
-    // Set what type of step (active, completed, warning, error, disabled)
+    /**
+     * Set what type of step (active, completed, warning, error, disabled).
+     *
+     * @returns {Object[]}
+     */
     getSteps() {
         return Array.from(
             this.template.querySelectorAll('c-primitive-progress-step')
         );
     }
 
+    /**
+     * Update current step value.
+     */
     updateCurrentStep() {
         const steps = this.getSteps();
         steps.forEach((step) => {
@@ -147,6 +216,9 @@ export default class AvonniProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Update step value if error.
+     */
     updateErrorSteps() {
         const steps = this.getSteps();
         steps.forEach((step) => {
@@ -159,6 +231,9 @@ export default class AvonniProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Update step with icon and warning.
+     */
     updateWarningSteps() {
         const steps = this.getSteps();
         steps.forEach((step) => {
@@ -175,6 +250,9 @@ export default class AvonniProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Update completed steps with icon and class.
+     */
     updateCompletedSteps() {
         const steps = this.getSteps();
         steps.forEach((step) => {
@@ -187,31 +265,101 @@ export default class AvonniProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Click on step dispatcher.
+     */
     dispatchStepClick() {
+        /**
+         * Event that fires when clicking on step.
+         *
+         * @event
+         * @name stepclick
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('stepclick'));
     }
 
+    /**
+     * Blur step dispatcher.
+     */
     dispatchStepBlur() {
+        /**
+         * Event that fires when step loses focus.
+         *
+         * @event
+         * @name stepblur
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('stepblur'));
     }
 
+    /**
+     * Focus on step dispatcher.
+     */
     dispatchStepFocus() {
+        /**
+         * Event that fires when focusing on step.
+         *
+         * @event
+         * @name stepfocus
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('stepfocus'));
     }
 
+    /**
+     * Mouse Enter step dispatcher.
+     */
     dispatchStepMouseEnter() {
+        /**
+         * Event that fires when mouse enters step.
+         *
+         * @event
+         * @name stepmouseenter
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('stepmouseenter'));
     }
 
+    /**
+     * Mouse Leave step dispatcher.
+     */
     dispatchStepMouseLeave() {
+        /**
+         * Event that fires when mouse leaves step.
+         *
+         * @event
+         * @name stepmouseleave
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('stepmouseleave'));
     }
 
+    /**
+     * Click on step button dispatcher.
+     */
     dispatchStepButtonClick() {
+        /**
+         * Event that fires when clicking on step button.
+         *
+         * @event
+         * @name stepbuttonclick
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('stepbuttonclick'));
     }
 
+    /**
+     * Click on step popover dispatcher.
+     */
     dispatchStepPopoverClick() {
+        /**
+         * Event that fires when clicking on step popover.
+         *
+         * @event
+         * @name stepclick
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('steppopoverclick'));
     }
 }

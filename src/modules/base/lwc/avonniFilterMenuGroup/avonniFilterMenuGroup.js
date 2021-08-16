@@ -46,6 +46,12 @@ const MENU_VARIANTS = {
 const DEFAULT_APPLY_BUTTON_LABEL = 'Apply';
 const DEFAULT_RESET_BUTTON_LABEL = 'Reset';
 
+/**
+ * @class
+ * @descriptor avonni-filter-menu-group
+ * @storyId example-filter-menu-group--base
+ * @public
+ */
 export default class AvonniFilterMenuGroup extends LightningElement {
     _menus = [];
     _hideSelectedItems = false;
@@ -55,6 +61,12 @@ export default class AvonniFilterMenuGroup extends LightningElement {
 
     selectedPills = [];
 
+    /**
+     * Array of menu objects.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get menus() {
         return this._menus;
@@ -66,6 +78,13 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         this.computeSelectedPills();
     }
 
+    /**
+     * If present, the selected items are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideSelectedItems() {
         return this._hideSelectedItems;
@@ -74,6 +93,13 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         this._hideSelectedItems = normalizeBoolean(bool);
     }
 
+    /**
+     * The variant changes the look of the menu group. Accepted variants include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
     @api
     get variant() {
         return this._variant;
@@ -85,6 +111,13 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         });
     }
 
+    /**
+     * Label of the apply button.
+     *
+     * @type {string}
+     * @public
+     * @default Apply
+     */
     @api
     get applyButtonLabel() {
         return this._applyButtonLabel;
@@ -96,6 +129,13 @@ export default class AvonniFilterMenuGroup extends LightningElement {
                 : DEFAULT_APPLY_BUTTON_LABEL;
     }
 
+    /**
+     * Label of the reset button.
+     *
+     * @type {string}
+     * @public
+     * @default Reset
+     */
     @api
     get resetButtonLabel() {
         return this._resetButtonLabel;
@@ -107,20 +147,40 @@ export default class AvonniFilterMenuGroup extends LightningElement {
                 : DEFAULT_RESET_BUTTON_LABEL;
     }
 
+    /**
+     * Check if Vertical variant.
+     *
+     * @type {boolean}
+     */
     get isVertical() {
         return this.variant === 'vertical';
     }
 
+    /**
+     * Check if selectedPills is populated and if items are not hidden.
+     *
+     * @type {boolean}
+     */
     get showSelectedItems() {
         return !this.hideSelectedItems && this.selectedPills.length > 0;
     }
 
+    /**
+     * Filter Wrapper class styling
+     *
+     * @type {string}
+     */
     get filtersWrapperClass() {
         return classSet().add({
             'slds-button-group-row': !this.isVertical
         });
     }
 
+    /**
+     * Filters class styling
+     *
+     * @type {string}
+     */
     get filtersClass() {
         return classSet().add({
             'slds-button-group-item': !this.isVertical,
@@ -128,10 +188,20 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         });
     }
 
+    /**
+     * Get Node list of all filter menu elements.
+     *
+     * @type {NodeListof<Element>}
+     */
     get menuComponents() {
         return this.template.querySelectorAll('c-filter-menu');
     }
 
+    /**
+     * Clear method to empty/reset computed value.
+     *
+     * @public
+     */
     @api
     clear() {
         if (this.menuComponents.length > 0) {
@@ -145,6 +215,11 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         }
     }
 
+    /**
+     * Apply method to computed value.
+     *
+     * @public
+     */
     @api
     apply() {
         if (this.menuComponents.length > 0) {
@@ -158,6 +233,9 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         }
     }
 
+    /**
+     * Compute Pills selection.
+     */
     computeSelectedPills() {
         const pills = [];
 
@@ -183,11 +261,22 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         this.selectedPills = pills;
     }
 
+    /**
+     * Compute Value.
+     *
+     * @param {string} menuName
+     * @param {string[]} value
+     */
     computeValue(menuName, value) {
         const index = this.menus.findIndex((menu) => menu.name === menuName);
         this.menus[index].value = value;
     }
 
+    /**
+     * Value change handler.
+     *
+     * @param {Event} event
+     */
     handleValueChange(event) {
         const name = event.target.dataset.name;
         const value = event.detail ? event.detail.value : [];
@@ -196,6 +285,11 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         this.computeSelectedPills();
     }
 
+    /**
+     * Selected Item removal event handler.
+     *
+     * @param {Event} event
+     */
     handleSelectedItemRemove(event) {
         // Split the pill name
         const pillName = event.detail.item.name.match(/^(.+),(.+)$/);
@@ -225,15 +319,36 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         menuComponent.value = this.menus[menuIndex].value;
     }
 
+    /**
+     * Apply Click handler.
+     */
     handleApplyClick() {
         this.apply();
     }
 
+    /**
+     * Reset Click handler.
+     */
     handleResetClick() {
         this.clear();
     }
 
+    /**
+     * Dispatch Select event.
+     *
+     * @param {Event} event
+     */
     dispatchSelect(event) {
+        /**
+         * Select event.
+         *
+         * @event
+         * @name select
+         * @param {string} name
+         * @param {string[]} value
+         * @public
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('select', {
                 detail: {

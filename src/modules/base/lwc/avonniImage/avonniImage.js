@@ -47,9 +47,33 @@ const BLANK_COLOR_DEFAULT = 'transparent';
 const CROP_POSITION_X_DEFAULT = '50';
 const CROP_POSITION_Y_DEFAULT = '50';
 
+/**
+ * @class
+ * @descriptor avonni-image
+ * @storyId example-image--base
+ * @public
+ */
 export default class AvonniImage extends LightningElement {
+    /**
+     * The value to set for the 'alt' attribute.
+     *
+     * @public
+     * @type  {string}
+     */
     @api alt;
+    /**
+     * X-axis of the image position ( in percent ).
+     *
+     * @public
+     * @type {string}
+     */
     @api cropPositionX = CROP_POSITION_X_DEFAULT;
+    /**
+     * Y-axis of the image position ( in percent ).
+     *
+     * @public
+     * @type {string}
+     */
     @api cropPositionY = CROP_POSITION_Y_DEFAULT;
 
     _src;
@@ -73,11 +97,20 @@ export default class AvonniImage extends LightningElement {
     _imgHeight;
     _staticImages = false;
     _lazyLoading = false;
+    _widthPercent;
+    _heightPercent;
+    _aspectRatio;
 
     renderedCallback() {
         this.getImageDimensions();
     }
 
+    /**
+     * Sets the image as static. Images retain their current dimensions and will no longer be responsive.
+     *
+     * @public
+     * @type {boolean}
+     */
     @api
     get staticImages() {
         return this._staticImages;
@@ -87,19 +120,35 @@ export default class AvonniImage extends LightningElement {
         this._staticImages = normalizeBoolean(value);
     }
 
+    /**
+     * Enables lazy loading for images that are offscreen. If set to true, the property ensures that offscreen images are loaded early enough so that they have finished loading once the user scrolls near them.
+     * Note: Keep in mind that the property uses the loading attribute of HTML <img> element which is not supported for Internet Explorer.
+     *
+     * @public
+     * @type {boolean}
+     */
     @api
     get lazyLoading() {
-        return this._lazyLoading ? "lazy" : "auto";
+        return this._lazyLoading ? 'lazy' : 'auto';
     }
 
     set lazyLoading(value) {
         this._lazyLoading = normalizeBoolean(value);
     }
 
+    /**
+     * Crops the image to desired aspect ratio ( valid options : “1x1”, “4x3”, “16x9”, “none” ).
+     *
+     * @public
+     * @type {string}
+     */
     @api get cropSize() {
         return this._cropSize;
     }
 
+    /**
+     * Assign cropSize numerical value and aspectRatio fraction based on user input.
+     */
     set cropSize(value) {
         const cropSize = normalizeString(value, {
             fallbackValue: CROP_SIZE.default,
@@ -108,18 +157,29 @@ export default class AvonniImage extends LightningElement {
         switch (cropSize) {
             case '1x1':
                 this._cropSize = '100';
+                this._aspectRatio = '1/1';
                 break;
             case '4x3':
                 this._cropSize = '75';
+                this._aspectRatio = '4/3';
                 break;
             case '16x9':
                 this._cropSize = '56.25';
+                this._aspectRatio = '16/9';
                 break;
             default:
                 this._cropSize = null;
+                this._aspectRatio = null;
         }
     }
 
+    /**
+     * Image fit behaviour inside its container ( valid options : “cover”, “contain”, “fill”, “none” ). Default is cover.
+     *
+     * @public
+     * @type {string}
+     * @default cover
+     */
     @api get cropFit() {
         return this._cropFit;
     }
@@ -131,6 +191,12 @@ export default class AvonniImage extends LightningElement {
         });
     }
 
+    /**
+     * URL to set for the 'src' attribute.
+     *
+     * @public
+     * @type {string}
+     */
     @api
     get src() {
         return this._src;
@@ -142,6 +208,12 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
+    /**
+     * The value to set on the image's 'width' attribute.
+     *
+     * @public
+     * @type {number | string} width
+     */
     @api
     get width() {
         return this._width;
@@ -149,9 +221,22 @@ export default class AvonniImage extends LightningElement {
 
     set width(value) {
         this._width = value;
+        if (
+            value !== undefined &&
+            typeof value === 'string' &&
+            value.includes('%')
+        ) {
+            this._widthPercent = value;
+        }
         this.initBlank();
     }
 
+    /**
+     * The value to set on the image's 'height' attribute.
+     *
+     * @public
+     * @type {number | string} height
+     */
     @api
     get height() {
         return this._height;
@@ -159,9 +244,23 @@ export default class AvonniImage extends LightningElement {
 
     set height(value) {
         this._height = value;
+        if (
+            value !== undefined &&
+            typeof value === 'string' &&
+            value.includes('%')
+        ) {
+            this._heightPercent = value;
+        }
         this.initBlank();
     }
 
+    /**
+     * Sets the color of the blank image to the CSS color value specified. Default is transparent.
+     *
+     * @public
+     * @type {string}
+     * @default transparent
+     */
     @api
     get blankColor() {
         return this._blankColor;
@@ -172,6 +271,12 @@ export default class AvonniImage extends LightningElement {
         this.initBlank();
     }
 
+    /**
+     * One or more strings separated by commas (or an array of strings), indicating possible image sources for the user agent to use.
+     *
+     * @public
+     * @type {string | object[]}
+     */
     @api
     get srcset() {
         return this._srcset;
@@ -185,6 +290,12 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
+    /**
+     * One or more strings separated by commas (or an array of strings), indicating a set of source sizes. Optionally used in combination with the srcset prop.
+     *
+     * @public
+     * @type {string | object[]}
+     */
     @api
     get sizes() {
         return this._sizes;
@@ -198,6 +309,13 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
+    /**
+     * Forces the image to display as a block element rather than the browser default of inline-block element.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get block() {
         return this._block;
@@ -207,6 +325,13 @@ export default class AvonniImage extends LightningElement {
         this._block = normalizeBoolean(value);
     }
 
+    /**
+     * Makes the image responsive. The image will shrink as needed or grow up the the image's native width.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get fluid() {
         return this._fluid;
@@ -216,6 +341,13 @@ export default class AvonniImage extends LightningElement {
         this._fluid = normalizeBoolean(value);
     }
 
+    /**
+     * Similar to the 'fluid' prop, but allows the image to scale up past its native width.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get fluidGrow() {
         return this._fluidGrow;
@@ -225,6 +357,12 @@ export default class AvonniImage extends LightningElement {
         this._fluidGrow = normalizeBoolean(value);
     }
 
+    /**
+     * If present, makes the image corners slightly rounded. Can also be used to disable rounded corners or make the image a circle/oval. See docs for details.
+     *
+     * @public
+     * @type {boolean|string}
+     */
     @api
     get rounded() {
         return this._rounded;
@@ -243,6 +381,13 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
+    /**
+     * Adds a thumbnail border around the image.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get thumbnail() {
         return this._thumbnail;
@@ -252,6 +397,13 @@ export default class AvonniImage extends LightningElement {
         this._thumbnail = normalizeBoolean(value);
     }
 
+    /**
+     * Floats the image to the left when set.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get left() {
         return this._left;
@@ -261,6 +413,13 @@ export default class AvonniImage extends LightningElement {
         this._left = normalizeBoolean(value);
     }
 
+    /**
+     * Floats the image to the right when set.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get right() {
         return this._right;
@@ -270,6 +429,13 @@ export default class AvonniImage extends LightningElement {
         this._right = normalizeBoolean(value);
     }
 
+    /**
+     * Centers the image horizontally.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get center() {
         return this._center;
@@ -279,6 +445,13 @@ export default class AvonniImage extends LightningElement {
         this._center = normalizeBoolean(value);
     }
 
+    /**
+     * Creates a blank/transparent image via an SVG data URI.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get blank() {
         return this._blank;
@@ -289,6 +462,11 @@ export default class AvonniImage extends LightningElement {
         this.initBlank();
     }
 
+    /**
+     * Computed Image class styling.
+     *
+     * @type {string}
+     */
     get computedImageClass() {
         return classSet({
             'avonni-img-fluid': this.fluid || this.fluidGrow,
@@ -301,87 +479,18 @@ export default class AvonniImage extends LightningElement {
             'avonni-rounded-left': this.rounded === 'left',
             'avonni-rounded-circle': this.rounded === 'circle',
             'avonni-not-rounded': this.rounded === '0',
-            'avonni-float-left': this.left && !this._cropSize,
-            'avonni-float-right': this.right && !this._cropSize,
-            'avonni-margin-auto': this.center && !this._cropSize,
+            'avonni-float-left': this.left,
+            'avonni-float-right': this.right,
+            'avonni-margin-auto': this.center,
             'avonni-display-block': this.center || this.block
-        })
-            .add({
-                'avonni-img_cropped': this._cropSize,
-                'avonni-img_cropped-centered':
-                    (this.center && this._cropSize) ||
-                    (this.center &&
-                        !this._blank &&
-                        this.width &&
-                        this.height &&
-                        !this._cropSize &&
-                        !this.staticImages),
-                'avonni-img_cropped-left':
-                    (this.left && this._cropSize) ||
-                    (this.left &&
-                        this.width &&
-                        this.height &&
-                        !this._cropSize &&
-                        !this.staticImages),
-                'avonni-img_cropped-right':
-                    (this.right && this._cropSize) ||
-                    (this.right &&
-                        this.width &&
-                        this.height &&
-                        !this._cropSize &&
-                        !this.staticImages),
-                'avonni-img_blank_no-crop_centered':
-                    this.center &&
-                    this.width &&
-                    this.height &&
-                    this._blank &&
-                    !this._cropSize &&
-                    !this.staticImages,
-                'avonni-img_cropped_no-width_height':
-                    !this.width &&
-                    this.height &&
-                    this._cropSize &&
-                    !this.staticImages,
-                'avonni-img_cropped_no-width_no-height':
-                    !this.width &&
-                    !this.height &&
-                    this._cropSize &&
-                    !this.staticImages,
-                'avonni-img_cropped_width':
-                    this.width &&
-                    !this.height &&
-                    this._cropSize &&
-                    !this.staticImages,
-                'avonni-img_no-crop_no-width_height':
-                    !this.width && this.height && !this._cropSize,
-                'avonni-img_no-crop_no-width_no-height':
-                    !this.width &&
-                    !this.height &&
-                    !this._cropSize &&
-                    !this.staticImages,
-                '.avonni-img_no-crop_blank_width_height':
-                    this.width &&
-                    !this._cropSize &&
-                    this._blank &&
-                    !this.staticImages,
-                'avonni-img_width_height':
-                    this.width && this.height && !this._blank,
-                'avonni-img_static_height_no-crop_no-width':
-                    this.staticImages && !this.width && this.height,
-                'avonni-img_static_no-crop_blank_height_width':
-                    this.staticImages &&
-                    this._blank &&
-                    !this._cropSize &&
-                    this.width &&
-                    this.height
-            })
-            .toString();
+        }).toString();
     }
 
-    get computedImgContainerClass() {
-        return classSet('avonni-img-container').toString();
-    }
-
+    /**
+     * Canvas render for blank image.
+     *
+     * @returns {HTMLCanvasElement} src
+     */
     initBlank() {
         if (this.blank) {
             let canvas = document.createElement('canvas');
@@ -398,81 +507,11 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
-    get computedImgContainerStyle() {
-        if (!this._cropSize) {
-            return this.imgContainerNoCrop();
-        } else if (this._cropSize) {
-            return this.imgContainerCropped();
-        }
-        return '';
-    }
-
-    imgContainerNoCrop() {
-        if (!this.staticImages) {
-            if (this.width && this.height && !this._blank) {
-                return `
-                padding-top: ${(this.height / this.width) * 100}%;
-                `;
-            } else if (!this.width && this.height) {
-                return `
-                padding-top: ${(this.height / this._imgWidth) * 100}%;
-                `;
-            }
-        } else if (this.staticImages) {
-            if (!this.width && this.height) {
-                return `
-                padding-top: ${(this.height / this._imgWidth) * 100}%;
-                max-width: ${this._imgWidth}px;
-                max-height: ${this.height}px;
-                min-width: ${this._imgWidth}px;
-                min-height: ${this.height}px;
-                `;
-            } else if (this.width && this.height) {
-                return `
-                padding-top: ${(this.height / this.width) * 100}%;
-                max-width: ${this.width}px;
-                max-height: ${this.height}px;
-                min-width: ${this.width}px;
-                min-height: ${this.height}px;
-                `;
-            }
-        }
-        return '';
-    }
-
-    imgContainerCropped() {
-        if (!this.staticImages) {
-            return `padding-top: ${this._cropSize}%;`;
-        } else if (this.staticImages) {
-            if (!this.width && !this.height) {
-                return `
-                padding-top: ${this._cropSize}%;
-                max-width: ${this._imgWidth}px;
-                max-height: ${this._imgHeight}px;
-                min-width: ${this._imgWidth}px;
-                min-height: ${this._imgHeight}px;
-                `;
-            } else if (this.width) {
-                return `
-                padding-top: ${this._cropSize}%;
-                max-width: ${this.width}px;
-                max-height: ${this.width * (this._cropSize / 100)}px;
-                min-width: ${this.width}px;
-                min-height: ${this.width * (this._cropSize / 100)}px;
-                `;
-            } else if (!this.width && this.height) {
-                return `
-                padding-top: ${this._cropSize}%;
-                max-height: ${this.height}px;
-                max-width: ${this.height / (this._cropSize / 100)}px;
-                min-height: ${this.height}px;
-                min-width: ${this.height / (this._cropSize / 100)}px;
-                `;
-            }
-        }
-        return '';
-    }
-
+    /**
+     * Final Computed Image Style.
+     *
+     * @type {boolean} check if image is cropped
+     */
     get computedImgStyle() {
         if (!this._cropSize) {
             return this.imgHandlerNoCrop();
@@ -485,164 +524,312 @@ export default class AvonniImage extends LightningElement {
         `;
     }
 
+    /**
+     * Compute No Crop image style.
+     *
+     * @returns {string} image style
+     */
     imgHandlerNoCrop() {
+        // Repeated computed styles for fit and position
+        const imageFitPosition = `
+            object-fit: ${this.cropFit};
+            object-position: ${this.cropPositionX}% ${this.cropPositionY}%;
+            `;
+        // No Crop - Static Image
         if (this.staticImages) {
-            if (this.width && this.height) {
+            // Width px - Height px
+            if (
+                this.width &&
+                this.height &&
+                !this._widthPercent &&
+                !this._heightPercent
+            ) {
                 return `
                 min-width: ${this.width}px;
                 min-height: ${this.height}px;
                 max-width: ${this.width}px;
                 max-height: ${this.height}px;
+                ${imageFitPosition}      
                 `;
-            } else if (!this.width && this.height) {
+            }
+            // No width - Height px
+            else if (!this.width && this.height && !this._heightPercent) {
                 return `
                 min-height: ${this.height}px;
                 height: ${this.height}px;
+                max-height: ${this.height}px;
                 max-width: ${this._imgWidth}px;
+                width: ${this._imgWidth}px;
                 min-width: ${this._imgWidth}px;
+                ${imageFitPosition}        
                 `;
-            } else if (this.width && !this.height) {
+            }
+            // Width px - No height
+            else if (this.width && !this._widthPercent && !this.height) {
                 return `
                 max-width: ${this.width}px;
+                ${imageFitPosition}
                 `;
-            } else if (!this.width && !this.height) {
+            }
+            // No Width - No Height
+            // Width % - Height %
+            // Width % - No Height
+            else if (
+                (!this.width && !this.height) ||
+                (this._widthPercent && this._heightPercent) ||
+                (this._widthPercent && !this.height)
+            ) {
                 return `
                 max-width: ${this._imgWidth}px;
                 max-height: ${this._imgHeight}px;
                 min-width: ${this._imgWidth}px;
                 min-height: ${this._imgHeight}px;
+                ${imageFitPosition}        
                 `;
             }
-        } else if (!this.staticImages) {
+            // Width % - Height px
+            else if (
+                this._widthPercent &&
+                this.height &&
+                !this._heightPercent
+            ) {
+                return `
+                max-width: ${this._imgWidth}px;
+                max-height: ${this.height}px;
+                min-width: ${this._imgWidth}px;
+                min-height: ${this.height}px;
+                ${imageFitPosition}
+                `;
+            }
+            // Width px - Height %
+            else if (this.width && !this._widthPercent && this._heightPercent) {
+                return `
+                max-width: ${this.width}px;
+                max-height: ${this._imgHeight}px;
+                min-width: ${this.width}px;
+                min-height: ${this._imgHeight}px;
+                ${imageFitPosition}    
+                `;
+            }
+            // No Width - Height %
+            else if (
+                !this.width &&
+                !this._widthPercent &&
+                this._heightPercent
+            ) {
+                return `
+                max-width: ${this._imgWidth}px;
+                max-height: ${this._imgHeight}px;
+                height: ${this._imgHeight};
+                width: ${this._imgWidth};
+                min-width: ${this._imgWidth}px;
+                min-height: ${this._imgHeight}px;
+                ${imageFitPosition}      
+                `;
+            }
+        }
+        // No Crop - No Static Images
+        else if (!this.staticImages) {
+            // Width px - Height px - blank
             if (this._blank && this.width && this.height) {
                 return `
                 width: ${this.width}px;
+                ${imageFitPosition}
+                `;
+            }
+            // Width px - Height %
+            else if (this.width && !this._widthPercent && this._heightPercent) {
+                return `
+                width: ${this.width}px;
+                height: ${this._heightPercent};
+                ${imageFitPosition}        
+                `;
+            }
+            // Width % - Height %
+            else if (this._widthPercent && this._heightPercent) {
+                return `
+                width: ${this._widthPercent};
+                height: ${this._heightPercent};
+                ${imageFitPosition}      
+                `;
+            }
+            // Width % - Height px
+            else if (this._widthPercent && this.height) {
+                return `
+                width: ${this._widthPercent};
+                height: ${this.height}px;
+                ${imageFitPosition}        
+                `;
+            }
+            // Width % - No Height
+            else if (this._widthPercent && !this.height) {
+                return `
+                width: ${this._widthPercent};
+                ${imageFitPosition}        
+                `;
+            }
+            // No Width - Height %
+            else if (this._heightPercent && !this.width) {
+                return `
+                height: ${this._heightPercent};
+                ${imageFitPosition}        
                 `;
             }
         }
         return `
         width: ${this.width}px;
-        height: ${this.height}px;        
+        height: ${this.height}px;
+        ${imageFitPosition}            
         `;
     }
 
+    /**
+     * Compute Cropped image style.
+     *
+     * @returns {string} image style
+     */
     imgHandlerCropped() {
+        // Repeated computed styles for Fit, Position and Aspect-ratio
+        const imageFitPositionAspectRatio = `
+            object-fit: ${this.cropFit};
+            object-position: ${this.cropPositionX}% ${this.cropPositionY}%;
+            aspect-ratio: ${this._aspectRatio};
+            `;
+        // Cropped - No Static Images
         if (!this.staticImages) {
+            // No Width - No Height
             if (!this.width && !this.height) {
                 return `
-                object-fit: ${this.cropFit};
-                object-position: ${this.cropPositionX}% ${this.cropPositionY}%; 
-                `;
-            } else if (this.width) {
-                return `
-                width: ${this.width}px;
-                height: ${this.width * (this._cropSize / 100)}px;
-                object-fit: ${this.cropFit};
-                object-position: ${this.cropPositionX}% ${this.cropPositionY}%; 
-                `;
-            } else if (!this.width && this.height) {
-                return `
-                height: ${this.height}px;
-                width: ${this.height / (this._cropSize / 100)}px;
-                object-fit: ${this.cropFit};
-                object-position: ${this.cropPositionX}% ${this.cropPositionY}%; 
+                width: ${this._imgWidth}px;
+                ${imageFitPositionAspectRatio}
                 `;
             }
-        } else if (this.staticImages) {
+            // No Width - Height %
+            else if (!this.width && this._heightPercent) {
+                return `
+                height: ${this._heightPercent};
+                ${imageFitPositionAspectRatio}
+                `;
+            }
+            // Width px
+            // Width px - Height %
+            else if (
+                (this.width && !this._widthPercent && !this._heightPercent) ||
+                (this.width && !this._widthPercent && this._heightPercent)
+            ) {
+                return `
+                width: ${this.width}px;
+                ${imageFitPositionAspectRatio}
+                `;
+            }
+            // No Width - Height px
+            else if (!this.width && this.height && !this._heightPercent) {
+                return `
+                height: ${this.height}px;
+                ${imageFitPositionAspectRatio}
+                `;
+            }
+            // Width % - Height %
+            // Width % - No Height
+            else if (
+                (this._widthPercent && this._heightPercent) ||
+                (this._widthPercent && !this.height)
+            ) {
+                return `
+                width: ${this._widthPercent};
+                ${imageFitPositionAspectRatio}
+                `;
+            }
+            // Width % - Height px
+            else if (
+                this._widthPercent &&
+                this.height &&
+                !this._heightPercent
+            ) {
+                return `
+                    width: ${this.height / (this._cropSize / 100)}px;
+                    ${imageFitPositionAspectRatio}
+                    `;
+            }
+        }
+        // Cropped - Static Images
+        else if (this.staticImages) {
+            // No Width - No Height
             if (!this.width && !this.height) {
                 return `
+                height: ${this._imgHeight}px;
                 max-width: ${this._imgWidth}px;
                 max-height: ${this._imgHeight}px;
                 min-width: ${this._imgWidth}px;
                 min-height: ${this._imgHeight}px;
-                object-fit: ${this.cropFit};
-                object-position: ${this.cropPositionX}% ${this.cropPositionY}%; 
+                ${imageFitPositionAspectRatio} 
                 `;
-            } else if (this.width) {
+            }
+            // Width px
+            else if (this.width && !this._widthPercent) {
                 return `
                 max-width: ${this.width}px;
                 max-height: ${this.width * (this._cropSize / 100)}px;
                 min-width: ${this.width}px;
                 min-height: ${this.width * (this._cropSize / 100)}px;
-                object-fit: ${this.cropFit};
-                object-position: ${this.cropPositionX}% ${this.cropPositionY}%; 
+                ${imageFitPositionAspectRatio} 
                 `;
-            } else if (!this.width && this.height) {
+            }
+            // No Width - Height px
+            // Width % - Height px
+            else if (
+                (!this.width && this.height && !this._heightPercent) ||
+                (this._widthPercent && this.height)
+            ) {
                 return `
                 max-height: ${this.height}px;
                 max-width: ${this.height / (this._cropSize / 100)}px;
                 min-height: ${this.height}px;
                 min-width: ${this.height / (this._cropSize / 100)}px;
-                object-fit: ${this.cropFit};
-                object-position: ${this.cropPositionX}% ${this.cropPositionY}%; 
+                ${imageFitPositionAspectRatio} 
+                `;
+            }
+            // Width % - Height %
+            // Width % - No Height
+            else if (
+                (this._widthPercent && this._heightPercent) ||
+                (this._widthPercent && !this.height)
+            ) {
+                return `
+                max-height: ${this._imgWidth * (this._cropSize / 100)}px;
+                max-width: ${this._imgWidth}px;
+                min-height: ${this._imgWidth * (this._cropSize / 100)}px;
+                min-width: ${this._imgWidth}px;
+                ${imageFitPositionAspectRatio} 
+                `;
+            }
+            // No Width - Height %
+            else if (!this.width && this._heightPercent) {
+                return `
+                height: ${this._imgHeight};
+                max-height: ${this._imgHeight}px;
+                max-width: ${this._imgHeight / (this._cropSize / 100)}px;
+                min-height: ${this._imgHeight}px;
+                min-width: ${this._imgHeight / (this._cropSize / 100)}px;
+                ${imageFitPositionAspectRatio}
                 `;
             }
         }
         return `
         width: ${this.width}px;
-        height: ${this.height}px;        
+        height: ${this.height}px;
+        ${imageFitPositionAspectRatio}        
         `;
     }
 
+    /**
+     * Get Image dimensions when values missing or %.
+     *
+     * @returns {number} imgHeight , imgWidth
+     */
     getImageDimensions() {
-        if (
-            this.staticImages &&
-            !this.width &&
-            !this.height &&
-            !this._cropSize
-        ) {
-            const img = this.template.querySelector('img');
-            this._imgWidth = img.clientWidth;
-            this._imgHeight = img.clientHeight;
-        }
-        if (
-            this.staticImages &&
-            !this.width &&
-            !this.height &&
-            this._cropSize
-        ) {
-            const container = this.template.querySelector(
-                '.avonni-img-container'
-            );
-            switch (this._cropSize) {
-                case '100':
-                    this._imgWidth = container.clientWidth;
-                    this._imgHeight = container.clientHeight;
-                    break;
-                case '75':
-                    this._imgWidth = container.clientWidth;
-                    this._imgHeight = container.clientWidth * 0.75;
-                    break;
-                case '56.25':
-                    this._imgWidth = container.clientWidth;
-                    this._imgHeight = container.clientWidth * 0.5625;
-                    break;
-                default:
-                    this._imgWidth = container.clientWidth;
-                    break;
-            }
-        }
-        if (
-            !this.width &&
-            this.height &&
-            !this._cropSize &&
-            !this.staticImages
-        ) {
-            const container = this.template.querySelector(
-                '.avonni-img-container'
-            );
-            this._imgWidth = container.clientWidth;
-        }
-        if (
-            !this.width &&
-            this.height &&
-            !this._cropSize &&
-            this.staticImages
-        ) {
-            const container = this.template.querySelector(
-                '.avonni-img-container'
-            );
-            this._imgWidth = container.clientWidth;
-        }
+        const img = this.template.querySelector('img');
+        this._imgWidth = img.clientWidth;
+        this._imgHeight = img.clientHeight;
     }
 }

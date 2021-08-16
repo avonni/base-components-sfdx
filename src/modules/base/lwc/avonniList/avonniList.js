@@ -73,6 +73,7 @@ export default class AvonniList extends LightningElement {
     computedItems = [];
     menuRole;
     itemRole;
+    denyItemClick = false;
 
     @api
     get divider() {
@@ -274,6 +275,9 @@ export default class AvonniList extends LightningElement {
     }
 
     dragStart(event) {
+        // Reset denyItemClick attribute on item touch
+        this.denyItemClick = false;
+
         // Stop dragging if the click was on a button menu
         if (
             !this.sortable ||
@@ -287,7 +291,6 @@ export default class AvonniList extends LightningElement {
         this._draggedElement = event.currentTarget;
         this._currentItemDraggedHeight = this._draggedElement.offsetHeight;
         this._draggedIndex = Number(this._draggedElement.dataset.index);
-        this._draggedElement.classList.add('sortable-item_dragged');
         if (event.type !== 'keydown') {
             this.initPositions(event);
         } else {
@@ -306,6 +309,10 @@ export default class AvonniList extends LightningElement {
 
     drag(event) {
         if (!this._draggedElement) return;
+        this._draggedElement.classList.add('sortable-item_dragged');
+
+        // Deny itemclick event dispatch on drag
+        this.denyItemClick = true;
 
         const mouseY =
             event.type === 'touchmove'
@@ -341,8 +348,13 @@ export default class AvonniList extends LightningElement {
         if (buttonMenu) buttonMenu.classList.remove('slds-is-open');
     }
 
-    dragEnd() {
+    dragEnd(event) {
         if (!this._draggedElement) return;
+
+        // Allow imperfect item click within a 4px drag margin
+        if (event && Math.abs(event.clientY - this._initialY) < 4) {
+            this.denyItemClick = false;
+        }
 
         this.computedItems = [...this.computedItems];
 
@@ -412,5 +424,72 @@ export default class AvonniList extends LightningElement {
     handleButtonMenuTouchStart(event) {
         // Stop the dragging process when touching the button menu
         event.stopPropagation();
+    }
+
+    /**
+     * Handles a click on an item action.
+     *
+     * @param {Event} event
+     */
+    handleActionClick(event) {
+        const actionName = this.hasMultipleActions
+            ? event.detail.value
+            : event.target.value;
+        const itemIndex = event.target.parentElement.parentElement.parentElement.getAttribute(
+            'data-index'
+        );
+
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @param {string} name  Name of the action clicked.
+         * @param {object} items Item clicked.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('actionclick', {
+                detail: {
+                    name: actionName,
+                    item: this.computedItems[itemIndex]
+                }
+            })
+        );
+    }
+
+    /**
+     * Handles a click on an item.
+     * The click event will not dispatch an event if the clicked element already has a purpose (action or link).
+     *
+     * @param {Event} event
+     */
+    handleItemClick(event) {
+        if (
+            this.denyItemClick ||
+            event.target.tagName.startsWith('LIGHTNING') ||
+            event.target.tagName === 'A'
+        )
+            return;
+
+        /**
+         * The event fired when a user clicks on an item.
+         *
+         * @event
+         * @name itemclick
+         * @param {object}  item Item clicked.
+         * @param {DOMRect} name Bounds of the item clicked.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('itemclick', {
+                detail: {
+                    item: this.computedItems[
+                        event.currentTarget.getAttribute('data-index')
+                    ],
+                    bounds: event.currentTarget.getBoundingClientRect()
+                }
+            })
+        );
     }
 }

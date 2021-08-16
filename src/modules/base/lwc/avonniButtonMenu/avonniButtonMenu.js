@@ -79,15 +79,66 @@ const BUTTON_VARIANTS = {
 
 const DEFAULT_ICON_NAME = 'utility:down';
 
+/**
+ * @class
+ * @descriptor avonni-button-menu
+ * @public
+ */
 export default class AvonniButtonMenu extends LightningElement {
     static delegatesFocus = true;
 
+    /**
+     * The size of the icon. Options include xx-small, x-small, small, or medium.
+     *
+     * @public
+     * @type {string}
+     * @default medium
+     */
     @api iconSize = ICON_SIZES.default;
+    /**
+     * The name of the icon to be used in the format 'utility:down'. If an icon other than 'utility:down' or 'utility:chevrondown' is used, a utility:down icon is appended to the right of that icon.
+     *
+     * @public
+     * @type {string}
+     * @default utility:down
+     */
     @api iconName = DEFAULT_ICON_NAME;
+    /**
+     * The value for the button element. This value is optional and can be used when submitting a form.
+     *
+     * @public
+     * @type {string}
+     */
     @api value = '';
+    /**
+     * The assistive text for the button menu.
+     *
+     * @public
+     * @type {string}
+     * @default Show Menu
+     */
     @api alternativeText = i18n.showMenu;
+    /**
+     * Message displayed while the menu is in the loading state.
+     *
+     * @public
+     * @type {string}
+     * @default Loading
+     */
     @api loadingStateAlternativeText = i18n.loading;
+    /**
+     * Optional text to be shown on the button.
+     *
+     * @public
+     * @type {string}
+     */
     @api label;
+    /**
+     * Describes the reason for showing the draft indicator. This is required when is-draft is true.
+     *
+     * @public
+     * @type {string}
+     */
     @api draftAlternativeText;
 
     _accesskey;
@@ -122,6 +173,13 @@ export default class AvonniButtonMenu extends LightningElement {
             this.classList.add('slds-is-unsaved');
         }
 
+        /**
+         * @event
+         * @name privatebuttonregister
+         * @param {object{}} callbacks - setOrder, setDeregistrationCallback
+         * @private
+         * @bubbles
+         */
         const privatebuttonregister = new CustomEvent('privatebuttonregister', {
             bubbles: true,
             detail: {
@@ -155,6 +213,13 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * The variant changes the look of the button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
+     *
+     * @public
+     * @type {string}
+     * @default border
+     */
     @api
     get variant() {
         return this._variant;
@@ -167,6 +232,13 @@ export default class AvonniButtonMenu extends LightningElement {
         });
     }
 
+    /**
+     * Determines the alignment of the menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space.
+     *
+     * @public
+     * @type {string}
+     * @default left
+     */
     @api
     get menuAlignment() {
         return this._menuAlignment;
@@ -179,6 +251,13 @@ export default class AvonniButtonMenu extends LightningElement {
         });
     }
 
+    /**
+     * If present, the menu can be opened by users.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get disabled() {
         return this._disabled;
@@ -188,6 +267,13 @@ export default class AvonniButtonMenu extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * If present, a nubbin is present on the menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get nubbin() {
         return this._nubbin;
@@ -197,6 +283,12 @@ export default class AvonniButtonMenu extends LightningElement {
         this._nubbin = normalizeBoolean(value);
     }
 
+    /**
+     * Displays title text when the mouse moves over the button menu.
+     *
+     * @public
+     * @type {string}
+     */
     @api
     get title() {
         return this._title;
@@ -206,6 +298,13 @@ export default class AvonniButtonMenu extends LightningElement {
         this._title = newValue;
     }
 
+    /**
+     * If present, the menu trigger shows a draft indicator.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get isDraft() {
         return this._isDraft;
@@ -215,6 +314,13 @@ export default class AvonniButtonMenu extends LightningElement {
         this._isDraft = normalizeBoolean(value);
     }
 
+    /**
+     * If true, the menu is in a loading state and shows a spinner.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get isLoading() {
         return this._isLoading;
@@ -229,6 +335,12 @@ export default class AvonniButtonMenu extends LightningElement {
         this._isLoading = normalizedValue;
     }
 
+    /**
+     * The keyboard shortcut for the button menu.
+     *
+     * @public
+     * @type {string}
+     */
     @api
     get accessKey() {
         return this._accesskey;
@@ -238,6 +350,12 @@ export default class AvonniButtonMenu extends LightningElement {
         this._accesskey = newValue;
     }
 
+    /**
+     * Text to display when the user mouses over or focuses on the button. The tooltip is auto-positioned relative to the button and screen space.
+     *
+     * @public
+     * @type {string}
+     */
     @api
     get tooltip() {
         return this._tooltip ? this._tooltip.value : undefined;
@@ -258,6 +376,11 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Sets focus on the button.
+     *
+     * @public
+     */
     @api
     focus() {
         if (this.isConnected) {
@@ -265,6 +388,11 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Simulates a mouse click on the button.
+     *
+     * @public
+     */
     @api
     click() {
         if (this.isConnected) {
@@ -276,12 +404,18 @@ export default class AvonniButtonMenu extends LightningElement {
         return String(this._dropdownVisible);
     }
 
+    /**
+     * Tooltip initialization.
+     */
     initTooltip() {
         if (this._tooltip && !this._tooltip.initialized) {
             this._tooltip.initialize();
         }
     }
 
+    /**
+     * Return focus on menu item after render.
+     */
     focusOnMenuItemAfterRender() {
         let focusOnIndex = this._focusOnIndexDuringRenderedCallback || 0;
 
@@ -308,22 +442,47 @@ export default class AvonniButtonMenu extends LightningElement {
         this._rerenderFocus = false;
     }
 
+    /**
+     * Computed access key.
+     *
+     * @type {string}
+     */
     get computedAccessKey() {
         return this._accesskey;
     }
 
+    /**
+     * Computed title.
+     *
+     * @type {string}
+     */
     get computedTitle() {
         return this._title;
     }
 
+    /**
+     * Computed alternative text.
+     *
+     * @type {string}
+     */
     get computedAlternativeText() {
         return this.alternativeText || i18n.showMenu;
     }
 
+    /**
+     * Computed loading state default or loading state alternative text.
+     *
+     * @type {string}
+     */
     get computedLoadingStateAlternativeText() {
         return this.loadingStateAlternativeText || i18n.loading;
     }
 
+    /**
+     * Computed button class styling.
+     *
+     * @type {string}
+     */
     get computedButtonClass() {
         const isDropdownIcon = !this.computedShowDownIcon;
         const isBare =
@@ -374,6 +533,11 @@ export default class AvonniButtonMenu extends LightningElement {
             .toString();
     }
 
+    /**
+     * Show downwards icon on button.
+     *
+     * @type {boolean}
+     */
     get computedShowDownIcon() {
         return !(
             this.iconName === 'utility:down' ||
@@ -381,6 +545,11 @@ export default class AvonniButtonMenu extends LightningElement {
         );
     }
 
+    /**
+     * Computed dropdown class styling.
+     *
+     * @type {string}
+     */
     get computedDropdownClass() {
         return classSet('slds-dropdown')
             .add({
@@ -410,6 +579,11 @@ export default class AvonniButtonMenu extends LightningElement {
             .toString();
     }
 
+    /**
+     * Menu item selector handler.
+     *
+     * @param {Event} event
+     */
     handleMenuItemPrivateSelect(event) {
         if (event.detail.type === 'submenu') {
             event.target.parentElement
@@ -443,7 +617,18 @@ export default class AvonniButtonMenu extends LightningElement {
         this.dispatchSelect(event);
     }
 
+    /**
+     * Menu item select dispatch method.
+     *
+     * @param {Event} event
+     */
     dispatchSelect(event) {
+        /**
+         * @event
+         * @name select
+         * @param {string} value
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('select', {
                 cancelable: true,
@@ -454,6 +639,9 @@ export default class AvonniButtonMenu extends LightningElement {
         );
     }
 
+    /**
+     * Button click handler.
+     */
     handleButtonClick() {
         this.allowBlur();
 
@@ -462,6 +650,11 @@ export default class AvonniButtonMenu extends LightningElement {
         this.focusOnButton();
     }
 
+    /**
+     * Button mouse down handler.
+     *
+     * @param {Event} event
+     */
     handleButtonMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -469,6 +662,11 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Dropdown menu mouse down handler.
+     *
+     * @param {Event} event
+     */
     handleDropdownMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -476,24 +674,43 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Dropdown menu mouse up handler.
+     */
     handleDropdownMouseUp() {
         this.allowBlur();
     }
 
+    /**
+     * Dropdown menu mouse leave handler.
+     */
     handleDropdownMouseLeave() {
         if (!this._menuHasFocus) {
             this.close();
         }
     }
 
+    /**
+     * Dropdown menu scroll event handler.
+     *
+     * @param {Event} event
+     */
     handleDropdownScroll(event) {
         event.stopPropagation();
     }
 
+    /**
+     * Button focus.
+     */
     focusOnButton() {
         this.template.querySelector('button').focus();
     }
 
+    /**
+     * Set focus on menu item via Item Index.
+     *
+     * @param {object} itemIndex
+     */
     focusOnMenuItem(itemIndex) {
         if (this._dropdownVisible) {
             const menuItem = this.getMenuItemByIndex(itemIndex);
@@ -501,10 +718,18 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Auto alignement handler.
+     *
+     * @return {boolean}
+     */
     isAutoAlignment() {
         return this.menuAlignment.startsWith('auto');
     }
 
+    /**
+     * Menu visibility toggle handler.
+     */
     toggleMenuVisibility() {
         if (!this.disabled) {
             this._dropdownVisible = !this._dropdownVisible;
@@ -520,6 +745,10 @@ export default class AvonniButtonMenu extends LightningElement {
                 this._dropdownOpened = true;
             }
             if (this._dropdownVisible) {
+                /**
+                 * @event
+                 * @name open
+                 */
                 this.dispatchEvent(new CustomEvent('open'));
 
                 this._boundingRect = this.getBoundingClientRect();
@@ -531,18 +760,41 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Get item array from menu.
+     *
+     * @return {object[]}
+     */
     getMenuItems() {
         return Array.from(this.querySelectorAll(menuItemCSSSelector));
     }
 
+    /**
+     * Get item with index in menu item array.
+     *
+     * @param {object[]} index
+     * @return menu item from array
+     */
     getMenuItemByIndex(index) {
         return this.getMenuItems()[index];
     }
 
+    /**
+     * Find menu item's index.
+     *
+     * @param {object} menuItemElement
+     * @returns {number} index of menu item
+     */
     findMenuItemIndex(menuItemElement) {
         return this.getMenuItems().indexOf(menuItemElement);
     }
 
+    /**
+     * Find menu item from event target.
+     *
+     * @param {Element} element
+     * @returns {Element} menu item
+     */
     findMenuItemFromEventTarget(element) {
         let currentNode = element;
         const stopAtElement = this.template.querySelector("[role='menu']");
@@ -563,6 +815,11 @@ export default class AvonniButtonMenu extends LightningElement {
         return null;
     }
 
+    /**
+     * Menu item mouse over handler.
+     *
+     * @param {Event} event
+     */
     handleMouseOverOnMenuItem(event) {
         const menuItem = this.findMenuItemFromEventTarget(event.target);
 
@@ -580,6 +837,11 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Blur cancel and set focus on menu item.
+     *
+     * @param {object} menuItem
+     */
     cancelBlurAndFocusOnMenuItem(menuItem) {
         if (menuItem) {
             this.cancelBlur();
@@ -587,10 +849,22 @@ export default class AvonniButtonMenu extends LightningElement {
         }
     }
 
+    /**
+     * Focus handler.
+     */
     handleFocus() {
+        /**
+         * @event
+         * @name focus
+         */
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
+    /**
+     * Private blur handler.
+     *
+     * @param {Event} event
+     */
     handlePrivateBlur(event) {
         event.stopPropagation();
 
@@ -598,6 +872,11 @@ export default class AvonniButtonMenu extends LightningElement {
         this._menuHasFocus = false;
     }
 
+    /**
+     * Private focus handler.
+     *
+     * @param {Event} event
+     */
     handlePrivateFocus(event) {
         event.stopPropagation();
 
@@ -605,6 +884,9 @@ export default class AvonniButtonMenu extends LightningElement {
         this._menuHasFocus = true;
     }
 
+    /**
+     * Blur handler.
+     */
     handleBlur() {
         if (this._cancelBlur) {
             return;
@@ -614,27 +896,48 @@ export default class AvonniButtonMenu extends LightningElement {
             this.toggleMenuVisibility();
         }
 
+        /**
+         * @event
+         * @name blur
+         */
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
+    /**
+     * Allow blur.
+     */
     allowBlur() {
         this._cancelBlur = false;
     }
 
+    /**
+     * Cancel blur.
+     */
     cancelBlur() {
         this._cancelBlur = true;
     }
 
+    /**
+     * Set button order.
+     *
+     * @param {object} order
+     */
     setOrder(order) {
         this._order = order;
     }
 
+    /**
+     * Close menu.
+     */
     close() {
         if (this._dropdownVisible) {
             this.toggleMenuVisibility();
         }
     }
 
+    /**
+     * Poll bounding rect position for button menu.
+     */
     pollBoundingRect() {
         if (this.isAutoAlignment() && this._dropdownVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation

@@ -184,7 +184,7 @@ export class FieldConstraintApi {
         if (!isValid) {
             if (this.inputComponent) {
                 this.inputComponent.dispatchEvent(
-                    new CustomEvent('invalid', { cancellable: true })
+                    new CustomEvent('invalid', { cancelable: true })
                 );
             }
         }

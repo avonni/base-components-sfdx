@@ -81,11 +81,48 @@ const DEFAULT_FINISH_BUTTON_LABEL = 'Finish';
 const DEFAULT_FRACTION_PREFIX_LABEL = 'Step';
 const DEFAULT_FRACTION_LABEL = 'of';
 
+/**
+ * @class
+ * @descriptor avonni-wizard
+ * @storyId example-wizard--base
+ * @public
+ */
 export default class AvonniWizard extends LightningElement {
+    /**
+     * The title can include text, and is displayed in the header.
+     * To include additional markup or another component, use the title slot.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
+    /**
+     * The Lightning Design System name of the icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. The icon is displayed in the header before the title.
+     *
+     * @type {string}
+     * @public
+     */
     @api iconName;
+    /**
+     * The name of an icon to display for the previous button.
+     *
+     * @type {string}
+     * @public
+     */
     @api previousButtonIconName;
+    /**
+     * The name of an icon to display for the next button.
+     *
+     * @type {string}
+     * @public
+     */
     @api nextButtonIconName;
+    /**
+     * The name of an icon to display for the finish button.
+     *
+     * @type {string}
+     * @public
+     */
     @api finishButtonIconName;
 
     _variant = VARIANTS.default;
@@ -146,6 +183,9 @@ export default class AvonniWizard extends LightningElement {
         return BaseView;
     }
 
+    /**
+     * Initialize steps.
+     */
     _initSteps() {
         // Make sure all steps have a name
         this.steps.forEach((step, index) => {
@@ -161,6 +201,9 @@ export default class AvonniWizard extends LightningElement {
         this._updateStepDisplay();
     }
 
+    /**
+     * Update step display visibility.
+     */
     _updateStepDisplay() {
         this.steps.forEach((step) => {
             step.callbacks.setClass('slds-hide');
@@ -168,6 +211,13 @@ export default class AvonniWizard extends LightningElement {
         this.steps[this.currentStepIndex].callbacks.setClass(undefined);
     }
 
+    /**
+     * Set current-step to match the value attribute of one of wizard-step components. If current-step is not provided, the value of the first wizard-step component is used.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get currentStep() {
         return this._currentStep;
@@ -177,6 +227,13 @@ export default class AvonniWizard extends LightningElement {
         this._initialCurrentStep = this._currentStep;
     }
 
+    /**
+     * If true, hide the navigation (buttons and indicator).
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideNavigation() {
         return this._hideNavigation;
@@ -185,6 +242,13 @@ export default class AvonniWizard extends LightningElement {
         this._hideNavigation = normalizeBoolean(boolean);
     }
 
+    /**
+     * Variant of the wizard. Valid values include base, modal and card.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get variant() {
         return this._variant;
@@ -196,6 +260,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Changes the indicator position. Valid values are top, bottom, left and right.
+     *
+     * @type {string}
+     * @public
+     * @default bottom
+     */
     @api
     get indicatorPosition() {
         return this._indicatorPosition;
@@ -207,6 +278,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Changes the visual pattern of the indicator. Valid values are base, base-shaded, path, bullet, fractions and bar.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get indicatorType() {
         return this._indicatorType;
@@ -218,6 +296,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * If true, hide the indicator.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideIndicator() {
         return this._hideIndicator;
@@ -226,6 +311,13 @@ export default class AvonniWizard extends LightningElement {
         this._hideIndicator = normalizeBoolean(value);
     }
 
+    /**
+     * Describes the position of the icon with respect to body. Options include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api
     get previousButtonIconPosition() {
         return this._previousButtonIconPosition;
@@ -237,6 +329,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Label for the previous button.
+     *
+     * @type {string}
+     * @public
+     * @default Previous
+     */
     @api
     get previousButtonLabel() {
         return this._previousButtonLabel;
@@ -247,6 +346,13 @@ export default class AvonniWizard extends LightningElement {
             DEFAULT_PREVIOUS_BUTTON_LABEL;
     }
 
+    /**
+     * Change the appearance of the previous button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     *
+     * @type {string}
+     * @public
+     * @default neutral
+     */
     @api
     get previousButtonVariant() {
         return this._previousButtonVariant;
@@ -258,6 +364,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Describes the position of the icon with respect to body. Options include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api
     get nextButtonIconPosition() {
         return this._nextButtonIconPosition;
@@ -269,6 +382,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Label for the next button.
+     *
+     * @type {string}
+     * @public
+     * @default Next
+     */
     @api
     get nextButtonLabel() {
         return this._nextButtonLabel;
@@ -279,6 +399,13 @@ export default class AvonniWizard extends LightningElement {
             DEFAULT_NEXT_BUTTON_LABEL;
     }
 
+    /**
+     * Change the appearance of the next button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     *
+     * @type {string}
+     * @public
+     * @default neutral
+     */
     @api
     get nextButtonVariant() {
         return this._nextButtonVariant;
@@ -290,6 +417,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Describes the position of the icon with respect to body. Options include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api
     get finishButtonIconPosition() {
         return this._finishButtonIconPosition;
@@ -301,6 +435,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Label for the finish button.
+     *
+     * @type {string}
+     * @public
+     * @default Finish
+     */
     @api
     get finishButtonLabel() {
         return this._finishButtonLabel;
@@ -311,6 +452,13 @@ export default class AvonniWizard extends LightningElement {
             DEFAULT_FINISH_BUTTON_LABEL;
     }
 
+    /**
+     * Change the appearance of the finish button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     *
+     * @type {string}
+     * @public
+     * @default neutral
+     */
     @api
     get finishButtonVariant() {
         return this._finishButtonVariant;
@@ -322,6 +470,12 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get buttonAlignmentBump() {
         return this._buttonAlignmentBump;
@@ -333,6 +487,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api
     get actionPosition() {
         return this._actionPosition;
@@ -344,6 +505,13 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Label displayed in front of fraction. Example: fraction-prefix-label == “Step” => Step 1 of 3
+     *
+     * @type {string}
+     * @public
+     * @default step
+     */
     @api
     get fractionPrefixLabel() {
         return this._fractionPrefixLabel;
@@ -354,6 +522,13 @@ export default class AvonniWizard extends LightningElement {
             DEFAULT_FRACTION_PREFIX_LABEL;
     }
 
+    /**
+     * Label displayed between current index and max number of slides. Example: fraction-label == “of” => 1 of 3
+     *
+     * @type {string}
+     * @public
+     * @default of
+     */
     @api
     get fractionLabel() {
         return this._fractionLabel;
@@ -364,15 +539,30 @@ export default class AvonniWizard extends LightningElement {
             DEFAULT_FRACTION_LABEL;
     }
 
+    /**
+     * Get index of the current step.
+     *
+     * @type {number}
+     */
     get currentStepIndex() {
         const stepNames = this.steps.map((step) => step.name);
         return stepNames.indexOf(this.currentStep);
     }
 
+    /**
+     * Verify if indicator is visible top.
+     *
+     * @type {boolean}
+     */
     get indicatorInHeader() {
         return !this.hideIndicator && this.indicatorPosition === 'top';
     }
 
+    /**
+     * Verify if indicator is visible and left or right.
+     *
+     * @type {boolean}
+     */
     get indicatorOnSide() {
         return (
             !this.hideIndicator &&
@@ -382,6 +572,11 @@ export default class AvonniWizard extends LightningElement {
         );
     }
 
+    /**
+     * Computed wrapper class styling.
+     *
+     * @type {string}
+     */
     get wrapperClass() {
         return classSet().add({
             'slds-grid slds-gutters slds-has-flexi-truncate slds-grid_vertical-stretch':
@@ -390,6 +585,11 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Computed main column class styling.
+     *
+     * @type {string}
+     */
     get mainColClass() {
         return classSet('main-col').add({
             'slds-col':
@@ -399,6 +599,11 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Computed side column class styling.
+     *
+     * @type {string}
+     */
     get sideColClass() {
         return classSet('slds-container_small side-col').add({
             'slds-align-bottom': this.indicatorType === 'fractions',
@@ -411,22 +616,46 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Display the wizard.
+     *
+     * @public
+     */
     @api
     show() {
         this.showWizard = true;
     }
 
+    /**
+     * Hide the wizard.
+     *
+     * @public
+     */
     @api
     hide() {
         this.showWizard = false;
         this.steps = [];
     }
 
+    /**
+     * Display the next step of the wizard.
+     *
+     * @public
+     */
     @api
     next() {
         const oldStep = this.currentStep;
         this._currentStep = this.steps[this.currentStepIndex + 1].name;
 
+        /**
+         * The event fired when the wizard advances or goes back following the configured step flow. An external change by setting the attribute current-step does not emit this event.
+         *
+         * @event
+         * @name change
+         * @param {string} currentStep The step name the wizard is moving to.
+         * @param {string} oldStep The step name the wizard is moving from.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
@@ -439,6 +668,11 @@ export default class AvonniWizard extends LightningElement {
         this._updateStepDisplay();
     }
 
+    /**
+     * Display the previous step of the wizard.
+     *
+     * @public
+     */
     @api
     previous() {
         const oldStep = this.currentStep;
@@ -456,6 +690,12 @@ export default class AvonniWizard extends LightningElement {
         this._updateStepDisplay();
     }
 
+    /**
+     * State of step before change.
+     *
+     * @param {object} step
+     * @returns {boolean}
+     */
     beforeChange(step) {
         return new Promise((resolve) => {
             if (!step.callbacks.beforeChange) {
@@ -466,6 +706,11 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /**
+     * Change event handler.
+     *
+     * @param {Event} event
+     */
     async handleChange(event) {
         this.errorMessage = undefined;
         const verticalIndicator = this.template.querySelector(
@@ -508,6 +753,9 @@ export default class AvonniWizard extends LightningElement {
         }
     }
 
+    /**
+     * Close dialog handler.
+     */
     handleCloseDialog() {
         this.hide();
     }

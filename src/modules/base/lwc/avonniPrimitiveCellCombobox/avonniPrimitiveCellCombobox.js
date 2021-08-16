@@ -1,4 +1,3 @@
-<!--
 /**
  * BSD 3-Clause License
  *
@@ -30,16 +29,51 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
--->
 
-<template>
-    <div class="reset-z-index slds-m-left_x-small">
-        <c-avonni-avatar-group
-            size={typeAttributes.size}
-            variant={typeAttributes.variant}
-            items={value}
-            layout={typeAttributes.layout}
-            max-count={typeAttributes.maxCount}
-        ></c-avonni-avatar-group>
-    </div>
-</template>
+import { LightningElement, api } from 'lwc';
+
+export default class AvonniPrimitiveCellCombobox extends LightningElement {
+    @api colKeyValue;
+    @api rowKeyValue;
+    @api disabled;
+    @api dropdownAlignment;
+    @api dropdownLength;
+    @api isMultiSelect;
+    @api label;
+    @api options;
+    @api placeholder;
+
+    _value;
+    readOnly;
+
+    @api
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        // When data is first set, the value is an object containing the editable state
+        // When the cell is edited, only the value is sent back
+        if (typeof value === 'object' && value.editable !== undefined) {
+            this.readOnly = !value.editable;
+            this._value = value.value;
+        } else {
+            this._value = value;
+        }
+    }
+
+    handleChange(event) {
+        const detail = {
+            value: event.detail.value,
+            colKeyValue: this.colKeyValue,
+            rowKeyValue: this.rowKeyValue
+        };
+
+        this.dispatchEvent(
+            new CustomEvent('privateeditcustomcell', {
+                detail: detail,
+                bubbles: true,
+                composed: true
+            })
+        );
+    }
+}

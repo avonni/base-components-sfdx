@@ -41,7 +41,7 @@ import {
     normalizeAriaAttribute,
     classListMutation
 } from 'c/utilsPrivate';
-import { FieldConstraintApi } from 'c/inputUtils';
+import { InteractingState, FieldConstraintApi } from 'c/inputUtils';
 import { classSet, generateUniqueId } from 'c/utils';
 import { AutoPosition, Direction } from 'c/positionLibrary';
 
@@ -74,12 +74,42 @@ const DEFAULT_PLACEHOLDER_WHEN_SEARCH_ALLOWED = 'Search...';
 const DEFAULT_SELECTED_OPTIONS_ARIA_LABEL = 'Selected Options';
 const DEFAULT_GROUP_NAME = 'ungrouped';
 
-// Default LWC message
-const DEFAULT_MESSAGE_WHEN_VALUE_MISSING = 'Complete this field.';
-
+/**
+ * Primitive Combobox.
+ *
+ * @class
+ */
 export default class AvonniPrimitiveCombobox extends LightningElement {
+    /**
+     * Help text detailing the purpose and function of the primitive combobox.
+     *
+     * @type {string}
+     * @public
+     */
     @api fieldLevelHelp;
+
+    /**
+     * Text label for the primitive combobox.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+
+    /**
+     * Error message to be displayed when the value is missing and input is required.
+     *
+     * @type {string}
+     * @public
+     */
+    @api messageWhenValueMissing;
+
+    /**
+     * Specifies the name of the primitive combobox.
+     *
+     * @type {string}
+     * @public
+     */
     @api name;
 
     _actions = [];
@@ -92,7 +122,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     _isLoading = false;
     _isMultiSelect = false;
     _loadingStateAlternativeText = DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
-    _messageWhenValueMissing = DEFAULT_MESSAGE_WHEN_VALUE_MISSING;
     _multiLevelGroups = false;
     _options = [];
     _placeholder;
@@ -129,6 +158,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                 this.visibleOptions
             );
         }
+
+        this.interactingState = new InteractingState();
+        this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
     }
 
     renderedCallback() {
@@ -138,6 +170,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Array of action objects. The actions are displayed at the end of the primitive combobox options.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get actions() {
         return this._actions;
@@ -160,6 +198,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
     }
 
+    /**
+     * If present, the primitive combobox options are searchable.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get allowSearch() {
         return this._allowSearch;
@@ -168,6 +213,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._allowSearch = normalizeBoolean(value);
     }
 
+    /**
+     * If present, the primitive combobox is disabled and users cannot interact with it.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get disabled() {
         return this._disabled;
@@ -176,6 +228,17 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * Specifies where the drop-down list is aligned with or anchored to the selection field.
+     * Valid values include auto, left, center, right, bottom-left, bottom-center and bottom-right.
+     * By default the list is aligned with the selection field at the top left so the list opens down.
+     * Use bottom-left to make the selection field display at the bottom so the list opens above it.
+     * Use auto to let the component determine where to open the list based on space available.
+     *
+     * @type {string}
+     * @default left
+     * @public
+     */
     @api
     get dropdownAlignment() {
         return this._dropdownAlignment;
@@ -187,6 +250,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
     }
 
+    /**
+     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items.
+     *
+     * @type {string}
+     * @default 7-items
+     * @public
+     */
     @api
     get dropdownLength() {
         return this._dropdownLength;
@@ -202,6 +272,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * Array of group objects. The groups are used to separate the options inside the drop-down.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get groups() {
         return this._groups;
@@ -214,6 +290,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (this.visibleOptions.length) this.computeGroups();
     }
 
+    /**
+     * If present, the selected options pills will be hidden.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get hideSelectedOptions() {
         return this._hideSelectedOptions;
@@ -222,6 +305,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._hideSelectedOptions = normalizeBoolean(value);
     }
 
+    /**
+     * If true, the drop-down menu is in a loading state and shows a spinner.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get isLoading() {
         return this._isLoading;
@@ -230,6 +320,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._isLoading = normalizeBoolean(value);
     }
 
+    /**
+     * If present, multiple options can be selected.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get isMultiSelect() {
         return this._isMultiSelect;
@@ -239,6 +336,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (this.isConnected) this.initValue();
     }
 
+    /**
+     * Message displayed while the combobox is in the loading state.
+     *
+     * @type {string}
+     * @default Loading
+     * @public
+     */
     @api
     get loadingStateAlternativeText() {
         return this._loadingStateAlternativeText;
@@ -250,17 +354,16 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                 : DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
     }
 
-    @api
-    get messageWhenValueMissing() {
-        return this._messageWhenValueMissing;
-    }
-    set messageWhenValueMissing(value) {
-        this._messageWhenValueMissing =
-            typeof value === 'string'
-                ? value.trim()
-                : DEFAULT_MESSAGE_WHEN_VALUE_MISSING;
-    }
-
+    /**
+     * If present, groups can contain other groups. Each group added to an option will create a level of depth.
+     *
+     * If false, there will be only one level of groups.
+     * If an option belongs to several groups, the option will be repeated in each group.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get multiLevelGroups() {
         return this._multiLevelGroups;
@@ -272,6 +375,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.computeGroups();
     }
 
+    /**
+     * Array of option objects.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get options() {
         return this._options;
@@ -287,6 +396,15 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Text that is displayed before an option is selected, to prompt the user to select an option.
+     *
+     * The default value varies depending on the value of allow-search.
+     *
+     * @type {string}
+     * @default Select an Option -or- Search…
+     * @public
+     */
     @api
     get placeholder() {
         if (this._placeholder) return this._placeholder;
@@ -299,6 +417,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._placeholder = value;
     }
 
+    /**
+     * If present, the combobox is read-only. A read-only combobox is also disabled.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get readOnly() {
         return this._readOnly;
@@ -307,6 +432,15 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._readOnly = normalizeBoolean(value);
     }
 
+    /**
+     * If present, the selected options will be removed from the options.
+     *
+     * If false, a checkmark will be displayed next to the selected options.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get removeSelectedOptions() {
         return this._removeSelectedOptions;
@@ -315,6 +449,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._removeSelectedOptions = normalizeBoolean(value);
     }
 
+    /**
+     * If present, a value must be selected before the form can be submitted.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get required() {
         return this._required;
@@ -323,6 +464,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._required = normalizeBoolean(value);
     }
 
+    /**
+     * Custom search function to execute instead of the default search. It has to:
+     * * Take an object with two keys as an argument: options and searchTerm
+     * * Return the new options.
+     *
+     * @type {function}
+     * @public
+     */
     @api
     get search() {
         return this._search;
@@ -331,6 +480,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._search = typeof value === 'function' ? value : this.computeSearch;
     }
 
+    /**
+     * Describes the selected options section to assistive technologies.
+     *
+     * @type {string}
+     * @default Selected Options
+     * @public
+     */
     @api
     get selectedOptionsAriaLabel() {
         return this._selectedOptionsAriaLabel;
@@ -342,6 +498,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                 : DEFAULT_SELECTED_OPTIONS_ARIA_LABEL;
     }
 
+    /**
+     * If present, a value must be selected before the form can be submitted.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get showClearInput() {
         return this._showClearInput;
@@ -350,11 +513,23 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._showClearInput = normalizeBoolean(value);
     }
 
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get validity() {
         return this._constraint.validity;
     }
 
+    /**
+     * Array of selected options value. If is-multi-select is false and several values are passed, only the first one will be taken into account.
+     *
+     * @type {string[]}
+     * @public
+     */
     @api
     get value() {
         return this._value;
@@ -365,6 +540,17 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (this.isConnected) this.initValue();
     }
 
+    /**
+     * The variant changes the appearance of the combobox.
+     * Accepted variants include standard, label-hidden, label-inline, and label-stacked.
+     * This value defaults to standard. Use label-hidden to hide the label but make it available to assistive technology.
+     * Use label-inline to horizontally align the label and combobox.
+     * Use label-stacked to place the label above the combobox.
+     *
+     * @type {string}
+     * @default standard
+     * @public
+     */
     @api
     get variant() {
         return this._variant;
@@ -381,6 +567,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
     }
 
+    /**
+     * Returns an array of visible options.
+     *
+     * @type {object[]}
+     */
     get visibleOptions() {
         return this._visibleOptions;
     }
@@ -393,6 +584,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this.computeGroups();
     }
 
+    /**
+     * Gets FieldConstraintApi.
+     *
+     * @type {object}
+     */
     get _constraint() {
         if (!this._constraintApi) {
             this._constraintApi = new FieldConstraintApi(() => this, {
@@ -403,18 +599,38 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return this._constraintApi;
     }
 
+    /**
+     * Returns a unique ID.
+     *
+     * @type {string}
+     */
     get generateKey() {
         return generateUniqueId();
     }
 
+    /**
+     * Returns an input element.
+     *
+     * @type {element}
+     */
     get input() {
         return this.template.querySelector('input');
     }
 
+    /**
+     * Returns an icon name for the input depending on allow-search attribute.
+     *
+     * @type {string}
+     */
     get inputIconName() {
         return this.allowSearch ? 'utility:search' : 'utility:down';
     }
 
+    /**
+     * If true, display value avatar.
+     *
+     * @type {boolean}
+     */
     get showInputValueAvatar() {
         return (
             this.selectedOption &&
@@ -425,26 +641,56 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * If true, display value icon.
+     *
+     * @type {boolean}
+     */
     get showInputValueIcon() {
         return this.selectedOption && this.selectedOption.iconName;
     }
 
+    /**
+     * True if disabled or read-only are true.
+     *
+     * @type {boolean}
+     */
     get inputIsDisabled() {
         return this.disabled || this.readOnly;
     }
 
+    /**
+     * True if allow-search is false.
+     *
+     * @type {boolean}
+     */
     get hasNoSearch() {
         return !this.allowSearch;
     }
 
+    /**
+     * Returns true as a string if dropdown-visible is true and false as a string if false.
+     *
+     * @type {string}
+     */
     get computedAriaExpanded() {
         return this.dropdownVisible ? 'true' : 'false';
     }
 
+    /**
+     * Returns none if this.readOnly or this.disabled is present and list if not.
+     *
+     * @type {string}
+     */
     get computedAriaAutocomplete() {
         return this.readOnly || this.disabled ? 'none' : 'list';
     }
 
+    /**
+     * True if parent-options-values and current parent.
+     *
+     * @type {boolean}
+     */
     get currentParent() {
         return (
             this.parentOptionsValues.length &&
@@ -454,6 +700,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * Returns an array of options element.
+     *
+     * @type {element}
+     */
     get _optionElements() {
         if (this.dropdownVisible) {
             const elements = [];
@@ -488,6 +739,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return [];
     }
 
+    /**
+     * True if highlighted-option.
+     *
+     * @type {boolean}
+     */
     get _highlightedOption() {
         return (
             this._optionElements.length &&
@@ -495,6 +751,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * True if selected-options, multi-select is true and hide-selected-options is false.
+     *
+     * @type {boolean}
+     */
     get showSelectedOptions() {
         return (
             !this.hideSelectedOptions &&
@@ -503,24 +764,40 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * True if show-clear-input is true, this.input and hide-selected-options is false.
+     *
+     * @type {boolean}
+     */
     get showClearInputIcon() {
         return this.showClearInput && this.input && this.inputValue !== '';
     }
 
+    /**
+     * True if input-value and no visible-options.
+     *
+     * @type {boolean}
+     */
     get showNoSearchResultMessage() {
         return this.inputValue && !this.visibleOptions.length;
     }
 
-    get showHelpMessage() {
-        return this.helpMessage && !this.checkValidity();
-    }
-
+    /**
+     * Computed Label Class styling.
+     *
+     * @type {string}
+     */
     get computedLabelClass() {
         return classSet('slds-form-element__label')
             .add({ 'slds-assistive-text': this.variant === 'label-hidden' })
             .toString();
     }
 
+    /**
+     * Computed Dropdown Trigger Class styling.
+     *
+     * @type {string}
+     */
     get computedDropdownTriggerClass() {
         return classSet(
             'slds-is-relative slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click combobox__dropdown-trigger'
@@ -533,6 +810,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Dropdown Class styling.
+     *
+     * @type {string}
+     */
     get computedDropdownClass() {
         return classSet(
             'slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid combobox__dropdown'
@@ -553,6 +835,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Input Container Class styling.
+     *
+     * @type {string}
+     */
     get computedInputContainerClass() {
         return classSet('slds-combobox__form-element slds-input-has-icon')
             .add({
@@ -564,16 +851,32 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             .toString();
     }
 
+    /**
+     * Removes focus from the input.
+     *
+     * @public
+     */
     @api
     blur() {
         if (this.input) this.input.blur();
     }
 
+    /**
+     * Indicates whether the element meets all constraint validations.
+     *
+     * @returns {boolean} the valid attribute value on the ValidityState object.
+     * @public
+     */
     @api
     checkValidity() {
         return this._constraint.checkValidity();
     }
 
+    /**
+     * Closes the dropdown.
+     *
+     * @public
+     */
     @api
     close() {
         if (this.dropdownVisible) {
@@ -599,11 +902,21 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Sets focus on the input.
+     *
+     * @public
+     */
     @api
     focus() {
         if (this.input) this.input.focus();
     }
 
+    /**
+     * Opens the dropdown.
+     *
+     * @public
+     */
     @api
     open() {
         const hasItems = this.options.length || this.actions.length;
@@ -617,6 +930,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Displays the error messages and returns false if the input is invalid.
+     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     *
+     * @returns {boolean} - The validity status of the input fields.
+     * @public
+     */
     @api
     reportValidity() {
         return this._constraint.reportValidity((message) => {
@@ -624,18 +944,43 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
     }
 
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message - The string that describes the error.
+     * If message is an empty string, the error message is reset.
+     * @public
+     */
     @api
     setCustomValidity(message) {
         this._constraint.setCustomValidity(message);
     }
 
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     *
+     * @public
+     */
     @api
     showHelpMessageIfInvalid() {
         this.reportValidity();
     }
 
+    /**
+     * Value initialization.
+     */
     initValue() {
+        this.inputValue = '';
+        if (this.selectedOption) {
+            this.selectedOption.selected = false;
+            this.selectedOption = undefined;
+        }
+
         if (this.isMultiSelect) {
+            this.selectedOptions.forEach((option) => {
+                option.selected = false;
+            });
             this.value.forEach((value) => {
                 const selectedOption = this.options.find(
                     (option) => option.value === value
@@ -648,6 +993,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             const selectedOption = this.options.find(
                 (option) => option.value === this.value[0]
             );
+
             if (selectedOption) {
                 selectedOption.selected = true;
                 this.selectedOption = selectedOption;
@@ -656,6 +1002,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Option's object initialization.
+     */
     initOptionObjects(options) {
         const optionObjects = [];
         options.forEach((option) => {
@@ -672,6 +1021,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return optionObjects;
     }
 
+    /**
+     * Positioning for the dropdown.
+     */
     startDropdownAutoPositioning() {
         if (this.dropdownAlignment !== 'auto') {
             return;
@@ -708,6 +1060,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Calculating the dropdown's height.
+     */
     updateDropdownHeight() {
         const groups = this.template.querySelectorAll(
             'c-primitive-combobox-group'
@@ -770,6 +1125,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Computing the groups.
+     */
     computeGroups() {
         const computedGroups = [];
 
@@ -818,7 +1176,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * Find a group based on its name, and adds an option to its list.
+     * Finds a group based on its name, and adds an option to its list.
      * Takes an object with three keys as an argument.
      *
      * @param {array} groups Array of the groups.
@@ -869,7 +1227,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * Move the default group at the top
+     * Move the default group at the top.
      */
     sortGroups(groups) {
         const defaultGroupIndex = groups.findIndex(
@@ -881,6 +1239,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Computes the selected options.
+     */
     computeSelection() {
         this.selectedOptions = this.getSelectedOptions();
         this._value = this.selectedOptions.map((option) => option.value);
@@ -892,6 +1253,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * Search function.
+     *
+     * @param {object} params The search term and an array of the options
+     * @returns {array} Array of options that includes the search term
+     */
     computeSearch(params) {
         const { options, searchTerm } = params;
         return options.filter((option) => {
@@ -901,6 +1268,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
     }
 
+    /**
+     * Removes selected options from the options array.
+     *
+     * @param {array} options Array of all the options
+     * @returns {array} Array of all unselected options
+     */
     removeSelectedOptionsFrom(options) {
         const unselectedOptions = [];
         options.forEach((option) => {
@@ -921,6 +1294,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return unselectedOptions;
     }
 
+    /**
+     * Unselects selected options.
+     *
+     * @param {array} options Array of all the options
+     */
     unselectOption(options = this.options) {
         let selectedOption = options.find((option) => option.selected);
         if (selectedOption) {
@@ -939,6 +1317,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Return an array of all selected options.
+     *
+     * @param {array} options Array of all the options
+     * @returns {array} Array of all selected options
+     */
     getSelectedOptions(options = this.options) {
         const selectedOptions = [];
         options.forEach((option) => {
@@ -951,6 +1335,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return selectedOptions.flat();
     }
 
+    /**
+     * Gets the option.
+     *
+     * @param {string[]} value Array of selected options value.
+     * @param {array} options Array of all the options.
+     * @returns {string} option
+     */
     getOption(value, options = this.options) {
         let option = options.find((opt) => opt.value === value);
 
@@ -967,6 +1358,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return option;
     }
 
+    /**
+     * Hightlights the option with focus on.
+     *
+     * @param {number} index index of the option with focus on.
+     */
     highlightOption(index) {
         if (!this._optionElements[index]) return;
 
@@ -983,6 +1379,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * Updates the back link.
+     *
+     * @param {string} label
+     */
     updateBackLink(label) {
         this.backLink = new Action({
             label: label,
@@ -993,6 +1394,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
     }
 
+    /**
+     * If selected-option and input-value = '' closes the dropdown.
+     * Dispatches blur event.
+     */
     handleBlur() {
         if (this._cancelBlur) {
             return;
@@ -1002,13 +1407,24 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
         this.close();
 
+        this.interactingState.leave();
+
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
+    /**
+     * Dispatches focus event.
+     */
     handleFocus() {
+        this.interactingState.enter();
+
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
+    /**
+     * Handles the input for the search function.
+     * Dispatches search event.
+     */
     handleInput(event) {
         const searchTerm = event.currentTarget.value;
         this.inputValue = searchTerm;
@@ -1040,12 +1456,18 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Sets cancelBlur to false on mouseup on dropdown.
+     */
     handleDropdownMouseUp() {
         // We need this to make sure that if a scrollbar is being dragged with the mouse, upon release
         // of the drag we allow blur, otherwise the dropdown would not close on blur since we'd have cancel blur set
         this._cancelBlur = false;
     }
 
+    /**
+     * Handles the click on highlighted options.
+     */
     handleHighlightedOptionClick(event) {
         // If the search is allowed, the options have to be selected with enter
         if (this.allowSearch && (event.key === ' ' || event.key === 'Spacebar'))
@@ -1060,6 +1482,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Handles the input key down.
+     * If dropdown is closed, opens it and dispatch open event.
+     */
     handleInputKeyDown(event) {
         if (!this.dropdownVisible) {
             this.open();
@@ -1111,6 +1537,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
     }
 
+    /**
+     * Handles the back link click.
+     */
     handleBackLinkClick() {
         const parents = this.parentOptionsValues;
         parents.pop();
@@ -1127,6 +1556,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this.focus();
     }
 
+    /**
+     * Clears the input value.
+     * Dispatches change event.
+     */
     handleClearInput(event) {
         event.stopPropagation();
         this.inputValue = '';
@@ -1154,8 +1587,17 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this.focus();
     }
 
+    /**
+     * Handles the click on action.
+     * Dispatches actionClick event.
+     * Closes the dropdown.
+     *
+     * @param {event} event If clicked with mouse we receive the event
+     * @param {string} name If clicked with keyboard we receive the name
+     */
     handleActionClick(eventOrName) {
         // If the action is "clicked" through a keyboard event, the argument will be the name
+
         let name;
         if (typeof eventOrName === 'string') {
             name = eventOrName;
@@ -1180,6 +1622,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this.focus();
     }
 
+    /**
+     * Handles the click on option.
+     * Dispatches change event.
+     * Closes the dropdown.
+     *
+     * @param {event} event click event
+     */
     handleOptionClick(event) {
         event.stopPropagation();
 
@@ -1225,6 +1674,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this.focus();
     }
 
+    /**
+     * Handles mouse enter on li.
+     */
     handleMouseEnter(event) {
         event.stopPropagation();
         if (event.currentTarget.ariaDisabled === 'true') return;
@@ -1239,6 +1691,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this.highlightOption(index);
     }
 
+    /**
+     * Handles the remove of lightning-pill (selected-option).
+     * Dispatches change event.
+     *
+     * @param {event} event onremove event
+     * @public
+     */
     @api
     handleRemoveSelectedOption(event) {
         const value = event.detail.name;
@@ -1258,6 +1717,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * Handles the trigger click.
+     * If dropdown is closed, it opens it.
+     * Dispatches open event.
+     */
     handleTriggerClick() {
         if (!this.dropdownVisible) {
             this.open();

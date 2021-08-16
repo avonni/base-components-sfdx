@@ -33,6 +33,22 @@
 import { normalizeArray } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
+/**
+ * Option
+ * 
+ * @class
+ * @property {string} avatarFallbackIconName The Lightning Design System name of the icon used as a fallback when the image fails to load. The initials fallback relies on this for its background color.
+ * Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
+ * @property {string} avatarSrc Image URL for the option avatar.
+ * @property {string[]} groups Array of group names this option belongs to.
+ * @property {string} label Label of the option.
+ * @property {object[]} options Array of option objects. If present:
+ * * The icon utility:chevronright will be displayed to the right of the option to indicate it has children.
+ * * The option is not selectable. On click on it, the children options will replace the current options in the drop-down.
+ * @property {string} secondaryText Secondary text to display below the label.
+ * @property {string} value Required. A unique value for the option.
+ * @property {boolean} hasAvatar Present if avatarFallbackIconName or avatarSrc
+ */
 export default class AvonniOption {
     constructor(option) {
         this.avatarFallbackIconName = option.avatarFallbackIconName;
@@ -46,6 +62,11 @@ export default class AvonniOption {
         this.hasAvatar = this.avatarFallbackIconName || this.avatarSrc;
     }
 
+    /**
+     * Class of the option.
+     * 
+     * @type {string}
+     */
     get computedClass() {
         return classSet(
             'slds-media slds-media_small slds-media_center slds-listbox__item slds-listbox__option slds-listbox__option_plain slds-listbox__option_entity combobox__option'
@@ -56,16 +77,31 @@ export default class AvonniOption {
             .toString();
     }
 
+    /**
+     * Class of the option's icon.
+     * 
+     * @type {string}
+     */
     get computedIconClass() {
         return this.selected || this.hasSelectedChildren()
             ? 'slds-current-color'
             : undefined;
     }
 
+    /**
+     * Return the icon chosen or utility:check.
+     * 
+     * @type {string}
+     */
     get computedCheckmarkIconName() {
         return this.iconName || 'utility:check';
     }
 
+    /**
+     * True if selected, options or icon-name.
+     * 
+     * @type {boolean}
+     */
     get showCheckmark() {
         return (
             this.selected ||
@@ -74,6 +110,12 @@ export default class AvonniOption {
         );
     }
 
+    /**
+     * Array of option's options.
+     * 
+     * @param {object[]} options Array of option objects.
+     * @returns {object[]} Array of option's options
+     */
     hasSelectedChildren(options = this.options) {
         return options.some((option) => {
             return (

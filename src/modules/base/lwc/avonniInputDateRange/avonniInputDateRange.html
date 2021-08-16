@@ -65,6 +65,7 @@
                         disabled={disabled}
                         aria-readonly={readOnly}
                         readonly={readOnly}
+                        required={required}
                     />
                     <lightning-icon
                         icon-name="utility:event"
@@ -98,6 +99,7 @@
                 onchange={handleChangeStartTime}
                 disabled={disabled}
                 read-only={readOnly}
+                class="start-time"
             ></lightning-input>
             <div class="slds-form-element">
                 <label
@@ -152,7 +154,18 @@
                 onchange={handleChangeEndTime}
                 disabled={disabled}
                 read-only={readOnly}
+                class="end-time"
             ></lightning-input>
+        </div>
+    </div>
+    <div class="slds-has-error" if:true={helpMessage}>
+        <div
+            id="help-message"
+            class="slds-form-element__help"
+            data-help-message
+            role="alert"
+        >
+            {helpMessage}
         </div>
     </div>
 </template>

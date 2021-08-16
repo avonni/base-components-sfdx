@@ -105,9 +105,33 @@ const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search...';
 const DEFAULT_APPLY_BUTTON_LABEL = 'Apply';
 const DEFAULT_RESET_BUTTON_LABEL = 'Reset';
 
+/**
+ * @class
+ * @descriptor avonni-filter-menu
+ * @storyId example-filter-menu--base
+ * @public
+ */
 export default class AvonniFilterMenu extends LightningElement {
+    /**
+     * The keyboard shortcut for the button menu (horizontal variant) or the checkbox group (vertical variant).
+     *
+     * @type {string}
+     * @public
+     */
     @api accessKey;
+    /**
+     * Label of the menu.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+    /**
+     * Title of the button (horizontal variant) or the label (vertical variant).
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
 
     _alternativeText = i18n.showMenu;
@@ -143,6 +167,18 @@ export default class AvonniFilterMenu extends LightningElement {
 
     connectedCallback() {
         // button-group necessities
+        /**
+        * Private button register event
+        *
+        * @event
+        * @name privatebuttonregister
+        * @param {object} callbacks
+        * *setOrder : this.setOrder.bind(this),
+        * *setDeRegistrationCallback: (deRegistrationCallback) => {
+                        this._deRegistrationCallback = deRegistrationCallback;
+                    }
+        * @bubbles
+        */
         const privatebuttonregister = new CustomEvent('privatebuttonregister', {
             bubbles: true,
             detail: {
@@ -176,10 +212,15 @@ export default class AvonniFilterMenu extends LightningElement {
                 'slds-dropdown-trigger_click'
             );
         }
-        
+
         this.initTooltip();
     }
 
+    /**
+     * Render html template based on variant vertical or not.
+     *
+     * @returns {File} filterMenu.html | filterMenuVertical.html
+     */
     render() {
         if (this.variant === 'vertical') {
             return filterMenuVertical;
@@ -187,6 +228,13 @@ export default class AvonniFilterMenu extends LightningElement {
         return filterMenu;
     }
 
+    /**
+     * The assistive text for the button menu. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default Show Menu
+     */
     @api
     get alternativeText() {
         return this._alternativeText;
@@ -196,6 +244,13 @@ export default class AvonniFilterMenu extends LightningElement {
             typeof value === 'string' ? value.trim() : i18n.showMenu;
     }
 
+    /**
+     * Message displayed while the menu is in the loading state.
+     *
+     * @type {string}
+     * @public
+     * @default Loading
+     */
     @api
     get loadingStateAlternativeText() {
         return this._loadingStateAlternativeText;
@@ -205,6 +260,12 @@ export default class AvonniFilterMenu extends LightningElement {
             typeof value === 'string' ? value.trim() : i18n.loading;
     }
 
+    /**
+     * The tooltip is displayed on hover or focus on the button (horizontal variant), or on the help icon (vertical variant).
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get tooltip() {
         return this._tooltip ? this._tooltip.value : undefined;
@@ -227,6 +288,13 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * If present, the menu cannot be used by users.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get disabled() {
         return this._disabled;
@@ -235,6 +303,13 @@ export default class AvonniFilterMenu extends LightningElement {
         this._disabled = normalizeBoolean(bool);
     }
 
+    /**
+     * The name of the icon to be used in the format 'utility:down'. For the horizontal variant, if an icon other than 'utility:down' or 'utility:chevrondown' is used, a utility:down icon is appended to the right of that icon. This value defaults to utility:down.
+     *
+     * @type {string}
+     * @public
+     * @default utility:down for horizontal variant
+     */
     @api
     get iconName() {
         return this._iconName;
@@ -246,6 +321,13 @@ export default class AvonniFilterMenu extends LightningElement {
                 : DEFAULT_ICON_NAME;
     }
 
+    /**
+     * The size of the icon. Options include xx-small, x-small, small, medium or large. This value defaults to medium.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api
     get iconSize() {
         return this._iconSize;
@@ -257,6 +339,13 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * If present, the menu is in a loading state and shows a spinner.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get isLoading() {
         return this._isLoading;
@@ -276,6 +365,12 @@ export default class AvonniFilterMenu extends LightningElement {
         this._isLoading = normalizedValue;
     }
 
+    /**
+     * Array of item objects.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get items() {
         return this._items;
@@ -289,6 +384,12 @@ export default class AvonniFilterMenu extends LightningElement {
         this.computeTabindex();
     }
 
+    /**
+     * Array of selected item's values.
+     *
+     * @type {String[]}
+     * @public
+     */
     @api
     get value() {
         return this._value;
@@ -301,6 +402,13 @@ export default class AvonniFilterMenu extends LightningElement {
         this.computeSelectedItems();
     }
 
+    /**
+     * The variant changes the look of the menu. Accepted variants include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
     @api
     get variant() {
         return this._variant;
@@ -312,6 +420,13 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * The button variant changes the look of the horizontal variant’s button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default border
+     */
     @api
     get buttonVariant() {
         return this._buttonVariant;
@@ -323,6 +438,13 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * Text displayed when the search input is empty, to prompt the user for a valid entry.
+     *
+     * @type {string}
+     * @public
+     * @default Search...
+     */
     @api
     get searchInputPlaceholder() {
         return this._searchInputPlaceholder;
@@ -334,6 +456,13 @@ export default class AvonniFilterMenu extends LightningElement {
                 : DEFAULT_SEARCH_INPUT_PLACEHOLDER;
     }
 
+    /**
+     * If present, the search box is visible.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get showSearchBox() {
         return this._showSearchBox;
@@ -342,6 +471,13 @@ export default class AvonniFilterMenu extends LightningElement {
         this._showSearchBox = normalizeBoolean(bool);
     }
 
+    /**
+     * Label of the apply button.
+     *
+     * @type {string}
+     * @public
+     * @default Apply
+     */
     @api
     get applyButtonLabel() {
         return this._applyButtonLabel;
@@ -353,6 +489,13 @@ export default class AvonniFilterMenu extends LightningElement {
                 : DEFAULT_APPLY_BUTTON_LABEL;
     }
 
+    /**
+     * Label of the reset button.
+     *
+     * @type {string}
+     * @public
+     * @default Reset
+     */
     @api
     get resetButtonLabel() {
         return this._resetButtonLabel;
@@ -364,6 +507,13 @@ export default class AvonniFilterMenu extends LightningElement {
                 : DEFAULT_RESET_BUTTON_LABEL;
     }
 
+    /**
+     * If present, the apply and reset buttons are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideApplyResetButtons() {
         return this._hideApplyResetButtons;
@@ -372,6 +522,13 @@ export default class AvonniFilterMenu extends LightningElement {
         this._hideApplyResetButtons = normalizeBoolean(bool);
     }
 
+    /**
+     * Determines the alignment of the dropdown menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api
     get dropdownAlignment() {
         return this._dropdownAlignment;
@@ -383,6 +540,13 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * Minimum width of the dropdown menu. Valid values include xx-small, x-small, small, medium and large. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default small
+     */
     @api
     get dropdownWidth() {
         return this._dropdownWidth;
@@ -394,6 +558,13 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default 7-items
+     */
     @api
     get dropdownLength() {
         return this._dropdownLength;
@@ -405,6 +576,13 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * If present, a nubbin is present on the dropdown menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get dropdownNubbin() {
         return this._dropdownNubbin;
@@ -413,6 +591,13 @@ export default class AvonniFilterMenu extends LightningElement {
         this._dropdownNubbin = normalizeBoolean(bool);
     }
 
+    /**
+     * If present, the selected items are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideSelectedItems() {
         return this._hideSelectedItems;
@@ -421,10 +606,20 @@ export default class AvonniFilterMenu extends LightningElement {
         this._hideSelectedItems = normalizeBoolean(bool);
     }
 
+    /**
+     * Computed checkbox Items.
+     *
+     * @type {object}
+     */
     get checkboxComputedItems() {
         return this.computedItems.filter((item) => !item.hidden);
     }
 
+    /**
+     * Computed showdown icon.
+     *
+     * @type {boolean}
+     */
     get computedShowDownIcon() {
         return !(
             this.iconName === 'utility:down' ||
@@ -432,10 +627,20 @@ export default class AvonniFilterMenu extends LightningElement {
         );
     }
 
+    /**
+     * Computed Aria Expanded from dropdown menu.
+     *
+     * @type {string}
+     */
     get computedAriaExpanded() {
         return String(this._dropdownVisible); // default value must be a string for the attribute to always be present with a string value
     }
 
+    /**
+     * Computed Button class styling.
+     *
+     * @type {string}
+     */
     get computedButtonClass() {
         const isDropdownIcon = !this.computedShowDownIcon;
         const isBare =
@@ -491,6 +696,11 @@ export default class AvonniFilterMenu extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Dropdown class styling.
+     *
+     * @type {string}
+     */
     get computedDropdownClass() {
         return classSet('slds-dropdown')
             .add({
@@ -529,6 +739,11 @@ export default class AvonniFilterMenu extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Item List Class styling.
+     *
+     * @type {string}
+     */
     get computedItemListClass() {
         return classSet('slds-dropdown__list').add({
             'slds-dropdown_length-with-icon-5':
@@ -540,10 +755,20 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * Display selected items.
+     *
+     * @type {boolean}
+     */
     get showSelectedItems() {
         return !this.hideSelectedItems && this.selectedItems.length > 0;
     }
 
+    /**
+     * Focus method.
+     *
+     * @public
+     */
     @api
     focus() {
         if (this.variant === 'vertical') {
@@ -553,12 +778,22 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Apply method.
+     *
+     * @public
+     */
     @api
     apply() {
         this.computeSelectedItems();
         this.close();
     }
 
+    /**
+     * Clear Method.
+     *
+     * @public
+     */
     @api
     clear() {
         this._value = [];
@@ -566,6 +801,9 @@ export default class AvonniFilterMenu extends LightningElement {
         this.computeSelectedItems();
     }
 
+    /**
+     * Compute Tab index.
+     */
     computeTabindex() {
         let firstFocusableItem;
         this.computedItems.forEach((item) => {
@@ -578,6 +816,9 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * Compute Value of items by 'checked' state.
+     */
     computeValue() {
         this.computedItems.forEach((item) => {
             if (this.value.indexOf(item.value) > -1) {
@@ -588,6 +829,9 @@ export default class AvonniFilterMenu extends LightningElement {
         });
     }
 
+    /**
+     * Compute Selected Items List by checked items.
+     */
     computeSelectedItems() {
         const selectedItems = [];
         this.computedItems.forEach((item) => {
@@ -601,34 +845,61 @@ export default class AvonniFilterMenu extends LightningElement {
         this.selectedItems = selectedItems;
     }
 
+    /**
+     * Allow blur.
+     */
     allowBlur() {
         this._cancelBlur = false;
     }
 
+    /**
+     * Cancel blur.
+     */
     cancelBlur() {
         this._cancelBlur = true;
     }
 
+    /**
+     * Close dropdown menu.
+     */
     close() {
         if (this._dropdownVisible) {
             this.toggleMenuVisibility();
         }
     }
 
+    /**
+     * Initialize tooltip.
+     */
     initTooltip() {
         if (this._tooltip && !this._tooltip.initialized) {
             this._tooltip.initialize();
         }
     }
 
+    /**
+     * Set order of items.
+     *
+     * @param {object} order
+     */
     setOrder(order) {
         this._order = order;
     }
 
+    /**
+     * Checks if dropdown is auto Aligned.
+     *
+     * @returns boolean
+     */
     isAutoAlignment() {
         return this.dropdownAlignment.startsWith('auto');
     }
 
+    /**
+     * Menu positioning and animation start.
+     *
+     * @returns object dropdown menu positioning.
+     */
     startPositioning() {
         if (!this.isAutoAlignment()) {
             return Promise.resolve();
@@ -682,6 +953,9 @@ export default class AvonniFilterMenu extends LightningElement {
             });
     }
 
+    /**
+     * Stop menu positioning and animation.
+     */
     stopPositioning() {
         if (this._autoPosition) {
             stopPositioning(this._autoPosition);
@@ -690,6 +964,9 @@ export default class AvonniFilterMenu extends LightningElement {
         this._positioning = false;
     }
 
+    /**
+     * Dropdown menu visibility toggle.
+     */
     toggleMenuVisibility() {
         if (!this.disabled) {
             this._dropdownVisible = !this._dropdownVisible;
@@ -713,6 +990,9 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Get bounding rect coordinates for dropdown menu.
+     */
     pollBoundingRect() {
         // only poll if the dropdown is auto aligned
         if (this.isAutoAlignment() && this._dropdownVisible) {
@@ -732,6 +1012,11 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Dropdown mouse down event handler.
+     *
+     * @param {Event} event
+     */
     handleDropdownMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -739,6 +1024,11 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Button Mouse Down handler.
+     *
+     * @param {Event} event
+     */
     handleButtonMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -746,6 +1036,9 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Dropdown click handler.
+     */
     handleDropdownClick() {
         // On click outside of a focusable element, the focus will go to the button
         if (!this.template.activeElement) {
@@ -753,16 +1046,25 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Button Click handler.
+     */
     handleButtonClick() {
         this.allowBlur();
 
         this.toggleMenuVisibility();
     }
 
+    /**
+     * Button Focus handler.
+     */
     handleButtonFocus() {
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
+    /**
+     * Button Blur handler.
+     */
     handleButtonBlur() {
         if (!this._cancelBlur) {
             this.close();
@@ -770,12 +1072,22 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Checkbox value change event handler.
+     *
+     * @param {Event} event
+     */
     handleCheckboxChange(event) {
         this._value = event.detail.value;
         this.computeValue();
         this.dispatchSelect();
     }
 
+    /**
+     * Private select handler.
+     *
+     * @param {Event} event
+     */
     handlePrivateSelect(event) {
         const index = this.value.findIndex(
             (itemValue) => itemValue === event.detail.value
@@ -792,6 +1104,11 @@ export default class AvonniFilterMenu extends LightningElement {
         this.dispatchSelect();
     }
 
+    /**
+     * Private Blur handler.
+     *
+     * @param {Event} event
+     */
     handlePrivateBlur(event) {
         event.stopPropagation();
 
@@ -804,11 +1121,21 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Private focus handler.
+     *
+     * @param {Event} event
+     */
     handlePrivateFocus(event) {
         event.stopPropagation();
         this.allowBlur();
     }
 
+    /**
+     * Key down event handler.
+     *
+     * @param {Event} event
+     */
     handleKeyDown(event) {
         if (event.code === 'Tab') {
             this.cancelBlur();
@@ -846,6 +1173,11 @@ export default class AvonniFilterMenu extends LightningElement {
         }
     }
 
+    /**
+     * Selected Item removal handler.
+     *
+     * @param {Event} event
+     */
     handleSelectedItemRemove(event) {
         const selectedItemIndex = event.detail.index;
         this.selectedItems.splice(selectedItemIndex, 1);
@@ -858,17 +1190,35 @@ export default class AvonniFilterMenu extends LightningElement {
         this.dispatchApply();
     }
 
+    /**
+     * Apply click handler.
+     */
     handleApplyClick() {
         this.computeSelectedItems();
         this.dispatchApply();
         this.close();
     }
 
+    /**
+     * Reset Click handler.
+     */
     handleResetClick() {
+        /**
+         * Reset event.
+         *
+         * @event
+         * @name reset
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('reset'));
         this.clear();
     }
 
+    /**
+     * Search handler.
+     *
+     * @param {Event} event
+     */
     handleSearch(event) {
         const searchTerm = event.currentTarget.value;
 
@@ -879,6 +1229,14 @@ export default class AvonniFilterMenu extends LightningElement {
                 : false;
         });
 
+        /**
+         * Search event.
+         *
+         * @event
+         * @name search
+         * @param {string} value : searchTerm
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('search', {
                 detail: {
@@ -888,7 +1246,18 @@ export default class AvonniFilterMenu extends LightningElement {
         );
     }
 
+    /**
+     * Dispatch Apply event.
+     */
     dispatchApply() {
+        /**
+         * Apply event.
+         *
+         * @event
+         * @name apply
+         * @param {string[]} value : this.value
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('apply', {
                 detail: {
@@ -898,9 +1267,21 @@ export default class AvonniFilterMenu extends LightningElement {
         );
     }
 
+    /**
+     * Dispatch Select event.
+     */
     dispatchSelect() {
         // Dispatch the event with the same properties as LWC button-menu
         this.dispatchEvent(
+            /**
+             * Select event.
+             *
+             * @event
+             * @name select
+             * @param {string[]} value: this.value
+             * @public
+             * @cancelable
+             */
             new CustomEvent('select', {
                 cancelable: true,
                 detail: {

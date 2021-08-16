@@ -33,41 +33,44 @@
 -->
 
 <template>
-    <label class={computedWrapperClass} for="avonni-input-toggle">
-        <template if:true={required}>
-            <abbr class="slds-required" title={i18n.required}>*</abbr>
-        </template>
-        <span class={computedLabelClass}>{label}</span>
-        <lightning-helptext
-            if:true={fieldLevelHelp}
-            content={fieldLevelHelp}
-            class="slds-m-right_x-small"
-        ></lightning-helptext>
-        <input
-            id="avonni-input-toggle"
-            accesskey={accessKey}
-            aria-label={ariaLabel}
-            checked={checked}
-            disabled={disabled}
-            name={name}
-            onblur={handleBlur}
-            onchange={handleChange}
-            onfocus={handleFocus}
-            readonly={readOnly}
-            required={required}
-            type="checkbox"
-            value={value}
-        />
-        <span
-            class="slds-checkbox_faux_container"
-            aria-live="assertive"
-            data-toggle-description
-        >
-            <span class={computedFauxToggleClass}></span>
-            <span class="slds-checkbox_on">{messageToggleActive}</span>
-            <span class="slds-checkbox_off">{messageToggleInactive}</span>
-        </span>
-    </label>
+    <div class="slds-show_inline-block">
+        <label class={computedWrapperClass} for="avonni-input-toggle">
+            <template if:true={required}>
+                <abbr class="slds-required" title={i18n.required}>*</abbr>
+            </template>
+            <span class={computedLabelClass}>{label}</span>
+            <lightning-helptext
+                if:true={fieldLevelHelp}
+                content={fieldLevelHelp}
+                class="slds-m-right_x-small"
+            ></lightning-helptext>
+            <input
+                id="avonni-input-toggle"
+                accesskey={accessKey}
+                aria-label={ariaLabel}
+                checked={checked}
+                disabled={disabled}
+                name={name}
+                onblur={handleBlur}
+                onchange={handleChange}
+                onfocus={handleFocus}
+                readonly={readOnly}
+                required={required}
+                type="checkbox"
+                value={value}
+            />
+            <span
+                class="slds-checkbox_faux_container"
+                aria-live="assertive"
+                data-toggle-description
+            >
+                <span class={computedFauxToggleClass}></span>
+                <span class="slds-checkbox_on">{messageToggleActive}</span>
+                <span class="slds-checkbox_off">{messageToggleInactive}</span>
+            </span>
+        </label>
+    </div>
+
     <template if:false={valid}>
         <div
             id="help-message"

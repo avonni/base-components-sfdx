@@ -33,17 +33,49 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
-const SEGMENT_BUTTON_TYPES = {valid: ['button', 'reset', 'submit'], default: 'button'};
+const SEGMENT_BUTTON_TYPES = {
+    valid: ['button', 'reset', 'submit'],
+    default: 'button'
+};
 
+/**
+ * @class
+ * @descriptor avonni-segment-button
+ * @storyId example-segment--base
+ */
 export default class AvonniSegmentButton extends LightningElement {
+    /**
+     * The button label.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+    /**
+     * The name of the icon to be used in the format 'utility:down'.
+     *
+     * @type {string}
+     * @public
+     */
     @api iconName;
+    /**
+     * The name of an icon to display before the text of the button.
+     *
+     * @type {string}
+     * @public
+     */
     @api prefixIconName;
 
     _value;
     _type = SEGMENT_BUTTON_TYPES.default;
     _disabled = false;
 
+    /**
+     * The value of the segment button.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get value() {
         return this._value;
@@ -54,6 +86,13 @@ export default class AvonniSegmentButton extends LightningElement {
         this.setAttribute('data-value', value);
     }
 
+    /**
+     * The type of the button. Values include button, reset, submit.
+     *
+     * @type {string}
+     * @public
+     * @default button
+     */
     @api get type() {
         return this._type;
     }
@@ -65,6 +104,12 @@ export default class AvonniSegmentButton extends LightningElement {
         });
     }
 
+    /**
+     * If true, the user cannot interact with the segment button.
+     *
+     * @type {boolean}
+     * @public
+     */
     @api get disabled() {
         return this._disabled;
     }
@@ -73,12 +118,30 @@ export default class AvonniSegmentButton extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * Button disabled method.
+     */
     @api
     disableButton() {
         this._disabled = true;
     }
 
+    /**
+     * Button click event handler.
+     *
+     * @param {Event} event
+     */
     handleButtonClick(event) {
+        /**
+         * The event fired when the button is clicked.
+         *
+         * @event
+         * @name click
+         * @param {string} value
+         * @public
+         * @bubbles
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('click', {
                 bubbles: true,

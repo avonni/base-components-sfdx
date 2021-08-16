@@ -44,14 +44,39 @@ const ICON_SIZES = {
     default: 'small'
 };
 
+/**
+ * @class
+ * @descriptor avonni-blockquote
+ * @storyId example-blockquote--base
+ * @public
+ */
 export default class AvonniBlockquote extends LightningElement {
+    /**
+     * The title can include text and is displayed in the header.
+     *
+     * @public
+     * @type {string}
+     */
     @api title;
+    /**
+     * Icon display next to the title.
+     *
+     * @public
+     * @type {string}
+     */
     @api iconName;
 
     _variant = BLOCKQUOTE_VARIANTS.default;
     _iconPosition = ICON_POSITIONS.default;
     _iconSize = ICON_SIZES.default;
 
+    /**
+     * The variant changes the appearance of the blockquote. Valid values include default, brand, warning, error, success.
+     *
+     * @public
+     * @type {string}
+     * @default default
+     */
     @api
     get variant() {
         return this._variant;
@@ -64,6 +89,13 @@ export default class AvonniBlockquote extends LightningElement {
         });
     }
 
+    /**
+     * Describes the position of the icon. Options include left and right.
+     *
+     * @public
+     * @type {string}
+     * @default left
+     */
     @api
     get iconPosition() {
         return this._iconPosition;
@@ -76,6 +108,13 @@ export default class AvonniBlockquote extends LightningElement {
         });
     }
 
+    /**
+     * The size of the icon. Valid values include xx-small, x-small, small, medium, large.
+     *
+     * @public
+     * @type {string}
+     * @default small
+     */
     @api
     get iconSize() {
         return this._iconSize;
@@ -88,6 +127,11 @@ export default class AvonniBlockquote extends LightningElement {
         });
     }
 
+    /**
+     * Compute blockquote style by variant.
+     *
+     * @type {string}
+     */
     get blockquoteClass() {
         return classSet('doc')
             .add({
@@ -100,10 +144,20 @@ export default class AvonniBlockquote extends LightningElement {
             .toString();
     }
 
+    /**
+     * Set icon left.
+     *
+     * @type {boolean}
+     */
     get leftIcon() {
         return this._iconPosition === 'left' && this.iconName;
     }
 
+    /**
+     * Set icon right.
+     *
+     * @type {boolean}
+     */
     get rightIcon() {
         return this._iconPosition === 'right' && this.iconName;
     }

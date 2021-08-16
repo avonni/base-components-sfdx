@@ -48,8 +48,26 @@ const VALID_ORIENTATIONS = {
 };
 const VALID_ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 
+/**
+ * @class
+ * @descriptor avonni-segment
+ * @storyId example-separator--base
+ * @public
+ */
 export default class AvonniSeparator extends LightningElement {
+    /**
+     * Text to display in the separator.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+    /**
+     * The name of the icon to be used in the format 'utility:down'.
+     *
+     * @type {string}
+     * @public
+     */
     @api iconName;
 
     _alignContent = VALID_ALIGN_CONTENTS;
@@ -57,6 +75,13 @@ export default class AvonniSeparator extends LightningElement {
     _orientation = VALID_ORIENTATIONS;
     _iconPosition = VALID_ICON_POSITIONS;
 
+    /**
+     * Position of the content in the separator. Valid values include start, center and end.
+     *
+     * @type {string}
+     * @public
+     * @default center
+     */
     @api get alignContent() {
         return this._alignContent;
     }
@@ -68,6 +93,13 @@ export default class AvonniSeparator extends LightningElement {
         });
     }
 
+    /**
+     * The size of the icon. Options include xx-small, x-small, small, medium and large.
+     *
+     * @type {string}
+     * @public
+     * @default small
+     */
     @api get iconSize() {
         return this._iconSize;
     }
@@ -79,6 +111,13 @@ export default class AvonniSeparator extends LightningElement {
         });
     }
 
+    /**
+     * Valid values include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
     @api get orientation() {
         return this._orientation;
     }
@@ -90,6 +129,13 @@ export default class AvonniSeparator extends LightningElement {
         });
     }
 
+    /**
+     * Describes the position of the icon. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api get iconPosition() {
         return this._iconPosition;
     }
@@ -101,10 +147,20 @@ export default class AvonniSeparator extends LightningElement {
         });
     }
 
+    /**
+     * Verify if the content is populated.
+     *
+     * @type {string}
+     */
     get hasContent() {
         return this.label || this.iconName;
     }
 
+    /**
+     * Computed container class styling based on orientation.
+     *
+     * @type {string}
+     */
     get computedContainerClass() {
         return classSet(
             'avonni-separator_container slds-grid slds-grid_vertical-align-center slds-nowrap'
@@ -116,6 +172,11 @@ export default class AvonniSeparator extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed line one class styling based on oritentaion and alignment.
+     *
+     * @type {string}
+     */
     get computedLineOneClass() {
         return classSet('avonni-separator_line-one')
             .add({
@@ -128,6 +189,11 @@ export default class AvonniSeparator extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed line two class styling based on oritentaion and alignment.
+     *
+     * @type {string}
+     */
     get computedLineTwoClass() {
         return classSet('avonni-separator_line-two')
             .add({
@@ -139,6 +205,12 @@ export default class AvonniSeparator extends LightningElement {
             })
             .toString();
     }
+
+    /**
+     * Computed content class styling.
+     *
+     * @type {string}
+     */
     get computedContentClass() {
         return classSet(
             'avonni-separator_content slds-grid slds-vertical slds-grid_vertical-align-center slds-grid_align-center slds-m-around_small'
@@ -149,6 +221,11 @@ export default class AvonniSeparator extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed icon class styling based on label and icon position.
+     *
+     * @type {string}
+     */
     get computedIconClass() {
         return classSet('avonni-separator_icon-margin')
             .add({

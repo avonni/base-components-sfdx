@@ -33,9 +33,24 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
-const SEGMENT_VARIANTS = {valid: ['shade', 'success', 'warning', 'error'], default: 'shade'};
+const SEGMENT_VARIANTS = {
+    valid: ['shade', 'success', 'warning', 'error'],
+    default: 'shade'
+};
 
+/**
+ * @class
+ * @descriptor avonni-segment
+ * @storyId example-segment--base
+ * @public
+ */
 export default class AvonniSegment extends LightningElement {
+    /**
+     * The value of the segment.
+     *
+     * @type {string}
+     * @public
+     */
     @api value;
 
     _variant = SEGMENT_VARIANTS.default;
@@ -55,6 +70,13 @@ export default class AvonniSegment extends LightningElement {
         }
     }
 
+    /**
+     * Values include shade, success, warning, error
+     *
+     * @type {string}
+     * @public
+     * @default shade
+     */
     @api get variant() {
         return this._variant;
     }
@@ -66,6 +88,12 @@ export default class AvonniSegment extends LightningElement {
         });
     }
 
+    /**
+     * If true, the user cannot interact with the segment.
+     *
+     * @type {boolean}
+     * @public
+     */
     @api get disabled() {
         return this._disabled;
     }
@@ -74,14 +102,34 @@ export default class AvonniSegment extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * Computed segment class styling based on selected variant.
+     *
+     * @type {string}
+     */
     get computedSegmentClass() {
         return `avonni-segment-container avonni-segment-${this.variant}`;
     }
 
+    /**
+     * Click event handler.
+     *
+     * @param {Event} event
+     */
     handleClick(event) {
         if (event.detail.value !== undefined) {
             this.moveSwitch(event.detail.value);
 
+            /**
+             * Emitted when the value property has changed.
+             *
+             * @event
+             * @name change
+             * @param {string} value The value of the segment.
+             * @public
+             * @bubbles
+             * @cancelable
+             */
             this.dispatchEvent(
                 new CustomEvent('change', {
                     bubbles: true,
@@ -94,6 +142,11 @@ export default class AvonniSegment extends LightningElement {
         }
     }
 
+    /**
+     * Move selector switch container display when selecting element.
+     *
+     * @param {string} value
+     */
     moveSwitch(value) {
         let segmentButton = this.querySelector(`[data-value='${value}']`);
         let switchContainer = this.template.querySelector(

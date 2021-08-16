@@ -32,7 +32,11 @@
 
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
-import { normalizeString, normalizeBoolean, normalizeArray } from 'c/utilsPrivate';
+import {
+    normalizeString,
+    normalizeBoolean,
+    normalizeArray
+} from 'c/utilsPrivate';
 
 const AVATAR_SIZES = {
     valid: [
@@ -75,13 +79,61 @@ const DEFAULT_ENTITY_TITLE = 'Entity';
 const DEFAULT_PRESENCE_TITLE = 'Presence';
 const DEFAULT_STATUS_TITLE = 'Status';
 
+/**
+ * @class
+ * @descriptor avonni-avatar
+ * @storyId example-avatar--base
+ * @public
+ */
 export default class AvonniAvatar extends LightningElement {
+    /**
+     * If the record name contains two words, like first and last name, use the first capitalized letter of each. For records that only have a single word name, use the first two letters of that word using one capital and one lower case letter. Placed inside the entity.
+     *
+     * @public
+     * @type {string}
+     */
     @api entityInitials;
+    /**
+     * Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
+     *
+     * @public
+     * @type {string}
+     */
     @api entityIconName;
+    /**
+     * The Lightning Design System name of the icon used as a fallback when the image fails to load. The initials fallback relies on this for its background color. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
+     *
+     * @public
+     * @type {string}
+     */
     @api fallbackIconName;
+    /**
+     * If the record name contains two words, like first and last name, use the first capitalized letter of each. For records that only have a single word name, use the first two letters of that word using one capital and one lower case letter.
+     *
+     * @public
+     * @type {string}
+     */
     @api initials;
+    /**
+     * primary-text.
+     *
+     * @public
+     * @type {string}
+     */
     @api primaryText;
+    /**
+     * Secondary text to display, usually the role of the user.
+     *
+     * @public
+     * @type {string}
+     */
     @api secondaryText;
+    /**
+     * Tertiary text to display, usually the status of the user. The tertiary text will only be shown when using size x-large and xx-large.
+     *
+     * @public
+     * @type {string}
+     */
     @api tertiaryText;
 
     mediaObjectClass;
@@ -105,14 +157,17 @@ export default class AvonniAvatar extends LightningElement {
     _tags;
     _computedTags;
 
-    /**
-     * Main avatar logic
-     */
-
     connectedCallback() {
         this._updateClassList();
     }
 
+    /**
+     * Hide primary, secondary and tertiary text.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get hideAvatarDetails() {
         return this._hideAvatarDetails;
@@ -122,6 +177,14 @@ export default class AvonniAvatar extends LightningElement {
         this._hideAvatarDetails = normalizeBoolean(value);
     }
 
+    /**
+     * The alternative text used to describe the avatar, which is displayed as hover text on the image.
+     *
+     * @public
+     * @type {string}
+     * @required
+     * @default Avatar
+     */
     @api
     get alternativeText() {
         return this._alternativeText;
@@ -132,6 +195,13 @@ export default class AvonniAvatar extends LightningElement {
             typeof value === 'string' ? value.trim() : DEFAULT_ALTERNATIVE_TEXT;
     }
 
+    /**
+     * The size of the avatar. Valid values are x-small, small, medium, large, x-large and xx-large.
+     *
+     * @public
+     * @type {string}
+     * @default medium
+     */
     @api
     get size() {
         return this._size;
@@ -144,6 +214,13 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
+    /**
+     * The URL for the image.
+     *
+     * @public
+     * @type {string}
+     * @required
+     */
     @api
     get src() {
         return this._src;
@@ -153,6 +230,13 @@ export default class AvonniAvatar extends LightningElement {
         this._src = (typeof value === 'string' && value.trim()) || '';
     }
 
+    /**
+     * The variant changes the shape of the avatar. Valid values are empty, circle, and square.
+     *
+     * @public
+     * @type {string}
+     * @default square
+     */
     @api
     get variant() {
         return this._variant;
@@ -165,6 +249,13 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
+    /**
+     * Position of the details text, relatively to the avatar. Valid values include right, left or center.
+     *
+     * @public
+     * @type {string}
+     * @default right
+     */
     @api
     get textPosition() {
         return this._textPosition;
@@ -179,9 +270,11 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Status
+     * Status of the user to display. Valid values include approved, locked, declined and unknown.
+     *
+     * @public
+     * @type {string}
      */
-
     @api
     get status() {
         return this._status;
@@ -194,6 +287,13 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
+    /**
+     * Status title to be shown as a tooltip on hover over the status icon.
+     *
+     * @public
+     * @type {string}
+     * @default Status
+     */
     @api
     get statusTitle() {
         return this._statusTitle;
@@ -204,6 +304,13 @@ export default class AvonniAvatar extends LightningElement {
             typeof value === 'string' ? value.trim() : DEFAULT_STATUS_TITLE;
     }
 
+    /**
+     * Position of the status icon. Valid values include top-left, top-right, bottom-left and bottom-right.
+     *
+     * @public
+     * @type {string}
+     * @default top-right
+     */
     @api
     get statusPosition() {
         return this._statusPosition;
@@ -217,9 +324,11 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Presence
+     * Presence of the user to display. Valid values include online, busy, focus, offline, blocked and away.
+     *
+     * @public
+     * @type {string}
      */
-
     @api
     get presence() {
         return this._presence;
@@ -232,6 +341,13 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
+    /**
+     * Presence title to be shown as a tooltip on hover over the presence icon.
+     *
+     * @public
+     * @type {string}
+     * @default bottom-right
+     */
     @api
     get presencePosition() {
         return this._presencePosition;
@@ -244,6 +360,13 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
+    /**
+     * Position of the presence icon. Valid values include top-left, top-right, bottom-left and bottom-right.
+     *
+     * @public
+     * @type {string}
+     * @default Presence
+     */
     @api
     get presenceTitle() {
         return this._presenceTitle;
@@ -255,9 +378,12 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Entity
+     * Position of the entity icon. Valid values include top-left, top-right, bottom-left and bottom-right.
+     *
+     * @public
+     * @type {string}
+     * @default top-left
      */
-
     @api
     get entityPosition() {
         return this._entityPosition;
@@ -270,6 +396,12 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
+    /**
+     * The URL for the entity image.
+     *
+     * @public
+     * @type {string}
+     */
     @api
     get entitySrc() {
         return this._entitySrc;
@@ -279,6 +411,13 @@ export default class AvonniAvatar extends LightningElement {
         this._entitySrc = (typeof value === 'string' && value.trim()) || '';
     }
 
+    /**
+     * Entity title to be shown as a tooltip on hover over the presence icon.
+     *
+     * @public
+     * @type {string}
+     * @default Entity
+     */
     @api
     get entityTitle() {
         return this._entityTitle;
@@ -289,6 +428,13 @@ export default class AvonniAvatar extends LightningElement {
             (typeof value === 'string' && value.trim()) || DEFAULT_ENTITY_TITLE;
     }
 
+    /**
+     * The variant changes the shape of the entity. Valid values are empty, circle, and square.
+     *
+     * @public
+     * @type {string}
+     * @default square
+     */
     @api
     get entityVariant() {
         return this._entityVariant;
@@ -300,6 +446,13 @@ export default class AvonniAvatar extends LightningElement {
             validValues: AVATAR_VARIANTS.valid
         });
     }
+
+    /**
+     * Properties for the badge tags of the avatar.
+     *
+     * @public
+     * @type {object[]}
+     */
     @api
     get tags() {
         return this._tags;
@@ -308,6 +461,11 @@ export default class AvonniAvatar extends LightningElement {
         this._tags = normalizeArray(tags);
     }
 
+    /**
+     * Computed JSON string of tags object.
+     *
+     * @type {object[]} computed tags json
+     */
     get computedTags() {
         this._computedTags = JSON.parse(JSON.stringify(this._tags));
         this._computedTags.forEach((tag) => {
@@ -318,28 +476,60 @@ export default class AvonniAvatar extends LightningElement {
         return this._computedTags;
     }
 
+    /**
+     * Check if Avatar exists.
+     *
+     * @type {boolean}
+     */
     get showAvatar() {
         return this.src || this.initials || this.fallbackIconName;
     }
 
+    /**
+     * Tertiary text show.
+     *
+     * @type {boolean}
+     */
     get showTertiaryText() {
         return this.size === 'x-large' || this.size === 'xx-large';
     }
 
+    /**
+     * Text position left.
+     *
+     * @type {boolean}
+     */
     get textPositionLeft() {
         return this.textPosition === 'left';
     }
 
+    /**
+     * Text position centered.
+     *
+     * @type {boolean}
+     */
     get computedMediaObjectInline() {
         return this.textPosition === 'center';
     }
 
+    /**
+     * Media object layout based on text position.
+     *
+     * @type {string}
+     */
     _updateClassList() {
         this.mediaObjectClass = classSet('').add({
             'slds-text-align_right': this.textPosition === 'left',
             'slds-text-align_center': this.textPosition === 'center'
         });
     }
+
+    /**
+     * Computed badge style based on tag object variant value.
+     *
+     * @param {object[]} tag
+     * @returns {string} slds badge style
+     */
     _determineBadgeStyle(tag) {
         switch (tag.variant) {
             case 'inverse':

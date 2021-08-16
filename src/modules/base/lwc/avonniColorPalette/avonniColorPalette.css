@@ -49,3 +49,17 @@ a[is-disabled='true']:focus {
 .slds-color-picker__swatches {
     white-space: initial;
 }
+
+.label:hover{
+	color:#0176d3;
+}
+
+.list-container{
+	height: 100%;
+}
+
+.grid{
+	display: grid; 
+	grid-template-columns: 150px 1fr;
+	justify-items: start;
+}

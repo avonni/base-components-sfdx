@@ -43,7 +43,7 @@ export { Direction } from 'c/positionLibrary';
 
 const DEFAULT_ALIGN = {
     horizontal: 'left',
-    vertical: 'bottom',
+    vertical: 'bottom'
 };
 
 const BUBBLE_ID = `salesforce-lightning-tooltip-bubble_${guid()}`;
@@ -59,7 +59,7 @@ function buildResizeObserver(callback) {
     return {
         observe() {},
 
-        unobserve() {},
+        unobserve() {}
     };
 }
 /**
@@ -69,12 +69,14 @@ function buildResizeObserver(callback) {
  */
 let CACHED_BUBBLE_ELEMENT;
 let CONTENT;
-let ALIGN;
+let ALIGN = {};
 
 function getCachedBubbleElement() {
     if (!CACHED_BUBBLE_ELEMENT) {
-        CACHED_BUBBLE_ELEMENT = document.createElement('avonni-primitive-bubble');
-        CACHED_BUBBLE_ELEMENT.setAttribute('id', BUBBLE_ID)
+        CACHED_BUBBLE_ELEMENT = document.createElement(
+            'avonni-primitive-bubble'
+        );
+        CACHED_BUBBLE_ELEMENT.setAttribute('id', BUBBLE_ID);
         CACHED_BUBBLE_ELEMENT.setAttribute('role', 'tooltip');
         CACHED_BUBBLE_ELEMENT.style.position = 'absolute';
         CACHED_BUBBLE_ELEMENT.style.minWidth = 'fit-content';
@@ -109,25 +111,22 @@ function updateClassList(align) {
     // show or hide bubble
     classes.add({
         'slds-rise-from-ground': CACHED_BUBBLE_ELEMENT.visible,
-        'slds-fall-into-ground': !CACHED_BUBBLE_ELEMENT.visible,
+        'slds-fall-into-ground': !CACHED_BUBBLE_ELEMENT.visible
     });
 
     // apply the proper nubbin CSS class
     const { horizontal, vertical } = align;
     classes.add({
         'slds-nubbin_top-left': horizontal === 'left' && vertical === 'top',
-        'slds-nubbin_top-right':
-            horizontal === 'right' && vertical === 'top',
+        'slds-nubbin_top-right': horizontal === 'right' && vertical === 'top',
         'slds-nubbin_bottom-left':
             horizontal === 'left' && vertical === 'bottom',
         'slds-nubbin_bottom-right':
             horizontal === 'right' && vertical === 'bottom',
-        'slds-nubbin_bottom':
-            horizontal === 'center' && vertical === 'bottom',
+        'slds-nubbin_bottom': horizontal === 'center' && vertical === 'bottom',
         'slds-nubbin_top': horizontal === 'center' && vertical === 'top',
         'slds-nubbin_left': horizontal === 'left' && vertical === 'center',
-        'slds-nubbin_right':
-            horizontal === 'right' && vertical === 'center',
+        'slds-nubbin_right': horizontal === 'right' && vertical === 'center'
     });
 
     Object.keys(classes).forEach((key) => {
@@ -166,7 +165,7 @@ const NUBBIN_OFFSET = 24;
  */
 export const TooltipType = {
     Info: 'info',
-    Toggle: 'toggle',
+    Toggle: 'toggle'
 };
 
 /**
@@ -203,14 +202,14 @@ export class Tooltip {
 
         this._type = normalizeString(config.type, {
             fallbackValue: TooltipType.Info,
-            validValues: Object.values(TooltipType),
+            validValues: Object.values(TooltipType)
         });
 
         // If a tooltip element is not given, fall back on the globally shared instance.
         this._element = config.element;
         if (!this._element) {
             this._element = getCachedBubbleElement;
-            updateClassList(DEFAULT_ALIGN)
+            updateClassList(DEFAULT_ALIGN);
             const bubbleElement = getCachedBubbleElement();
             if (bubbleElement.parentNode === null) {
                 document.body.appendChild(bubbleElement);
@@ -251,7 +250,7 @@ export class Tooltip {
             }
             const ariaDescribedBy = normalizeAriaAttribute([
                 target.getAttribute(ARIA_DESCRIBEDBY),
-                this._element().id,
+                this._element().id
             ]);
             target.setAttribute(ARIA_DESCRIBEDBY, ariaDescribedBy);
 
@@ -402,11 +401,11 @@ export class Tooltip {
         // The lightning-helptext component was originally left aligned.
         const align = {
             horizontal: this._config.align.horizontal || Direction.Left,
-            vertical: this._config.align.vertical || Direction.Bottom,
+            vertical: this._config.align.vertical || Direction.Bottom
         };
         const targetAlign = {
             horizontal: this._config.targetAlign.horizontal || Direction.Left,
-            vertical: this._config.targetAlign.vertical || Direction.Top,
+            vertical: this._config.targetAlign.vertical || Direction.Top
         };
 
         // Pads the tooltip so its nubbin is at the center of the target element.
@@ -421,7 +420,7 @@ export class Tooltip {
                 targetAlign,
                 autoFlip: true,
                 padTop: NUBBIN_SIZE,
-                padLeft,
+                padLeft
             })
             .then((autoPositionUpdater) => {
                 // The calculation above may have flipped the alignment of the tooltip. When the

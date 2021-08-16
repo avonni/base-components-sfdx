@@ -59,7 +59,19 @@ const DEFAULT_DURATION = 1;
 const DEFAULT_AUTO_START = false;
 const DEFAULT_REPEAT = false;
 
+/**
+ * @class
+ * @descriptor avonni-summary-detail
+ * @storyId example-timer--base
+ * @public
+ */
 export default class AvonniTimer extends LightningElement {
+    /**
+     * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     *
+     * @type {string}
+     * @public
+     */
     @api iconName;
 
     _value = DEFAULT_VALUE;
@@ -79,6 +91,13 @@ export default class AvonniTimer extends LightningElement {
         clearInterval(this.interval);
     }
 
+    /**
+     * Default value of the timer.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
     @api
     get value() {
         return this._value;
@@ -89,6 +108,13 @@ export default class AvonniTimer extends LightningElement {
             typeof value === 'number' ? Number(value / 1000) : DEFAULT_VALUE;
     }
 
+    /**
+     * How long a timer runs in milliseconds. There is no maximum value.
+     *
+     * @type {number}
+     * @public
+     * @default 1000
+     */
     @api
     get duration() {
         return this._duration;
@@ -106,6 +132,13 @@ export default class AvonniTimer extends LightningElement {
         }
     }
 
+    /**
+     * The variant changes the appearance of the timer. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
+     *
+     * @type {string}
+     * @public
+     * @default neutral
+     */
     @api get variant() {
         return this._variant;
     }
@@ -117,6 +150,13 @@ export default class AvonniTimer extends LightningElement {
         });
     }
 
+    /**
+     * Type of the timer. Valid values include count-up and count-down.
+     *
+     * @type {string}
+     * @public
+     * @default count-up
+     */
     @api get type() {
         return this._type;
     }
@@ -128,6 +168,13 @@ export default class AvonniTimer extends LightningElement {
         });
     }
 
+    /**
+     * Describes the position of the icon with respect to body. Valid options include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api get iconPosition() {
         return this._iconPosition;
     }
@@ -139,6 +186,13 @@ export default class AvonniTimer extends LightningElement {
         });
     }
 
+    /**
+     * Format of the timer. Valid values include "hh:mm:ss", "mm:ss", "hh:mm", “hh”, “mm”, “ss”.
+     *
+     * @type {string}
+     * @public
+     * @default "hh:mm:ss"
+     */
     @api get format() {
         return this._format;
     }
@@ -150,6 +204,13 @@ export default class AvonniTimer extends LightningElement {
         });
     }
 
+    /**
+     * Whether the timer control automatically starts to play when the user navigates to the component.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get autoStart() {
         return this._autoStart;
     }
@@ -162,6 +223,13 @@ export default class AvonniTimer extends LightningElement {
         }
     }
 
+    /**
+     * Whether a timer automatically restarts when it finishes running.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get repeat() {
         return this._repeat;
     }
@@ -170,6 +238,11 @@ export default class AvonniTimer extends LightningElement {
         this._repeat = normalizeBoolean(value);
     }
 
+    /**
+     * Return the time format to display based on inputted format ( hh, mm, ss ).
+     *
+     * @type {string|number}
+     */
     get time() {
         if (this.format === 'hh:mm:ss') {
             return (
@@ -235,6 +308,11 @@ export default class AvonniTimer extends LightningElement {
         return this.value;
     }
 
+    /**
+     * Retrieve the timer value.
+     *
+     * @type {number}
+     */
     get timerValue() {
         if (this.type === 'count-up') {
             return this.value;
@@ -243,21 +321,41 @@ export default class AvonniTimer extends LightningElement {
         return this.duration - this.value;
     }
 
+    /**
+     * Compute the hours based on the timer value.
+     *
+     * @type {number}
+     */
     get hours() {
         let time = parseFloat(this.timerValue).toFixed(3);
         return Math.floor(time / 60 / 60);
     }
 
+    /**
+     * Compute the minutes based on the timer value.
+     *
+     * @type {number}
+     */
     get minutes() {
         let time = parseFloat(this.timerValue).toFixed(3);
         return Math.floor(time / 60) % 60;
     }
 
+    /**
+     * Compute the minutes based on the timer value.
+     *
+     * @type {number}
+     */
     get seconds() {
         let time = parseFloat(this.timerValue).toFixed(3);
         return Math.floor(time - this.minutes * 60);
     }
 
+    /**
+     * Start the timer.
+     *
+     * @public
+     */
     @api
     start() {
         if (this.interval === null) {
@@ -267,12 +365,22 @@ export default class AvonniTimer extends LightningElement {
         this.dispatchTimerStart();
     }
 
+    /**
+     * Pause the timer.
+     *
+     * @public
+     */
     @api
     pause() {
         this.play = false;
         this.dispatchTimerPause();
     }
 
+    /**
+     * Stop the timer.
+     *
+     * @public
+     */
     @api
     stop() {
         this.play = false;
@@ -280,13 +388,35 @@ export default class AvonniTimer extends LightningElement {
         this.dispatchTimerStop();
     }
 
+    /**
+     * Reset the timer.
+     *
+     * @public
+     */
     @api
     reset() {
         this._value = 0;
         this.dispatchTimerReset();
     }
 
+    /**
+     * Timer start event dispatcher.
+     */
     dispatchTimerStart() {
+        /**
+         * The event fired when the timer start.
+         *
+         * @event
+         * @name timerstart
+         * @param {string} time the time value.
+         * @param {string} hours the hours value.
+         * @param {string} minutes the minutes value.
+         * @param {string} seconds the seconds value.
+         * @param {string} duration the duration value.
+         * @param {string} format the format value.
+         * @param {string} type the type value.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('timerstart', {
                 detail: {
@@ -302,7 +432,24 @@ export default class AvonniTimer extends LightningElement {
         );
     }
 
+    /**
+     * Timer pause event dispatcher.
+     */
     dispatchTimerPause() {
+        /**
+         * The event fired when the timer is paused.
+         *
+         * @event
+         * @name timerpause
+         * @param {string} time the time value.
+         * @param {string} hours the hours value.
+         * @param {string} minutes the minutes value.
+         * @param {string} seconds the seconds value.
+         * @param {string} duration the duration value.
+         * @param {string} format the format value.
+         * @param {string} type the type value.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('timerpause', {
                 detail: {
@@ -318,7 +465,24 @@ export default class AvonniTimer extends LightningElement {
         );
     }
 
+    /**
+     * Timer stop event dispatcher.
+     */
     dispatchTimerStop() {
+        /**
+         * The event fired when the timer stop.
+         *
+         * @event
+         * @name timerstop
+         * @param {string} time the time value.
+         * @param {string} hours the hours value.
+         * @param {string} minutes the minutes value.
+         * @param {string} seconds the seconds value.
+         * @param {string} duration the duration value.
+         * @param {string} format the format value.
+         * @param {string} type the type value.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('timerstop', {
                 detail: {
@@ -334,7 +498,24 @@ export default class AvonniTimer extends LightningElement {
         );
     }
 
+    /**
+     * Timer reset event dispatcher.
+     */
     dispatchTimerReset() {
+        /**
+         * The event fired when the timer start.
+         *
+         * @event
+         * @name timerreset
+         * @param {string} time the time value.
+         * @param {string} hours the hours value.
+         * @param {string} minutes the minutes value.
+         * @param {string} seconds the seconds value.
+         * @param {string} duration the duration value.
+         * @param {string} format the format value.
+         * @param {string} type the type value.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('timerreset', {
                 detail: {
@@ -350,6 +531,9 @@ export default class AvonniTimer extends LightningElement {
         );
     }
 
+    /**
+     * Create timer interval.
+     */
     createInterval() {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this.interval = setInterval(() => {
@@ -379,6 +563,9 @@ export default class AvonniTimer extends LightningElement {
         }, 1000);
     }
 
+    /**
+     * Clear the current interval.
+     */
     clearCurrentInterval() {
         clearInterval(this.interval);
         this.interval = null;
@@ -386,6 +573,13 @@ export default class AvonniTimer extends LightningElement {
         this.dispatchTimerStop();
     }
 
+    /**
+     * Compute format time.
+     *
+     * @param {number} num
+     * @param {number} size
+     * @returns {string} formatTime
+     */
     formatTime(num, size) {
         return ('000' + num).slice(-size);
     }

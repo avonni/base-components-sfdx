@@ -48,10 +48,41 @@ const BUTTON_VARIANTS = {
 };
 const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 
+/**
+ * @class
+ * @descriptor avonni-button-dialog
+ * @description The button dialog component displays a lightning button. On click, open the modal box
+ * @storyId example-button-dialog--base
+ * @public
+ */
 export default class AvonniButtonDialog extends LightningElement {
+    /**
+     * The keyboard shortcut for the button.
+     * 
+     * @public
+     * @type {string}
+     */
     @api accessKey;
+    /**
+     * Optional text to be shown on the button.
+     * 
+     * @public
+     * @type {string}
+     */
     @api label;
+    /**
+     * The name of the icon to be used in the format 'utility:down'.
+     * 
+     * @public
+     * @type {string}
+     */
     @api iconName;
+    /**
+     * The assistive text for the button.
+     * 
+     * @public
+     * @type {string}
+     */
     @api alternativeText;
 
     _disabled = false;
@@ -63,6 +94,13 @@ export default class AvonniButtonDialog extends LightningElement {
         this._dialogSlot = this.template.querySelector('slot');
     }
 
+    /**
+     * The variant changes the appearance of the button. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
+     * 
+     * @public
+     * @type {string}
+     * @default neutral
+     */
     @api
     get variant() {
         return this._variant;
@@ -75,6 +113,13 @@ export default class AvonniButtonDialog extends LightningElement {
         });
     }
 
+    /**
+     * Describes the position of the icon with respect to body. Options include left and right.
+     * 
+     * @public
+     * @type {string}
+     * @default left
+     */
     @api
     get iconPosition() {
         return this._iconPosition;
@@ -87,6 +132,13 @@ export default class AvonniButtonDialog extends LightningElement {
         });
     }
 
+    /**
+     * If present, the popover can be opened by users.
+     * 
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get disabled() {
         return this._disabled;
@@ -96,33 +148,74 @@ export default class AvonniButtonDialog extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * Open the modal box method.
+     * 
+     * @public
+     */
     @api
     show() {
         if (this._dialogSlot.assignedElements().length !== 0) {
             this._dialogSlot.assignedElements()[0].show();
         }
+        /**
+         * @event
+         * @name show
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('show'));
     }
 
+    /**
+     * Close the modal box method.
+     * 
+     * @public
+     */
     @api
     hide() {
         if (this._dialogSlot.assignedElements().length !== 0) {
             this._dialogSlot.assignedElements()[0].hide();
         }
+        /**
+         * @event
+         * @name hide
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('hide'));
     }
 
+    /**
+     * Clicks the button method.
+     * 
+     * @public
+     */
     @api
     click() {
         if (this._dialogSlot.assignedElements().length !== 0) {
             this._dialogSlot.assignedElements()[0].show();
         }
+
+        /**
+         * @event
+         * @name click
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('click'));
     }
 
+    /**
+     * Sets focus on the button method.
+     * 
+     * @public
+     */
     @api
     focus() {
         this.template.querySelector('lightning-button').focus();
+        /**
+         * @event
+         * @name focus
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('focus'));
     }
 }

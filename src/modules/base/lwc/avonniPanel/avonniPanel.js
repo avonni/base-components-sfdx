@@ -41,7 +41,19 @@ const PANEL_SIZES = {
     default: 'medium'
 };
 
+/**
+ * @class
+ * @descriptor avonni-panel
+ * @storyId example-panel--base
+ * @public
+ */
 export default class AvonniPagination extends LightningElement {
+    /**
+     * The title can include text, and is displayed in the panel header. To include additional markup or another component, use the title slot.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
 
     _position = PANEL_POSITIONS.default;
@@ -63,14 +75,31 @@ export default class AvonniPagination extends LightningElement {
         }
     }
 
+    /**
+     * Get title slot DOM element.
+     *
+     * @type {Element}
+     */
     get titleSlot() {
         return this.template.querySelector('slot[name=title]');
     }
 
+    /**
+     * Get Panel body slot DOM element.
+     *
+     * @type {Element}
+     */
     get panelBodySlot() {
         return this.template.querySelector('slot[name=panel-body]');
     }
 
+    /**
+     * Position of the panel. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default right
+     */
     @api
     get position() {
         return this._position;
@@ -83,6 +112,13 @@ export default class AvonniPagination extends LightningElement {
         });
     }
 
+    /**
+     * It defines the width of the panel. Valid values include small, medium, large, x-large and full.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api
     get size() {
         return this._size;
@@ -95,6 +131,13 @@ export default class AvonniPagination extends LightningElement {
         });
     }
 
+    /**
+     * Attribute that toggles displaying the Panel.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get showPanel() {
         return this._showPanel;
@@ -104,6 +147,11 @@ export default class AvonniPagination extends LightningElement {
         this._showPanel = normalizeBoolean(value);
     }
 
+    /**
+     * Computed Outer class styling basedf on selected attributes.
+     *
+     * @type {string}
+     */
     get computedOuterClass() {
         return classSet('slds-panel slds-panel_docked')
             .add({
@@ -124,20 +172,40 @@ export default class AvonniPagination extends LightningElement {
             .toString();
     }
 
+    /**
+     * Check if Title has text.
+     *
+     * @type {string}
+     */
     get hasStringTitle() {
         return !!this.title;
     }
 
+    /**
+     * Close the panel.
+     *
+     * @public
+     */
     @api
     close() {
         this._showPanel = false;
     }
 
+    /**
+     * Toggle the panel.
+     *
+     * @public
+     */
     @api
     toggle() {
         this._showPanel = !this._showPanel;
     }
 
+    /**
+     * Open the panel.
+     *
+     * @public
+     */
     @api
     open() {
         this._showPanel = true;

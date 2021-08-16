@@ -34,9 +34,9 @@ import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
 import qrcodeGeneration from './avonniQrcodeGeneration.js';
 
-const QR_ENCODINGS = {valid: ['ISO_8859_1', 'UTF_8'], default: 'ISO_8859_1'};
-const QR_ERROR_CORRECTIONS = {valid: ['L', 'M', 'Q', 'H'], default: 'L'};
-const QR_RENDER_AS = {valid: ['canvas', 'svg'], default: 'svg'};
+const QR_ENCODINGS = { valid: ['ISO_8859_1', 'UTF_8'], default: 'ISO_8859_1' };
+const QR_ERROR_CORRECTIONS = { valid: ['L', 'M', 'Q', 'H'], default: 'L' };
+const QR_RENDER_AS = { valid: ['canvas', 'svg'], default: 'svg' };
 
 const DEFAULT_BORDER_WIDTH = 0;
 const DEFAULT_PADDING = 0;
@@ -44,6 +44,12 @@ const DEFAULT_SIZE = 200;
 const DEFAULT_COLOR = '#000';
 const DEFAULT_BACKGROUND_COLOR = '#fff';
 
+/**
+ * @class
+ * @descriptor avonni-qrcode
+ * @storyId example-qrcode--base
+ * @public
+ */
 export default class AvonniQrcode extends LightningElement {
     _borderWidth = DEFAULT_BORDER_WIDTH;
     _padding = DEFAULT_PADDING;
@@ -63,6 +69,13 @@ export default class AvonniQrcode extends LightningElement {
         this.rendered = true;
     }
 
+    /**
+     * The width of the border in pixels. By default the border width is set to zero which means that the border will not appear.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
     @api
     get borderWidth() {
         return this._borderWidth;
@@ -77,6 +90,13 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * Sets the minimum distance in pixels that should be left between the border and the QR modules.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
     @api
     get padding() {
         return this._padding;
@@ -90,6 +110,13 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * The value of the QRCode.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
     @api
     get value() {
         return this._value;
@@ -103,6 +130,15 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * Specifies the size of a QR code in pixels (i.e. "200px").
+     * Numeric values are treated as pixels.
+     * If no size is specified, it will be determined from the element width and height. In case the element has width or height of zero, a default value of 200 pixels will be used.
+     *
+     * @type {number}
+     * @public
+     * @default 200
+     */
     @api
     get size() {
         return this._size;
@@ -120,6 +156,15 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * The encoding mode used to encode the value.The possible values are:
+     * "ISO_8859_1" - supports all characters from the ISO/IEC 8859-1 character set.
+     * "UTF_8" - supports all Unicode characters.
+     *
+     * @type {string}
+     * @public
+     * @default ISO_8859_1
+     */
     @api get encoding() {
         return this._encoding;
     }
@@ -136,6 +181,17 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * The error correction level used to encode the value. The possible values are:
+     * "L" - approximately 7% of the codewords can be restored.
+     * "M" - approximately 15% of the codewords can be restored.
+     * "Q" - approximately 25% of the codewords can be restored.
+     * "H" - approximately 30% of the codewords can be restored.
+     *
+     * @type {string}
+     * @public
+     * @default L
+     */
     @api get errorCorrection() {
         return this._errorCorrection;
     }
@@ -152,6 +208,15 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * Sets the preferred rendering engine. If it is not supported by the browser, the QRCode will switch to the first available mode. The supported values are:
+     * "canvas" - renders the widget as a Canvas element, if available.
+     * "svg" - renders the widget as inline SVG document, if available
+     *
+     * @type {string}
+     * @public
+     * @default svg
+     */
     @api get renderAs() {
         return this._renderAs;
     }
@@ -167,6 +232,13 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * Background color of the qr-code. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     * @default #fff
+     */
     @api get background() {
         return this._background;
     }
@@ -191,6 +263,12 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * The color of the border. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     */
     @api get borderColor() {
         return this._borderColor;
     }
@@ -213,6 +291,13 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * The color of the QR code. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     * @default #000
+     */
     @api get color() {
         return this._color;
     }
@@ -237,10 +322,21 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /**
+     * Render QR Code as SVG.
+     *
+     * @type {string}
+     */
     get renderAsSvg() {
         return this._renderAs === 'svg';
     }
 
+    /**
+     * Verify if color is hexadecimal.
+     *
+     * @param {string} hex
+     * @returns {boolean}
+     */
     isHexColor(hex) {
         return (
             typeof hex === 'string' &&
@@ -249,6 +345,11 @@ export default class AvonniQrcode extends LightningElement {
         );
     }
 
+    /**
+     * Redraws the QR code using the current value and options.
+     * 
+     * @public
+     */
     @api
     redraw() {
         if (this.value) {

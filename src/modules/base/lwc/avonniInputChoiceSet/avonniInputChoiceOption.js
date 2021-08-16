@@ -39,6 +39,14 @@ const POSITION_ICON = {
     LEFT: 'left'
 };
 
+/**
+ * Input choice set options
+ * @class
+ * @param {string} label Label of the option.
+ * @param {string} value Value of the option.
+ * @param {string} iconName The Lightning Design System name of the icon. Names are written in the format standard:opportunity. The icon is appended to the left of the header label.
+ * @param {string} iconPosition The position of the icon with respect to the label. Valid options include left, right, top and bottom. This value defaults to left.
+ */
 export default class AvonniInputChoiceOption {
     constructor(option, value, index) {
         this.label = option.label;
@@ -49,6 +57,11 @@ export default class AvonniInputChoiceOption {
         this.iconPosition = option.iconPosition;
     }
 
+    /**
+     * True if options's icon position is top or left or no icon position or no icon name.
+     * 
+     * @type {boolean}
+     */
     get isIconTopLeft() {
         return (
             this.iconPosition === POSITION_ICON.TOP ||
@@ -58,6 +71,11 @@ export default class AvonniInputChoiceOption {
         );
     }
 
+    /**
+     * True if options's icon position is bottom or right.
+     * 
+     * @type {boolean}
+     */
     get isIconBottomRight() {
         return (
             this.iconPosition === POSITION_ICON.BOTTOM ||
@@ -65,6 +83,11 @@ export default class AvonniInputChoiceOption {
         );
     }
 
+    /**
+     * Class of options's icon button.
+     * 
+     * @type {string}
+     */
     get computedIconButtonClass() {
         return classSet('')
             .add({
@@ -81,6 +104,11 @@ export default class AvonniInputChoiceOption {
             .toString();
     }
 
+    /**
+     * Class of options's label button.
+     * 
+     * @type {string}
+     */
     get computedLabelButtonClass() {
         return classSet('slds-checkbox_faux')
             .add({
@@ -91,6 +119,11 @@ export default class AvonniInputChoiceOption {
             .toString();
     }
 
+    /**
+     * Class of options's button variant.
+     * 
+     * @type {string}
+     */
     get computedVariantButton() {
         return this.isChecked ? 'inverse' : 'base';
     }

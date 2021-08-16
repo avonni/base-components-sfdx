@@ -38,9 +38,33 @@ import visualPickerLinkInfoOnly from './avonniVisualPickerLinkInfoOnly.html';
 
 const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 
+/**
+ * @class
+ * @descriptor avonni-visual-picker-link
+ * @storyId example-visualpickerlink--base
+ * @public
+ */
 export default class AvonniVisualPickerLink extends LightningElement {
+    /**
+     * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     *
+     * @type {string}
+     * @public
+     */
     @api iconName;
+    /**
+     * The title can include text, and is displayed in the header. To include additional markup or another component, use the title slot.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
+    /**
+     * The URL of the page that the link goes to.
+     *
+     * @type {string}
+     * @public
+     */
     @api href;
 
     _iconPosition = ICON_POSITIONS.default;
@@ -58,10 +82,22 @@ export default class AvonniVisualPickerLink extends LightningElement {
         }
     }
 
+    /**
+     * Get slot dom element.
+     *
+     * @type {Element}
+     */
     get titleSlot() {
         return this.template.querySelector('slot[name=title]');
     }
 
+    /**
+     * Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api get iconPosition() {
         return this._iconPosition;
     }
@@ -73,6 +109,13 @@ export default class AvonniVisualPickerLink extends LightningElement {
         });
     }
 
+    /**
+     * Style: https://www.lightningdesignsystem.com/components/welcome-mat/#With-Completed-Steps .
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get completed() {
         return this._completed;
     }
@@ -81,6 +124,13 @@ export default class AvonniVisualPickerLink extends LightningElement {
         this._completed = normalizeBoolean(value);
     }
 
+    /**
+     * https://www.lightningdesignsystem.com/components/welcome-mat/#Info-only .
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get infoOnly() {
         return this._infoOnly;
     }
@@ -89,6 +139,11 @@ export default class AvonniVisualPickerLink extends LightningElement {
         this._infoOnly = normalizeBoolean(value);
     }
 
+    /**
+     * Computed container class styling.
+     *
+     * @type {string}
+     */
     get computedContainerClass() {
         return classSet('slds-welcome-mat__tile')
             .add({
@@ -99,6 +154,11 @@ export default class AvonniVisualPickerLink extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed tile body class styling.
+     *
+     * @type {string}
+     */
     get computedTileBodyClass() {
         return classSet('slds-welcome-mat__tile-body')
             .add({
@@ -109,6 +169,11 @@ export default class AvonniVisualPickerLink extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed icon container class styling.
+     *
+     * @type {string}
+     */
     get computedIconContainerClass() {
         return classSet(
             'slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center'
@@ -119,11 +184,26 @@ export default class AvonniVisualPickerLink extends LightningElement {
             .toString();
     }
 
+    /**
+     * Verify if icon is left.
+     *
+     * @type {boolean}
+     */
     get leftPosition() {
         return this._iconPosition === 'left';
     }
 
+    /**
+     * Click event handler.
+     */
     handleClick() {
+        /**
+         * The event fired when the visual picker is clicked.
+         *
+         * @event
+         * @name click
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('click'));
     }
 }

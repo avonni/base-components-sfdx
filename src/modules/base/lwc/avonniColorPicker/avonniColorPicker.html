@@ -140,12 +140,14 @@
                                             if:true={isDefault}
                                             class="slds-tabs_default__content"
                                         >
-                                            <c-avonni-color-palette
-                                                colors={colors}
-                                                tile-height="25"
-                                                tile-width="25"
-                                                read-only={readOnly}
-                                            ></c-avonni-color-palette>
+                                            <div class="palette-height">
+                                                <c-avonni-color-palette
+                                                    colors={colors}
+                                                    tile-height="25"
+                                                    tile-width="25"
+                                                    read-only={readOnly}
+                                                ></c-avonni-color-palette>
+                                            </div>
                                         </div>
                                         <div
                                             if:false={isDefault}
@@ -208,10 +210,11 @@
                 type="text"
                 variant="label-hidden"
                 label="color"
-                value={value}
+                value={inputValue}
                 name={name}
                 onchange={handleInputColor}
                 disabled={disabledInput}
+				read-only={isLabelDisplayed}
             ></lightning-input>
         </div>
         <p if:true={showError} class="slds-form-error">{messageWhenBadInput}</p>

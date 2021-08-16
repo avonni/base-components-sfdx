@@ -70,16 +70,83 @@ const ICON_SIZES = {
 
 const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search…';
 
+/**
+ * @class
+ * @descriptor  avonni-dynamic-menu
+ * @storyId example-dynamic-menu--base
+ * @public
+ */
 export default class AvonniDynamicMenu extends LightningElement {
+    /**
+     * The name of the icon to be used in the format 'utility:down'.
+     *
+     * @type {string}
+     * @public
+     */
     @api iconName;
+    /**
+     * The value for the button element. This value is optional and can be used when submitting a form.
+     *
+     * @type {string}
+     * @public
+     */
     @api value;
+    /**
+     * The assistive text for the button.
+     *
+     * @type {string}
+     * @public
+     */
     @api alternativeText;
+    /**
+     * Message displayed while the menu is in the loading state.
+     *
+     * @type {string}
+     * @public
+     */
     @api loadingStateAlternativeText;
+    /**
+     * Optional text to be shown on the button.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+    /**
+     * If present, display search box.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api withSearch;
+    /**
+     * The keyboard shortcut for the button menu.
+     *
+     * @type {string}
+     * @public
+     */
     @api accessKey;
+    /**
+     * Displays tooltip text when the mouse moves over the button menu.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
+    /**
+     * Text that is displayed when the field is empty, to prompt the user for a valid entry.
+     *
+     * @type {string}
+     * @public
+     */
     @api searchInputPlaceholder = DEFAULT_SEARCH_INPUT_PLACEHOLDER;
+    /**
+     * Text to display when the user mouses over or focuses on the button. The tooltip is auto-positioned relative to the button and screen space.
+     *
+     * @type {string}
+     * @public
+     */
     @api tooltip;
 
     _items = [];
@@ -112,6 +179,12 @@ export default class AvonniDynamicMenu extends LightningElement {
         return this.template.querySelector('slot[name=footer]');
     }
 
+    /**
+     * An Array of item fields.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get items() {
         return this._items;
@@ -131,6 +204,13 @@ export default class AvonniDynamicMenu extends LightningElement {
         this.filteredItems = result;
     }
 
+    /**
+     * The variant changes the look of the button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
+     *
+     * @type {string}
+     * @public
+     * @default border
+     */
     @api
     get variant() {
         return this._variant;
@@ -143,6 +223,13 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
+    /**
+     * The size of the icon. Options include xx-small, x-small, medium, or large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api get iconSize() {
         return this._iconSize;
     }
@@ -154,6 +241,13 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
+    /**
+     * Determines the alignment of the menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api
     get menuAlignment() {
         return this._menuAlignment;
@@ -166,6 +260,13 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
+    /**
+     * If present, the menu cannot be opened by users.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get disabled() {
         return this._disabled;
@@ -175,6 +276,13 @@ export default class AvonniDynamicMenu extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * If present, the menu is in a loading state and shows a spinner.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get isLoading() {
         return this._isLoading;
@@ -184,14 +292,31 @@ export default class AvonniDynamicMenu extends LightningElement {
         this._isLoading = normalizeBoolean(value);
     }
 
+    /**
+     * Set focus on the button.
+     *
+     * @public
+     */
     @api
     focus() {
         if (this.isConnected) {
             this.focusOnButton();
         }
+        /**
+         * Focus event
+         *
+         * @event
+         * @name focus
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
+    /**
+     * Click method on the button.
+     *
+     * @public
+     */
     @api
     click() {
         if (this.isConnected) {
@@ -203,10 +328,20 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Computed Aria Expanded from dropdown menu.
+     *
+     * @type {string} dropdown menu
+     */
     get computedAriaExpanded() {
         return String(this._dropdownVisible);
     }
 
+    /**
+     * Computed Dropdown class styling.
+     *
+     * @type {string}
+     */
     get computedDropdownClass() {
         return classSet('slds-dropdown slds-popover slds-dynamic-menu')
             .add({
@@ -231,16 +366,29 @@ export default class AvonniDynamicMenu extends LightningElement {
             .toString();
     }
 
+    /**
+     * Check if there's Items to display.
+     *
+     * @type {boolean}
+     */
     get showItems() {
         return this.filteredItems.length > 0;
     }
 
+    /**
+     * Button Click handler.
+     */
     handleButtonClick() {
         this.allowBlur();
         this.toggleMenuVisibility();
         this.focusOnButton();
     }
 
+    /**
+     * Button Mouse down event handler.
+     *
+     * @param {Event} event
+     */
     handleButtonMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -248,6 +396,11 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Dropdown menu Mouse down event handler.
+     *
+     * @param {Event} event
+     */
     handleDropdownMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -255,14 +408,25 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Dropdown menu Mouse up handler.
+     */
     handleDropdownMouseUp() {
         this.allowBlur();
     }
 
+    /**
+     * Dropdown menu scroll event handler.
+     *
+     * @param {Event} event
+     */
     handleDropdownScroll(event) {
         event.stopPropagation();
     }
 
+    /**
+     * Button focus handler.
+     */
     focusOnButton() {
         if (this.label) {
             this.template.querySelector('lightning-button').focus();
@@ -271,16 +435,31 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Check if menu is Auto Aligned.
+     *
+     * @returns boolean
+     */
     isAutoAlignment() {
         return this.menuAlignment.startsWith('auto');
     }
 
+    /**
+     * Dropdown menu Visibility toggle.
+     */
     toggleMenuVisibility() {
         if (!this.disabled) {
             this._dropdownVisible = !this._dropdownVisible;
             this._dropdownOpened = !this._dropdownOpened;
 
             if (this._dropdownVisible) {
+                /**
+                 * Event fires when opening dropdown menu.
+                 *
+                 * @event
+                 * @name open
+                 * @public
+                 */
                 this.dispatchEvent(new CustomEvent('open'));
                 this._boundingRect = this.getBoundingClientRect();
                 this.pollBoundingRect();
@@ -292,6 +471,9 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Blur Handler.
+     */
     handleBlur() {
         if (this._cancelBlur) {
             return;
@@ -300,24 +482,42 @@ export default class AvonniDynamicMenu extends LightningElement {
         if (this._dropdownVisible) {
             this.toggleMenuVisibility();
         }
-
+        /**
+         * Blur event
+         *
+         * @event
+         * @name blur
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
+    /**
+     * Allows Blur.
+     */
     allowBlur() {
         this._cancelBlur = false;
     }
 
+    /**
+     * Cancels Blur.
+     */
     cancelBlur() {
         this._cancelBlur = true;
     }
 
+    /**
+     * Close Dropdown menu.
+     */
     close() {
         if (this._dropdownVisible) {
             this.toggleMenuVisibility();
         }
     }
 
+    /**
+     * Get bounding rect coordinates for dropdown menu.
+     */
     pollBoundingRect() {
         if (this.isAutoAlignment() && this._dropdownVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
@@ -333,6 +533,11 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Key up event handler.
+     *
+     * @param {Event} event
+     */
     handleKeyUp(event) {
         let filter = event.target.value.toLowerCase();
         this.filteredItems = this.items.filter((item) => {
@@ -340,10 +545,23 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
+    /**
+     * Click handler.
+     *
+     * @param {Event} event
+     */
     handleClick(event) {
         let index = event.currentTarget.id.split('-')[0];
         let item = this.items[index];
 
+        /**
+         * Select event.
+         *
+         * @event
+         * @name select
+         * @param {object[]} item
+         * @public
+         */
         const selectedEvent = new CustomEvent('select', {
             detail: {
                 item
@@ -354,6 +572,11 @@ export default class AvonniDynamicMenu extends LightningElement {
         this.toggleMenuVisibility();
     }
 
+    /**
+     * Clear filtered Items.
+     *
+     * @param {Event} event
+     */
     clearFilter(event) {
         if (!event.target.value) {
             this.filteredItems = this.items;

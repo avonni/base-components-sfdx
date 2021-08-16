@@ -30,13 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-img-container {
-    width: 100%;
-    height: auto;
-    position: relative;
-    overflow: hidden;
-}
-
 .avonni-img-fluid {
     max-width: 100% !important;
     height: auto;
@@ -98,8 +91,7 @@
 }
 
 .avonni-margin-left-auto,
-.avonni-margin-auto,
-.avonni-img_cropped-left {
+.avonni-margin-auto {
     margin-left: auto;
 }
 
@@ -110,80 +102,4 @@
 
 .avonni-display-block {
     display: block;
-}
-
-.avonni-img_cropped-centered {
-    transform: translate(50%);
-    right: 50%;
-    margin-left: auto;
-    margin-right: 0;
-}
-
-.avonni-img_blank_no-crop_centered {
-    right: 50%;
-    margin-left: auto;
-}
-
-.avonni-img_cropped-right {
-    right: 0%;
-    margin-left: auto;
-}
-
-.avonni-img_no-crop_no-width_no-height {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-}
-
-.avonni-img_no-crop_no-width_height {
-    max-width: 100%;
-    max-height: 100%;
-    top: 0;
-    left: 0;
-    position: absolute;
-}
-
-.avonni-img_cropped {
-    top: 0;
-    left: 0;
-    position: absolute;
-}
-
-.avonni-img_cropped_no-width_height {
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.avonni-img_cropped_width {
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.avonni-img_cropped_no-width_no-height {
-    width: 100%;
-    height: 100%;
-}
-
-.avonni-img_no-crop_blank_width_height {
-    max-width: 100%;
-    height: auto;
-}
-
-.avonni-img_width_height {
-    max-width: 100%;
-    max-height: 100%;
-    top: 0;
-    left: 0;
-    position: absolute;
-}
-
-.avonni-img_static_height_no-crop_no-width {
-    max-width: none;
-    width: auto;
-}
-
-.avonni-img_static_no-crop_blank_height_width {
-    top: 0;
-    left: 0;
-    position: absolute;
 }

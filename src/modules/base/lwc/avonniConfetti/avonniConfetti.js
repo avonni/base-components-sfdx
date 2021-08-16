@@ -59,15 +59,56 @@ const DEFAULT_ORIGIN_Y = 0.5
 
 const DEFAULT_Z_INDEX = 100
 
+/**
+ * @class
+ * @public
+ * @descriptor avonni-confetti
+ * @storyId example-confetti--base
+ */
 export default class AvonniConfetti extends LightningElement {
+    /**
+     * An array of color strings, in the HEX format.
+     * 
+     * @public
+     * @type {string[]}
+     * @default ['#529EE0','#F0E442','#FFB03B','#E16032','#4FD2D2','#006699','#E287B2']
+     */
     @api colors = DEFAULT_COLORS;
+    /**
+     * The x position on the page, with 0 being the left edge and 1 being the right edge.
+     * 
+     * @public
+     * @type {number}
+     * @default 0.5
+     */
     @api originX = DEFAULT_ORIGIN_X;
+    /**
+     * The y position on the page, with 0 being the top edge and 1 being the bottom edge.
+     * 
+     * @public
+     * @type {number}
+     * @default 0.5
+     */
     @api originY = DEFAULT_ORIGIN_Y;
+    /**
+     * The confetti should be on top, after all. But if you have a crazy high page, you can set it even higher.
+     * 
+     * @public
+     * @type {number}
+     * @default 100
+     */
     @api zIndex = DEFAULT_Z_INDEX;
 
     _variant = CONFETTI_VARIANTS.default;
     _name;
 
+    /**
+     * The variant changes the appearance of the confetti. Accepted variants include include base, random-direction, realistic, fireworks, snow and pride.
+     * 
+     * @public
+     * @type {string}
+     * @default base
+     */
     @api
     get variant() {
         return this._variant;
@@ -80,6 +121,12 @@ export default class AvonniConfetti extends LightningElement {
         });
     }
 
+    /**
+     * Name of the confetti.
+     * 
+     * @public
+     * @type {string}
+     */
     @api
     get name() {
         return this._name;
@@ -90,6 +137,11 @@ export default class AvonniConfetti extends LightningElement {
         this.setAttribute('name', value);
     }
 
+    /**
+     * Confetti Fire method.
+     * 
+     * @public
+     */
     @api
     fire() {
         switch (this.variant) {
@@ -116,6 +168,9 @@ export default class AvonniConfetti extends LightningElement {
         }
     }
 
+    /**
+     * Base variant.
+     */
     base() {
         // eslint-disable-next-line no-undef
         confetti({
@@ -130,6 +185,9 @@ export default class AvonniConfetti extends LightningElement {
         });
     }
 
+    /**
+     * Random Direction variant.
+     */
     randomDirection() {
         // eslint-disable-next-line no-undef
         confetti({
@@ -145,6 +203,9 @@ export default class AvonniConfetti extends LightningElement {
         });
     }
 
+    /**
+     * Realistic variant.
+     */
     realistic() {
         let count = 200;
         let defaults = {
@@ -191,6 +252,9 @@ export default class AvonniConfetti extends LightningElement {
         });
     }
 
+    /**
+     * Fireworks variant.
+     */
     fireworks() {
         let animationEnd = Date.now() + 6000;
 
@@ -220,6 +284,9 @@ export default class AvonniConfetti extends LightningElement {
         }, 250);
     }
 
+    /**
+     * Snow variant.
+     */
     snow() {
         let animationEnd = Date.now() + 6000;
         let skew = 1;
@@ -254,6 +321,9 @@ export default class AvonniConfetti extends LightningElement {
         }, 10);
     }
 
+    /**
+     * Pride variant.
+     */
     pride() {
         let end = Date.now() + 6000;
 
@@ -286,6 +356,13 @@ export default class AvonniConfetti extends LightningElement {
         }, 150);
     }
 
+    /**
+     * Random number generator for min max range.
+     * 
+     * @param {number} min 
+     * @param {number} max 
+     * @returns number
+     */
     randomInRange(min, max) {
         return Math.random() * (max - min) + min;
     }

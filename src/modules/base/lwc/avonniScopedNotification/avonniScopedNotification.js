@@ -34,11 +34,36 @@ import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { normalizeString } from 'c/utilsPrivate';
 
-const SCOPED_NOTIFICATION_VARIANTS = {valid: ['base', 'light', 'dark', 'warning', 'error', 'success'], default: 'base'};
-const ICON_SIZES = {valid: ['xx-small', 'x-small', 'small', 'medium', 'large'], default: 'medium'};
+const SCOPED_NOTIFICATION_VARIANTS = {
+    valid: ['base', 'light', 'dark', 'warning', 'error', 'success'],
+    default: 'base'
+};
+const ICON_SIZES = {
+    valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
+    default: 'medium'
+};
 
+/**
+ * @class
+ * @descriptor avonni-scoped-notification
+ * @storyId example-scoped-notification--base
+ * @public
+ */
 export default class AvonniScopedNotification extends LightningElement {
+    /**
+     * The heading of the section message.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
+    /**
+     * The name of the icon to be used in the format 'utility:down'.
+     *
+     * @type {}
+     * @public
+     * @default
+     */
     @api iconName;
 
     _variant = SCOPED_NOTIFICATION_VARIANTS.default;
@@ -51,10 +76,20 @@ export default class AvonniScopedNotification extends LightningElement {
         }
     }
 
+    /**
+     * Get the title slot DOM element.
+     */
     get titleSlot() {
         return this.template.querySelector('slot[name=title]');
     }
 
+    /**
+     * The variant changes the look of the scoped notification. Valid values include base, light, dark, warning, error, success.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api get variant() {
         return this._variant;
     }
@@ -66,6 +101,13 @@ export default class AvonniScopedNotification extends LightningElement {
         });
     }
 
+    /**
+     * The size of the icon. Valid options include xx-small, x-small, small, medium, or large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api get iconSize() {
         return this._iconSize;
     }
@@ -77,6 +119,11 @@ export default class AvonniScopedNotification extends LightningElement {
         });
     }
 
+    /**
+     * Computed notification class styling.
+     *
+     * @type {string}
+     */
     get computedNotificationClass() {
         return classSet('slds-scoped-notification slds-media slds-media_center')
             .add({
@@ -90,6 +137,11 @@ export default class AvonniScopedNotification extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Icon variant class based on selection.
+     *
+     * @type {string}
+     */
     get computedIconVariant() {
         return classSet()
             .add({

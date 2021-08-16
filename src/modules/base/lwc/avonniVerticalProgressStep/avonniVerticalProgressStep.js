@@ -32,7 +32,19 @@
 
 import { LightningElement, api } from 'lwc';
 
+/**
+ * @class
+ * @descriptor avonni-vertical-progress-step
+ * @storyId example-vertical-progress-indicator--base
+ * @public
+ */
 export default class AvonniVerticalProgressStep extends LightningElement {
+    /**
+     * Text label to title the step.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
 
     _value;
@@ -43,6 +55,12 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         this.classList.add('slds-progress__item');
     }
 
+    /**
+     * Text to name the step.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get value() {
         return this._value;
@@ -53,6 +71,13 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         this.setAttribute('data-step', value);
     }
 
+    /**
+     * Attributes for in line and variant shade sent from avonni-vertical-progress-indicator.
+     *
+     * @param {boolean} contentInLine
+     * @param {string} shade
+     * @public
+     */
     @api
     setAttributes(contentInLine, shade) {
         if (contentInLine) {
@@ -64,16 +89,39 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         }
     }
 
+    /**
+     * Icon name sent from avonni-vertical-progress-indicator.
+     *
+     * @param {string} iconName
+     */
     @api
     setIcon(iconName) {
         this.iconName = iconName;
     }
 
+    /**
+     * Get the item elements from the default slot.
+     *
+     * @type {Element}
+     */
     get slotItems() {
         return this.template.querySelector('slot');
     }
 
+    /**
+     * Mouse enter event handler.
+     */
     handleMouseEnter() {
+        /**
+         * The event fired when the mouse enter the step.
+         *
+         * @event
+         * @name stepmouseenter
+         * @param {string} value the step value.
+         * @public
+         * @bubbles
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('stepmouseenter', {
                 bubbles: true,
@@ -85,7 +133,20 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         );
     }
 
+    /**
+     * Mouse leave event handler.
+     */
     handleMouseLeave() {
+        /**
+         * The event fired when the mouse leave the step.
+         *
+         * @event
+         * @name stepmouseleave
+         * @param {string} value The step value.
+         * @public
+         * @bubbles
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('stepmouseleave', {
                 bubbles: true,
@@ -97,7 +158,20 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         );
     }
 
+    /**
+     * Focus on step event handler.
+     */
     handleFocus() {
+        /**
+         * The event fired when you focus the step.
+         *
+         * @event
+         * @name stepfocus
+         * @param {string} value The step value.
+         * @public
+         * @bubbles
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('stepfocus', {
                 bubbles: true,
@@ -109,7 +183,20 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         );
     }
 
+    /**
+     * Blur event handler.
+     */
     handleBlur() {
+        /**
+         * The event fired when the focus is removed from the step.
+         *
+         * @event
+         * @name stepblur
+         * @param {string} value The step value.
+         * @public
+         * @bubbles
+         * @cancelable
+         */
         this.dispatchEvent(
             new CustomEvent('stepblur', {
                 bubbles: true,

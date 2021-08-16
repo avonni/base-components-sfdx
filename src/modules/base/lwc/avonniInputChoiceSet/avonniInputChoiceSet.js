@@ -40,7 +40,7 @@ import {
 } from 'c/utilsPrivate';
 import {
     FieldConstraintApi,
-    debounce,
+    InteractingState,
     normalizeVariant,
     VARIANT
 } from 'c/inputUtils';
@@ -51,20 +51,51 @@ const i18n = {
     required: 'required'
 };
 
-const DEBOUNCE_PERIOD = 200;
-
 const INPUT_CHOICE_ORIENTATIONS = {
     valid: ['vertical', 'horizontal'],
     default: 'vertical'
 };
 const INPUT_CHOICE_TYPES = { valid: ['default', 'button'], default: 'default' };
 
+/**
+ * @class
+ * @descriptor avonni-input-choice-set
+ * @storyId example-input-choice-set--radio-buttons
+ * @public
+ */
 export default class AvonniInputChoiceSet extends LightningElement {
     static delegatesFocus = true;
 
+    /**
+     * Text label for the input.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
     @api label;
+    /**
+     * Array of option objects.
+     *
+     * @type {object[]}
+     * @public
+     * @required
+     */
     @api options;
+    /**
+     * Optional message to be displayed when no option is selected and the required attribute is set.
+     *
+     * @type {string}
+     * @public
+     */
     @api messageWhenValueMissing;
+    /**
+     * Specifies the name of an input element.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
     @api name;
 
     _orientation = INPUT_CHOICE_ORIENTATIONS.default;
@@ -78,14 +109,11 @@ export default class AvonniInputChoiceSet extends LightningElement {
     constructor() {
         super();
         this.itemIndex = 0;
-
-        this.debouncedShowIfBlurred = debounce(() => {
-            if (!this.containsFocus) {
-                this.showHelpMessageIfInvalid();
-            }
-        }, DEBOUNCE_PERIOD);
     }
 
+    /**
+     * Synchronize all inputs Aria help element ID.
+     */
     synchronizeA11y() {
         const inputs = this.template.querySelectorAll('input');
         Array.prototype.slice.call(inputs).forEach((input) => {
@@ -98,8 +126,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
     connectedCallback() {
         this.classList.add('slds-form-element');
         this.updateClassList();
+        this.interactingState = new InteractingState();
+        this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
     }
 
+    /**
+     * Update form class styling.
+     */
     updateClassList() {
         classListMutation(this.classList, {
             'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
@@ -112,6 +145,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this.synchronizeA11y();
     }
 
+    /**
+     * The list of selected options. Each array entry contains the value of a selected option. The value of each option is set in the options attribute.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
     @api
     get value() {
         return this._value;
@@ -121,6 +161,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this._value = value;
     }
 
+    /**
+     * If present, the input field is disabled and users cannot interact with it.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get disabled() {
         return this._disabled || false;
@@ -129,6 +176,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * Orientation of the input options. Valid values include vertical and horizontal.
+     * 
+     * @type {string}
+     * @default vertical
+     * @public
+     */
     @api
     get orientation() {
         return this._orientation;
@@ -141,6 +195,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
         });
     }
 
+    /**
+     * If present, multiple choices can be selected.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get isMultiSelect() {
         return this._isMultiSelect || false;
@@ -149,6 +210,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this._isMultiSelect = normalizeBoolean(value);
     }
 
+    /**
+     * If present, at least one option must be selected.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get required() {
         return this._required || false;
@@ -157,6 +225,17 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this._required = normalizeBoolean(value);
     }
 
+    /**
+     * The variant changes the appearance of the input label.
+     * Accepted variants include standard, label-hidden, label-inline, and label-stacked.
+     * Use label-hidden to hide the label but make it available to assistive technology.
+     * Use label-inline to horizontally align the label and checkbox group.
+     * Use label-stacked to place the label above the checkbox group.
+     * 
+     * @type {string}
+     * @default standard
+     * @public
+     */
     @api
     get variant() {
         return this._variant || VARIANT.STANDARD;
@@ -167,6 +246,13 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this.updateClassList();
     }
 
+    /**
+     * Type of the input. Valid values include default and button.
+     * 
+     * @type {string}
+     * @default default
+     * @public
+     */
     @api
     get type() {
         return this._type;
@@ -179,14 +265,29 @@ export default class AvonniInputChoiceSet extends LightningElement {
         });
     }
 
+    /**
+     * True if type is default.
+     * 
+     * @type {boolean}
+     */
     get checkboxVariant() {
         return this.type === 'default';
     }
 
+    /**
+     * Localization.
+     * 
+     * @type {i18n}
+     */
     get i18n() {
         return i18n;
     }
 
+    /**
+     * Create new InputChoiceOption object.
+     *
+     * @type {Object[]}
+     */
     get transformedOptions() {
         const { options, value } = this;
         if (Array.isArray(options)) {
@@ -197,16 +298,35 @@ export default class AvonniInputChoiceSet extends LightningElement {
         return [];
     }
 
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get validity() {
         return this._constraint.validity;
     }
 
+    /**
+     * Checks if the input is valid.
+     * 
+     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @public
+     */
     @api
     checkValidity() {
         return this._constraint.checkValidity();
     }
 
+    /**
+     * Displays the error messages and returns false if the input is invalid.
+     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * 
+     * @returns {boolean} - The validity status of the input fields.
+     * @public
+     */
     @api
     reportValidity() {
         return this._constraint.reportValidity((message) => {
@@ -214,21 +334,44 @@ export default class AvonniInputChoiceSet extends LightningElement {
         });
     }
 
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     * 
+     * @param {string} message - The string that describes the error.
+     * If message is an empty string, the error message is reset.
+     * @public
+     */
     @api
     setCustomValidity(message) {
         this._constraint.setCustomValidity(message);
     }
 
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * 
+     * @public
+     */
     @api
     showHelpMessageIfInvalid() {
         this.reportValidity();
     }
 
+    /**
+     * Get element unique help ID.
+     *
+     * @type {string}
+     */
     get computedUniqueHelpElementId() {
         const helpElement = this.template.querySelector('[data-helptext]');
         return getRealDOMId(helpElement);
     }
 
+    /**
+     * Focus method. Sets focus on the first input option.
+     *
+     * @public
+     */
     @api
     focus() {
         const firstCheckbox = this.template.querySelector('input');
@@ -237,31 +380,72 @@ export default class AvonniInputChoiceSet extends LightningElement {
         }
     }
 
+    /**
+     * Dispatch the focus event.
+     */
     handleFocus() {
-        this.containsFocus = true;
+        this.interactingState.enter();
+
+        /**
+         * The event fired when you focus the input.
+         * 
+         * @event
+         * @name focus
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
+    /**
+     * Dispatch the blur event.
+     */
     handleBlur() {
-        this.containsFocus = false;
+        this.interactingState.leave();
+
+
+        /**
+         * The event fired when the focus is removed from the input.
+         * 
+         * @event
+         * @name blur
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
+    /**
+     * Click handler.
+     *
+     * @param {Event} event
+     */
     handleClick(event) {
         if (this.template.activeElement !== event.target) {
             event.target.focus();
         }
     }
 
+    /**
+     * Value change handler.
+     * 
+     * @param {array} inputs All inputs.
+     * @returns {array} Checked values.
+     */
+    handleValueChange(inputs) {
+        return Array.from(inputs)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+    }
+
+    /**
+     * Dispatches the change event.
+     */
     handleChange(event) {
         event.stopPropagation();
 
         let value = event.target.value;
         const checkboxes = this.template.querySelectorAll('input');
         if (this.isMultiSelect) {
-            value = Array.from(checkboxes)
-                .filter((checkbox) => checkbox.checked)
-                .map((checkbox) => checkbox.value);
+            this._value = this.handleValueChange(checkboxes);
         } else {
             const checkboxesToUncheck = Array.from(checkboxes).filter(
                 (checkbox) => checkbox.value !== value
@@ -269,6 +453,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
             checkboxesToUncheck.forEach((checkbox) => {
                 checkbox.checked = false;
             });
+            this._value = this.handleValueChange(checkboxes);
         }
         if (this.type === 'button') {
             checkboxes.forEach((checkbox) => {
@@ -286,6 +471,17 @@ export default class AvonniInputChoiceSet extends LightningElement {
             });
         }
 
+        /**
+         * The event fired when the value changed.
+         *
+         * @event
+         * @name change
+         * @param {string} value The input value.
+         * @public
+         * @bubbles
+         * @cancelable
+         * @composed
+         */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
@@ -298,16 +494,26 @@ export default class AvonniInputChoiceSet extends LightningElement {
         );
     }
 
+    /**
+     * Gets FieldConstraintApi for validation.
+     *
+     * @type {object}
+     */
     get _constraint() {
         if (!this._constraintApi) {
             this._constraintApi = new FieldConstraintApi(() => this, {
                 valueMissing: () =>
-                    !this.disabled && this.required && this.value.length === 0
+                    !this.disabled && this.required && !this.value.length
             });
         }
         return this._constraintApi;
     }
 
+    /**
+     * Computed Legend Class styling.
+     *
+     * @type {string}
+     */
     get computedLegendClass() {
         const classnames = classSet(
             'slds-form-element__legend slds-form-element__label'
@@ -320,12 +526,22 @@ export default class AvonniInputChoiceSet extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Button Class styling.
+     *
+     * @type {string}
+     */
     get computedButtonClass() {
         return this.checkboxVariant
             ? ''
             : `slds-checkbox_button-group ${this.orientation}`;
     }
 
+    /**
+     * Computed Checkbox Container Class styling.
+     *
+     * @type {string}
+     */
     get computedCheckboxContainerClass() {
         const checkboxClass = this.isMultiSelect
             ? `slds-checkbox ${this.orientation}`
@@ -335,6 +551,11 @@ export default class AvonniInputChoiceSet extends LightningElement {
         return this.checkboxVariant ? checkboxClass : buttonClass;
     }
 
+    /**
+     * Computed Label Class styling.
+     *
+     * @type {string}
+     */
     get computedLabelClass() {
         const buttonLabelClass = `slds-checkbox_button__label slds-align_absolute-center ${this.orientation}`;
         const checkboxLabelClass =
@@ -345,12 +566,22 @@ export default class AvonniInputChoiceSet extends LightningElement {
         return this.checkboxVariant ? checkboxLabelClass : buttonLabelClass;
     }
 
+    /**
+     * Returns checkbox if is-multi-select is true or type is not default and radio if is-multi-select is false.
+     * 
+     * @type {string}
+     */
     get computedInputType() {
         return this.isMultiSelect || !this.checkboxVariant
             ? 'checkbox'
             : 'radio';
     }
 
+    /**
+     * Returns slds-checkbox_faux if is-multi-select is true and slds-radio_faux if is-multi-select is false.
+     * 
+     * @type {string}
+     */
     get computedCheckboxShapeClass() {
         return this.isMultiSelect ? 'slds-checkbox_faux' : 'slds-radio_faux';
     }

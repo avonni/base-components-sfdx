@@ -34,18 +34,21 @@ import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const PROGRESS_RING_VARIANTS = {valid: [
-    'base',
-    'active-step',
-    'warning',
-    'expired',
-    'base-autocomplete'
-], default: 'base'};
-const PROGRESS_RING_DIRECTIONS = {valid: ['fill', 'drain'], default: 'fill'};
-const PROGRESS_RING_SIZES = {valid:['medium', 'large'], default: 'medium'};
+const PROGRESS_RING_VARIANTS = {
+    valid: ['base', 'active-step', 'warning', 'expired', 'base-autocomplete'],
+    default: 'base'
+};
+const PROGRESS_RING_DIRECTIONS = { valid: ['fill', 'drain'], default: 'fill' };
+const PROGRESS_RING_SIZES = { valid: ['medium', 'large'], default: 'medium' };
 
-const DEFAULT_VALUE = 0
+const DEFAULT_VALUE = 0;
 
+/**
+ * @class
+ * @descriptor avonni-progress-ring
+ * @storyId example-progress-ring--base
+ * @public
+ */
 export default class AvonniProgressRing extends LightningElement {
     _direction = PROGRESS_RING_DIRECTIONS.default;
     _size = PROGRESS_RING_SIZES.default;
@@ -53,6 +56,14 @@ export default class AvonniProgressRing extends LightningElement {
     _variant = PROGRESS_RING_VARIANTS.default;
     _hideIcon = false;
 
+    /**
+     * Controls which way the color flows from the top of the ring, either clockwise or counterclockwise Valid values include fill and drain.
+     * The fill value corresponds to a color flow in the clockwise direction. The drain value indicates a color flow in the counterclockwise direction.
+     *
+     * @type {string}
+     * @public
+     * @default fill
+     */
     @api
     get direction() {
         return this._direction;
@@ -65,6 +76,13 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
+    /**
+     * The size of the progress ring. Valid values include medium and large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api
     get size() {
         return this._size;
@@ -77,6 +95,13 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
+    /**
+     * The percentage value of the progress ring. The value must be a number from 0 to 100. A value of 50 corresponds to a color fill of half the ring in a clockwise or counterclockwise direction, depending on the direction attribute.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
     @api
     get value() {
         return this._value;
@@ -92,6 +117,13 @@ export default class AvonniProgressRing extends LightningElement {
         }
     }
 
+    /**
+     * Changes the appearance of the progress ring. Accepted variants include base, active-step, warning, expired, base-autocomplete.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get variant() {
         return this._variant;
@@ -104,6 +136,13 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
+    /**
+     * If present and the variant is equal to warning, base-autocomplete or expired, hide the icon in the progress ring content
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideIcon() {
         return this._hideIcon;
@@ -113,6 +152,11 @@ export default class AvonniProgressRing extends LightningElement {
         this._hideIcon = normalizeBoolean(value);
     }
 
+    /**
+     * Computed outer class styling based on selected attributes.
+     *
+     * @type {string}
+     */
     get computedOuterClass() {
         return classSet('slds-progress-ring')
             .add({
@@ -127,6 +171,11 @@ export default class AvonniProgressRing extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Icon theme variant class.
+     *
+     * @type {string}
+     */
     get computedIconTheme() {
         return classSet('slds-icon_container').add({
             'slds-icon-utility-warning': this._variant === 'warning',
@@ -135,6 +184,11 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
+    /**
+     * Get progress ring draw coordinates and styling.
+     *
+     * @type {string}
+     */
     get d() {
         const fillPercent = this._value / 100 || 0;
         const filldrain = this.direction === 'drain' ? 1 : 0;
@@ -147,6 +201,11 @@ export default class AvonniProgressRing extends LightningElement {
         return `M 1 0 A 1 1 0 ${islong} ${filldrain} ${arcx} ${arcy} L 0 0`;
     }
 
+    /**
+     * Computed alternative text based on variant.
+     *
+     * @type {string}
+     */
     get computedAltText() {
         if (this.variant === 'warning') {
             return 'Warning';
@@ -160,6 +219,11 @@ export default class AvonniProgressRing extends LightningElement {
         return undefined;
     }
 
+    /**
+     * Modify incon name value based on variant.
+     *
+     * @type {string}
+     */
     get iconName() {
         if (this._variant === 'warning') {
             return 'utility:warning';
@@ -171,6 +235,11 @@ export default class AvonniProgressRing extends LightningElement {
         return null;
     }
 
+    /**
+     * Verify icon presence.
+     *
+     * @type {boolean}
+     */
     get iconPresence() {
         if (
             (this._variant === 'base-autocomplete' &&
@@ -184,10 +253,20 @@ export default class AvonniProgressRing extends LightningElement {
         return false;
     }
 
+    /**
+     * Verify showing Icon.
+     *
+     * @type {boolean}
+     */
     get showIcon() {
         return !this.hideIcon && this.iconPresence;
     }
 
+    /**
+     * Verify showing slot.
+     *
+     * @type {boolean}
+     */
     get showSlot() {
         return !this.iconPresence || (this.iconPresence && this.hideIcon);
     }

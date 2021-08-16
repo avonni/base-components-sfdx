@@ -36,10 +36,28 @@ import { classSet } from 'c/utils';
 
 const validVariants = ['base', 'comment'];
 
+/**
+* @class
+* @descriptor avonni-publisher
+* @storyId example-publisher--variant-base
+* @public
+*/
 export default class AvonniPublisher extends LightningElement {
+    /**
+    * Text that is displayed when the field is empty, to prompt the user for a valid entry.
+    *
+    * @type {string}
+    * @public
+    */  
     @api placeholder;
+    /**
+    * Optional text to be shown on the button.
+    *
+    * @type {string}
+    * @public
+    */
     @api buttonLabel;
-    @api submitAction;
+    @api submitAction; //? in use ??
 
     _variant = 'base';
     _disabled;
@@ -65,14 +83,31 @@ export default class AvonniPublisher extends LightningElement {
         }
     }
 
+    /**
+     * Get figure slot DOM element.
+     * 
+     * @type {Element}
+     */
     get figureSlot() {
         return this.template.querySelector('slot[name=figure]');
     }
 
+    /**
+     * Get figure slot DOM element.
+     * 
+     * @type {Element}
+     */
     get actionsSlot() {
         return this.template.querySelector('slot[name=actions]');
     }
 
+    /**
+    * Valid variants include base and comment
+    *
+    * @type {string}
+    * @public
+    * @default base
+    */
     @api get variant() {
         return this._variant;
     }
@@ -84,6 +119,13 @@ export default class AvonniPublisher extends LightningElement {
         });
     }
 
+    /**
+    * If present, the publisher can't be used by users.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api get disabled() {
         return this._disabled;
     }
@@ -92,6 +134,12 @@ export default class AvonniPublisher extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+    * The HTML content in the rich text editor.
+    *
+    * @type {string}
+    * @public
+    */
     @api get value() {
         return this._value;
     }
@@ -100,6 +148,11 @@ export default class AvonniPublisher extends LightningElement {
         this._value = value;
     }
 
+    /**
+     * Compute Publisher class isActive.
+     * 
+     * @type {string}
+     */
     get publisherClass() {
         return classSet('slds-publisher')
             .add({
@@ -108,6 +161,11 @@ export default class AvonniPublisher extends LightningElement {
             .toString();
     }
 
+    /**
+     * Compute actions section class.
+     * 
+     * @type {string}
+     */
     get actionsSectionClass() {
         return classSet('slds-publisher__actions slds-grid')
             .add({
@@ -117,11 +175,21 @@ export default class AvonniPublisher extends LightningElement {
             .toString();
     }
 
+    /**
+     * Set focus on the publisher.
+     * 
+     * @public
+     */
     @api
     focus() {
         this.isActive = true;
     }
 
+    /**
+     * Removes focus from the publisher.
+     * 
+     * @public
+     */
     @api
     blur() {
         if (this.isActive) {
@@ -129,12 +197,28 @@ export default class AvonniPublisher extends LightningElement {
         }
     }
 
+    /**
+     * Change event handler.
+     * 
+     * @param {Event} event 
+     */
     handleChange(event) {
         this.value = event.detail.value;
     }
 
+    /**
+     * Click submit event handler.
+     */
     hanlerClick() {
         if (this.isActive) {
+            /**
+            * The event fired when the publisher submit data.
+            *
+            * @event
+            * @name submit
+            * @param {string} value The input value.
+            * @public
+            */
             const selectedEvent = new CustomEvent('submit', {
                 detail: {
                     value: this._value
@@ -149,10 +233,19 @@ export default class AvonniPublisher extends LightningElement {
         }
     }
 
+    /**
+     * Check if the button is disabled.
+     * 
+     * @type {boolean}
+     */
     get buttonDisabled() {
         return (this.isActive && !this.value) || this._disabled;
     }
 
+
+    /**
+     * Render button on base variant or isActive.
+     */
     get renderButton() {
         return this._variant === 'base' || this.isActive;
     }

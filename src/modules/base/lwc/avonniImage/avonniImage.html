@@ -33,17 +33,15 @@
 -->
 
 <template>
-    <div style={computedImgContainerStyle} class={computedImgContainerClass}>
-        <img
-            src={src}
-            srcset={srcset}
-            sizes={sizes}
-            alt={alt}
-            width={width}
-            height={height}
-            style={computedImgStyle}
-            class={computedImageClass}
-            loading={lazyLoading}
-        />
-    </div>
+    <img
+        src={src}
+        srcset={srcset}
+        sizes={sizes}
+        alt={alt}
+        width={width}
+        height={height}
+        style={computedImgStyle}
+        class={computedImageClass}
+        loading={lazyLoading}
+    />
 </template>

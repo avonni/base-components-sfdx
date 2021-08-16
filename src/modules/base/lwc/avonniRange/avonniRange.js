@@ -44,16 +44,83 @@ const RATING_TYPES = {valid: ['horizontal', 'vertical'], default: 'horizontal'};
 const LABEL_VARIANTS = {valid: ['standard', 'label-hidden', 'label-inline', 'label-stacked'], default: 'standard'};
 const RATING_UNITS = {valid: ['decimal', 'currency', 'percent'], default: 'decimal'};
 
+/**
+* @class
+* @descriptor avonni-range
+* @storyId example-range--base
+* @public
+*/
 export default class AvonniRange extends LightningElement {
+    /**
+    * Text label to describe the slider. Provide your own label to describe the slider.
+    *
+    * @type {string}
+    * @public
+    */
     @api label;
+    /**
+    * Error message to be displayed when a range overflow is detected.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenRangeOverflow;
+    /**
+    * Error message to be displayed when a range underflow is detected.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenRangeUnderflow;
+    /**
+    * Error message to be displayed when a step mismatch is detected.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenStepMismatch;
+    /**
+    * Error message to be displayed when the value is missing.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenValueMissing;
+    /**
+    * Error message to be displayed when the value is too long.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenTooLong;
+    /**
+    * Error message to be displayed when a bad input is detected.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenBadInput;
+    /**
+    * Error message to be displayed when a pattern mismatch is detected.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenPatternMismatch;
+    /**
+    * Error message to be displayed when a type mismatch is detected.
+    *
+    * @type {string}
+    * @public
+    */
     @api messageWhenTypeMismatch;
+    /**
+    * Object containing selected fields for the unit type (currencyCode, currencyDisplayAs, minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, minimumSignificantDigits, maximumSignificantDigits).
+    *
+    * @type {object{}}
+    * @public
+    * @default
+    */
     @api unitAttributes = {};
 
     _min = DEFAULT_MIN;
@@ -78,19 +145,33 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The minimum value of the input range. The default is 0.
+    *
+    * @type {number}
+    * @public
+    * @default 0
+    */
     @api
     get min() {
         return this._min;
     }
 
     set min(value) {
-        this._min = Number(value);
+        this._min = Number(value); 
 
         if (this.init) {
             this.initRange();
         }
     }
 
+    /**
+    * The maximum value of the input range. The default is 100.
+    *
+    * @type {number}
+    * @public
+    * @default 100
+    */
     @api
     get max() {
         return this._max;
@@ -104,6 +185,13 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The step increment value of the input range. Example steps include 0.1, 1, or 10. The default is 1.
+    *
+    * @type {number}
+    * @public
+    * @default 1
+    */
     @api
     get step() {
         return this._step;
@@ -117,6 +205,13 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The lower value of the range.
+    *
+    * @type {string}
+    * @public
+    * @default 0
+    */
     @api
     get valueLower() {
         return this._valueLower ? this._valueLower : this.min;
@@ -130,6 +225,12 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The upper value of the range.
+    *
+    * @type {string}
+    * @public
+    */
     @api
     get valueUpper() {
         if (!this._valueUpper) {
@@ -149,6 +250,12 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The size of the slider. The default is an empty string, which sets the slider to the width of the viewport. Accepted values are x-small, small, medium, and large.
+    *
+    * @type {string}
+    * @public
+    */
     @api get size() {
         return this._size;
     }
@@ -164,6 +271,13 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The type determines the orientation of the slider. Accepted values are vertical and horizontal. The default is horizontal.
+    *
+    * @type {string}
+    * @public
+    * @default horizontal
+    */
     @api get type() {
         return this._type;
     }
@@ -179,6 +293,13 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * The variant changes the appearance of the slider. Accepted variants include standard and label-hidden. The default is standard.
+    *
+    * @type {string}
+    * @public
+    * @default standard
+    */
     @api get variant() {
         return this._variant;
     }
@@ -194,6 +315,14 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * Accepted unit include decimal, currency and percent. 
+    * Format the value displayed (lightning-formatted-number)
+    *
+    * @type {string}
+    * @public
+    * @default decimal
+    */
     @api get unit() {
         return this._unit;
     }
@@ -209,6 +338,13 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * If present, a pin with integer value is shown when the knob is pressed.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api get pin() {
         return this._pin;
     }
@@ -221,6 +357,13 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+    * If present, the slider is disabled and users cannot interact with it.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api get disabled() {
         return this._disabled;
     }
@@ -233,6 +376,9 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Initialize range cmp.
+     */
     initRange() {
         this.showHelpMessageIfInvalid();
         this.setInputsWidth();
@@ -240,6 +386,11 @@ export default class AvonniRange extends LightningElement {
         this.setBubblesPosition();
     }
 
+    /**
+     * Handle left slider point value change.
+     * 
+     * @param {Event} event 
+     */
     handleChangeLeft(event) {
         this.valueLower = event.target.value;
         this.setInputsWidth();
@@ -248,6 +399,11 @@ export default class AvonniRange extends LightningElement {
         this.setBubblesPosition();
     }
 
+    /**
+     * Handle right slider point value change.
+     * 
+     * @param {Event} event 
+     */
     handleChangeRight(event) {
         this.valueUpper = event.target.value;
         this.setInputsWidth();
@@ -256,10 +412,22 @@ export default class AvonniRange extends LightningElement {
         this.setBubblesPosition();
     }
 
+    /**
+     * Update range upper and lower values.
+     */
     changeRange() {
         this._updateProxyInputLeftAttributes('value');
         this._updateProxyInputRightAttributes('value');
 
+        /**
+        * The event fired when the range value changed.
+        *
+        * @event
+        * @name change
+        * @param {string} valueLower The lower value of the range.
+        * @param {string} valueUpper The upper value of the range.
+        * @public
+        */
         const selectedEvent = new CustomEvent('change', {
             detail: {
                 valueLower: Number(this.valueLower),
@@ -270,6 +438,11 @@ export default class AvonniRange extends LightningElement {
         this.dispatchEvent(selectedEvent);
     }
 
+    /**
+     * Computed label class styling.
+     * 
+     * @type {string}
+     */
     get computedLabelClass() {
         const classes = classSet();
 
@@ -282,6 +455,11 @@ export default class AvonniRange extends LightningElement {
         return classes.toString();
     }
 
+    /**
+     * Computed container class styling ( size, vertical ).
+     * 
+     * @type {string}
+     */
     get computedContainerClass() {
         const { size, type } = this;
         const classes = classSet('');
@@ -297,22 +475,42 @@ export default class AvonniRange extends LightningElement {
         return classes.toString();
     }
 
+    /**
+     * Computed left bubble class styling.
+     * 
+     * @type {string}
+     */
     get computedBubbleLeftClass() {
         return this._type === 'vertical'
             ? 'avonni-bubble-vertical left-bubble'
             : 'avonni-bubble left-bubble';
     }
 
+    /**
+     * Computed right bubble class styling.
+     * 
+     * @type {string}
+     */
     get computedBubbleRightClass() {
         return this._type === 'vertical'
             ? 'avonni-bubble-vertical right-bubble'
             : 'avonni-bubble right-bubble';
     }
 
+    /**
+     * Verify if range is vertical.
+     * 
+     * @type {boolean}
+     */
     get isVertical() {
         return this._type === 'vertical';
     }
 
+    /**
+     * Calculate the max range from the lower value.
+     * 
+     * @type {number}
+     */
     get calculateMax() {
         return (
             Number(this.valueLower) +
@@ -320,6 +518,11 @@ export default class AvonniRange extends LightningElement {
         ).toFixed(3);
     }
 
+    /**
+     * Calculate the max range from the lower value.
+     * 
+     * @type {number}
+     */
     get calculateMin() {
         let minVaule =
             Number(this.valueUpper) - this.stepsCount('right') * this.step;
@@ -330,6 +533,12 @@ export default class AvonniRange extends LightningElement {
         return minVaule.toFixed(3);
     }
 
+    /**
+     * Calculate Steps count from position method.
+     * 
+     * @param {string} position 
+     * @returns {number} stepsForPosition
+     */
     stepsCount(position) {
         let stepCount = (this.valueUpper - this.valueLower) / this.step;
         let stepsForPosition = 0;
@@ -342,6 +551,9 @@ export default class AvonniRange extends LightningElement {
         return stepsForPosition;
     }
 
+    /**
+     * Calculate inputs width between left and right inputs.
+     */
     setInputsWidth() {
         let inputWidth = this.max - this.min;
         let leftStep = this.stepsCount('left');
@@ -362,6 +574,9 @@ export default class AvonniRange extends LightningElement {
         rightInput.style.width = leftInputWidth + '%';
     }
 
+    /**
+     * Progress indicator line.
+     */
     addProgressLine() {
         if (!this._disabled) {
             let leftInput = this.template.querySelector('.slider-left');
@@ -392,6 +607,9 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Display left bubble.
+     */
     showLeftBubble() {
         if (this._pin) {
             let bubbleLeft = this.template.querySelector('.left-bubble');
@@ -399,6 +617,9 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Display right bubble.
+     */
     showRightBubble() {
         if (this._pin) {
             let bubbleRight = this.template.querySelector('.right-bubble');
@@ -406,6 +627,9 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Hide left bubble.
+     */
     hideLeftBubble() {
         if (this._pin) {
             let bubbleLeft = this.template.querySelector('.left-bubble');
@@ -413,6 +637,9 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Hide right bubble.
+     */
     hideRightBubble() {
         if (this._pin) {
             let bubbleRight = this.template.querySelector('.right-bubble');
@@ -420,6 +647,9 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Calculate Bubbles position.
+     */
     setBubblesPosition() {
         if (this._pin) {
             setTimeout(() => {
@@ -454,6 +684,11 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /**
+     * Represents the validity states of the slider inputs, with respect to constraint validation.
+     * 
+     * @public
+     */
     @api get validity() {
         return (
             this._constraintLeft.validity +
@@ -462,6 +697,12 @@ export default class AvonniRange extends LightningElement {
         );
     }
 
+    /**
+     * Returns the valid attribute value (Boolean) on the ValidityState object.
+     * 
+     * @public
+     * @returns {boolean}
+     */
     @api
     checkValidity() {
         return (
@@ -470,6 +711,12 @@ export default class AvonniRange extends LightningElement {
         );
     }
 
+    /**
+     * Displays the error messages and returns false if the input is invalid. If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * 
+     * @public
+     * @returns {string | boolean}
+     */
     @api
     reportValidity() {
         let helpMessage = '';
@@ -491,29 +738,55 @@ export default class AvonniRange extends LightningElement {
         return leftInput && rightInput;
     }
 
+    /**
+     * Sets a custom error message to be displayed when the input value is submitted.
+     * 
+     * @public
+     * @param {string} message 
+     */
     @api
     setCustomValidity(message) {
         this._constraintLeft.setCustomValidity(message);
         this._constraintRight.setCustomValidity(message);
     }
 
+    /**
+     * Displays an error message if the input value is required and no option is selected.
+     * 
+     * @public
+     */
     @api
     showHelpMessageIfInvalid() {
         this.reportValidity();
     }
 
+    /**
+     * Update input left proxy attributes.
+     * 
+     * @param {object} attributes 
+     */
     _updateProxyInputLeftAttributes(attributes) {
         if (this._constraintApiProxyInputLeftUpdater) {
             this._constraintApiProxyInputLeftUpdater(attributes);
         }
     }
 
+    /**
+     * Update input right proxy attributes.
+     * 
+     * @param {object} attributes 
+     */
     _updateProxyInputRightAttributes(attributes) {
         if (this._constraintApiProxyInputRightUpdater) {
             this._constraintApiProxyInputRightUpdater(attributes);
         }
     }
 
+    /**
+     * Get the left constraint API via proxy input.
+     * 
+     * @return {object} constraintApiLeft
+     */
     get _constraintLeft() {
         if (!this._constraintApiLeft) {
             this._constraintApiLeft = new FieldConstraintApiWithProxyInput(
@@ -534,6 +807,11 @@ export default class AvonniRange extends LightningElement {
         return this._constraintApiLeft;
     }
 
+    /**
+     * Get the right constraint API via proxy input.
+     * 
+     * @return {object} constraintApiRight
+     */
     get _constraintRight() {
         if (!this._constraintApiRight) {
             this._constraintApiRight = new FieldConstraintApiWithProxyInput(

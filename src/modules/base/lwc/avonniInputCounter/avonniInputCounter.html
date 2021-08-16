@@ -61,20 +61,13 @@
             <lightning-input
                 name={name}
                 label={label}
-                message-when-bad-input={messageWhenBadInput}
-                message-when-pattern-mismatch={messageWhenPatternMismatch}
-                message-when-range-overflow={messageWhenRangeOverflow}
-                message-when-range-underflow={messageWhenRangeUnderflow}
-                message-when-step-mismatch={messageWhenStepMismatch}
-                message-when-value-missing={messageWhenValueMissing}
+                placeholder="0"
                 aria-label={ariaLabel}
                 aria-controls={computedAriaControls}
                 aria-labelledby={computedAriaLabelledBy}
                 aria-describedby={computedAriaDescribedBy}
-                max={max}
-                min={min}
-                step={step}
                 value={value}
+                step={inputStep}
                 field-level-help={labelFieldLevelHelp}
                 accesskey={accessKey}
                 variant={labelVariant}
@@ -82,11 +75,13 @@
                 readonly={readOnly}
                 required={required}
                 type="number"
-                placeholder="0"
+                formatter={type}
                 class={inputClass}
-                onchange={handlerChange}
+                oncommit={handlerCommit}
                 onfocus={handlerFocus}
                 onblur={handlerBlur}
+                onkeydown={handlerKeyDown}
+                autocomplete="off"
             ></lightning-input>
             <lightning-button-icon
                 if:false={readOnly}
@@ -99,6 +94,15 @@
                 class={buttonIncrementClass}
                 disabled={disabled}
             ></lightning-button-icon>
+            <template if:true={helpMessage}>
+                <div
+                    id="message-id"
+                    class="slds-form-element__help slds-p-top_xx-small"
+                    aria-live="assertive"
+                >
+                    {helpMessage}
+                </div>
+            </template>
         </div>
     </div>
 </template>

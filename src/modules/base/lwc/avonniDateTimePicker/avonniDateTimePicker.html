@@ -62,15 +62,6 @@
             >
                 {currentDateRangeString}
             </p>
-
-            <!-- Error message -->
-            <div
-                class="slds-form-element__help"
-                aria-live="assertive"
-                if:true={helpMessage}
-            >
-                {helpMessage}
-            </div>
         </lightning-layout-item>
 
         <!-- Time zone -->
@@ -173,6 +164,8 @@
                                 aria-selected={day.selected}
                                 data-today={day.isToday}
                                 class="avonni-date-time-picker__day-label slds-p-around_medium"
+                                onblur={handleValueBlur}
+                                onfocus={handleValueFocus}
                             >
                                 {day.label}
                             </div>
@@ -216,6 +209,8 @@
                                                                 type="button"
                                                                 onclick={handleTimeSlotClick}
                                                                 aria-readonly={readOnly}
+                                                                onblur={handleValueBlur}
+                                                                onfocus={handleValueFocus}
                                                             >
                                                                 <lightning-formatted-date-time
                                                                     value={timelineTime.startTimeISO}
@@ -262,6 +257,8 @@
                                                 type="button"
                                                 onclick={handleTimeSlotClick}
                                                 aria-readonly={readOnly}
+                                                onblur={handleValueBlur}
+                                                onfocus={handleValueFocus}
                                             >
                                                 <lightning-formatted-date-time
                                                     value={time.startTimeISO}
@@ -294,4 +291,15 @@
             </div>
         </lightning-layout-item>
     </lightning-layout>
+    <!-- Error message -->
+    <div class="slds-has-error" if:true={helpMessage}>
+        <div
+            id="help-message"
+            class="slds-form-element__help"
+            data-help-message
+            role="alert"
+        >
+            {helpMessage}
+        </div>
+    </div>
 </template>

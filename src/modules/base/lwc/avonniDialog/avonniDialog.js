@@ -36,9 +36,33 @@ import { classSet } from 'c/utils';
 
 const DIALOG_SIZES = { valid: ['small', 'medium', 'large'], default: 'medium' };
 
+/**
+ * @class
+ * @descriptor avonni-dialog
+ * @storyId example-dialog--base
+ * @public
+ */
 export default class AvonniDialog extends LightningElement {
+    /**
+     * Name of dialog.
+     *
+     * @type {string}
+     * @public
+     */
     @api dialogName;
+    /**
+     * The title can include text, and is displayed in the header. To include additional markup or another component, use the title slot.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
+    /**
+     * Message displayed while the modal box is in the loading state.
+     *
+     * @type {string}
+     * @public
+     */
     @api loadingStateAlternativeText;
 
     _size = DIALOG_SIZES.default;
@@ -62,14 +86,31 @@ export default class AvonniDialog extends LightningElement {
         }
     }
 
+    /**
+     * Title Slot DOM element
+     *
+     * @type {HTMLElement}
+     */
     get titleSlot() {
         return this.template.querySelector('slot[name=title]');
     }
 
+    /**
+     * Footer Slot DOM element
+     *
+     * @type {HTMLElement}
+     */
     get footerSlot() {
         return this.template.querySelector('slot[name=footer]');
     }
 
+    /**
+     * Width of the modal. Accepted sizes include small, medium, large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api
     get size() {
         return this._size;
@@ -82,6 +123,13 @@ export default class AvonniDialog extends LightningElement {
         });
     }
 
+    /**
+     * If present, the modal box is in a loading state and shows a spinner.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get isLoading() {
         return this._isLoading;
@@ -91,6 +139,13 @@ export default class AvonniDialog extends LightningElement {
         this._isLoading = normalizeBoolean(value);
     }
 
+    /**
+     * Show Dialog - boolean to show or hide the dialog.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get showDialog() {
         return this._showDialog;
@@ -100,21 +155,47 @@ export default class AvonniDialog extends LightningElement {
         this._showDialog = normalizeBoolean(value);
     }
 
+    /**
+     * Verify if Title string present.
+     *
+     * @type {boolean}
+     */
     get hasStringTitle() {
         return !!this.title;
     }
 
+    /**
+     * Open the modal box.
+     *
+     * @public
+     */
     @api
     show() {
         this._showDialog = true;
     }
 
+    /**
+     * Close the modal box.
+     *
+     * @public
+     */
     @api
     hide() {
         this._showDialog = false;
+        /**
+         * The event fired when the dialog closes.
+         *
+         * @event
+         * @name closedialog
+         */
         this.dispatchEvent(new CustomEvent('closedialog'));
     }
 
+    /**
+     * Computed Header class styling.
+     *
+     * @type {string}
+     */
     get computedHeaderClass() {
         return classSet('slds-modal__header')
             .add({
@@ -123,6 +204,11 @@ export default class AvonniDialog extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Modal class styling
+     *
+     * @type {string}
+     */
     get computedModalClass() {
         return classSet('slds-modal slds-fade-in-open')
             .add({

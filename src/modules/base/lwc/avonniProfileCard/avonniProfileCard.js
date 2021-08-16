@@ -51,14 +51,69 @@ const AVATAR_POSITIONS = {
 };
 const AVATAR_VARIANTS = { valid: ['circle', 'square'], default: 'circle' };
 
+/**
+ * @class
+ * @descriptor avonni-profile-card
+ * @storyId example-profile-card--base
+ * @public
+ */
 export default class AvonniProfileCard extends LightningElement {
+    /**
+     * The title can include text, and is displayed in the header.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
+    /**
+     * The subtitle can include text, and is displayed under the title.
+     *
+     * @type {string}
+     * @public
+     */
     @api subtitle;
+    /**
+     * Background color in hexadecimal.
+     *
+     * @type {string}
+     * @public
+     */
     @api backgroundColor;
+    /**
+     * URL for the optional image.
+     *
+     * @type {string}
+     * @public
+     */
     @api backgroundSrc;
+    /**
+     * Value to set the image attribute 'alt'.
+     *
+     * @type {string}
+     * @public
+     */
     @api backgroundAlternativeText;
+    /**
+     * URL for the avatar image.
+     *
+     * @type {string}
+     * @public
+     */
     @api avatarSrc;
+    /**
+     * Value to set the image attribute 'alt'.
+     *
+     * @type {string}
+     * @public
+     */
     @api avatarAlternativeText;
+    /**
+     * The Lightning Design System name of the icon used as a fallback when the image fails to load.
+     * The initials fallback relies on this for its background color. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
+     *
+     * @type {string}
+     * @public
+     */
     @api avatarFallbackIconName;
 
     _size = AVATAR_SIZES.default;
@@ -124,18 +179,40 @@ export default class AvonniProfileCard extends LightningElement {
         }
     }
 
+    /**
+     * Get the avatar action slot DOM element.
+     * 
+     * @type {Element}
+     */
     get avatarActionsSlot() {
         return this.template.querySelector('slot[name=avataractions]');
     }
 
+    /**
+     * Get the action slot DOM element.
+     * 
+     * @type {Element}
+     */
     get actionsSlot() {
         return this.template.querySelector('slot[name=actions]');
     }
 
+    /**
+     * Get the footer slot DOM element.
+     * 
+     * @type {Element}
+     */
     get footerSlot() {
         return this.template.querySelector('slot[name=footer]');
     }
 
+    /**
+     * The size of the avatar. Valid values include x-small, small, medium, large, x-large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api
     get size() {
         return this._size;
@@ -148,6 +225,13 @@ export default class AvonniProfileCard extends LightningElement {
         });
     }
 
+    /**
+     * Position of the avatar. Valid values include top-left, top-center, top-right, bottom-left, bottom-center, bottom-right.
+     *
+     * @type {string}
+     * @public
+     * @default top-left
+     */
     @api
     get avatarPosition() {
         return this._avatarPosition;
@@ -160,6 +244,12 @@ export default class AvonniProfileCard extends LightningElement {
         });
     }
 
+    /**
+     * Position of the avatar when screen width is under 480px. Valid values include top-left, top-center, top-right, bottom-left, bottom-center, bottom-right.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get avatarMobilePosition() {
         return this._avatarMobilePosition;
@@ -172,6 +262,13 @@ export default class AvonniProfileCard extends LightningElement {
         });
     }
 
+    /**
+     * The variant change the shape of the avatar. Valid values are circle, square.
+     *
+     * @type {string}
+     * @public
+     * @default circle
+     */
     @api
     get avatarVariant() {
         return this._avatarVariant;
@@ -184,6 +281,11 @@ export default class AvonniProfileCard extends LightningElement {
         });
     }
 
+    /**
+     * Computed container class styling based on selected attributes.
+     *
+     * @type {string}
+     */
     get computedContainerClass() {
         return classSet('avonni-flex-container')
             .add({
@@ -205,6 +307,11 @@ export default class AvonniProfileCard extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Main container class styling based on selected attributes.
+     * 
+     * @type {string}
+     */
     get computedMainContainerClass() {
         return classSet('')
             .add({
@@ -232,12 +339,22 @@ export default class AvonniProfileCard extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed header class background size.
+     *
+     * @type {string}
+     */
     get computedHeaderClass() {
         return classSet('slds-media slds-media_center slds-has-flexi-truncate')
             .add(`background-${this._size}`)
             .toString();
     }
 
+    /**
+     * Computed avatar class styling.
+     *
+     * @type {string}
+     */
     get computedAvatarClass() {
         return classSet('avatar-img')
             .add(`avatar-${this._size}`)
@@ -248,14 +365,29 @@ export default class AvonniProfileCard extends LightningElement {
             .toString();
     }
 
+    /**
+     * Show header slot.
+     *
+     * @type {boolean}
+     */
     get showHeaderSlot() {
         return !this.title && !this.subtitle;
     }
 
+    /**
+     * Verify is avatar variant is circle.
+     *
+     * @type {string}
+     */
     get isCircle() {
         return this._avatarVariant === 'circle' ? 'avatar-img-circle' : '';
     }
 
+    /**
+     * Set the fallback Icon for the avatar.
+     *
+     * @type {string}
+     */
     setFallbackIcon() {
         if (
             this.avatarFallbackIconName &&

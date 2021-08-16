@@ -33,8 +33,17 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
 
-const SPLITTER_ORIENTATIONS = {valid: ['horizontal', 'vertical'], default: 'horizontal'};
+const SPLITTER_ORIENTATIONS = {
+    valid: ['horizontal', 'vertical'],
+    default: 'horizontal'
+};
 
+/**
+ * @class
+ * @descriptor avonni-splitter
+ * @storyId example-splitter--base
+ * @public
+ */
 export default class AvonniSplitter extends LightningElement {
     _orientation = SPLITTER_ORIENTATIONS.default;
     down = false;
@@ -314,6 +323,13 @@ export default class AvonniSplitter extends LightningElement {
         window.removeEventListener('mousemove', this.listenerOnMouseMove);
     }
 
+    /**
+     * Specifies the orientation of the widget. Supported values are "horizontal" and "vertical".
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
     @api get orientation() {
         return this._orientation;
     }
@@ -325,18 +341,33 @@ export default class AvonniSplitter extends LightningElement {
         });
     }
 
+    /**
+     * Computed orientation class based on vertical or horizontal display.
+     * 
+     * @type {string}
+     */
     get computedOrientationClass() {
         return this._orientation === 'vertical'
             ? 'splitter-orientation-vertical'
             : 'splitter-orientation-horizontal';
     }
 
+    /**
+     * Computed separator class based on vertical or horizontal display.
+     * 
+     * @type {string}
+     */
     get computedSeparatorClass() {
         return this._orientation === 'vertical'
             ? 'separator-vertical'
             : 'separator-horizontal';
     }
 
+    /**
+     * On mouse down event method.
+     *
+     * @param {Event} event
+     */
     onMouseDown(event) {
         let selectedSeparator = event.target;
 
@@ -363,6 +394,11 @@ export default class AvonniSplitter extends LightningElement {
         }
     }
 
+    /**
+     * On mouse move event method.
+     *
+     * @param {Event} event
+     */
     onMouseMove(event) {
         if (this.down) {
             let separator = this.selectedSeparator;
@@ -441,10 +477,20 @@ export default class AvonniSplitter extends LightningElement {
         }
     }
 
+    /**
+     * On mouse up method.
+     */
     onMouseUp() {
         this.down = false;
     }
 
+    /**
+     * Validate size constraints.
+     *
+     * @param {number} delta
+     * @param {Element} element
+     * @returns {boolean} valide
+     */
     validate(delta, element) {
         let valide = true;
         let min = element.getAttribute('min');
@@ -483,6 +529,9 @@ export default class AvonniSplitter extends LightningElement {
         return valide;
     }
 
+    /**
+     * Splitter elements collapsed left.
+     */
     colapsedLeft() {
         let parent = this.selectedSeparator.parentNode;
         let rightElement = parent.nextSibling;
@@ -555,6 +604,9 @@ export default class AvonniSplitter extends LightningElement {
         }
     }
 
+    /**
+     * Splitter elements collapsed right.
+     */
     colapsedRight() {
         let parent = this.selectedSeparator.parentNode;
         let rightElement = parent.nextSibling;
@@ -629,6 +681,9 @@ export default class AvonniSplitter extends LightningElement {
         }
     }
 
+    /**
+     * Open splitter panel from left.
+     */
     openLeft() {
         let parent = this.selectedSeparator.parentNode;
         let leftElement = parent.previousSibling;
@@ -768,6 +823,9 @@ export default class AvonniSplitter extends LightningElement {
         }
     }
 
+    /**
+     * Open splitter panel from right.
+     */
     openRight() {
         let parent = this.selectedSeparator.parentNode;
         let rightElement = parent.nextSibling;
@@ -907,6 +965,12 @@ export default class AvonniSplitter extends LightningElement {
         }
     }
 
+    /**
+     * Change horizontal container height.
+     *
+     * @param {number} height
+     * @public
+     */
     @api
     changeHeight(height) {
         let horizontalContainer = this.template.querySelector(

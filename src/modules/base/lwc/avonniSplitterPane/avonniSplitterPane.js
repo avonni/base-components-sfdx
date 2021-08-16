@@ -33,6 +33,12 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean } from 'c/utilsPrivate';
 
+/**
+ * @class
+ * @descriptor avonni-splitter-pane
+ * @storyId example-splitter--base
+ * @public
+ */
 export default class AvonniSplitterPane extends LightningElement {
     _collapsed = false;
     _collapsedSize;
@@ -87,6 +93,13 @@ export default class AvonniSplitterPane extends LightningElement {
         }
     }
 
+    /**
+     * Specifies whether a pane is initially collapsed (true) or expanded (false).
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get collapsed() {
         return this._collapsed;
     }
@@ -96,6 +109,12 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('collapsed', this._collapsed);
     }
 
+    /**
+     * Specifies the size of a collapsible pane when collapsed, defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     *
+     * @type {string}
+     * @public
+     */
     @api get collapsedSize() {
         return this._collapsedSize;
     }
@@ -105,6 +124,13 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('collapsedSize', this._collapsedSize);
     }
 
+    /**
+     * Specifies whether a pane is scrollable (true) or not scrollable (false).
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get scrollable() {
         return this._scrollable;
     }
@@ -114,6 +140,13 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('scrollable', this._scrollable);
     }
 
+    /**
+     * Specifies whether a pane is collapsible (true) or not collapsible (false).
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get collapsible() {
         return this._collapsible;
     }
@@ -123,6 +156,13 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('collapsible', this._collapsible);
     }
 
+    /**
+     * Specifies if the user is allowed to resize the pane and provide space for other panes.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get resizable() {
         return this._resizable;
     }
@@ -132,6 +172,12 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('resizable', this._resizable);
     }
 
+    /**
+     * Specifies the maximum size of a pane defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     *
+     * @type {string}
+     * @public
+     */
     @api get max() {
         return this._max;
     }
@@ -141,6 +187,12 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('max', this._max);
     }
 
+    /**
+     * Specifies the minimum size of a pane defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     *
+     * @type {string}
+     * @public
+     */
     @api get min() {
         return this._min;
     }
@@ -150,6 +202,12 @@ export default class AvonniSplitterPane extends LightningElement {
         this.setAttribute('min', this._min);
     }
 
+    /**
+     * Specifies the size of a pane defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     *
+     * @type {string}
+     * @public
+     */
     @api get size() {
         return this._size;
     }

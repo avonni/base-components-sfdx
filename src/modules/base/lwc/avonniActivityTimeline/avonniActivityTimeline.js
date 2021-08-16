@@ -41,9 +41,26 @@ const GROUP_BY_OPTIONS = {
     valid: ['week', 'month', 'year'],
     default: undefined
 };
-
+/**
+ * @class
+ * @descriptor avonni-activity-timeline
+ * @storyId example-activitytimeline--base
+ * @public
+ */
 export default class AvonniActivityTimeline extends LightningElement {
+    /**
+     * The title can include text, and is displayed in the header.
+     * 
+     * @public
+     * @type {string}
+     */
     @api title;
+    /**
+     * The Lightning Design System name of the icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. The icon is displayed in the header before the title.
+     * 
+     * @public
+     * @type {string}
+     */
     @api iconName;
 
     _collapsible = false;
@@ -65,6 +82,13 @@ export default class AvonniActivityTimeline extends LightningElement {
         this.connected = true;
     }
 
+    /**
+     * If true, the section is collapsible, the left icon is present.
+     * 
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get collapsible() {
         return this._collapsible;
@@ -74,6 +98,13 @@ export default class AvonniActivityTimeline extends LightningElement {
         this._collapsible = normalizeBoolean(value);
     }
 
+    /**
+     * If true, close the section.
+     * 
+     * @public
+     * @type {boolean}
+     * @default false
+     */
     @api
     get closed() {
         return this._closed;
@@ -83,6 +114,12 @@ export default class AvonniActivityTimeline extends LightningElement {
         this._closed = normalizeBoolean(value);
     }
 
+    /**
+     * If present, the value will define how the items will be grouped. Values can include week, month, year or undefined.
+     * 
+     * @public
+     * @type {string}
+     */
     @api
     get groupBy() {
         return this._groupBy;
@@ -95,6 +132,12 @@ export default class AvonniActivityTimeline extends LightningElement {
         });
     }
 
+    /**
+     * See Activity Timeline Item.
+     * 
+     * @public
+     * @type {object[]}
+     */
     @api
     get items() {
         return this._items;
@@ -107,6 +150,12 @@ export default class AvonniActivityTimeline extends LightningElement {
         }
     }
 
+    /**
+     * A list of different actions for dropdown menu.
+     * 
+     * @public
+     * @type {object[]}
+     */
     @api
     get actions() {
         return this._actions;
@@ -116,6 +165,13 @@ export default class AvonniActivityTimeline extends LightningElement {
         this._actions = normalizeArray(value);
     }
 
+    /**
+     * Compute Number of the week in the year.
+     * 
+     * @param {Date} date
+     * @type {Date|number}
+     * @returns number
+     */
     getNumberOfWeek(date) {
         const today = new Date(date);
         const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
@@ -123,11 +179,17 @@ export default class AvonniActivityTimeline extends LightningElement {
         return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
     }
 
+    /**
+     * Compute sortedItems list array.
+     */
     sortItems() {
         this._sortedItems = [...this.items];
         this._sortedItems.sort((a, b) => b.datetimeValue - a.datetimeValue);
     }
 
+    /**
+     * Sort the item dates by year, month, week.
+     */
     sortDates() {
         this._sortedItems.forEach((item) => {
             const date = new Date(item.datetimeValue);
@@ -159,6 +221,9 @@ export default class AvonniActivityTimeline extends LightningElement {
         });
     }
 
+    /**
+     * Group upcomingDates and beforeDates by year, month, week.
+     */
     groupDates() {
         this._upcomingDates = this._upcomingDates.reduce((prev, cur) => {
             this._key = 'Upcoming';
@@ -207,14 +272,19 @@ export default class AvonniActivityTimeline extends LightningElement {
         });
     }
 
+    /**
+     * Sort the orderedDates by hours.
+     */
     sortHours() {
         this.orderedDates.forEach((object) => {
             object.items.sort((a, b) => a.datetimeValue - b.datetimeValue);
         });
     }
 
+    /**
+     * UngroupedItems ordered by dates and hours.
+     */
     createUngroupedItems() {
-        // we need this function to have the dates ordered by dates and hours
         this.orderedDates.forEach((group) => {
             this.ungroupedItems.push(group.items);
         });
@@ -224,6 +294,9 @@ export default class AvonniActivityTimeline extends LightningElement {
         );
     }
 
+    /**
+     * Component initialized states.
+     */
     initActivityTimeline() {
         this.sortItems();
         this.sortDates();
@@ -232,14 +305,29 @@ export default class AvonniActivityTimeline extends LightningElement {
         this.createUngroupedItems();
     }
 
+    /**
+     * Verify if dates exist.
+     * 
+     * @type {boolean}
+     */
     get hasDates() {
         return this.orderedDates.length > 0;
     }
 
+    /**
+     * Assign header by title or icon-name.
+     * 
+     * @type {boolean}
+     */
     get hasHeader() {
         return this.title || this.iconName;
     }
 
+    /**
+     * Toggle for grouping dates.
+     * 
+     * @type {boolean}
+     */
     get noGroupBy() {
         return !this.groupBy;
     }

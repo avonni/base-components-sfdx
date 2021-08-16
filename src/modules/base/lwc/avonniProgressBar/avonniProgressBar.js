@@ -85,8 +85,26 @@ const PROGRESS_BAR_ORIENTATIONS = {
     default: 'horizontal'
 };
 
+/**
+ * @class
+ * @descriptor avonni-progress-bar
+ * @storyId example-progress-bar--base
+ * @public
+ */
 export default class AvonniProgressBar extends LightningElement {
+    /**
+     * Label for the progress bar.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+    /**
+     * Text display next to the value.
+     *
+     * @type {string}
+     * @public
+     */
     @api valueLabel;
 
     _size = PROGRESS_BAR_SIZES.default;
@@ -100,7 +118,11 @@ export default class AvonniProgressBar extends LightningElement {
     _thickness = PROGRESS_BAR_THICKNESSES.default;
     _orientation = PROGRESS_BAR_ORIENTATIONS.default;
 
-    // render the progress bar depending on its orientation
+    /**
+     * Render the progress bar depending on its orientation.
+     *
+     * @returns {File} progressBar.html | progressBarVertical.html
+     */
     render() {
         if (this._orientation === 'horizontal') {
             return progressBar;
@@ -108,6 +130,13 @@ export default class AvonniProgressBar extends LightningElement {
         return progressBarVertical;
     }
 
+    /**
+     * The size of the progress bar. Valid values are x-small, small, medium, large and full.
+     *
+     * @type {string}
+     * @public
+     * @default full
+     */
     @api
     get size() {
         return this._size;
@@ -120,6 +149,13 @@ export default class AvonniProgressBar extends LightningElement {
         });
     }
 
+    /**
+     * The percentage value of the progress bar.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
     @api
     get value() {
         return this._value;
@@ -139,6 +175,13 @@ export default class AvonniProgressBar extends LightningElement {
         }
     }
 
+    /**
+     * If present, display the value.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get showValue() {
         return this._showValue;
@@ -148,6 +191,13 @@ export default class AvonniProgressBar extends LightningElement {
         this._showValue = normalizeBoolean(value);
     }
 
+    /**
+     * Position of the value if present. Valid values include left, right, top-right, top-left, bottom-right and bottom-left.
+     *
+     * @type {string}
+     * @public
+     * @default top-right
+     */
     @api
     get valuePosition() {
         return this._valuePosition;
@@ -160,6 +210,12 @@ export default class AvonniProgressBar extends LightningElement {
         });
     }
 
+    /**
+     * Array of reference lines objects.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get referenceLines() {
         return this._referenceLines;
@@ -169,6 +225,13 @@ export default class AvonniProgressBar extends LightningElement {
         this._referenceLines = normalizeArray(value);
     }
 
+    /**
+     * The variant changes the appearance of the progress bar. Accepted variants include base or circular.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get variant() {
         return this._variant;
@@ -181,6 +244,13 @@ export default class AvonniProgressBar extends LightningElement {
         });
     }
 
+    /**
+     * Defines the theme of the progress bar. Valid values includes base, success, inverse, alt-inverse, warning, info, error and offline.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api
     get theme() {
         return this._theme;
@@ -193,6 +263,13 @@ export default class AvonniProgressBar extends LightningElement {
         });
     }
 
+    /**
+     * If present, display a texture background.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get textured() {
         return this._textured;
@@ -202,6 +279,13 @@ export default class AvonniProgressBar extends LightningElement {
         this._textured = normalizeBoolean(value);
     }
 
+    /**
+     * Set progress bar thickness. Valid values include x-small, small, medium and large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api
     get thickness() {
         return this._thickness;
@@ -214,6 +298,13 @@ export default class AvonniProgressBar extends LightningElement {
         });
     }
 
+    /**
+     * Orientation of the progress bar to be used. Valid values include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
     @api
     get orientation() {
         return this._orientation;
@@ -226,6 +317,11 @@ export default class AvonniProgressBar extends LightningElement {
         });
     }
 
+    /**
+     * Computed Sizing class for the progress bar.
+     *
+     * @type {string}
+     */
     get computedSizing() {
         return classSet('')
             .add({
@@ -259,6 +355,11 @@ export default class AvonniProgressBar extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed Outer class styling.
+     *
+     * @type {string}
+     */
     get computedOuterClass() {
         return classSet('slds-progress-bar slds-text-align_center')
             .add({
@@ -274,8 +375,13 @@ export default class AvonniProgressBar extends LightningElement {
             .toString();
     }
 
-    // for the progressBar in vertical we need to set a height on the outer div and inner div
+    /**
+     * Computed Inner class styling based on selected attributes.
+     *
+     * @type {string}
+     */
     get computedInnerClass() {
+        // for the progressBar in vertical we need to set a height on the outer div and inner div
         return classSet('slds-progress-bar__value')
             .add({
                 'slds-progress-bar__value_success': this._theme === 'success',
@@ -299,48 +405,103 @@ export default class AvonniProgressBar extends LightningElement {
             .toString();
     }
 
+    /**
+     * Return assistive text.
+     *
+     * @type {string}
+     */
     get assistiveText() {
         return `Progress: ${this._value}%`;
     }
 
+    /**
+     * Verify if progress bar is Horizontal.
+     *
+     * @type {string}
+     */
     get isHorizontal() {
         return this._orientation === 'horizontal';
     }
 
+    /**
+     * Computed orientation width or height depending on vertical or horizontal display.
+     *
+     * @type {string}
+     */
     get computedStyle() {
         return this._orientation === 'horizontal'
             ? `width: ${this._value}%`
             : `height: ${this._value}%`;
     }
 
+    /**
+     * Verify Show position left.
+     *
+     * @type {string | boolean}
+     */
     get showPositionLeft() {
         return this._valuePosition === 'left' && this._showValue;
     }
 
+    /**
+     * Verify Show position right.
+     *
+     * @type {string | boolean}
+     */
     get showPositionRight() {
         return this._valuePosition === 'right' && this._showValue;
     }
 
+    /**
+     * Verify Show position top right.
+     *
+     * @type {string | boolean}
+     */
     get showPositionTopRight() {
         return this._valuePosition === 'top-right' && this._showValue;
     }
 
+    /**
+     * Verify Show position top left.
+     *
+     * @type {string | boolean}
+     */
     get showPositionTopLeft() {
         return this._valuePosition === 'top-left' && this._showValue;
     }
 
+    /**
+     * Verify Show position bottom right.
+     *
+     * @type {string | boolean}
+     */
     get showPositionBottomRight() {
         return this._valuePosition === 'bottom-right' && this._showValue;
     }
 
+    /**
+     * Verify Show position bottom left.
+     *
+     * @type {string | boolean}
+     */
     get showPositionBottomLeft() {
         return this._valuePosition === 'bottom-left' && this._showValue;
     }
 
+    /**
+     * Verify Show position bottom.
+     *
+     * @type {boolean}
+     */
     get showPositionBottom() {
         return this.showPositionBottomLeft || this.showPositionBottomRight;
     }
 
+    /**
+     * Verify Show position top.
+     *
+     * @type {string | boolean}
+     */
     get showPositionTop() {
         return (
             this.showPositionTopLeft || this.showPositionTopRight || this.label

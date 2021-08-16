@@ -67,14 +67,62 @@ const BUTTON_VARIANTS = {
 const DEFAULT_LIST_BUTTON_SHOW_MORE_LABEL = 'Show more';
 const DEFAULT_LIST_BUTTON_SHOW_LESS_LABEL = 'Show less';
 
+/**
+ * @class
+ * @name Avatar Group
+ * @descriptor avonni-avatar-group
+ * @storyId example-avatar-group--base-with-two-avatars
+ * @public
+ */
 export default class AvonniAvatarGroup extends LightningElement {
+    /**
+     * The Lightning Design System name of the action icon.
+     * Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     * @type {string}
+     * @name action-icon-name
+     * @public
+     */
     @api actionIconName;
-    @api listButtonIconName;
+
+    /**
+     * Label of the button that appears in the list layout, when the number of avatars exceeds the max-count number.
+     * @type {string}
+     * @name list-button-show-more-label
+     * @default Show more
+     * @public
+     */
     @api listButtonShowMoreLabel = DEFAULT_LIST_BUTTON_SHOW_MORE_LABEL;
+
+    /**
+     * Label of the button that appears in the list layout, when the number of avatars exceeds the max-count number.
+     * @type {string}
+     * @name list-button-show-less-label
+     * @default Show less
+     * @public
+     */
     @api listButtonShowLessLabel = DEFAULT_LIST_BUTTON_SHOW_LESS_LABEL;
 
+    /**
+     * The Lightning Design System name of the list button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     * @type {string}
+     * @name list-button-show-more-icon-name
+     * @public
+     */
     @api listButtonShowMoreIconName;
+
+    /**
+     * The Lightning Design System name of the list button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     * @type {string}
+     * @name list-button-show-less-icon-name
+     * @public
+     */
     @api listButtonShowLessIconName;
+
+    /**
+     * Name of the avatar group. It will be returned by the actionclick event.
+     * @type {string}
+     * @public
+     */
     @api name;
 
     _items = [];
@@ -109,6 +157,11 @@ export default class AvonniAvatarGroup extends LightningElement {
         }
     }
 
+    /**
+     * An array of items to be rendered as avatar in a group.
+     * @type {object[]}
+     * @public
+     */
     @api
     get items() {
         return this._items;
@@ -118,6 +171,13 @@ export default class AvonniAvatarGroup extends LightningElement {
         this._items = normalizeArray(value);
     }
 
+    /**
+     * The maximum number of avatars allowed in the visible list.
+     * @type {number}
+     * @name max-count
+     * @default 5 for stack, 11 for grid and list
+     * @public
+     */
     @api
     get maxCount() {
         return this._maxCount;
@@ -127,7 +187,14 @@ export default class AvonniAvatarGroup extends LightningElement {
         this._maxCount = value;
     }
 
-    @api get size() {
+    /**
+     * The size of the avatars. Valid values include x-small, small, medium, large, x-large and xx-large.
+     * @type {string}
+     * @default medium
+     * @public
+     */
+    @api
+    get size() {
         return this._size;
     }
 
@@ -138,7 +205,14 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
-    @api get layout() {
+    /**
+     * Defines the layout of the avatar group. Valid values include stack, grid and list.
+     * @type {string}
+     * @default stack
+     * @public
+     */
+    @api
+    get layout() {
         return this._layout;
     }
 
@@ -149,7 +223,15 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
-    @api get listButtonVariant() {
+    /**
+     * Variant of the button that appears in the list layout, when the number of avatars exceeds the max-count number.
+     * @type {string}
+     * @name list-button-variant
+     * @default neutral
+     * @public
+     */
+    @api
+    get listButtonVariant() {
         return this._listButtonVariant;
     }
 
@@ -160,7 +242,15 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
-    @api get listButtonShowMoreIconPosition() {
+    /**
+     * Position of the list button’s icon. Valid values include left and right.
+     * @type {string}
+     * @name list-button-show-more-icon-position
+     * @default left
+     * @public
+     */
+    @api
+    get listButtonShowMoreIconPosition() {
         return this._listButtonShowMoreIconPosition;
     }
 
@@ -170,7 +260,16 @@ export default class AvonniAvatarGroup extends LightningElement {
             validValues: BUTTON_ICON_POSITIONS.valid
         });
     }
-    @api get listButtonShowLessIconPosition() {
+
+    /**
+     * Position of the list button’s icon. Valid values include left and right.
+     * @type {string}
+     * @name list-button-show-less-icon-position
+     * @default left
+     * @public
+     */
+    @api
+    get listButtonShowLessIconPosition() {
         return this._listButtonShowLessIconPosition;
     }
 
@@ -181,7 +280,14 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
-    @api get variant() {
+    /**
+     * Shape of the avatars. Valid values include empty, circle or square.
+     * @type {string}
+     * @default square
+     * @public
+     */
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -192,24 +298,40 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
+    /**
+     * Current label of the list button (show more or show less)
+     * @type {string}
+     */
     get currentlistButtonLabel() {
         return this.showPopover
             ? this.listButtonShowLessLabel
             : this.listButtonShowMoreLabel;
     }
 
+    /**
+     * Current icon name of the list button (show more or show less)
+     * @type {string}
+     */
     get currentListButtonIcon() {
         return this.showPopover
             ? this.listButtonShowLessIconName
             : this.listButtonShowMoreIconName;
     }
 
+    /**
+     * Current icon position of the list button (show more or show less)
+     * @type {string}
+     */
     get currentListButtonPosition() {
         return this.showPopover
             ? this.listButtonShowLessIconPosition
             : this.listButtonShowMoreIconPosition;
     }
 
+    /**
+     * If there are exactly two items, contains the first. Else contains an empty object.
+     * @type {object}
+     */
     get primaryItem() {
         if (this.items.length === 2) {
             return this.items[0];
@@ -218,6 +340,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         return {};
     }
 
+    /**
+     * If there are exactly two items, contains the second. Else contains an empty object.
+     * @type {object}
+     */
     get secondaryItem() {
         if (this.items.length === 2) {
             return this.items[1];
@@ -226,6 +352,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         return {};
     }
 
+    /**
+     * Computed list items
+     * @type {object[]}
+     */
     get listItems() {
         let length = this.items.length;
         let maxCount = this.maxCount;
@@ -250,6 +380,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         return items;
     }
 
+    /**
+     * Hidden extra items
+     * @type {object[]}
+     */
     get listHiddenItems() {
         let length = this.items.length;
         let maxCount = this.maxCount;
@@ -270,6 +404,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         return [];
     }
 
+    /**
+     * Class wrapping the two-avatar group
+     * @type {string}
+     */
     get avatarGroupClass() {
         return classSet('slds-avatar-group avonni-avatar-group__avatar')
             .add({
@@ -284,6 +422,10 @@ export default class AvonniAvatarGroup extends LightningElement {
             .toString();
     }
 
+    /**
+     * Class of avatars when displayed in a line
+     * @type {string}
+     */
     get avatarInlineClass() {
         return classSet('avonni-avatar-group__avatar')
             .add({
@@ -297,6 +439,10 @@ export default class AvonniAvatarGroup extends LightningElement {
             .toString();
     }
 
+    /**
+     * Class of the show more button when the avatars are displayed in a line
+     * @type {string}
+     */
     get avatarInlinePlusClass() {
         return classSet('avonni-avatar-group__avatar avonni-avatar-group__plus')
             .add({
@@ -306,6 +452,10 @@ export default class AvonniAvatarGroup extends LightningElement {
             .toString();
     }
 
+    /**
+     * Class of the avatar wrapper, when there are more than two avatars
+     * @type {string}
+     */
     get avatarWrapperClass() {
         return classSet('avonni-avatar-group__avatar-container').add({
             'slds-show': this.layout === 'list',
@@ -314,6 +464,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         });
     }
 
+    /**
+     * Class of the action button
+     * @type {string}
+     */
     get actionButtonClass() {
         return classSet('avonni-avatar-group__action-button')
             .add({
@@ -341,41 +495,39 @@ export default class AvonniAvatarGroup extends LightningElement {
             .toString();
     }
 
-    get actionButtonBaseLayoutClass() {
-        return classSet(
-            'avonni-avatar-group__action-button-base-layout'
-        ).toString();
-    }
-
-    get actionButtonListClass() {
-        return classSet('avonni-avatar-group__action-button-list').add({
-            'slds-show': this.layout === 'list'
-        });
-    }
-
-    get actionButtonInlineClass() {
-        return classSet('avonni-avatar-group__action-button-base-layout')
+    /**
+     * Class of action button wrapper
+     * @type {string}
+     */
+    get actionButtonWrapperClass() {
+        let classes = classSet(`avonni-action-button-${this.size}`)
             .add({
+                'avonni-avatar-group__action-button-base-layout':
+                    this.layout !== 'list',
+                'avonni-avatar-group__action-button-list slds-show':
+                    this.layout === 'list',
                 'avonni-avatar-group_action-button-in-line':
                     this.layout === 'stack'
             })
-            .add(`avonni-action-button-${this.size}`)
             .toString();
+
+        return classes;
     }
-    get hiddenListStyle() {
+
+    /**
+     * Class of the hidden extra items dropdown
+     * @type {string}
+     */
+    get hiddenListClass() {
         return classSet().add({
             'slds-dropdown slds-dropdown_left': this.layout !== 'list'
         });
     }
-    get actionButtonLayoutClass() {
-        if (this.layout === 'list') {
-            return this.actionButtonListClass;
-        } else if (this.layout === 'stack') {
-            return this.actionButtonInlineClass;
-        }
-        return this.actionButtonBaseLayoutClass;
-    }
 
+    /**
+     * Action button icon size
+     * @type {string}
+     */
     get actionButtonIconSize() {
         switch (this.size) {
             case 'x-small':
@@ -389,6 +541,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         }
     }
 
+    /**
+     * True if there are only two avatars visible
+     * @type {boolean}
+     */
     get isClassic() {
         return (
             this.layout === 'stack' &&
@@ -397,17 +553,31 @@ export default class AvonniAvatarGroup extends LightningElement {
         );
     }
 
+    /**
+     * True if the layout is not "list"
+     * @type {boolean}
+     */
     get isNotList() {
         return !(this.layout === 'list');
     }
+
+    /**
+     * Change the value of _allowBlur to true
+     */
     allowBlur() {
         this._allowBlur = true;
     }
 
+    /**
+     * Change the value of _allowBlur to false
+     */
     cancelBlur() {
         this._allowBlur = false;
     }
 
+    /**
+     * Close the hidden extra avatars popover
+     */
     handleBlur() {
         if (!this._allowBlur) {
             return;
@@ -416,6 +586,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         this.showPopover = false;
     }
 
+    /**
+     * If the "show more" avatar was clicked, open the popover.
+     * If another avatar was clicked, dispatch the avatarclick event.
+     */
     handleAvatarClick(event) {
         if (event.type === 'keyup' && event.key !== 'Enter') return;
 
@@ -434,6 +608,15 @@ export default class AvonniAvatarGroup extends LightningElement {
             this.template.querySelector('.slds-dropdown-trigger').focus();
             this.allowBlur();
         } else {
+            /**
+             * @event
+             * @name avatarclick
+             * The event fired when the user click on an avatar.
+             * @param {object} item The avatar detail
+             * @bubbles
+             * @cancelable
+             * @public
+             */
             this.dispatchEvent(
                 new CustomEvent('avatarclick', {
                     bubbles: true,
@@ -449,14 +632,21 @@ export default class AvonniAvatarGroup extends LightningElement {
         }
     }
 
-    actionClick() {
-        // * action event *
+    /**
+     * Dispatch the actionclick event
+     */
+    handleActionClick() {
         const name = this.name;
 
+        /**
+         * @event
+         * @name actionclick
+         * The event fired when the user clicks on an action.
+         * @param {string} name The avatar group name.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('actionclick', {
-                bubbles: true,
-                cancelable: true,
                 detail: {
                     name
                 }
@@ -464,6 +654,9 @@ export default class AvonniAvatarGroup extends LightningElement {
         );
     }
 
+    /**
+     * Toggle the hidden extra avatars popover
+     */
     toggleShowHiddenList() {
         this.showPopover = !this.showPopover;
     }

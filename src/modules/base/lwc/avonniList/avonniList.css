@@ -35,6 +35,10 @@
 }
 
 .sortable-item {
+    cursor: var(--list-item-cursor, grab);
+}
+
+.sortable-icon-cursor {
     cursor: grab;
 }
 

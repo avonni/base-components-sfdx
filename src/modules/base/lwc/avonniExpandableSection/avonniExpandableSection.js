@@ -34,12 +34,31 @@ import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { normalizeBoolean } from 'c/utilsPrivate';
 
+/**
+ * @class
+ * @descriptor avonni-expandable-section
+ * @storyId example-expandable-section--base
+ * @public
+ */
 export default class AvonniExpandableSection extends LightningElement {
+    /**
+     * The title can include text, and is displayed in the header.
+     *
+     * @type {string}
+     * @public
+     */
     @api title;
 
     _closed = false;
     _collapsible = false;
 
+    /**
+     * If present, close the section.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get closed() {
         return this._closed;
@@ -49,6 +68,13 @@ export default class AvonniExpandableSection extends LightningElement {
         this._closed = normalizeBoolean(value);
     }
 
+    /**
+     * If the section is not collapsible, the left icon is hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get collapsible() {
         return this._collapsible;
@@ -58,6 +84,11 @@ export default class AvonniExpandableSection extends LightningElement {
         this._collapsible = normalizeBoolean(value);
     }
 
+    /**
+     * Computed section class styling.
+     *
+     * @type {string}
+     */
     get sectionClass() {
         return classSet('slds-section')
             .add({
@@ -66,6 +97,11 @@ export default class AvonniExpandableSection extends LightningElement {
             .toString();
     }
 
+    /**
+     * Computed section Title class styling.
+     *
+     * @type {string}
+     */
     get sectionTitleClass() {
         return classSet('slds-section__title')
             .add({
@@ -74,6 +110,9 @@ export default class AvonniExpandableSection extends LightningElement {
             .toString();
     }
 
+    /**
+     * Section change status toggle.
+     */
     changeSectionStatus() {
         this._closed = !this._closed;
     }

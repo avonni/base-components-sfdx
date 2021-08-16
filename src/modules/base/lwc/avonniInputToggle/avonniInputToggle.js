@@ -32,7 +32,6 @@
 
 import { LightningElement, api } from 'lwc';
 import {
-    classListMutation,
     ContentMutation,
     synchronizeAttrs,
     getRealDOMId,
@@ -42,6 +41,7 @@ import {
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import {
+    InteractingState,
     FieldConstraintApiWithProxyInput,
     normalizeVariant,
     VARIANT
@@ -55,20 +55,94 @@ const ARIA_CONTROLS = 'aria-controls';
 const ARIA_DESCRIBEDBY = 'aria-describedby';
 const ARIA_LABELEDBY = 'aria-labelledby';
 
-const INPUT_SIZES = {valid: ['x-small', 'small', 'medium', 'large'], default: 'medium'};
+const INPUT_SIZES = {
+    valid: ['x-small', 'small', 'medium', 'large'],
+    default: 'medium'
+};
 
-const DEFAULT_MESSAGE_TOGGLE_ACTIVE = 'Active'
-const DEFAULT_MESSAGE_TOGGLE_INACTIVE = 'Inactive'
+const DEFAULT_MESSAGE_TOGGLE_ACTIVE = 'Active';
+const DEFAULT_MESSAGE_TOGGLE_INACTIVE = 'Inactive';
 
-
+/**
+ * @class
+ * @public
+ * @storyId example-input-toggle--base
+ * @descriptor avonni-input-toggle
+ */
 export default class AvonniInputToggle extends LightningElement {
+    /**
+     * Specifies a shortcut key to activate or focus an element.
+     * 
+     * @type {string}
+     * @public
+     */
     @api accessKey;
+
+    /**
+     * Describes the input to assistive technologies.
+     * 
+     * @type {string}
+     * @public
+     */
     @api ariaLabel;
+
+    /**
+     * Help text detailing the purpose and function of the input.
+     * This attribute isn't supported for file, radio, toggle, and checkbox-button types.
+     * 
+     * @type {string}
+     * @public
+     */
     @api fieldLevelHelp;
+
+    /**
+     * Text label for the input.
+     * 
+     * @type {string}
+     * @required
+     * @public
+     */
     @api label;
+
+    /**
+     * Text shown for the active state of a toggle.
+     * 
+     * @type {string}
+     * @public
+     */
     @api messageToggleActive = DEFAULT_MESSAGE_TOGGLE_ACTIVE;
+
+    /**
+     * Text shown for the inactive state of a toggle.
+     * 
+     * @type {string}
+     * @public
+     */
     @api messageToggleInactive = DEFAULT_MESSAGE_TOGGLE_INACTIVE;
+
+    /**
+     * Error message to be displayed when the value is missing.
+     * The valueMissing error can be returned when you specify the required attribute for any input type.
+     * 
+     * @type {string}
+     * @public
+     */
+    @api messageWhenValueMissing
+
+    /**
+     * Specifies the name of an input element.
+     * 
+     * @type {string}
+     * @public
+     */
     @api name;
+
+    /**
+     * Specifies the value of an input element.
+     * 
+     * @type {string}
+     * @public
+     */
     @api value;
 
     _ariaControls;
@@ -84,7 +158,6 @@ export default class AvonniInputToggle extends LightningElement {
 
     _rendered;
     helpMessage;
-    valid = true;
 
     constructor() {
         super();
@@ -93,7 +166,8 @@ export default class AvonniInputToggle extends LightningElement {
 
     connectedCallback() {
         this.classList.add('slds-form-element');
-        this.updateClassList();
+        this.interactingState = new InteractingState();
+        this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
     }
 
     renderedCallback() {
@@ -101,6 +175,9 @@ export default class AvonniInputToggle extends LightningElement {
         this._synchronizeA11y();
     }
 
+    /**
+     * Synchronize all inputs Aria help element ID.
+     */
     _synchronizeA11y() {
         const input = this.template.querySelector('input');
 
@@ -113,10 +190,17 @@ export default class AvonniInputToggle extends LightningElement {
         }
     }
 
+    /**
+     * A space-separated list of element IDs whose presence or content is controlled by the input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get ariaControls() {
         return this._ariaControls;
     }
+
     set ariaControls(references) {
         this._ariaControls = normalizeAriaAttribute(references);
         this.ariaObserver.link(
@@ -127,6 +211,12 @@ export default class AvonniInputToggle extends LightningElement {
         );
     }
 
+    /**
+     * A space-separated list of element IDs that provide descriptive labels for the input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get ariaDescribedBy() {
         return this._ariaDescribedBy;
@@ -142,6 +232,12 @@ export default class AvonniInputToggle extends LightningElement {
         );
     }
 
+    /**
+     * A space-separated list of element IDs that provide labels for the input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get ariaLabelledBy() {
         return this._ariaLabelledBy;
@@ -157,6 +253,13 @@ export default class AvonniInputToggle extends LightningElement {
         );
     }
 
+    /**
+     * If present, the toggle is selected.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get checked() {
         return this._checked;
@@ -170,14 +273,29 @@ export default class AvonniInputToggle extends LightningElement {
         this._updateProxyInputAttributes('checked');
     }
 
+    /**
+     * If present, the input field is disabled and users cannot interact with it.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get disabled() {
         return this._disabled;
     }
+
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
     }
 
+    /**
+     * If present, hides the mark.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get hideMark() {
         return this._hideMark;
@@ -186,15 +304,13 @@ export default class AvonniInputToggle extends LightningElement {
         this._hideMark = normalizeBoolean(value);
     }
 
-    @api
-    get messageWhenValueMissing() {
-        return this._messageWhenValueMissing;
-    }
-
-    set messageWhenValueMissing(value) {
-        this._messageWhenValueMissing = value;
-    }
-
+    /**
+     * If present, the input field is read-only and cannot be edited by users.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get readOnly() {
         return this._readOnly;
@@ -204,6 +320,13 @@ export default class AvonniInputToggle extends LightningElement {
         this._readOnly = normalizeBoolean(value);
     }
 
+    /**
+     * If present, the input field must be filled out before the form is submitted.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
     @api
     get required() {
         return this._required;
@@ -214,6 +337,13 @@ export default class AvonniInputToggle extends LightningElement {
         this._updateProxyInputAttributes('required');
     }
 
+    /**
+     * The size of the input toggle. Valid values include x-small, small, medium and large.
+     * 
+     * @type {string}
+     * @default medium
+     * @public
+     */
     @api
     get size() {
         return this._size;
@@ -226,6 +356,18 @@ export default class AvonniInputToggle extends LightningElement {
         });
     }
 
+    /**
+     * The variant changes the appearance of an input field.
+     * Accepted variants include standard, label-inline, label-hidden, and label-stacked.
+     * This value defaults to standard, which displays the label above the field.
+     * Use label-hidden to hide the label but make it available to assistive technology.
+     * Use label-inline to horizontally align the label and input field.
+     * Use label-stacked to place the label above the input field.
+     * 
+     * @type {string}
+     * @default standard
+     * @public
+     */
     @api
     get variant() {
         return this._variant || VARIANT.STANDARD;
@@ -233,14 +375,24 @@ export default class AvonniInputToggle extends LightningElement {
 
     set variant(toggleVariant) {
         this._variant = normalizeVariant(toggleVariant);
-        this.updateClassList();
     }
 
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get validity() {
         return this._constraint.validity;
     }
 
+    /**
+     * Removes keyboard focus from the input element.
+     * 
+     * @public
+     */
     @api
     blur() {
         if (this._rendered) {
@@ -248,11 +400,22 @@ export default class AvonniInputToggle extends LightningElement {
         }
     }
 
+    /**
+     * Checks if the input is valid.
+     * 
+     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @public
+     */
     @api
     checkValidity() {
         return this._constraint.checkValidity();
     }
 
+    /**
+     * Sets focus on the input element.
+     * 
+     * @public
+     */
     @api
     focus() {
         if (this._rendered) {
@@ -260,27 +423,55 @@ export default class AvonniInputToggle extends LightningElement {
         }
     }
 
+    /**
+     * Displays the error messages and returns false if the input is invalid.
+     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * 
+     * @returns {boolean} - The validity status of the input fields.
+     * @public
+     */
     @api
     reportValidity() {
         return this._constraint.reportValidity((message) => {
-            this.helpMessage = this.messageWhenValueMissing || message;
+            this.helpMessage = message;
         });
     }
 
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     * 
+     * @param {string} message - The string that describes the error.
+     * If message is an empty string, the error message is reset.
+     * @public
+     */
     @api
     setCustomValidity(message) {
         this._constraint.setCustomValidity(message);
     }
 
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * 
+     * @public
+     */
     @api
     showHelpMessageIfInvalid() {
         this.reportValidity();
     }
 
+    /**
+     * Localization.
+     */
     get i18n() {
         return i18n;
     }
 
+    /**
+     * Computed Wrapper Class styling.
+     * 
+     * @type {string}
+     */
     get computedWrapperClass() {
         return classSet('slds-checkbox_toggle label').add({
             'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
@@ -288,6 +479,11 @@ export default class AvonniInputToggle extends LightningElement {
         });
     }
 
+    /**
+     * Computed Faux Toggle Class styling.
+     * 
+     * @type {string}
+     */
     get computedFauxToggleClass() {
         return classSet('slds-checkbox_faux').add({
             'faux_x-small': this.size === 'x-small',
@@ -297,6 +493,11 @@ export default class AvonniInputToggle extends LightningElement {
         });
     }
 
+    /**
+     * Computed Label Class styling.
+     * 
+     * @type {string}
+     */
     get computedLabelClass() {
         return classSet(
             'slds-form-element slds-form-element__label slds-m-bottom_none'
@@ -306,15 +507,28 @@ export default class AvonniInputToggle extends LightningElement {
         });
     }
 
+    /**
+     * Gets element unique help ID.
+     *
+     * @type {string}
+     */
     get computedUniqueHelpElementId() {
         return getRealDOMId(this.template.querySelector('[data-help-message]'));
     }
 
+    /**
+     * Gets element described by ID.
+     *
+     * @type {string}
+     */
     get computedUniqueToggleElementDescribedById() {
         const toggle = this.template.querySelector('[data-toggle-description]');
         return getRealDOMId(toggle);
     }
 
+    /**
+     * Gets Aria Described By.
+     */
     get computedAriaDescribedBy() {
         const ariaValues = [];
 
@@ -333,6 +547,9 @@ export default class AvonniInputToggle extends LightningElement {
         return normalizeAriaAttribute(ariaValues);
     }
 
+    /**
+     * Gets Aria Controls.
+     */
     get computedAriaControls() {
         const ariaValues = [];
 
@@ -343,6 +560,9 @@ export default class AvonniInputToggle extends LightningElement {
         return normalizeAriaAttribute(ariaValues);
     }
 
+    /**
+     * Gets Aria Labelled by.
+     */
     get computedAriaLabelledBy() {
         const ariaValues = [];
 
@@ -353,10 +573,20 @@ export default class AvonniInputToggle extends LightningElement {
         return normalizeAriaAttribute(ariaValues);
     }
 
+    /**
+     * Gets input element.
+     * 
+     * @type {element}
+     */
     get _inputElement() {
         return this.template.querySelector('input');
     }
 
+    /**
+     * Gets FieldConstraintApi.
+     *
+     * @type {object}
+     */
     get _constraint() {
         if (!this._constraintApi) {
             this._constraintApi = new FieldConstraintApiWithProxyInput(
@@ -374,29 +604,50 @@ export default class AvonniInputToggle extends LightningElement {
         return this._constraintApi;
     }
 
+    /**
+     * Updates proxy input attributes.
+     * 
+     * @param {string} attributes
+     */
     _updateProxyInputAttributes(attributes) {
         if (this._constraintApiProxyInputUpdater) {
             this._constraintApiProxyInputUpdater(attributes);
         }
     }
 
-    updateClassList() {
-        classListMutation(this.classList, {
-            'slds-has-error': !this.valid
-        });
-    }
-
+    /**
+     * Dispatches the blur event.
+     */
     handleBlur() {
-        this.valid = !(this.required && !this.checked);
-        this.updateClassList();
+        this.interactingState.leave();
 
+        /**
+         * @event
+         * @name blur
+         * The event fired when the focus is removed from the input toggle.
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
+    /**
+     * Dispatches the focus event.
+     */
     handleFocus() {
+        this.interactingState.enter();
+
+        /**
+         * @event
+         * @name focus
+         * The event fired when you focus the input toggle.
+         * @public
+         */
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
+    /**
+     * Dispatches the change event.
+     */
     handleChange(event) {
         if (this.readOnly) {
             this._inputElement.checked = this.checked;
@@ -406,6 +657,16 @@ export default class AvonniInputToggle extends LightningElement {
         this._checked = this._inputElement.checked;
         this._updateProxyInputAttributes('checked');
 
+        /**
+         * The event fired when a value is changed in the input toggle.
+         * 
+         * @event
+         * @name change
+         * @param {boolean} checked For input types checkbox and checkbox-button, the value of checked attribute.
+         * @bubbles
+         * @composed
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {

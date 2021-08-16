@@ -56,12 +56,58 @@ const ACTIONS_POSITIONS = {
 const DEFAULT_SHRINK_ICON_NAME = 'utility:chevrondown';
 const DEFAULT_EXPAND_ICON_NAME = 'utility:chevronright';
 
+/**
+ * @class
+ * @descriptor avonni-relationship-graph
+ * @storyId example-relationship-graph--base
+ * @public
+ */
 export default class AvonniRelationshipGraph extends LightningElement {
+    /**
+     * Root label.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
     @api label;
+    /**
+     * Image URL for the avatar of the root item. If present, the avatar is displayed before the label.
+     *
+     * @type {string}
+     * @public
+     */
     @api avatarSrc;
+    /**
+     * The Lightning Design System name of the icon used as a fallback when the root avatar image fails to load.
+     * Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     *
+     * @type {string}
+     * @public
+     */
     @api avatarFallbackIconName;
+    /**
+     * URL for the root label link.
+     *
+     * @type {string}
+     * @public
+     */
     @api href;
+    /**
+     * Icon used to shrink an expanded group of items.
+     *
+     * @type {string}
+     * @public
+     * @default utility:chevrondown
+     */
     @api shrinkIconName = DEFAULT_SHRINK_ICON_NAME;
+    /**
+     * Icon used to expand a closed group of items.
+     *
+     * @type {string}
+     * @public
+     * @default utility:chevronright
+     */
     @api expandIconName = DEFAULT_EXPAND_ICON_NAME;
 
     processedGroups;
@@ -92,6 +138,13 @@ export default class AvonniRelationshipGraph extends LightningElement {
         this.updateLine();
     }
 
+    /**
+     * Valid values include horizontal, vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
     @api
     get variant() {
         return this._variant;
@@ -103,6 +156,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Array of root actions.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get actions() {
         return this._actions;
@@ -111,6 +170,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
         this._actions = normalizeArray(value);
     }
 
+    /**
+     * Name of the selected item.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get selectedItemName() {
         return this._selectedItemName;
@@ -122,6 +187,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
         if (this.isConnected) this.updateSelection();
     }
 
+    /**
+     * Array of item groups.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get groups() {
         return this._groups;
@@ -134,6 +205,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
         }
     }
 
+    /**
+     * Array of default actions for all groups.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get groupActions() {
         return this._groupActions;
@@ -142,6 +219,13 @@ export default class AvonniRelationshipGraph extends LightningElement {
         this._groupActions = normalizeArray(value);
     }
 
+    /**
+     * Position of the group actions. Valid options include ‘top’ and ‘bottom’.
+     *
+     * @type {string}
+     * @public
+     * @default top
+     */
     @api
     get groupActionsPosition() {
         return this._groupActionsPosition;
@@ -153,6 +237,13 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Theme of the item groups tiles. Valid options include: ‘default’, ‘shade’ and ‘inverse’.
+     *
+     * @type {string}
+     * @public
+     * @default default
+     */
     @api
     get groupTheme() {
         return this._groupTheme;
@@ -164,6 +255,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Array of default actions for all items.
+     *
+     * @type {object[]}
+     * @public
+     */
     @api
     get itemActions() {
         return this._itemActions;
@@ -172,6 +269,13 @@ export default class AvonniRelationshipGraph extends LightningElement {
         this._itemActions = normalizeArray(value);
     }
 
+    /**
+     * Theme of the item tiles. Valid options include: ‘default’, ‘shade’ and ‘inverse’.
+     *
+     * @type {string}
+     * @public
+     * @default default
+     */
     @api
     get itemTheme() {
         return this._itemTheme;
@@ -183,6 +287,13 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * If true, the number of items per group is hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get hideItemsCount() {
         return this._hideItemsCount;
@@ -191,20 +302,40 @@ export default class AvonniRelationshipGraph extends LightningElement {
         this._hideItemsCount = normalizeBoolean(boolean);
     }
 
+    /**
+     * Verify if avatar is displayed.
+     *
+     * @type {string}
+     */
     get hasAvatar() {
         return this.avatarSrc || this.avatarFallbackIconName;
     }
 
+    /**
+     * Verify if actions object is populated.
+     *
+     * @type {object[]}
+     */
     get hasActions() {
         return this.actions.length > 0;
     }
 
+    /**
+     * Get the DOM child element level
+     *
+     * @type {Element}
+     */
     get childLevel() {
         return this.template.querySelector(
             'c-primitive-relationship-graph-level'
         );
     }
 
+    /**
+     * Compute wrapper class when horizontal.
+     *
+     * @type {string}
+     */
     get wrapperClass() {
         return classSet('').add({
             'slds-grid': this.variant === 'horizontal',
@@ -212,6 +343,11 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Compute header class styling based on selected attributes.
+     *
+     * @type {string}
+     */
     get headerClass() {
         const { variant, groupTheme } = this;
         return classSet('slds-show_inline-block').add({
@@ -228,6 +364,11 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Compute actions class styling based on vertical or horizontal alignment.
+     *
+     * @type {string}
+     */
     get actionsClass() {
         return classSet('slds-is-relative actions').add({
             actions_vertical: this.variant === 'vertical',
@@ -235,6 +376,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
             'slds-p-vertical_large': this.variant === 'vertical'
         });
     }
+
+    /**
+     * Get action button class styling based on vertical or horizontal alignment.
+     *
+     * @type {string}
+     */
     get actionButtonClass() {
         return classSet('slds-button slds-button_neutral').add({
             'slds-button_stretch': this.variant === 'vertical',
@@ -242,6 +389,11 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Get line class styling based on vertical or horizontal alignment.
+     *
+     * @type {string}
+     */
     get lineClass() {
         return classSet('line').add({
             line_vertical: this.variant === 'horizontal',
@@ -249,6 +401,11 @@ export default class AvonniRelationshipGraph extends LightningElement {
         });
     }
 
+    /**
+     * Update line width and height based child element level.
+     *
+     * @type {string}
+     */
     updateLine() {
         const line = this.template.querySelector('.line');
         const currentLevel = this.childLevel;
@@ -262,6 +419,9 @@ export default class AvonniRelationshipGraph extends LightningElement {
         }
     }
 
+    /**
+     * Update selection from graph.
+     */
     updateSelection() {
         if (!this.groups.length > 0) return;
 
@@ -273,6 +433,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
             this.selectItem(this.selectedItemName, this.processedGroups);
     }
 
+    /**
+     * Select item from relationship graph.
+     *
+     * @param {string} name
+     * @param {object} groups
+     */
     selectItem(name, groups) {
         let i = 0;
 
@@ -312,11 +478,24 @@ export default class AvonniRelationshipGraph extends LightningElement {
         }
     }
 
+    /**
+     * Select event dispatch.
+     *
+     * @param {Event} event
+     */
     dispatchSelectEvent(event) {
         const name = event.detail.name;
         this._selectedItemName = name;
         this.updateSelection();
 
+        /**
+         * The event fired when a user clicks on an item. An external select by changing the selected attribute of an item does not emit this event.
+         *
+         * @event
+         * @name select
+         * @param {string} name Name of the item selected.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('select', {
                 detail: {
@@ -326,7 +505,22 @@ export default class AvonniRelationshipGraph extends LightningElement {
         );
     }
 
+    /**
+     * Action click event dispatcher.
+     *
+     * @param {Event} event
+     */
     dispatchActionClickEvent(event) {
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @param {string} name Name of the action clicked.
+         * @param {string} targetName Name of the group or item the action is related to. If the action is a root action, the value of targetName will be ‘root’.
+         * @param {object} itemData For an item action, data of the item.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('actionclick', {
                 detail: event.detail
@@ -347,6 +541,9 @@ export default class AvonniRelationshipGraph extends LightningElement {
         );
     }
 
+    /**
+     * Level height change handler.
+     */
     handleLevelHeightChange() {
         this.updateLine();
     }

@@ -34,9 +34,21 @@ import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const MEDIA_OBJECT_SIZES = {valid: ['small', 'medium', 'large'], default: 'medium'};
-const VERTICAL_ALIGNMENTS = {valid: ['center', 'start', 'end'], default: 'start'};
+const MEDIA_OBJECT_SIZES = {
+    valid: ['small', 'medium', 'large'],
+    default: 'medium'
+};
+const VERTICAL_ALIGNMENTS = {
+    valid: ['center', 'start', 'end'],
+    default: 'start'
+};
 
+/**
+ * @class
+ * @descriptor avonni-media-object
+ * @storyId example-media-object--base
+ * @public
+ */
 export default class AvonniMediaObject extends LightningElement {
     _verticalAlign = VERTICAL_ALIGNMENTS.default;
     _responsive = false;
@@ -63,14 +75,31 @@ export default class AvonniMediaObject extends LightningElement {
         }
     }
 
+    /**
+     * Get the figure slot DOM Element
+     *
+     * @type {Element}
+     */
     get figureSlot() {
         return this.template.querySelector('slot[name=figure]');
     }
 
+    /**
+     * Get the firgure-inverse slot DOM Element
+     *
+     * @type {Element}
+     */
     get figureInverseSlot() {
         return this.template.querySelector('slot[name=figure-inverse]');
     }
 
+    /**
+     * Determines how to align the media object items vertically in the container. The alignment options are start, center and end.
+     *
+     * @type {string}
+     * @public
+     * @default start
+     */
     @api
     get verticalAlign() {
         return this._verticalAlign;
@@ -83,6 +112,13 @@ export default class AvonniMediaObject extends LightningElement {
         });
     }
 
+    /**
+     * figure and body stack on smaller screens.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get responsive() {
         return this._responsive;
@@ -92,6 +128,13 @@ export default class AvonniMediaObject extends LightningElement {
         this._responsive = normalizeBoolean(value);
     }
 
+    /**
+     * Aligns the figure and body to be inline-block of each other.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get inline() {
         return this._inline;
@@ -101,6 +144,13 @@ export default class AvonniMediaObject extends LightningElement {
         this._inline = normalizeBoolean(value);
     }
 
+    /**
+     * The size of the media object. Valid values include small, medium and large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
     @api get size() {
         return this._size;
     }
@@ -112,6 +162,11 @@ export default class AvonniMediaObject extends LightningElement {
         });
     }
 
+    /**
+     * Compute media object class styling based on selected attributes.
+     *
+     * @type {string}
+     */
     get mediaObjectClass() {
         return classSet('slds-media')
             .add({

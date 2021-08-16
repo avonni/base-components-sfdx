@@ -33,37 +33,98 @@
 -->
 
 <template>
-    <div class="avonni-pallet-container">
-        <lightning-spinner if:true={isLoading} size="small"></lightning-spinner>
-        <ul
-            if:false={isLoading}
-            class="slds-color-picker__swatches"
-            role="listbox"
-        >
-            <template for:each={colors} for:item="color">
-                <li
+    <template if:true={isList}>
+        <div class="list-container slds-scrollable">
+            <template for:each={bundles} for:item="bundle">
+                <div
                     key={uniqKey}
-                    class="slds-color-picker__swatch"
-                    role="presentation"
+					item-label={bundle.label}
+					item-token={bundle.token}
+                    item-color={bundle.value}
+                    onclick={handleClick}
+                    onblur={handleBlur}
+                    onfocus={handleFocus}
                 >
-                    <a
-                        class="slds-color-picker__swatch-trigger"
-                        href="javascript:void(0)"
-                        onclick={handleClick}
-                        onblur={handleBlur}
-                        onfocus={handleFocus}
-                        item-color={color}
-                        is-disabled={disabled}
-                        read-only={readOnly}
-                        role="option"
-                        tabindex="0"
-                    >
-                        <span class="slds-swatch">
-                            <span class="slds-assistive-text">{color}</span>
-                        </span>
-                    </a>
-                </li>
+                    <div class="slds-dropdown__item" role="presentation">
+                        <a
+                            aria-checked="true"
+                            href="javascript:void(0)"
+                            role="menuitemcheckbox"
+                            tabindex="0"
+                        >
+                            <span class="slds-truncate" title="Table View">
+                                <svg
+                                    class="slds-icon slds-icon_selected slds-icon_x-small slds-icon-text-default slds-m-right_x-small"
+                                    aria-hidden="true"
+                                >
+                                    <use
+                                        xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#check"
+                                    ></use>
+                                </svg>
+                                {bundle.label}</span
+                            >
+                            <div role="presentation">
+                                <div
+                                    class="slds-color-picker__swatch-trigger"
+                                    href="javascript:void(0)"
+                                    item-color={bundle.value}
+                                    is-disabled={disabled}
+                                    read-only={readOnly}
+                                    role="option"
+                                    tabindex="0"
+                                >
+                                    <span class="slds-swatch">
+                                        <p class="slds-assistive-text">
+                                            {bundle.value}
+                                        </p>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </template>
-        </ul>
-    </div>
+        </div>
+    </template>
+
+    <template if:true={isBase}>
+        <div class="avonni-pallet-container">
+            <lightning-spinner
+                if:true={isLoading}
+                size="small"
+            ></lightning-spinner>
+            <ul
+                if:false={isLoading}
+                class="slds-color-picker__swatches"
+                role="listbox"
+            >
+                <template for:each={colors} for:item="color">
+                    <li
+                        key={uniqKey}
+                        class="slds-color-picker__swatch"
+                        role="presentation"
+                    >
+                        <a
+                            class="slds-color-picker__swatch-trigger"
+                            href="javascript:void(0)"
+                            onclick={handleClick}
+                            onblur={handleBlur}
+                            onfocus={handleFocus}
+                            item-color={color}
+                            is-disabled={disabled}
+                            read-only={readOnly}
+                            role="option"
+                            tabindex="0"
+                        >
+                            <span class="slds-swatch">
+                                <span class="slds-assistive-text"
+                                    >{color}
+                                </span>
+                            </span>
+                        </a>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </template>
 </template>

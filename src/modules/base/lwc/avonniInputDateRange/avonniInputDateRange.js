@@ -31,9 +31,13 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
+import {
+    normalizeBoolean,
+    normalizeString
+} from 'c/utilsPrivate';
 import { parseDateTime } from 'c/internationalizationLibrary';
 import { classSet } from 'c/utils';
+import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
 
 const DATE_TYPES = {
     valid: ['date', 'datetime'],
@@ -42,18 +46,61 @@ const DATE_TYPES = {
 const DATE_STYLES = {
     valid: ['short', 'medium', 'long'],
     defaultDate: 'medium',
-    defaultTime:'short'
+    defaultTime: 'short'
 };
 const LABEL_VARIANTS = {
     valid: ['standard', 'label-hidden', 'label-inline', 'label-stacked'],
     default: 'standard'
 };
 
+/**
+ * @class
+ * @public
+ * @storyId example-input-date-range--base
+ * @descriptor avonni-input-date-range
+ */
 export default class AvonniInputDateRange extends LightningElement {
+    /**
+     * Help text detailing the purpose and function of the input.
+     * This attribute isn't supported for file, radio, toggle, and checkbox-button types.
+     * 
+     * @type {string}
+     * @public
+     */
     @api fieldLevelHelp;
+
+    /**
+     * Text label for the input.
+     * 
+     * @type {string}
+     * @required
+     * @public
+     */
     @api label;
+
+    /**
+     * Text label for the start input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api labelStartDate;
+
+    /**
+     * Text label for the end input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api labelEndDate;
+
+    /**
+     * Error message to be displayed when the start-date is missing.
+     * 
+     * @type {string}
+     * @public
+     */
+    @api messageWhenValueMissing;
 
     _timezone;
     _startDate;
@@ -74,6 +121,24 @@ export default class AvonniInputDateRange extends LightningElement {
     _cancelBlurStartDate = false;
     _cancelBlurEndDate = false;
 
+    helpMessage;
+    _valid = true;
+
+    connectedCallback() {
+        this.interactingState = new InteractingState();
+        this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
+    }
+    
+    renderedCallback(){
+        this.updateClassListWhenError();
+    }
+
+    /**
+     * Specifies the value of the start date input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get startDate() {
         return this._startDate;
@@ -85,6 +150,12 @@ export default class AvonniInputDateRange extends LightningElement {
         this.initStartDate();
     }
 
+    /**
+     * Specifies the value of the end date input.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get endDate() {
         return this._endDate;
@@ -96,6 +167,13 @@ export default class AvonniInputDateRange extends LightningElement {
         this.initEndtDate();
     }
 
+    /**
+     * Specifies the time zone used when type='datetime' only.
+     * This value defaults to the user's Salesforce time zone setting.
+     * 
+     * @type {string}
+     * @public
+     */
     @api
     get timezone() {
         return this._timezone;
@@ -107,7 +185,16 @@ export default class AvonniInputDateRange extends LightningElement {
         this.initEndtDate();
     }
 
-    @api 
+    /**
+     * The display style of the date when type='date' or type='datetime'.
+     * Valid values are short, medium and long. The format of each style is specific to the locale.
+     * On mobile devices this attribute has no effect.
+     * 
+     * @type {string}
+     * @default medium
+     * @public
+     */
+    @api
     get dateStyle() {
         return this._dateStyle;
     }
@@ -119,7 +206,16 @@ export default class AvonniInputDateRange extends LightningElement {
         });
     }
 
-    @api 
+    /**
+     * The display style of the time when type='time' or type='datetime'.
+     * Valid values are short, medium and long. Currently, medium and long styles look the same.
+     * On mobile devices this attribute has no effect.
+     * 
+     * @type {string}
+     * @default short
+     * @public
+     */
+    @api
     get timeStyle() {
         return this._timeStyle;
     }
@@ -131,7 +227,14 @@ export default class AvonniInputDateRange extends LightningElement {
         });
     }
 
-    @api 
+    /**
+     * Valid types include date and datetime.
+     * 
+     * @type {string}
+     * @default date
+     * @public
+     */
+    @api
     get type() {
         return this._type;
     }
@@ -145,7 +248,14 @@ export default class AvonniInputDateRange extends LightningElement {
         this.initEndtDate();
     }
 
-    @api 
+    /**
+     * If present, the input field is disabled and users cannot interact with it.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
     get disabled() {
         return this._disabled;
     }
@@ -154,7 +264,14 @@ export default class AvonniInputDateRange extends LightningElement {
         this._disabled = normalizeBoolean(value);
     }
 
-    @api 
+    /**
+     * If present, the input is read-only and cannot be edited by users.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
     get readOnly() {
         return this._readOnly;
     }
@@ -163,7 +280,14 @@ export default class AvonniInputDateRange extends LightningElement {
         this._readOnly = normalizeBoolean(value);
     }
 
-    @api 
+    /**
+     * If present, the input field must be filled out before the form is submitted.
+     * 
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
     get required() {
         return this._required;
     }
@@ -172,7 +296,19 @@ export default class AvonniInputDateRange extends LightningElement {
         this._required = normalizeBoolean(value);
     }
 
-    @api 
+    /**
+     * The variant changes the appearance of an input field.
+     * Accepted variants include standard, label-inline, label-hidden, and label-stacked.
+     * This value defaults to standard, which displays the label above the field.
+     * Use label-hidden to hide the label but make it available to assistive technology.
+     * Use label-inline to horizontally align the label and input field.
+     * Use label-stacked to place the label above the input field.
+     * 
+     * @type {string}
+     * @default standard
+     * @public
+     */
+    @api
     get variant() {
         return this._variant;
     }
@@ -184,10 +320,67 @@ export default class AvonniInputDateRange extends LightningElement {
         });
     }
 
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     * 
+     * @type {string}
+     * @public
+     */
+    @api
+    get validity() {
+        return this._constraint.validity;
+    }
+
+    /**
+     * Start date input.
+     * 
+     * @type {element}
+     */
+    get startDateInput() {
+        return this.template.querySelector('.start-date')
+    }
+
+    /**
+     * End date input.
+     * 
+     * @type {element}
+     */
+    get endDateInput() {
+        return this.template.querySelector('.end-date')
+    }
+
+    /**
+     * Start time input.
+     * 
+     * @type {element}
+     */
+    get startTimeInput() {
+        return this.template.querySelector('.start-time')
+    }
+
+    /**
+     * End time input.
+     * 
+     * @type {element}
+     */
+    get endTimeInput() {
+        return this.template.querySelector('.end-time')
+    }
+
+    /**
+     * True if type is datetime.
+     * 
+     * @type {boolean}
+     */
     get showTime() {
         return this.type === 'datetime';
     }
 
+    /**
+     * Formatted start date string.
+     * 
+     * @type {string}
+     */
     get startDateString() {
         let dateStr = '';
 
@@ -198,6 +391,11 @@ export default class AvonniInputDateRange extends LightningElement {
         return dateStr;
     }
 
+    /**
+     * Formatted end date string.
+     * 
+     * @type {string}
+     */
     get endDateString() {
         let dateStr = '';
 
@@ -208,30 +406,149 @@ export default class AvonniInputDateRange extends LightningElement {
         return dateStr;
     }
 
+    /**
+     * Class of the label container.
+     * 
+     * @type {string}
+     */
     get computedLabelClass() {
-        return classSet('avonni-label-container').add({
-            'slds-assistive-text': this.variant === 'label-hidden',
-            'slds-m-right_small': this.variant === 'label-inline'
-        }).toString();
+        return classSet('avonni-label-container')
+            .add({
+                'slds-assistive-text': this.variant === 'label-hidden',
+                'slds-m-right_small': this.variant === 'label-inline'
+            })
+            .toString();
     }
 
+    /**
+     * Class of the input date range wrapper.
+     * 
+     * @type {string}
+     */
     get computedWrapperClass() {
-        return classSet().add({
-            'slds-grid': this.variant === 'label-inline'
-        }).toString();
+        return classSet()
+            .add({
+                'slds-grid': this.variant === 'label-inline'
+            })
+            .toString();
+    }
+    
+    /**
+     * Removes the slds-has-error class on the whole element if it's not valid.
+     * Aplies it on every input we need it applied.
+     * Removes it from every input when valid.
+     */
+    updateClassListWhenError() {
+        if(!this._valid) {
+            this.classList.remove('slds-has-error')
+            this.startDateInput.classList.add('slds-has-error')
+            this.startDateInput.classList.add('avonni-input-date-rage-input-error')
+            this.endDateInput.classList.add('slds-has-error')
+            this.endDateInput.classList.add('avonni-input-date-rage-input-error')
+            if(this.showTime){
+                this.startTimeInput.classList.add('slds-has-error')
+                this.endTimeInput.classList.add('slds-has-error')
+            }
+        }
+        if(this._valid) {
+            this.startDateInput.classList.remove('slds-has-error')
+            this.startDateInput.classList.remove('avonni-input-date-rage-input-error')
+            this.endDateInput.classList.remove('slds-has-error')
+            this.endDateInput.classList.remove('avonni-input-date-rage-input-error')
+            if(this.showTime){
+                this.startTimeInput.classList.remove('slds-has-error')
+                this.endTimeInput.classList.remove('slds-has-error')
+            }
+        }
     }
 
+    /**
+     * Sets focus on the start date input.
+     * 
+     * @public
+     */
     @api
     focus() {
-        this.template.querySelector('.start-date').focus();
+        this.startDateInput.focus();
     }
 
+    /**
+     * Removes keyboard focus from the start date input and end date input.
+     * 
+     * @public
+     */
     @api
     blur() {
-        this.template.querySelector('.start-date').blur();
-        this.template.querySelector('.end-date').blur();
+        this.startDateInput.blur();
+        this.endDateInput.blur();
     }
 
+    /**
+     * Checks if the input is valid.
+     * 
+     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Displays the error messages and returns false if the input is invalid.
+     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * 
+     * @returns {boolean} - The validity status of the input fields.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this.helpMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     * 
+     * @param {string} message - The string that describes the error.
+     * If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * 
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+    
+    /**
+     * Gets FieldConstraintApi.
+     *
+     * @type {object}
+     */
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled && this.required && !this.startDate
+            });
+        }
+        return this._constraintApi;
+    }
+
+    /**
+     * Initialization of start date depending on timezone and type.
+     */
     initStartDate() {
         if (this.startDate) {
             if (this.timezone) {
@@ -252,6 +569,9 @@ export default class AvonniInputDateRange extends LightningElement {
         }
     }
 
+    /**
+     * Initialization of end date depending on timezone and type.
+     */
     initEndtDate() {
         if (this.endDate) {
             if (this.timezone) {
@@ -272,6 +592,9 @@ export default class AvonniInputDateRange extends LightningElement {
         }
     }
 
+    /**
+     * Handles the change of start-time.
+     */
     handleChangeStartTime(event) {
         event.stopPropagation();
         event.preventDefault();
@@ -279,6 +602,9 @@ export default class AvonniInputDateRange extends LightningElement {
         this.dispatchChange();
     }
 
+    /**
+     * Handles the change of end-time.
+     */
     handleChangeEndTime(event) {
         event.stopPropagation();
         event.preventDefault();
@@ -286,6 +612,9 @@ export default class AvonniInputDateRange extends LightningElement {
         this.dispatchChange();
     }
 
+    /**
+     * Handles the change of start-date on c-calendar.
+     */
     handleChangeStartDate(event) {
         // Date format received is: YYYY-MM-DD
         const date = event.detail.value.split('-');
@@ -299,6 +628,9 @@ export default class AvonniInputDateRange extends LightningElement {
         this.handleBlurStartDate();
     }
 
+    /**
+     * Handles focus for the start-date input.
+     */
     handleFocusStartDate() {
         if (this.readOnly) return;
 
@@ -307,9 +639,16 @@ export default class AvonniInputDateRange extends LightningElement {
         if (!this.isOpenStartDate) {
             this.toggleStartDateVisibility();
         }
+        this.interactingState.enter();
     }
 
+    /**
+     * Handles blur for the start-date input.
+     */
     handleBlurStartDate(event) {
+        this.interactingState.leave();
+
+        this._valid = !(this.required && !this.startDate);
         if (this._cancelBlurStartDate) {
             return;
         }
@@ -335,58 +674,79 @@ export default class AvonniInputDateRange extends LightningElement {
                     this.startDate.getDate() + 1
                 );
                 this.endDate = new Date(new Date(endDate).setHours(0, 0, 0, 0));
-                this.template.querySelector('.end-date').focus();
+                this.endDateInput.focus();
             }
 
             this.dispatchChange();
         }
     }
 
+    /**
+     * Handles blur for the c-calendar for start-date.
+     */
     handlePrivateBlurStartDate(event) {
         event.stopPropagation();
         this.allowBlurStartDate();
         this.handleBlurStartDate();
     }
 
+    /**
+     * Handles focus for the c-calendar for start-date.
+     */
     handlePrivateFocusStartDate(event) {
         event.stopPropagation();
         this.cancelBlurStartDate();
         this.handleFocusStartDate();
     }
 
+    /**
+     * Sets the variable cancelBlurStartDate to false.
+     */
     allowBlurStartDate(event) {
         if (event !== undefined) {
             this._cancelBlurStartDate = false;
         }
     }
 
+    /**
+     * Sets the variable cancelBlurStartDate to true.
+     */
     cancelBlurStartDate() {
         this._cancelBlurStartDate = true;
     }
 
+    /**
+     * Toggles the visibility of c-calendar for start-date.
+     */
     toggleStartDateVisibility() {
         this.isOpenStartDate = !this.isOpenStartDate;
         if (!this.isOpenStartDate) {
-            this.template.querySelector('.start-date').blur();
+            this.startDateInput.blur();
         }
     }
 
+    /**
+     * Handles the change of end-date on c-calendar.
+     */
     handleChangeEndDate(event) {
         // Date format received is: YYYY-MM-DD
         const date = event.detail.value.split('-');
         const year = Number(date[0]);
         const month = Number(date[1]) - 1;
         const day = Number(date[2]);
-        
+
         this.endDate = new Date(year, month, day);
         event.stopPropagation();
         this._cancelBlurEndDate = false;
         this.handleBlurEndDate();
     }
 
+    /**
+     * Handles focus for the end date input.
+     */
     handleFocusEndDate() {
         if (this.readOnly) return;
-        
+
         this.allowBlurEndDate();
 
         if (!this.isOpenEndDate) {
@@ -394,6 +754,9 @@ export default class AvonniInputDateRange extends LightningElement {
         }
     }
 
+    /**
+     * Handles blur for the end date input.
+     */
     handleBlurEndDate(event) {
         if (this._cancelBlurEndDate) {
             return;
@@ -422,42 +785,63 @@ export default class AvonniInputDateRange extends LightningElement {
                 this.startDate = new Date(
                     new Date(startDate).setHours(0, 0, 0, 0)
                 );
-                this.template.querySelector('.start-date').focus();
+                this.startDateInput.focus();
             }
 
             this.dispatchChange();
         }
     }
 
+    /**
+     * Handles blur for the c-calendar for end-date.
+     */
     handlePrivateBlurEndDate(event) {
         event.stopPropagation();
         this.allowBlurEndDate();
         this.handleBlurEndDate();
     }
 
+    /**
+     * Handles focus for the c-calendar for end-date.
+     */
     handlePrivateFocusEndDate(event) {
         event.stopPropagation();
         this.handleBlurEndDate();
         this.handleFocusEndDate();
     }
 
+    /**
+     * Sets the variable cancelBlurEndDate to false.
+     */
     allowBlurEndDate(event) {
         if (event !== undefined) {
             this._cancelBlurEndDate = false;
         }
     }
 
+    /**
+     * Sets the variable cancelBlurEndDate to true.
+     */
     cancelBlurEndDate() {
         this._cancelBlurEndDate = true;
     }
 
+    /**
+     * Toggles the visibility of c-calendar for end-date.
+     */
     toggleEndDateVisibility() {
         this.isOpenEndDate = !this.isOpenEndDate;
         if (!this.isOpenEndDate) {
-            this.template.querySelector('.end-date').blur();
+            this.endDateInput.blur();
         }
     }
 
+    /**
+     * Change the date format depending on date style.
+     * 
+     * @param {date}
+     * @returns {date} formated date depending on the date style.
+     */
     dateFormat(value) {
         let date = value.getDate();
         let year = value.getFullYear();
@@ -476,6 +860,9 @@ export default class AvonniInputDateRange extends LightningElement {
         return `${month}/${date}/${year}`;
     }
 
+    /**
+     * Dispatch changes from start-date input, end-date input, c-calendar for start-date and c-calendar for end-date.
+     */
     dispatchChange() {
         let startDate = this.startTime
             ? `${this.startDateString} ${this.startTime}`
@@ -500,6 +887,15 @@ export default class AvonniInputDateRange extends LightningElement {
             ? new Date(endDate).toISOString()
             : endDate;
 
+        /**
+         * The event fired when the value changed.
+         * 
+         * @event
+         * @name change
+         * @param {string} startDate Start date value.
+         * @param {string} endDate End date value
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {

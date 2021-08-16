@@ -139,3 +139,7 @@ button:disabled {
     width: 10rem;
     height: 4rem;
 }
+
+.palette-height{
+	height: 180px;
+}

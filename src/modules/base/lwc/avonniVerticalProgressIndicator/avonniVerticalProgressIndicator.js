@@ -35,7 +35,20 @@ import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
 const INDICATOR_VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
 
+/**
+ * @class
+ * @descriptor avonni-vertical-progress-indicator
+ * @storyId example-vertical-progress-indicator--base
+ * @public
+ */
 export default class AvonniVerticalProgressIndicator extends LightningElement {
+    /**
+     * Set current-step to match the value attribute of one of progress-step components.
+     * If current-step is not provided, the value of the first progress-step component is used.
+     *
+     * @type {string}
+     * @public
+     */
     @api currentStep;
 
     _variant = INDICATOR_VARIANTS.default;
@@ -77,6 +90,14 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * Changes the appearance of the progress indicator for the base type only. Valid values are base or shaded.
+     * The shaded variant adds a light gray border to the step indicators.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api get variant() {
         return this._variant;
     }
@@ -88,6 +109,13 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
         });
     }
 
+    /**
+     * If present, the current step is in error state and an error icon is displayed on the step indicator. Only the base type can display errors.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get hasError() {
         return this._hasError;
     }
@@ -96,6 +124,14 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
         this._hasError = normalizeBoolean(value);
     }
 
+    /**
+     * If present, add the class slds-progress__item_content to all vertical-progress-step items.
+     * Example: https://www.lightningdesignsystem.com/components/setup-assistant/#Hub-with-Expandable-Steps
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get contentInLine() {
         return this._contentInLine;
     }
@@ -104,12 +140,22 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
         this._contentInLine = normalizeBoolean(value);
     }
 
+    /**
+     * Computed progress class styling.
+     *
+     * @type {string}
+     */
     get computedProgressClass() {
         return this.variant === 'base'
             ? 'slds-progress slds-progress_vertical slds-progress_success'
             : 'slds-progress slds-progress_vertical slds-progress_success slds-progress_shade';
     }
 
+    /**
+     * Computed progress list class styling.
+     *
+     * @type {string}
+     */
     get computedProgressListClass() {
         return this.contentInLine
             ? 'slds-progress__list slds-progress__list-bordered'

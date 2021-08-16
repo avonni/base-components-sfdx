@@ -81,8 +81,28 @@ const CONFETTI_FREQUENCY = {
     }
 };
 
+/**
+* @class
+* @descriptor avonni-path
+* @storyId example-path--base
+* @public
+*/
 export default class AvonniPath extends LightningElement {
+    /**
+    * The Lightning Design System name of the icon used for the path update button.
+    * Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+    *
+    * @type {string}
+    * @public
+    */
     @api nextButtonIconName;
+    /**
+    * Label of the path button, when the user clicked on a different step than the current one. On click on the button, the selected step will become the current step.
+    *
+    * @type {string}
+    * @public
+    * @default Mark as Current Stage
+    */
     @api selectButtonIconName;
 
     _currentStep;
@@ -117,6 +137,12 @@ export default class AvonniPath extends LightningElement {
         this.initTooltips();
     }
 
+    /**
+    * Name of the current step.
+    *
+    * @type {string}
+    * @public
+    */
     @api
     get currentStep() {
         return this._currentStep;
@@ -129,6 +155,13 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+    * If true, the path is disabled.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api
     get disabled() {
         return this._disabled;
@@ -137,6 +170,13 @@ export default class AvonniPath extends LightningElement {
         this._disabled = normalizeBoolean(bool);
     }
 
+    /**
+    * Valid values include linear and non-linear.
+    *
+    * @type {string}
+    * @public
+    * @default linear
+    */
     @api
     get format() {
         return this._format;
@@ -148,6 +188,13 @@ export default class AvonniPath extends LightningElement {
         });
     }
 
+    /**
+    * Label of the key fields section.
+    *
+    * @type {string}
+    * @public
+    * @default Key Fields
+    */
     @api
     get keyFieldsLabel() {
         return this._keyFieldsLabel;
@@ -157,6 +204,13 @@ export default class AvonniPath extends LightningElement {
             typeof value === 'string' ? value.trim() : DEFAULT_KEYFIELDS_LABEL;
     }
 
+    /**
+    * Label of the guidance section.
+    *
+    * @type {string}
+    * @public
+    * @default Guidance for Success
+    */
     @api
     get guidanceLabel() {
         return this._guidanceLabel;
@@ -166,6 +220,13 @@ export default class AvonniPath extends LightningElement {
             typeof value === 'string' ? value.trim() : DEFAULT_GUIDANCE_LABEL;
     }
 
+    /**
+    * If true, the coaching section will be hidden.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api
     get hideCoaching() {
         return this._hideCoaching;
@@ -174,6 +235,13 @@ export default class AvonniPath extends LightningElement {
         this._hideCoaching = normalizeBoolean(bool);
     }
 
+    /**
+    * If true, hide the path buttons.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api
     get hideButtons() {
         return this._hideButtons;
@@ -182,6 +250,13 @@ export default class AvonniPath extends LightningElement {
         this._hideButtons = normalizeBoolean(bool);
     }
 
+    /**
+    * Default label of the path button. On click on the button, the path will go to the next step.
+    *
+    * @type {string}
+    * @public
+    * @default Mark as Complete
+    */
     @api
     get nextButtonLabel() {
         return this._nextButtonLabel;
@@ -193,6 +268,13 @@ export default class AvonniPath extends LightningElement {
                 : DEFAULT_NEXT_BUTTON_LABEL;
     }
 
+    /**
+    * The Lightning Design System name of the icon used for the path update button.
+    * Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+    *
+    * @type {string}
+    * @public
+    */
     @api
     get nextButtonIconPosition() {
         return this._nextButtonIconPosition;
@@ -204,6 +286,13 @@ export default class AvonniPath extends LightningElement {
         });
     }
 
+    /**
+    * Label of the path button, when the user clicked on a different step than the current one. On click on the button, the selected step will become the current step.
+    *
+    * @type {string}
+    * @public
+    * @default Mark as Current Stage
+    */
     @api
     get selectButtonLabel() {
         return this._selectButtonLabel;
@@ -215,6 +304,13 @@ export default class AvonniPath extends LightningElement {
                 : DEFAULT_SELECT_BUTTON_LABEL;
     }
 
+    /**
+    * The Lightning Design System name of the icon used for the path update button.
+    * Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+    *
+    * @type {string}
+    * @public
+    */
     @api
     get selectButtonIconPosition() {
         return this._selectButtonIconPosition;
@@ -226,6 +322,14 @@ export default class AvonniPath extends LightningElement {
         });
     }
 
+    /**
+    * Label of the menu item that appears when the previous step had completed options. 
+    * On click on the menu item, the dialog will reopen, and the user will be able to change the completion status.
+    *
+    * @type {string}
+    * @public
+    * @default Change Completion Status
+    */
     @api
     get changeCompletionStatusLabel() {
         return this._changeCompletionStatusLabel;
@@ -237,6 +341,13 @@ export default class AvonniPath extends LightningElement {
                 : DEFAULT_CHANGE_COMPLETION_OPTION_LABEL;
     }
 
+    /**
+    * Array of step objects.
+    *
+    * @type {object[]}
+    * @public
+    * @required
+    */
     @api
     get steps() {
         return this._steps;
@@ -251,6 +362,12 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+    * Array of default step actions.
+    *
+    * @type {object[]}
+    * @public
+    */
     @api
     get actions() {
         return this._actions;
@@ -261,24 +378,49 @@ export default class AvonniPath extends LightningElement {
         if (this.isConnected) this.initSteps();
     }
 
+    /**
+     * Toggle to display Coaching icon.
+     * 
+     * @type {string}
+     */
     get toggleCoachingIcon() {
         return this.coachingIsVisible
             ? 'utility:chevrondown'
             : 'utility:chevronright';
     }
 
+    /**
+     * Name string of the last step.
+     * 
+     * @type {string}
+     */
     get lastStepName() {
         return this.steps[this.steps.length - 1].name;
     }
 
+    /**
+     * Check if the last Step is the current step.
+     * 
+     * @type {string}
+     */
     get lastStepIsCurrent() {
         return this.lastStepName === this.currentStep;
     }
 
+    /**
+     * Verify if the current step is also the active step.
+     * 
+     * @type {boolean}
+     */
     get currentStepIsActive() {
         return this._activeStep && this._activeStep.name === this.currentStep;
     }
 
+    /**
+     * Upon fulfilling completed options show the Change Completion Status button.
+     * 
+     * @type {boolean}
+     */
     get showChangeCompletionStatusButton() {
         const previousStep = this.steps[this.currentStepIndex - 1];
         return (
@@ -288,10 +430,20 @@ export default class AvonniPath extends LightningElement {
         );
     }
 
+    /**
+     * Display the Select button when active step and is not the current step.
+     * 
+     * @type {boolean}
+     */
     get showSelectButton() {
         return this._activeStep && !this.currentStepIsActive;
     }
 
+    /**
+     * Display next button when not at end of steps and the current step is the active one.
+     * 
+     * @type {boolean}
+     */
     get showNextButton() {
         return (
             !this.lastStepIsCurrent &&
@@ -299,10 +451,20 @@ export default class AvonniPath extends LightningElement {
         );
     }
 
+    /**
+     * Find current Step index
+     * 
+     * @type {number}
+     */
     get currentStepIndex() {
         return this.steps.findIndex((step) => step.name === this.currentStep);
     }
 
+    /**
+     * Computed path class based on attribute selections.
+     * 
+     * @type {string}
+     */
     get pathClass() {
         const isComplete = this.currentStepIndex === this.steps.length - 1;
         const isLinear = this.format === 'linear';
@@ -325,12 +487,22 @@ export default class AvonniPath extends LightningElement {
             .toString();
     }
 
+    /**
+     * Return label for Stage Title based on active step or computed Current step.
+     * 
+     * @type {string}
+     */
     get stageTitle() {
         return this._activeStep
             ? this._activeStep.label
             : this.computedCurrentStep.label;
     }
 
+    /**
+     * Display the next step of the path.
+     * 
+     * @public
+     */
     @api
     next() {
         const toIndex = this.currentStepIndex + 1;
@@ -340,6 +512,11 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+     * Display the previous step of the path.
+     * 
+     * @public
+     */
     @api
     previous() {
         const toIndex = this.currentStepIndex - 1;
@@ -349,6 +526,9 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+     * Initialize steps properties. ( keyFields, actions, tooltip )
+     */
     initSteps() {
         this.steps.forEach((step) => {
             step.keyFields = normalizeArray(step.keyFields);
@@ -373,6 +553,11 @@ export default class AvonniPath extends LightningElement {
         });
     }
 
+    /**
+     * Initialize Current step.
+     * 
+     * @param {string} name 
+     */
     initCurrentStep(name) {
         const currentStep = this.getStepFromName(name);
 
@@ -390,6 +575,9 @@ export default class AvonniPath extends LightningElement {
         this.updateStepsStatus();
     }
 
+    /**
+     * Initialize the tooltips parameters.
+     */
     initTooltips() {
         this.steps.forEach((step) => {
             if (step.tooltip) {
@@ -398,6 +586,11 @@ export default class AvonniPath extends LightningElement {
         });
     }
 
+    /**
+     * Compute path step movement.
+     * 
+     * @param {object} param0 toIndex, toName
+     */
     computeMovement({ toIndex, toName }) {
         const toStep = toName
             ? this.getStepFromName(toName)
@@ -431,6 +624,11 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+     * Move the current step to the selected step name.
+     * 
+     * @param {string} name 
+     */
     moveToStep(name) {
         this._currentStep = name;
         this.computedCurrentStep = this.getStepFromName(name);
@@ -439,10 +637,19 @@ export default class AvonniPath extends LightningElement {
         this.fireConfetti();
     }
 
+    /**
+     * Retrieve step name
+     * 
+     * @param {string} name 
+     * @returns {string} step.name
+     */
     getStepFromName(name) {
         return this.steps.find((step) => step.name === name);
     }
 
+    /**
+     * For each step status update method. Assign path step styling and class based on current attributes.
+     */
     updateStepsStatus() {
         const base = this._status === 'base';
         const success = this._status === 'success';
@@ -495,11 +702,17 @@ export default class AvonniPath extends LightningElement {
         });
     }
 
+    /**
+     * Hide dialog in case step is not defined.
+     */
     hideDialog() {
         this._candidateStep = undefined;
         this.showDialog = false;
     }
 
+    /**
+     * Fire confetti method based on showConfetti attribute and previousStep completion.
+     */
     fireConfetti() {
         const previousStep = this.steps[this.currentStepIndex - 1];
         const showConfetti = previousStep && previousStep.showConfetti;
@@ -518,6 +731,9 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+     * Save the value of current dialog handler.
+     */
     handleSaveDialog() {
         this._completedOptionValue = this.template.querySelector(
             'lightning-combobox'
@@ -539,6 +755,9 @@ export default class AvonniPath extends LightningElement {
         this.dispatchChange(previousStep);
     }
 
+    /**
+     * Change completion status Handler.
+     */
     handleChangeCompletionStatus() {
         const previousStep = this.steps[this.currentStepIndex - 1];
         this.completedOptions = previousStep.completedOptions;
@@ -546,6 +765,11 @@ export default class AvonniPath extends LightningElement {
         this.showDialog = true;
     }
 
+    /**
+     * Click on step handler.
+     * 
+     * @param {Event} event 
+     */
     handlePathStepClick(event) {
         event.preventDefault();
 
@@ -556,12 +780,29 @@ export default class AvonniPath extends LightningElement {
         }
     }
 
+    /**
+     * Click on select button handler.
+     */
     handleSelectButtonClick() {
         const toName = this._activeStep.name;
         this.computeMovement({ toName });
     }
 
+    /**
+     * Action button click event handler.
+     * 
+     * @param {Event} event
+     */
     handleActionClick(event) {
+        /**
+        * The event fired when a user clicks on an edit button.
+        *
+        * @event
+        * @name actionclick
+        * @param {string} name Name of the action clicked.
+        * @param {string} targetName Name of the step the action is related to.
+        * @public
+        */
         this.dispatchEvent(
             new CustomEvent('actionclick', {
                 detail: {
@@ -572,11 +813,30 @@ export default class AvonniPath extends LightningElement {
         );
     }
 
+    /**
+     * Coaching visibility toggle handler.
+     */
     handleToggleCoaching() {
         this.coachingIsVisible = !this.coachingIsVisible;
     }
 
+    /**
+     * Change dispatcher.
+     * 
+     * @param {string} oldStep
+     */
     dispatchChange(oldStep) {
+        /**
+        * The event fired when the path advances or goes back following the configured step flow.
+        *
+        * @event
+        * @name change
+        * @param {string} currentStep The step name the path is moving to.
+        * @param {string} oldStep The step name the path is moving from.
+        * @param {string} completedValue Value of the completed option selected.
+        * @param {boolean} lastStep Will be true if the current step is the last step.
+        * @public
+        */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
