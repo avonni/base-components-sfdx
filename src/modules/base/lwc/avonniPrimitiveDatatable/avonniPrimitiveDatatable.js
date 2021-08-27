@@ -427,6 +427,12 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
         this.tableWidth();
         this.unscrollableMainDatatable();
 
+        if (this.isLoading) {
+            this.template.querySelector(
+                'lightning-primitive-datatable-loading-indicator'
+            ).style.height = '40px';
+        }
+
         // Make sure custom edited cells stay yellow on hover
         // Make sure error cells appear edited and with a red border
         const edited = Array.from(
@@ -482,11 +488,14 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     columnsWidthWithoutHeader() {
         let columnsWidthWithoutHeader = [];
         const row = this.template.querySelector('tbody > tr');
-        const data = Array.from(row.querySelectorAll('td, th'));
 
-        columnsWidthWithoutHeader = data.map((cell) => {
-            return cell.offsetWidth;
-        });
+        if (row) {
+            const data = Array.from(row.querySelectorAll('td, th'));
+
+            columnsWidthWithoutHeader = data.map((cell) => {
+                return cell.offsetWidth;
+            });
+        }
 
         return columnsWidthWithoutHeader;
     }
