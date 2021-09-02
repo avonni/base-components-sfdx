@@ -335,7 +335,7 @@ export default class AvonniRating extends LightningElement {
     /**
      * Compute items to display with min and max ratings.
      *
-     * @type {object[]} items
+     * @type {object[]}
      */
     get items() {
         let items = [];

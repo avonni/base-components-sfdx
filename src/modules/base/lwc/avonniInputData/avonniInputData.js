@@ -69,12 +69,12 @@ const VARIANTS = {
 /**
  * @class
  * @classdesc The input data displays data depending on its type.
- * @name DataInput
- * @descriptor avonni-data-input
- * @example example-data-input--base
+ * @name InputData
+ * @descriptor avonni-input-data
+ * @example example-input-data--base
  * @public
  */
-export default class AvonniDataInputBasic extends LightningElement {
+export default class AvonniInputData extends LightningElement {
     /**
      * Label of the input. If present, it will be displayed on top of the data.
      * @type {string}

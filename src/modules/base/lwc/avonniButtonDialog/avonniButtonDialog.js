@@ -50,6 +50,7 @@ const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 
 /**
  * @class
+ * @name Button Dialog
  * @descriptor avonni-button-dialog
  * @description The button dialog component displays a lightning button. On click, open the modal box
  * @storyId example-button-dialog--base
@@ -58,28 +59,28 @@ const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 export default class AvonniButtonDialog extends LightningElement {
     /**
      * The keyboard shortcut for the button.
-     * 
+     *
      * @public
      * @type {string}
      */
     @api accessKey;
     /**
      * Optional text to be shown on the button.
-     * 
+     *
      * @public
      * @type {string}
      */
     @api label;
     /**
      * The name of the icon to be used in the format 'utility:down'.
-     * 
+     *
      * @public
      * @type {string}
      */
     @api iconName;
     /**
      * The assistive text for the button.
-     * 
+     *
      * @public
      * @type {string}
      */
@@ -96,7 +97,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * The variant changes the appearance of the button. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
-     * 
+     *
      * @public
      * @type {string}
      * @default neutral
@@ -115,7 +116,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * Describes the position of the icon with respect to body. Options include left and right.
-     * 
+     *
      * @public
      * @type {string}
      * @default left
@@ -134,7 +135,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * If present, the popover can be opened by users.
-     * 
+     *
      * @public
      * @type {boolean}
      * @default false
@@ -150,7 +151,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * Open the modal box method.
-     * 
+     *
      * @public
      */
     @api
@@ -168,7 +169,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * Close the modal box method.
-     * 
+     *
      * @public
      */
     @api
@@ -186,7 +187,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * Clicks the button method.
-     * 
+     *
      * @public
      */
     @api
@@ -205,7 +206,7 @@ export default class AvonniButtonDialog extends LightningElement {
 
     /**
      * Sets focus on the button method.
-     * 
+     *
      * @public
      */
     @api

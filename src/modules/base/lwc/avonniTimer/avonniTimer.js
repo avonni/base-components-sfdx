@@ -61,7 +61,7 @@ const DEFAULT_REPEAT = false;
 
 /**
  * @class
- * @descriptor avonni-summary-detail
+ * @descriptor avonni-timer
  * @storyId example-timer--base
  * @public
  */

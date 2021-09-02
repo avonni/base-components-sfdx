@@ -162,7 +162,7 @@ export default class AvonniDatatable extends LightningElement {
      * Reserved for internal use.
      * Enables and configures advanced rendering modes.
      * @public
-     * @type {RenderManagerConfig} value - config object for datatable rendering
+     * @type {RenderManagerConfig} 
      */
     @api renderConfig;
 
@@ -300,7 +300,7 @@ export default class AvonniDatatable extends LightningElement {
      * @type {element}
      */
     get primitiveDatatable() {
-        return this.template.querySelector('c-primitive-datatable');
+        return this.template.querySelector('c-avonni-primitive-datatable');
     }
 
     /**

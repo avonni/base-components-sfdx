@@ -54,6 +54,7 @@ const BUTTON_VARIANTS = {
 
 /**
  * @class
+ * @name ButtonIconDialog
  * @descriptor avonni-button-icon-dialog
  * @description The button icon dialog component displays a lightning button icon. On click, open the modal box.
  * @storyId example-button-icon-dialog--border
@@ -176,6 +177,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].show();
         }
         /**
+         * Event that fires to open the modal box.
+         * 
          * @event
          * @name show
          * @public
@@ -194,6 +197,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].hide();
         }
         /**
+         * Event that fires to close the modal box.
+         * 
          * @event
          * @name hide
          * @public
@@ -212,6 +217,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].show();
         }
         /**
+         * Event that fires when clicking the button.
+         * 
          * @event
          * @name click
          * @public
@@ -228,6 +235,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     focus() {
         this.template.querySelector('lightning-button-icon').focus();
         /**
+         * Event that fires when focusing the button.
+         * 
          * @event
          * @name focus
          * @public

@@ -158,7 +158,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     set value(value) {
-        this._value = value;
+        this._value = value ? value : [];
     }
 
     /**

@@ -108,12 +108,13 @@ export default class AvonniProgressRing extends LightningElement {
     }
 
     set value(value) {
-        if (value < 0) {
+        const number = typeof value === 'number' ? value : parseInt(value, 10);
+        if (number < 0) {
             this._value = 0;
-        } else if (value > 100) {
+        } else if (number > 100) {
             this._value = 100;
         } else {
-            this._value = value;
+            this._value = number;
         }
     }
 
@@ -220,7 +221,7 @@ export default class AvonniProgressRing extends LightningElement {
     }
 
     /**
-     * Modify incon name value based on variant.
+     * Modify icon name value based on variant.
      *
      * @type {string}
      */

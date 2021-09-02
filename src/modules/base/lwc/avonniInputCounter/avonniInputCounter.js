@@ -49,9 +49,9 @@ const DEFAULT_STEP = 1;
 
 /**
  * @class
- * @example example-input-counter--base
  * @description The Input Counter allows a user to increase or decrease a numerical value.
  * @descriptor avonni-input-counter
+ * @storyId example-input-counter--base
  * @public
  */
 export default class AvonniInputCounter extends LightningElement {
@@ -434,7 +434,7 @@ export default class AvonniInputCounter extends LightningElement {
 
     /**
      * Get Aria Controls.
-     * 
+     *
      * @type {object}
      */
     get computedAriaControls() {
@@ -443,7 +443,7 @@ export default class AvonniInputCounter extends LightningElement {
 
     /**
      * Get Aria Labelled by.
-     * 
+     *
      * @type {string}
      */
     get computedAriaLabelledBy() {
@@ -452,7 +452,7 @@ export default class AvonniInputCounter extends LightningElement {
 
     /**
      * Get Aria Described By
-     * 
+     *
      * @type {string}
      */
     get computedAriaDescribedBy() {

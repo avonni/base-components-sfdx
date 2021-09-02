@@ -49,9 +49,38 @@ const DIVIDER = {
 
 const DEFAULT_ITEM_HEIGHT = 44;
 
+const IMAGE_WIDTH = {
+    valid: ['small', 'medium', 'large']
+};
+
+/**
+ * @class
+ * @example example-list--base
+ * @description The List component allows for a user to enumerate a vertical list with items.
+ * @descriptor avonni-list
+ * @public
+ */
 export default class AvonniList extends LightningElement {
+    /**
+     * Text label for the list.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
+    /**
+     * The Lightning Design System name of the sortable icon. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed.
+     *
+     * @type {string}
+     * @public
+     */
     @api sortableIconName;
+    /**
+     * Alternative text used to describe the list. If the list is sortable, it should describe its behavior, for example: “Sortable menu. Press spacebar to grab or drop an item. Press up and down arrow keys to change position. Press escape to cancel.”
+     *
+     * @type {string}
+     * @public
+     */
     @api alternativeText;
 
     _items = [];
@@ -69,12 +98,20 @@ export default class AvonniList extends LightningElement {
     _actions = [];
     _hasActions = false;
     _divider;
+    _imageSrc = [];
     computedActions = [];
     computedItems = [];
+    _hasImages;
     menuRole;
     itemRole;
     denyItemClick = false;
 
+    /**
+     * Position of the sortable icon. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get divider() {
         return this._divider;
@@ -85,6 +122,45 @@ export default class AvonniList extends LightningElement {
         });
     }
 
+    /**
+     * Fixed width of image (3 sizes: (small 48px, medium 72px and large 128px).
+     *
+     * @type {string}
+     * @public
+     * @default large
+     */
+    @api
+    get imageWidth() {
+        return this._imageWidth;
+    }
+
+    set imageWidth(width) {
+        this._imageWidth = normalizeString(width, {
+            validValues: IMAGE_WIDTH.valid
+        });
+
+        switch (this._imageWidth) {
+            case 'small':
+                this._imageWidth = '48';
+                break;
+            case 'medium':
+                this._imageWidth = '72';
+                break;
+            case 'large':
+                this._imageWidth = '128';
+                break;
+            default:
+                this._imageWidth = '128';
+                break;
+        }
+    }
+
+    /**
+     * Array of item objects.
+     *
+     * @type {object}
+     * @public
+     */
     @api
     get items() {
         return this._items;
@@ -98,6 +174,13 @@ export default class AvonniList extends LightningElement {
         });
     }
 
+    /**
+     * If true, it will be possible to reorder the list items.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api
     get sortable() {
         return this._sortable;
@@ -111,6 +194,13 @@ export default class AvonniList extends LightningElement {
         }
     }
 
+    /**
+     * Position of the sortable icon. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default right
+     */
     @api
     get sortableIconPosition() {
         return this._sortableIconPosition;
@@ -122,6 +212,12 @@ export default class AvonniList extends LightningElement {
         });
     }
 
+    /**
+     * Array of actions.
+     *
+     * @type {object}
+     * @public
+     */
     @api
     get actions() {
         return this._actions;
@@ -132,14 +228,41 @@ export default class AvonniList extends LightningElement {
         this._hasActions = true;
     }
 
+    /**
+     * Computed Image container style width defined by user selected image width.
+     *
+     * @type {string}
+     */
+    get computedImageContainerStyle() {
+        return `
+        width : ${this._imageWidth}px;
+        min-width : ${this._imageWidth}px;
+        `;
+    }
+
+    /**
+     * FirstAction is used when only 1 action is present in computedActions.
+     *
+     * @type {object}
+     */
     get firstAction() {
         return this.computedActions[0];
     }
 
+    /**
+     * Check whether Actions has multiple entries.
+     *
+     * @type {boolean}
+     */
     get hasMultipleActions() {
         return this._actions.length > 1;
     }
 
+    /**
+     * Check if Icon is to be shown to the right.
+     *
+     * @type {boolean}
+     */
     get showIconRight() {
         return (
             this.sortable &&
@@ -148,6 +271,11 @@ export default class AvonniList extends LightningElement {
         );
     }
 
+    /**
+     * Check if Icon is to be shown to the left.
+     *
+     * @type {boolean}
+     */
     get showIconLeft() {
         return (
             this.sortable &&
@@ -156,30 +284,83 @@ export default class AvonniList extends LightningElement {
         );
     }
 
+    /**
+     * Check if Image is present and set the list class styling according to attributes.
+     *
+     * @type {string}
+     */
     get computedListClass() {
-        return `menu slds-has-dividers_${this.divider}-space`;
-    }
-
-    get computedItemClass() {
-        return classSet('slds-grid list-item slds-item')
+        if (
+            this.computedItems.length > 0 &&
+            Object.keys(...this.computedItems).includes('imageSrc')
+        ) {
+            this._hasImages = true;
+        }
+        return classSet('avonni-list__item-menu')
             .add({
-                'sortable-item': this.sortable,
-                'expanded-item': this._hasActions,
-                'slds-p-vertical_x-small': !this.divider
+                'slds-has-dividers_around': this.divider === 'around',
+                'slds-has-dividers_top-space': this.divider === 'top',
+                'slds-has-dividers_bottom-space': this.divider === 'bottom',
+                'avonni-list__has-images': this._hasImages
             })
             .toString();
     }
 
+    /**
+     * Computed Image container class styling based on icon position and divider attributes.
+     *
+     * @type {string}
+     */
+    get computedImageContainerClass() {
+        return classSet('avonni-list__item-image-container')
+            .add({
+                'avonni-list__item-image-container_rounded-corners':
+                    this.divider === 'around' &&
+                    this.sortableIconName &&
+                    this.sortableIconPosition === 'right'
+            })
+            .toString();
+    }
+
+    /**
+     * Computed item class styling based on user specified attributes.
+     *
+     * @type {string}
+     */
+    get computedItemClass() {
+        return classSet('slds-grid avonni-list__item slds-item')
+            .add({
+                'avonni-list__item-sortable': this.sortable,
+                'avonni-list__item-expanded': this._hasActions,
+                'slds-p-vertical_x-small': !this.divider,
+                'slds-p-horizontal_none': this.divider === 'top' || 'bottom'
+            })
+            .toString();
+    }
+
+    /**
+     * Get current tab index based on if list is sortable.
+     *
+     * @type {boolean}
+     */
     get tabindex() {
         return this.sortable ? '0' : '-1';
     }
 
+    /**
+     * If the items have been sorted by the user, reset the items to their original order.
+     *
+     * @public
+     */
     @api
     reset() {
         this.clearSelection();
         this.computedItems = JSON.parse(JSON.stringify(this.items));
     }
 
+    /**
+     * Update assistive text based on new item ordering.
+     */
     updateAssistiveText() {
         const label = this.computedItems[this._draggedIndex].label;
         const position = this._draggedIndex + 1;
@@ -191,6 +372,12 @@ export default class AvonniList extends LightningElement {
         element.textContent = `${label}. ${position} / ${total}`;
     }
 
+    /**
+     * Compute hovered items center coordinates for ordering.
+     *
+     * @param {number} center
+     * @returns {object} item
+     */
     getHoveredItem(center) {
         return this._itemElements.find((item) => {
             if (item !== this._draggedElement) {
@@ -210,10 +397,15 @@ export default class AvonniList extends LightningElement {
         });
     }
 
+    /**
+     * Compute swap between dragged items.
+     *
+     * @param {Element} target
+     */
     switchWithItem(target) {
         const targetIndex = Number(target.dataset.index);
         const index = this._draggedIndex;
-        target.classList.add('sortable-item_moved');
+        target.classList.add('avonni-list__item-sortable_moved');
 
         // If the target has already been moved, move it back to its original position
         // Else, move it up or down
@@ -239,6 +431,9 @@ export default class AvonniList extends LightningElement {
         this.updateAssistiveText();
     }
 
+    /**
+     * Erase the list styles and dataset - clear tracked variables.
+     */
     clearSelection() {
         // Clean the styles and dataset
         this._itemElements.forEach((item, index) => {
@@ -246,12 +441,14 @@ export default class AvonniList extends LightningElement {
             item.dataset.position = 0;
             item.dataset.index = index;
             item.className = item.className.replace(
-                /sortable-item_moved.*/g,
+                /avonni-list__item-sortable_moved.*/g,
                 ''
             );
         });
         if (this._draggedElement)
-            this._draggedElement.classList.remove('sortable-item_dragged');
+            this._draggedElement.classList.remove(
+                'avonni-list__item-sortable_dragged'
+            );
 
         this.template.querySelector(
             '.slds-assistive-text[aria-live="assertive"]'
@@ -261,9 +458,14 @@ export default class AvonniList extends LightningElement {
         this._draggedElement = this._draggedIndex = this._initialY = this._savedComputedItems = undefined;
     }
 
+    /**
+     * Get initial list menu position and initial Y position on user interaction.
+     *
+     * @param {Event} event
+     */
     initPositions(event) {
         const menuPosition = this.template
-            .querySelector('.menu')
+            .querySelector('.avonni-list__item-menu')
             .getBoundingClientRect();
         this._menuTop = menuPosition.top;
         this._menuBottom = menuPosition.bottom;
@@ -274,6 +476,21 @@ export default class AvonniList extends LightningElement {
                 : event.clientY;
     }
 
+    /**
+     * Prevent ghost image on avatar drag.
+     *
+     * @param {Event} event
+     */
+    handleAvatarDragStart(event) {
+        event.preventDefault();
+    }
+
+    /**
+     * Compute drag event start element positions and indexes // Prevent certain elements from being dragged.
+     *
+     * @param {Event} event
+     * @returns {function | object} intiPositions() | _savedComputedItems
+     */
     dragStart(event) {
         // Reset denyItemClick attribute on item touch
         this.denyItemClick = false;
@@ -281,16 +498,20 @@ export default class AvonniList extends LightningElement {
         // Stop dragging if the click was on a button menu
         if (
             !this.sortable ||
-            event.target.tagName.startsWith('LIGHTNING-BUTTON')
+            event.target.tagName.startsWith('LIGHTNING-BUTTON') ||
+            event.target.tagName.startsWith('A')
         )
             return;
 
         this._itemElements = Array.from(
-            this.template.querySelectorAll('.sortable-item')
+            this.template.querySelectorAll('.avonni-list__item-sortable')
         );
         this._draggedElement = event.currentTarget;
         this._currentItemDraggedHeight = this._draggedElement.offsetHeight;
         this._draggedIndex = Number(this._draggedElement.dataset.index);
+        this._draggedElement.classList.add(
+            'avonni-list__item-sortable_dragged'
+        );
         if (event.type !== 'keydown') {
             this.initPositions(event);
         } else {
@@ -307,6 +528,11 @@ export default class AvonniList extends LightningElement {
         }
     }
 
+    /**
+     * Compute drag event logic.
+     *
+     * @param {Event} event
+     */
     drag(event) {
         if (!this._draggedElement) return;
         this._draggedElement.classList.add('sortable-item_dragged');
@@ -360,6 +586,14 @@ export default class AvonniList extends LightningElement {
 
         this.clearSelection();
 
+        /**
+         * The event fired when a user reordered the items.
+         *
+         * @event
+         * @name reorder
+         * @param {object} items
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('reorder', {
                 detail: {
@@ -368,7 +602,11 @@ export default class AvonniList extends LightningElement {
             })
         );
     }
-
+    /**
+     * Handler for keyboard access controls to sortable list.
+     *
+     * @param {Event} event
+     */
     handleKeyDown(event) {
         if (!this.sortable) return;
 
@@ -421,8 +659,12 @@ export default class AvonniList extends LightningElement {
         }
     }
 
+    /**
+     * Stop the dragging process when touching the button menu.
+     *
+     * @param {Event} event
+     */
     handleButtonMenuTouchStart(event) {
-        // Stop the dragging process when touching the button menu
         event.stopPropagation();
     }
 

@@ -331,7 +331,7 @@ export default class AvonniDynamicMenu extends LightningElement {
     /**
      * Computed Aria Expanded from dropdown menu.
      *
-     * @type {string} dropdown menu
+     * @type {string} 
      */
     get computedAriaExpanded() {
         return String(this._dropdownVisible);

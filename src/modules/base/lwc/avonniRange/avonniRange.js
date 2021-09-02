@@ -117,7 +117,7 @@ export default class AvonniRange extends LightningElement {
     /**
     * Object containing selected fields for the unit type (currencyCode, currencyDisplayAs, minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, minimumSignificantDigits, maximumSignificantDigits).
     *
-    * @type {object{}}
+    * @type {object}
     * @public
     * @default
     */

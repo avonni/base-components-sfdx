@@ -46,6 +46,7 @@ const ICON_SIZES = {
 
 /**
  * @class
+ * @name Blockquote
  * @descriptor avonni-blockquote
  * @storyId example-blockquote--base
  * @public

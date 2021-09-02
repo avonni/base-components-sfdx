@@ -30,38 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.list-item {
+.avonni-list__item {
     height: fit-content;
 }
 
-.sortable-item {
-    cursor: var(--list-item-cursor, grab);
+.avonni-list__item-sortable {
+    cursor: var(--avonni-list-item-cursor, grab);
 }
 
-.sortable-icon-cursor {
+.avonni-list__item-sortable-icon-cursor {
     cursor: grab;
 }
 
 /* Disable the hover on touch */
 @media (hover: hover) {
-    .sortable-item:hover {
+    .avonni-list__item-sortable:hover {
         background-color: var(--lwc-colorBackground, #f3f2f2);
     }
 }
 
-.sortable-item > div {
+.avonni-list__item-sortable > div {
     width: 100%;
 }
 
-.expanded-item > div {
+.avonni-list__item-expanded > div {
     width: 100%;
 }
 
-.sortable-item_moved {
+.avonni-list__item-sortable_moved {
     transition: transform 300ms;
 }
 
-.sortable-item.sortable-item_dragged {
+.avonni-list__item-sortable.avonni-list__item-sortable_dragged {
     position: relative;
     z-index: 1;
     border: none;
@@ -69,4 +69,32 @@
     opacity: 0.8;
     cursor: grabbing;
     background-color: rgba(255, 255, 255, 0.6);
+}
+
+.avonni-list__item-img {
+    position: absolute;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.avonni-list__item-image-container {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+.avonni-list__item-image-container_rounded-corners {
+    border-top-left-radius: 0.16rem;
+    border-bottom-left-radius: 0.16rem;
+}
+
+.avonni-list__item-menu {
+    display: grid;
+}
+
+@media (max-width: 320px) {
+    .avonni-list__has-images {
+        justify-content: center;
+    }
 }

@@ -58,6 +58,7 @@ const DEFAULT_DATE = new Date(new Date().setHours(0, 0, 0, 0));
 
 /**
  * @class
+ * @name Calendar
  * @descriptor avonni-calendar
  * @storyId example-calendar--base
  * @public

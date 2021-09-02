@@ -884,13 +884,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.stopDropdownPositioning();
 
             if (this.isMultiSelect) {
-                // Reset options and keep the current search
-                const searchTerm = this.inputValue;
-                const options = this.options;
-                this.visibleOptions = searchTerm
-                    ? this.search({ options, searchTerm })
-                    : options;
-
+                // Reset options
+                this.visibleOptions = [...this.options];
                 this.parentOptionsValues = [];
                 this.backLink = undefined;
             } else {
@@ -982,17 +977,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                 option.selected = false;
             });
             this.value.forEach((value) => {
-                const selectedOption = this.options.find(
-                    (option) => option.value === value
-                );
+                const selectedOption = this.getOption(value, this.options);
                 if (selectedOption) selectedOption.selected = true;
             });
             this.selectedOption = undefined;
             this.computeSelection();
         } else {
-            const selectedOption = this.options.find(
-                (option) => option.value === this.value[0]
-            );
+            const selectedOption = this.getOption(this.value[0], this.options);
 
             if (selectedOption) {
                 selectedOption.selected = true;
@@ -1336,11 +1327,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * Gets the option.
+     * Find an option from its value.
      *
-     * @param {string[]} value Array of selected options value.
-     * @param {array} options Array of all the options.
-     * @returns {string} option
+     * @param {string} value Unique value of the option to find.
+     * @param {array} options Array of options.
+     * @returns {object} option
      */
     getOption(value, options = this.options) {
         let option = options.find((opt) => opt.value === value);
@@ -1402,8 +1393,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (this._cancelBlur) {
             return;
         }
-        if (this.selectedOption && this.inputValue === '') {
+        if (this.selectedOption) {
             this.inputValue = this.selectedOption.label;
+        } else {
+            this.inputValue = '';
         }
         this.close();
 

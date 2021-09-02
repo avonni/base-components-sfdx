@@ -483,9 +483,10 @@ export default class AvonniButtonIconPopover extends LightningElement {
             this.clickOnButton();
         }
         /**
+         * The event fired when the popover is clicked.
+         * 
          * @event
          * @name click
-         * The event fired when the popover is clicked.
          * @public
          */
         this.dispatchEvent(new CustomEvent('click'));
@@ -526,9 +527,10 @@ export default class AvonniButtonIconPopover extends LightningElement {
             this.toggleMenuVisibility();
         }
         /**
+         * The event fired when the popover is closed.
+         * 
          * @event
          * @name close
-         * The event fired when the popover is closed.
          * @public
          */
         this.dispatchEvent(new CustomEvent('close'));

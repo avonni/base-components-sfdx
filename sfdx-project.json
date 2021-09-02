@@ -3,9 +3,6 @@
         {
             "path": "src/modules/base",
             "default": true
-        },
-        {
-            "path": "src/modules/data"
         }
     ],
     "namespace": "",

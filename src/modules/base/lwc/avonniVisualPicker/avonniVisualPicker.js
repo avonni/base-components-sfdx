@@ -115,7 +115,7 @@ export default class AvonniVisualPicker extends LightningElement {
     /**
      * Value of the selected item. For the checkbox type, the value is an array (Ex: [value1, value2]
      *
-     * @type {string}
+     * @type {(string|string[])}
      * @public
      */
     @api
@@ -124,13 +124,12 @@ export default class AvonniVisualPicker extends LightningElement {
     }
 
     set value(value) {
-        this._value = value;
-
+        this._value = value instanceof Array ? value : [value];
         const inputs = this.template.querySelectorAll('input');
 
-        if (inputs && this._value) {
+        if (inputs && this.value.length) {
             Array.from(inputs).forEach((item) => {
-                if (this._value.indexOf(item.value) > -1) {
+                if (this.value.indexOf(item.value) > -1) {
                     item.checked = true;
                 }
             });
@@ -526,13 +525,13 @@ export default class AvonniVisualPicker extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string} value The visual picker value.
+         * @param {string[]} value The visual picker value.
          * @public
          */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value: value.toString()
+                    value
                 }
             })
         );

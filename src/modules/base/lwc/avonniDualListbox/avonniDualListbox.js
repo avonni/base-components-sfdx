@@ -691,7 +691,7 @@ export default class AvonniDualListbox extends LightningElement {
     /**
      * Computed real DOM Id for Source List.
      *
-     * @type {string} DOM Id
+     * @type {string} 
      */
     get computedSourceListId() {
         return getRealDOMId(this.template.querySelector('[data-source-list]'));
@@ -700,7 +700,7 @@ export default class AvonniDualListbox extends LightningElement {
     /**
      * Computed real DOM Id for Selected List.
      *
-     * @type {string} DOM Id
+     * @type {string} 
      */
     get computedSelectedListId() {
         return getRealDOMId(

@@ -464,7 +464,7 @@ export default class AvonniAvatar extends LightningElement {
     /**
      * Computed JSON string of tags object.
      *
-     * @type {object[]} computed tags json
+     * @type {object[]}
      */
     get computedTags() {
         this._computedTags = JSON.parse(JSON.stringify(this._tags));

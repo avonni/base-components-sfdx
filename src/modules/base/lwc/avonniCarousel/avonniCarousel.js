@@ -37,6 +37,7 @@ import {
     normalizeString,
     normalizeArray
 } from 'c/utilsPrivate';
+import { classSet } from 'c/utils';
 
 const INDICATOR_ACTION = 'slds-carousel__indicator-action';
 const INDICATOR_ACTION_SHADED =
@@ -47,7 +48,23 @@ const SLDS_ACTIVE_SHADED =
 const FALSE_STRING = 'false';
 const TRUE_STRING = 'true';
 
+const ACTIONS_POSITIONS = {
+    valid: [
+        'top-left',
+        'top-right',
+        'bottom-left',
+        'bottom-right',
+        'bottom-center'
+    ],
+    default: 'bottom-center'
+};
+const ACTIONS_VARIANTS = {
+    valid: ['bare', 'border', 'menu'],
+    default: 'border'
+};
+
 const INDICATOR_VARIANTS = { valid: ['base', 'shaded'], default: 'base' };
+
 
 const DEFAULT_ITEMS_PER_PANEL = 1;
 const DEFAULT_SCROLL_DURATION = 5;
@@ -63,12 +80,59 @@ const i18n = {
     autoplayButton: DEFAULT_ASSISTIVE_TEXT_AUTOPLAY_BUTTON
 };
 
+/**
+* @class
+* @descriptor avonni-carousel
+* @storyId example-carousel--base
+* @public
+*/
 export default class AvonniCarousel extends LightningElement {
+    /**
+    * Dictates the currently active/visible carousel panel.
+    *
+    * @type {number}
+    * @public
+    */
     @api currentPanel;
+    /**
+    * If present, the carousel doesn't loop after the last image is displayed.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api disableAutoRefresh;
+    /**
+    * If present, images do not automatically scroll and users must click the indicators to scroll.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api disableAutoScroll;
+    /**
+    * Boolean for displaying the navigation indicators (left/right arrows) of the carousel.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api hidePreviousNextPanelNavigation;
+    /**
+    * Boolean for infinite loop navigation. Note: if not true autoplay will stop automatically at the last panel.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api isInfinite;
+    /**
+    * The auto scroll duration. The default is 5 seconds, after that the next image is displayed.
+    *
+    * @type {number}
+    * @public
+    * @default 5
+    */
     @api scrollDuration = DEFAULT_SCROLL_DURATION;
 
     _assistiveText = {
@@ -82,6 +146,8 @@ export default class AvonniCarousel extends LightningElement {
     _indicatorVariant = INDICATOR_VARIANTS.default;
     _hideIndicator = false;
     _carouselContentHeight = 6.625;
+    _actionsPosition = ACTIONS_POSITIONS.default;
+    _actionsVariant = ACTIONS_VARIANTS.default;
 
     activeIndexPanel;
     autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
@@ -104,6 +170,13 @@ export default class AvonniCarousel extends LightningElement {
         this._initialRender = true;
     }
 
+    /**
+    * Description of the carousel items for screen-readers.
+    *
+    * @type {object}
+    * @public
+    * @default {autoplayButton: Start / Stop auto-play, nextPanel: Next Panel, previousPanel: Previous Panel,}
+    */
     @api
     get assistiveText() {
         return this._assistiveText;
@@ -120,6 +193,13 @@ export default class AvonniCarousel extends LightningElement {
         };
     }
 
+    /**
+    * Array of item objects used by the default carousel item renderer. 
+    *
+    * @type {object[]}
+    * @public
+    * @required
+    */
     @api
     get items() {
         return this._carouselItems;
@@ -132,19 +212,10 @@ export default class AvonniCarousel extends LightningElement {
                 key: item.id,
                 title: item.title,
                 description: item.description,
-                buttonLabel: item.buttonLabel || null,
-                buttonIconName: item.buttonIconName,
-                buttonIconPosition: item.buttonIconPosition,
-                buttonVariant: item.buttonVariant,
-                buttonDisabled: item.buttonDisabled,
-                secondaryButtonLabel: item.secondaryButtonLabel || null,
-                secondaryButtonIconName: item.secondaryButtonIconName,
-                secondaryButtonIconPosition: item.secondaryButtonIconPosition,
-                secondaryButtonVariant: item.secondaryButtonVariant,
-                secondaryButtonDisabled: item.secondaryButtonDisabled,
                 imageAssistiveText: item.imageAssistiveText || item.title,
                 href: item.href,
-                src: item.src
+                src: item.src,
+                actions: item.actions || []
             });
         });
         if (this.isConnected) {
@@ -152,6 +223,13 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
+    /**
+    * Number of items to be displayed at a time in the carousel.
+    *
+    * @type {number}
+    * @public
+    * @default 1
+    */
     @api
     get itemsPerPanel() {
         return this._itemsPerPanel;
@@ -163,6 +241,13 @@ export default class AvonniCarousel extends LightningElement {
         this._itemsPerPanel = parseInt(number, 10);
     }
 
+    /**
+    * Changes the appearance of the progress indicators. Valid values are base or shaded.
+    *
+    * @type {string}
+    * @public
+    * @default base
+    */
     @api
     get indicatorVariant() {
         return this._indicatorVariant;
@@ -178,6 +263,13 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
+    /**
+    * Boolean for displaying the progress indicators.
+    *
+    * @type {boolean}
+    * @public
+    * @default false
+    */
     @api
     get hideIndicator() {
         return this._hideIndicator;
@@ -187,29 +279,194 @@ export default class AvonniCarousel extends LightningElement {
         this._hideIndicator = normalizeBoolean(value);
     }
 
-    // Sets the width of each item, depending on the number of items per panel
+    /**
+    * Valid values include bare, border and menu.
+    *
+    * @type {string}
+    * @public
+    * @default border
+    */
+    @api
+    get actionsVariant() {
+        return this._actionsVariant;
+    }
+
+    set actionsVariant(variant) {
+        this._actionsVariant = normalizeString(variant, {
+            fallbackValue: ACTIONS_VARIANTS.default,
+            validValues: ACTIONS_VARIANTS.valid
+        });
+    }
+
+    /**
+    * Valid values include top-left, top-right,  bottom-left, bottom-right and bottom-center.
+    *
+    * @type {string}
+    * @public
+    * @default bottom-center
+    */
+    @api
+    get actionsPosition() {
+        return this._actionsPosition;
+    }
+
+    set actionsPosition(position) {
+        this._actionsPosition = normalizeString(position, {
+            fallbackValue: ACTIONS_POSITIONS.default,
+            validValues: ACTIONS_POSITIONS.valid
+        });
+    }
+
+    /**
+     * Verify if actions are present. 
+    */
+    get hasActions() {
+        return this.items.map((item) => {
+            return item.actions && item.actions.length > 0;
+        });
+    }
+
+    /**
+     * Verify if the actions variant is menu. 
+     */
+    get isMenuVariant() {
+        return this._actionsVariant === 'menu';
+    }
+
+    /**
+     * Verify if actions position is at the bottom.
+     */
+    get isBottomPosition() {
+        return this._actionsPosition.indexOf('bottom') > -1;
+    }
+
+    /**
+    * Sets the width of each item, depending on the number of items per panel
+    */ 
     get carouselItemStyle() {
         const flexBasis = 100 / this.itemsPerPanel;
         return `flex-basis: ${flexBasis}%;`;
     }
 
+    /**
+     * If navigation is not infinite - set previous panel as disabled.
+     * 
+     * @type {number}
+     */ 
     get previousPanelNavigationDisabled() {
         return !this.isInfinite ? this.activeIndexPanel === 0 : null;
     }
 
+    /**
+     * If not infinite - set next panel as disabled.
+     * 
+     * @type {number}
+     */ 
     get nextPanelNavigationDisabled() {
         return !this.isInfinite
             ? this.activeIndexPanel === this.paginationItems.length - 1
             : null;
     }
 
-    // Change the button position depending if hideIndicator is true or false
+    /**
+     * Set actions variant button to base if the action variant is bare, if not , set the button to neutral.
+     * 
+     * @type {string}
+     */ 
+    get computedActionsVariantButton() {
+        return this._actionsVariant === 'bare' ? 'base' : 'neutral';
+    }
+
+    /**
+     * Set actions variant button icon to bare if the action variant is bare, if not , set the button icon to border-filled.
+     * 
+     * @type {string}
+     */
+    get computedActionsVariantButtonIcon() {
+        return this._actionsVariant === 'bare' ? 'bare' : 'border-filled';
+    }
+
+    /**
+     * Change the button position depending if hideIndicator is true or false.
+     * 
+     * @type {string}
+     */ 
     get computedAutoScrollAutoplayButton() {
         return this._hideIndicator
             ? 'avonni-carousel__autoscroll-button-without-indicator'
             : 'avonni-carousel__autoscroll-button-with-indicator';
     }
 
+    /**
+     * Retrieve image class - set to relative if not in bottom position.
+     * 
+     * @type {string}
+     */ 
+    get computedCarouselImageClass() {
+        return classSet('slds-carousel__image')
+            .add({
+                'slds-is-relative': !this.isBottomPosition
+            })
+            .toString();
+    }
+
+    /**
+     * Computed actions container class styling based on action position attributes.
+     * 
+     * @type {string}
+     */ 
+    get computedActionsContainerClass() {
+        return classSet('avonni-carousel__actions')
+            .add({
+                'avonni-carousel__actions-bottom-center':
+                    this._actionsPosition === 'bottom-center',
+                'avonni-carousel__actions-right':
+                    this._actionsPosition === 'bottom-right' ||
+                    this._actionsPosition === 'top-right',
+                'avonni-carousel__actions-left':
+                    this._actionsPosition === 'bottom-left' ||
+                    this._actionsPosition === 'top-left'
+            })
+            .add({
+                'slds-p-around_small': !this.isBottomPosition,
+                'slds-is-absolute': !this.isBottomPosition
+            })
+            .toString();
+    }
+
+    /**
+     * Computed carousel content class - set to display content bottom if position is bottom.
+     * 
+     * @type {string}
+     */ 
+    get computedCarouselContentClass() {
+        return classSet('slds-carousel__content')
+            .add({
+                'avonni-carousel__content-bottom': this.isBottomPosition
+            })
+            .toString();
+    }
+
+    /**
+     * Action button icon class styling based on attributes.
+     * 
+     * @type {string}
+     */ 
+    get computedLightningButtonIconActionClass() {
+        return classSet('')
+            .add({
+                'slds-m-horizontal_xx-small': this._actionsVariant === 'border',
+                'slds-m-right_x-small slds-m-top_xx-small':
+                    this._actionsVariant === 'bare'
+            })
+            .toString();
+    }
+
+    /**
+     * Initialize Pagination items method.
+     * 
+     * @param {number} numberOfPanels
+     */ 
     initializePaginationItems(numberOfPanels) {
         for (let i = 0; i < numberOfPanels; i++) {
             const isItemActive = i === this.activeIndexPanel;
@@ -239,12 +496,19 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
+    /**
+     * Initialize current panel method.
+     * 
+     * @param {number} numberOfPanels
+     */ 
     initializeCurrentPanel(numberOfPanels) {
         const firstPanel = parseInt(this.currentPanel, 10);
         this.activeIndexPanel = firstPanel < numberOfPanels ? firstPanel : 0;
     }
 
-    // Creates an array of panels, each containing an array of items
+    /**
+     * Creates an array of panels, each containing an array of items.
+     */ 
     initializePanels() {
         const panelItems = [];
         let panelIndex = 0;
@@ -268,6 +532,11 @@ export default class AvonniCarousel extends LightningElement {
         }%);`;
     }
 
+    /**
+    * Start the slide cycling.
+    * 
+    * @public
+    */
     @api
     start() {
         const scrollDuration = parseInt(this.scrollDuration, 10) * 1000;
@@ -291,11 +560,19 @@ export default class AvonniCarousel extends LightningElement {
         this.autoScrollIcon = DEFAULT_AUTOCROLL_PAUSE_ICON;
     }
 
+    /**
+     * Call the auto scroll.
+     */ 
     startAutoScroll() {
         this.next();
         this.start();
     }
 
+    /**
+    * Pause the slide cycling.
+    * 
+    * @public
+    */
     @api
     pause() {
         clearTimeout(this.autoScrollTimeOut);
@@ -303,6 +580,11 @@ export default class AvonniCarousel extends LightningElement {
         this.autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
     }
 
+    /**
+     * Item clicked event handler.
+     * 
+     * @param {event}
+     */ 
     handleItemClicked(event) {
         const panelNumber = parseInt(
             event.currentTarget.dataset.panelIndex,
@@ -310,6 +592,14 @@ export default class AvonniCarousel extends LightningElement {
         );
         const itemNumber = parseInt(event.currentTarget.dataset.itemIndex, 10);
         const itemData = this.panelItems[panelNumber].items[itemNumber];
+        /**
+        * The event fired when an item is clicked.
+        *
+        * @event
+        * @name itemclick
+        * @param {object} item The item data clicked.
+        * @public
+        */
         this.dispatchEvent(
             new CustomEvent('itemclick', {
                 detail: {
@@ -319,6 +609,11 @@ export default class AvonniCarousel extends LightningElement {
         );
     }
 
+    /**
+     * Key down event handler.
+     * 
+     * @param {Event}
+     */ 
     keyDownHandler(event) {
         const key = event.keyCode;
         let indicatorActionsElements = this.indicatorActionsElements;
@@ -359,17 +654,19 @@ export default class AvonniCarousel extends LightningElement {
         indicatorActionsElements[this.activeIndexPanel].focus();
     }
 
+    /**
+     * Carousel height initialization.
+     */ 
     initializeCarouselHeight() {
-        let carouselContentHeights = this.items.map((item) => {
-            return item.buttonLabel && item.secondaryButtonLabel
-                ? 12
-                : item.buttonLabel || item.secondaryButtonLabel
-                ? 8.5
-                : 6.625;
+        let carouselContentHeights = this.hasActions.map((item) => {
+            return item && this.isBottomPosition ? 7.5 : 6.625;
         });
         this._carouselContentHeight = Math.max(...carouselContentHeights);
     }
 
+    /**
+     * Initialize Carousel method.
+     */ 
     initCarousel() {
         const numberOfPanels = Math.ceil(
             this._carouselItems.length / this.itemsPerPanel
@@ -381,6 +678,11 @@ export default class AvonniCarousel extends LightningElement {
         this.initializeCarouselHeight();
     }
 
+    /**
+     * Panel selection event method.
+     * 
+     * @param {Event}
+     */ 
     onPanelSelect(event) {
         const currentTarget = event.currentTarget;
         const itemIndex = parseInt(currentTarget.dataset.index, 10);
@@ -392,6 +694,11 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
+    /**
+     * New panel selection method.
+     * 
+     * @param {number} panelIndex
+     */ 
     selectNewPanel(panelIndex) {
         const activePaginationItem = this.paginationItems[panelIndex];
         const activePanelItem = this.panelItems[panelIndex];
@@ -413,6 +720,9 @@ export default class AvonniCarousel extends LightningElement {
         this.activeIndexPanel = panelIndex;
     }
 
+    /**
+     * Selection removed from current panel.
+     */ 
     unselectCurrentPanel() {
         const activePaginationItem = this.paginationItems[
             this.activeIndexPanel
@@ -431,16 +741,31 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
+    /**
+     * Go to first slide.
+     * 
+     * @public
+     */ 
     @api
     first() {
         this.selectNewPanel(0);
     }
 
+    /**
+     * Go to last slide.
+     * 
+     * @public
+     */ 
     @api
     last() {
         this.selectNewPanel(this.paginationItems.length - 1);
     }
 
+    /**
+     * Go to previous slide.
+     * 
+     * @public
+     */ 
     @api
     previous() {
         this.pause();
@@ -453,6 +778,11 @@ export default class AvonniCarousel extends LightningElement {
         this.selectNewPanel(this.activeIndexPanel);
     }
 
+    /**
+     * Go to next slide.
+     * 
+     * @public
+     */ 
     @api
     next() {
         this.pause();
@@ -465,11 +795,48 @@ export default class AvonniCarousel extends LightningElement {
         this.selectNewPanel(this.activeIndexPanel);
     }
 
+    /**
+     * Auto Scroll toggler method.
+     */ 
     toggleAutoScroll() {
         /*eslint no-unused-expressions: ["error", { "allowTernary": true }]*/
         this.autoScrollOn ? this.pause() : this.start();
     }
 
+    /**
+     * Action click event handler.
+     * 
+     * @param {Event}
+     */ 
+    handleActionClick(event) {
+        const name = event.currentTarget.name;
+
+        /**
+        * The event fired when a user clicks on an action.
+        *
+        * @event
+        * @name actionclick
+        * @param {string} name Name of the action clicked.
+        * @param {object} item Item clicked.
+        * @public
+        */
+        this.dispatchEvent(
+            new CustomEvent('actionclick', {
+                detail: {
+                    name: name,
+                    item: this.panelItems[this.activeIndexPanel].items[
+                        this.activeIndexPanel
+                    ]
+                }
+            })
+        );
+    }
+
+    /**
+     * Computed Carousle content size height styling.
+     * 
+     * @type {string}
+     */ 
     get computedCarouselContentSize() {
         return `height: ${this._carouselContentHeight}rem`;
     }

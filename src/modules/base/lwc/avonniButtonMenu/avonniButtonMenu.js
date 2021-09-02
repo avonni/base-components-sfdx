@@ -176,7 +176,7 @@ export default class AvonniButtonMenu extends LightningElement {
         /**
          * @event
          * @name privatebuttonregister
-         * @param {object{}} callbacks - setOrder, setDeregistrationCallback
+         * @param {object}
          * @private
          * @bubbles
          */

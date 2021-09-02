@@ -35,10 +35,10 @@ lightning-input {
     width: 7rem;
 }
 
-button {
+/*button {
     height: auto;
     min-height: var(--lwc-squareIconMediumBoundary, 2rem);
-}
+}*/
 
 div:focus {
     outline: none;

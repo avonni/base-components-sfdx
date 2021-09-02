@@ -68,115 +68,140 @@
                 <div class="slds-grid slds-grid_vertical-align-center">
                     <lightning-icon
                         if:true={showIconLeft}
-                        class="icon-left draggable-element sortable-icon-cursor"
-                        icon-name={sortableIconName}
-                        size="x-small"
-                    ></lightning-icon>
-                    <c-avonni-avatar
-                        if:true={item.avatarSrc}
-                        class="slds-m-horizontal_x-small"
-                        fallback-icon-name={item.avatarFallbackIconName}
-                        src={item.avatarSrc}
-                        size="small"
-                        hide-avatar-details="true"
-                    ></c-avonni-avatar>
-                    <div class="slds-col slds-truncate">
-                        <div
-                            class="slds-grid slds-grid-align-center slds-truncate slds-no-space slds-margin-bottom_xx-small"
-                        >
-                            <template if:true={item.href}>
-                                <a href={item.href}>{item.label}</a>
-                            </template>
-                            <template if:false={item.href}>
-                                <h3>{item.label}</h3>
-                            </template>
-                            <div if:true={item.icons} class="slds-no-flex">
-                                <template for:each={item.icons} for:item="icon">
-                                    <lightning-icon
-                                        key={icon.title}
-                                        icon-name={icon.iconName}
-                                        alternative-text={icon.alternativeText}
-                                        title={icon.title}
-                                        size="x-small"
-                                        class="slds-p-left_x-small"
-                                    ></lightning-icon>
-                                </template>
-                            </div>
-                        </div>
-                        <p
-                            if:true={item.description}
-                            class="slds-text-body_regular slds-line-clamp_x-small description-text"
-                        >
-                            {item.description}
-                        </p>
-                        <template if:true={item.infos}>
-                            <ul
-                                if:true={item.infos.length}
-                                class="slds-list_horizontal slds-has-dividers_left slds-has-block-links"
-                            >
-                                <template for:each={item.infos} for:item="info">
-                                    <li key={info.label} class="slds-item">
-                                        <a href={info.href}>{info.label}</a>
-                                    </li>
-                                </template>
-                            </ul>
-                        </template>
-                    </div>
-                    <lightning-icon
-                        if:true={showIconRight}
-                        class="slds-m-right_x-small icon-right draggable-element sortable-icon-cursor"
+                        class="slds-p-horizontal_xx-small draggable-element icon-left avonni-list__item-sortable-icon-cursor"
                         icon-name={sortableIconName}
                         size="x-small"
                     ></lightning-icon>
                     <div
-                        if:true={actions.length}
-                        class="slds-media slds-media_small"
+                        if:true={item.imageSrc}
+                        class={computedImageContainerClass}
+                        style={computedImageContainerStyle}
                     >
-                        <lightning-button-menu
-                            if:true={hasMultipleActions}
-                            class="slds-m-right_none"
-                            menu-alignment="right"
-                            icon-size="x-small"
-                            ontouchstart={handleButtonMenuTouchStart}
-                            onselect={handleActionClick}
-                        >
-                            <template
-                                for:each={computedActions}
-                                for:item="action"
+                        <img
+                            key={item.imageSrc}
+                            src={item.imageSrc}
+                            class="avonni-list__item-img"
+                            width={imageWidth}
+                            min-width={imageWidth}
+                            height="100%"
+                            draggable="false"
+                        />
+                    </div>
+                    <div
+                        class="slds-grid slds-grow slds-grid_vertical-align-center slds-p-around_x-small"
+                    >
+                        <c-avonni-avatar
+                            if:true={item.avatarSrc}
+                            class="slds-m-horizontal_x-small"
+                            fallback-icon-name={item.avatarFallbackIconName}
+                            src={item.avatarSrc}
+                            size="small"
+                            hide-avatar-details="true"
+                        ></c-avonni-avatar>
+                        <div class="slds-col slds-truncate">
+                            <div
+                                class="slds-grid slds-grid-align-center slds-truncate slds-no-space slds-margin-bottom_xx-small"
                             >
-                                <lightning-menu-item
-                                    key={action.name}
-                                    value={action.name}
-                                    label={action.label}
-                                    disabled={action.disabled}
-                                    icon-name={action.iconName}
-                                ></lightning-menu-item>
+                                <template if:true={item.href}>
+                                    <a href={item.href}>{item.label}</a>
+                                </template>
+                                <template if:false={item.href}>
+                                    <h3>{item.label}</h3>
+                                </template>
+                                <div if:true={item.icons} class="slds-no-flex">
+                                    <template
+                                        for:each={item.icons}
+                                        for:item="icon"
+                                    >
+                                        <lightning-icon
+                                            key={icon.title}
+                                            icon-name={icon.iconName}
+                                            alternative-text={icon.alternativeText}
+                                            title={icon.title}
+                                            size="x-small"
+                                            class="slds-p-left_x-small"
+                                        ></lightning-icon>
+                                    </template>
+                                </div>
+                            </div>
+                            <p
+                                if:true={item.description}
+                                class="slds-text-body_regular slds-line-clamp_x-small description-text"
+                            >
+                                {item.description}
+                            </p>
+                            <template if:true={item.infos}>
+                                <ul
+                                    if:true={item.infos.length}
+                                    class="slds-list_horizontal slds-has-dividers_left slds-has-block-links"
+                                >
+                                    <template
+                                        for:each={item.infos}
+                                        for:item="info"
+                                    >
+                                        <li key={info.label} class="slds-item">
+                                            <a href={info.href}>{info.label}</a>
+                                        </li>
+                                    </template>
+                                </ul>
                             </template>
-                        </lightning-button-menu>
-                        <template if:false={hasMultipleActions}>
-                            <lightning-button
-                                if:true={firstAction.label}
+                        </div>
+                        <lightning-icon
+                            if:true={showIconRight}
+                            class="slds-m-right_x-small icon-right draggable-element avonni-list__item-sortable-icon-cursor"
+                            icon-name={sortableIconName}
+                            size="x-small"
+                        ></lightning-icon>
+                        <div
+                            if:true={actions.length}
+                            class="slds-media slds-media_small"
+                        >
+                            <lightning-button-menu
+                                if:true={hasMultipleActions}
                                 class="slds-m-right_none"
+                                menu-alignment="right"
+                                icon-size="x-small"
                                 ontouchstart={handleButtonMenuTouchStart}
-                                key={firstAction.name}
-                                value={firstAction.name}
-                                label={firstAction.label}
-                                disabled={firstAction.disabled}
-                                icon-name={firstAction.iconName}
-                                onclick={handleActionClick}
-                            ></lightning-button>
-                            <lightning-button-icon
-                                if:false={firstAction.label}
-                                class="slds-m-right_none"
-                                ontouchstart={handleButtonMenuTouchStart}
-                                key={firstAction.name}
-                                value={firstAction.name}
-                                disabled={firstAction.disabled}
-                                icon-name={firstAction.iconName}
-                                variant="bare"
-                                onclick={handleActionClick}
-                            ></lightning-button-icon>
-                        </template>
+                                onselect={handleActionClick}
+                            >
+                                <template
+                                    for:each={computedActions}
+                                    for:item="action"
+                                >
+                                    <lightning-menu-item
+                                        key={action.name}
+                                        value={action.name}
+                                        label={action.label}
+                                        disabled={action.disabled}
+                                        icon-name={action.iconName}
+                                    ></lightning-menu-item>
+                                </template>
+                            </lightning-button-menu>
+                            <template if:false={hasMultipleActions}>
+                                <lightning-button
+                                    if:true={firstAction.label}
+                                    class="slds-m-right_none"
+                                    ontouchstart={handleButtonMenuTouchStart}
+                                    key={firstAction.name}
+                                    value={firstAction.name}
+                                    label={firstAction.label}
+                                    disabled={firstAction.disabled}
+                                    icon-name={firstAction.iconName}
+                                    onclick={handleActionClick}
+                                ></lightning-button>
+                                <lightning-button-icon
+                                    if:false={firstAction.label}
+                                    class="slds-m-right_none"
+                                    ontouchstart={handleButtonMenuTouchStart}
+                                    key={firstAction.name}
+                                    value={firstAction.name}
+                                    disabled={firstAction.disabled}
+                                    icon-name={firstAction.iconName}
+                                    variant="bare"
+                                    onclick={handleActionClick}
+                                ></lightning-button-icon>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </li>

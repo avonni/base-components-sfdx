@@ -205,18 +205,42 @@
                     </div>
                 </template>
             </div>
-            <lightning-input
+            <div
+                class="slds-form-element slds-p-left_xx-small avonni-builder-icon-picker-input-container"
                 if:false={hideColorInput}
-                type="text"
-                variant="label-hidden"
-                label="color"
-                value={inputValue}
-                name={name}
-                onchange={handleInputColor}
-                disabled={disabledInput}
-				read-only={isLabelDisplayed}
-            ></lightning-input>
+            >
+                <div
+                    class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"
+                >
+                    <lightning-input
+                        type="text"
+                        variant="label-hidden"
+                        label="color"
+                        value={inputValue}
+                        name={name}
+                        onchange={handleInputColor}
+                        disabled={disabledInput}
+                        read-only={isLabelDisplayed}
+                    ></lightning-input>
+                    <template if:true={isInputFilled}>
+                        <button
+                            class="slds-button slds-button_icon slds-input__icon slds-input__icon_right avonni-builder-icon-picker-clear-icon"
+                            title="Clear"
+                            onclick={clearInput}
+                        >
+                            <lightning-icon
+                                size="xx-small"
+                                class="slds-button__icon slds-icon-text-light"
+                                icon-name="utility:clear"
+                            ></lightning-icon>
+                            <span class="slds-assistive-text">Clear</span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+            <p if:true={showError} class="slds-form-error">
+                {messageWhenBadInput}
+            </p>
         </div>
-        <p if:true={showError} class="slds-form-error">{messageWhenBadInput}</p>
     </div>
 </template>

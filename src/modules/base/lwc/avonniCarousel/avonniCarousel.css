@@ -45,10 +45,6 @@
     white-space: pre-line;
 }
 
-.avonni-carousel__content-description {
-    height: 2.25rem;
-}
-
 .avonni-carousel__nav-button {
     display: block;
 }
@@ -79,4 +75,27 @@
 .avonni-carousel-progress-indicator-shaded-inactive:focus {
     background-color: #dddbda;
     border: #dddbda;
+}
+
+.avonni-carousel__actions {
+    display: flex;
+    width: 100%;
+}
+
+.avonni-carousel__actions-bottom-center {
+    justify-content: center;
+}
+
+.avonni-carousel__actions-right {
+    justify-content: flex-end;
+}
+
+.avonni-carousel__actions-left {
+    justify-content: flex-start;
+}
+
+.avonni-carousel__content-bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }

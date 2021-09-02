@@ -192,6 +192,17 @@ export default class AvonniDialog extends LightningElement {
     }
 
     /**
+     * Set the focus on the close button.
+     *
+     * @public
+     */
+    @api
+    focusOnCloseButton() {
+        const button = this.template.querySelector('.slds-modal__close');
+        if (button) button.focus();
+    }
+
+    /**
      * Computed Header class styling.
      *
      * @type {string}

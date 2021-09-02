@@ -212,7 +212,7 @@ export default class AvonniImage extends LightningElement {
      * The value to set on the image's 'width' attribute.
      *
      * @public
-     * @type {number | string} width
+     * @type {number | string} 
      */
     @api
     get width() {
@@ -235,7 +235,7 @@ export default class AvonniImage extends LightningElement {
      * The value to set on the image's 'height' attribute.
      *
      * @public
-     * @type {number | string} height
+     * @type {number | string} 
      */
     @api
     get height() {
@@ -510,7 +510,7 @@ export default class AvonniImage extends LightningElement {
     /**
      * Final Computed Image Style.
      *
-     * @type {boolean} check if image is cropped
+     * @type {boolean} 
      */
     get computedImgStyle() {
         if (!this._cropSize) {

@@ -1,7 +1,7 @@
 {
     "name": "@avonni/base-components-sfdx",
     "description": "Base components sfdx",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/avonni/base-components-sfdx.git"
