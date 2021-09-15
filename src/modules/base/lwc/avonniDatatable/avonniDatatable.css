@@ -43,6 +43,8 @@
 }
 
 .avonni-datatable-container {
+    height: 100%;
+    position: relative;
     overflow-x: auto;
     background: #f3f2f2;
 }
