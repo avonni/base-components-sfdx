@@ -32,8 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
-import { normalizeBoolean } from 'c/utilsPrivate';
-import { normalizeString } from 'c/utilsPrivate/normalize';
+import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
 const VARIANTS = {
     default: 'shaded',
