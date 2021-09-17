@@ -71,7 +71,7 @@ const VARIANTS = {
  * @classdesc The input data displays data depending on its type.
  * @name InputData
  * @descriptor avonni-input-data
- * @example example-input-data--base
+ * @storyId example-input-data--base
  * @public
  */
 export default class AvonniInputData extends LightningElement {
@@ -109,7 +109,6 @@ export default class AvonniInputData extends LightningElement {
     /**
      * Called when the element is inserted in a document.
      * Initializes the input value.
-     * @callback connectedCallback
      */
     connectedCallback() {
         this.initalizeInputValue();

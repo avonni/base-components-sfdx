@@ -33,6 +33,12 @@
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { normalizeBoolean } from 'c/utilsPrivate';
+import { normalizeString } from '../utilsPrivate/normalize';
+
+const VARIANTS = {
+    default: 'shaded',
+    valid: ['base', 'shaded']
+};
 
 /**
  * @class
@@ -51,6 +57,7 @@ export default class AvonniExpandableSection extends LightningElement {
 
     _closed = false;
     _collapsible = false;
+    _variant = VARIANTS.default;
 
     /**
      * If present, close the section.
@@ -85,9 +92,45 @@ export default class AvonniExpandableSection extends LightningElement {
     }
 
     /**
-     * Computed section class styling.
+     * Variant of the section. Valid values include base and shaded.
      *
      * @type {string}
+     * @public
+     * @default base
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            validValues: VARIANTS.valid,
+            fallbackValues: VARIANTS.default
+        });
+    }
+
+    /**
+     * Computed list of the collapse icon classes.
+     *
+     * @type {string}
+     * @default slds-section__title-action-icon slds-button__icon slds-button__icon_left
+     */
+    get collapseIconClass() {
+        return classSet(
+            'slds-section__title-action-icon slds-button__icon slds-button__icon_left'
+        )
+            .add({
+                'slds-m-bottom_xx-small': !this.closed
+            })
+            .toString();
+    }
+
+    /**
+     * Computed list of the section classes.
+     *
+     * @type {string}
+     * @default slds-section
      */
     get sectionClass() {
         return classSet('slds-section')
@@ -98,22 +141,64 @@ export default class AvonniExpandableSection extends LightningElement {
     }
 
     /**
-     * Computed section Title class styling.
+     * Computed list of the header classes.
      *
      * @type {string}
+     * @default slds-section__title
      */
-    get sectionTitleClass() {
+    get headerClass() {
         return classSet('slds-section__title')
             .add({
-                'slds-theme_shade': !this.collapsible
+                'slds-theme_shade':
+                    !this.collapsible && this.variant === 'shaded'
             })
             .toString();
     }
 
     /**
+     * Computed list of the title classes, when the section is collapsible and the title is a button.
+     *
+     * @type {string}
+     * @default slds-button slds-section__title-action
+     */
+    get titleButtonClass() {
+        return classSet('slds-button slds-section__title-action')
+            .add({
+                'slds-theme_default avonni-expandable-section__title-button_base':
+                    this.variant === 'base'
+            })
+            .toString();
+    }
+
+    /**
+     * Computed list of the title classes, when the section is not collapsible.
+     *
+     * @type {string}
+     * @default slds-truncate
+     */
+    get titleClass() {
+        return classSet('slds-truncate')
+            .add({
+                'slds-p-horizontal_small': this.variant === 'shaded',
+                'slds-p-right_small': this.variant === 'base'
+            })
+            .toString();
+    }
+
+    /**
+     * If true, the header is visible.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    get showHeader() {
+        return this.title || this.collapsible;
+    }
+
+    /**
      * Section change status toggle.
      */
-    changeSectionStatus() {
+    toggleSection() {
         this._closed = !this._closed;
     }
 }

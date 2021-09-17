@@ -1,0 +1,394 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div
+        class="slds-grid slds-is-relative avonni-scheduler__wrapper"
+        onmouseup={handleMouseUp}
+        onmousemove={handleMouseMove}
+        onscroll={handleScroll}
+    >
+        <!-- Datatable -->
+        <div class={datatableColClass}>
+            <c-avonni-primitive-datatable
+                class="slds-show slds-border_top avonni-scheduler__datatable"
+                max-column-width="9999999999"
+                columns={columns}
+                data={rows}
+                hide-checkbox-column
+                key-field={rowsKeyField}
+                resize-column-disabled={resizeColumnDisabled}
+                onresize={handleDatatableResize}
+            ></c-avonni-primitive-datatable>
+
+            <!-- Resizing splitter -->
+            <div class="slds-is-relative">
+                <div
+                    class={splitterClass}
+                    onmousedown={handleSplitterMouseDown}
+                >
+                    <div
+                        class="slds-theme_shade slds-grid slds-grid_vertical-align-center slds-wrap"
+                    >
+                        <lightning-button-icon
+                            if:true={showCollapseLeft}
+                            class="avonni-scheduler__splitter-icon slds-is-relative"
+                            icon-name="utility:left"
+                            variant="bare"
+                            onclick={handleHideDatatable}
+                        ></lightning-button-icon>
+                        <lightning-button-icon
+                            if:true={showCollapseRight}
+                            class="avonni-scheduler__splitter-icon slds-is-relative"
+                            icon-name="utility:right"
+                            variant="bare"
+                            onclick={handleOpenDatatable}
+                        ></lightning-button-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="slds-col slds-grid avonni-scheduler__schedule-col">
+            <!-- Left infinite loading spinner -->
+            <div if:true={showLeftInfiniteLoadSpinner} class="slds-is-relative">
+                <div
+                    role="status"
+                    class="avonni-scheduler__infinite-load-spinner_left slds-spinner slds-spinner_medium"
+                >
+                    <span class="slds-assistive-text"
+                        >{loadingStateAlternativeText}</span
+                    >
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+            <div class="slds-col">
+                <!-- Headers -->
+                <c-avonni-primitive-scheduler-header-group
+                    class="avonni-scheduler__header"
+                    available-days-of-the-week={availableDaysOfTheWeek}
+                    available-months={availableMonths}
+                    available-time-frames={availableTimeFrames}
+                    headers={computedHeaders}
+                    scroll-left-offset={datatableWidth}
+                    start={start}
+                    time-span={timeSpan}
+                    onprivateheaderregister={handleHeaderRegister}
+                    onprivatecellwidthchange={handleHeaderCellWidthChange}
+                    onprivateheaderchange={handleHeaderChange}
+                    onprivateheaderfirstrender={handleHeaderFirstRender}
+                    onprivatevisibleheaderchange={handleHeaderVisibleCellsChange}
+                ></c-avonni-primitive-scheduler-header-group>
+                <!-- Rows -->
+                <div class="slds-is-relative avonni-scheduler__body">
+                    <template
+                        for:each={computedRows}
+                        for:item="row"
+                        for:index="index"
+                    >
+                        <div
+                            key={row.key}
+                            class="slds-grid slds-is-relative avonni-scheduler__row"
+                            data-index={index}
+                            data-key={row.key}
+                        >
+                            <template for:each={row.columns} for:item="column">
+                                <div
+                                    key={column.start}
+                                    class="slds-border_right slds-border_bottom slds-col slds-p-around_none slds-wrap avonni-scheduler__cell"
+                                    data-start={column.start}
+                                    data-end={column.end}
+                                    oncontextmenu={handleEmptySpotContextMenu}
+                                    onmousedown={handleMouseDown}
+                                    ondblclick={handleDoubleClick}
+                                ></div>
+                            </template>
+                        </div>
+                    </template>
+                    <!-- Events -->
+                    <div class="avonni-scheduler__events slds-is-absolute">
+                        <template for:each={computedEvents} for:item="event">
+                            <div key={event.key}>
+                                <template
+                                    for:each={event.occurrences}
+                                    for:item="occurrence"
+                                >
+                                    <c-avonni-primitive-scheduler-event-occurrence
+                                        key={occurrence.key}
+                                        color={event.color}
+                                        columns={smallestHeader.columns}
+                                        column-duration={smallestColumnDuration}
+                                        column-width={cellWidth}
+                                        date-format={dateFormat}
+                                        disabled={event.disabled}
+                                        event-data={event.data}
+                                        event-name={event.name}
+                                        from={occurrence.from}
+                                        icon-name={event.iconName}
+                                        labels={event.labels}
+                                        occurrence={occurrence}
+                                        occurrence-key={occurrence.key}
+                                        read-only={readOnly}
+                                        reference-line={event.referenceLine}
+                                        row-key={occurrence.rowKey}
+                                        rows={computedRows}
+                                        scroll-left-offset={datatableWidth}
+                                        title={occurrence.title}
+                                        theme={event.theme}
+                                        to={occurrence.to}
+                                        data-event-name={event.name}
+                                        data-key={occurrence.key}
+                                        data-row-key={occurrence.rowKey}
+                                        onprivatefocus={handleEventFocus}
+                                        onprivateblur={hideDetailPopover}
+                                        onprivatecontextmenu={handleEventContextMenu}
+                                        onprivatedisabledcontextmenu={handleEmptySpotContextMenu}
+                                        onprivatemouseenter={handleEventMouseEnter}
+                                        onprivatemouseleave={hideDetailPopover}
+                                        onprivatedblclick={handleEventDoubleClick}
+                                        onprivatedisableddblclick={handleDoubleClick}
+                                        onprivatemousedown={handleEventMouseDown}
+                                        onprivatedisabledmousedown={handleMouseDown}
+                                        onprivateresize={handleEventResize}
+                                    ></c-avonni-primitive-scheduler-event-occurrence>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <!-- Right infinite loading spinner -->
+            <div
+                if:true={showRightInfiniteLoadSpinner}
+                class="slds-is-relative"
+            >
+                <div
+                    role="status"
+                    class="avonni-scheduler__infinite-load-spinner slds-spinner slds-spinner_medium"
+                >
+                    <span class="slds-assistive-text"
+                        >{loadingStateAlternativeText}</span
+                    >
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complete schedule loading spinner -->
+        <lightning-spinner
+            if:true={isLoading}
+            alternative-text={loadingStateAlternativeText}
+            size="large"
+        ></lightning-spinner>
+    </div>
+
+    <!-- Event detail popover -->
+    <div
+        if:true={showDetailPopover}
+        class="avonni-scheduler__event-detail-popover slds-is-fixed slds-popover slds-dropdown slds-dropdown_left"
+        role="tooltip"
+        aria-live="polite"
+    >
+        <div class="slds-popover__body">
+            <div class="slds-m-bottom_x-small">
+                <strong>{selection.occurrence.title}</strong>
+            </div>
+            <div class="slds-grid">
+                <lightning-icon
+                    class="avonni-scheduler__event-detail-icon slds-m-right_xx-small"
+                    icon-name="utility:clock"
+                    size="x-small"
+                ></lightning-icon>
+                {selectionFrom}
+            </div>
+            <div class="slds-grid">
+                <lightning-icon
+                    class="avonni-scheduler__event-detail-icon slds-m-right_xx-small"
+                    icon-name="utility:clock"
+                    size="x-small"
+                ></lightning-icon>
+                {selectionTo}
+            </div>
+        </div>
+    </div>
+
+    <!-- Event context menu -->
+    <c-avonni-primitive-dropdown-menu
+        if:true={contextMenuActions.length}
+        class="slds-is-fixed avonni-scheduler__context-menu"
+        show={showContextMenu}
+        items={contextMenuActions}
+        onclose={hideContextMenu}
+        onprivateselect={handleActionSelect}
+    ></c-avonni-primitive-dropdown-menu>
+
+    <!-- Recurrent event edit choice dialog -->
+    <c-avonni-dialog
+        if:true={showRecurrenceDialog}
+        show-dialog={showRecurrenceDialog}
+        title={editDialogTitle}
+        size="small"
+        onclosedialog={handleCloseRecurrenceDialog}
+    >
+        <p class="slds-m-bottom_medium slds-text-align_center">
+            {dialogLabels.editRecurrent}
+        </p>
+        <div slot="footer">
+            <lightning-button
+                class="slds-m-right_xx-small"
+                label={dialogLabels.cancelButton}
+                onclick={handleCloseRecurrenceDialog}
+            ></lightning-button>
+            <lightning-button
+                class="slds-m-right_xx-small"
+                label={dialogLabels.saveOneRecurrent}
+                variant="brand"
+                value="one"
+                onclick={handleSaveEvent}
+            ></lightning-button>
+            <lightning-button
+                class="slds-m-right_xx-small"
+                label={dialogLabels.saveAllRecurrent}
+                variant="brand"
+                value="all"
+                onclick={handleSaveEvent}
+                onkeydown={handleEditSaveKeyDown}
+            ></lightning-button>
+        </div>
+    </c-avonni-dialog>
+
+    <!-- Delete confirmation dialog -->
+    <c-avonni-dialog
+        if:true={showDeleteConfirmationDialog}
+        show-dialog={showDeleteConfirmationDialog}
+        title={dialogLabels.deleteTitle}
+        size="small"
+        onclosedialog={handleCloseDeleteConfirmationDialog}
+    >
+        <p class="slds-m-bottom_medium slds-text-align_center">
+            {dialogLabels.deleteMessage}
+        </p>
+        <div slot="footer">
+            <lightning-button
+                class="slds-m-right_xx-small"
+                label={dialogLabels.cancelButton}
+                onclick={handleCloseDeleteConfirmationDialog}
+            ></lightning-button>
+            <lightning-button
+                class="slds-m-right_xx-small"
+                label={dialogLabels.deleteButton}
+                variant="brand"
+                onclick={handleEventDelete}
+            ></lightning-button>
+        </div>
+    </c-avonni-dialog>
+
+    <!-- Event edit dialog -->
+    <c-avonni-dialog
+        if:true={showEditDialog}
+        show-dialog={showEditDialog}
+        title={editDialogTitle}
+        size="small"
+        onclosedialog={handleCloseEditDialog}
+    >
+        <lightning-input
+            label={dialogLabels.title}
+            value={selection.occurrence.title}
+            name="title"
+            class="slds-m-bottom_small"
+            autocomplete="off"
+            required
+            onchange={handleEventTitleChange}
+        ></lightning-input>
+        <div class="slds-m-bottom_small">
+            <c-avonni-input-date-range
+                label-start-date={dialogLabels.from}
+                start-date={selection.occurrence.from}
+                end-date={selection.occurrence.to}
+                label-end-date={dialogLabels.to}
+                type="datetime"
+                required
+                variant="label-hidden"
+                onchange={handleEventDateChange}
+            ></c-avonni-input-date-range>
+        </div>
+        <div class="slds-m-bottom_small">
+            <c-avonni-combobox
+                if:true={resourcesComboboxOptions.length}
+                allow-search
+                is-multi-select
+                label={dialogLabels.resources}
+                value={selection.occurrence.keyFields}
+                options={resourcesComboboxOptions}
+                remove-selected-options
+                dropdown-length="5-items"
+                required
+                onchange={handleEventKeyFieldsChange}
+            ></c-avonni-combobox>
+        </div>
+        <div slot="footer" class="slds-text-align_right">
+            <lightning-button
+                class="slds-m-right_xx-small"
+                label={dialogLabels.cancelButton}
+                onclick={handleCloseEditDialog}
+            ></lightning-button>
+            <lightning-button
+                if:false={showRecurrenceSaveOptions}
+                label={dialogLabels.saveButton}
+                variant="brand"
+                onclick={handleSaveEvent}
+                onkeydown={handleEditSaveKeyDown}
+            ></lightning-button>
+            <lightning-button-menu
+                if:true={showRecurrenceSaveOptions}
+                label={dialogLabels.saveButton}
+                menu-alignment="bottom-right"
+                onselect={handleSaveEvent}
+                onkeydown={handleEditSaveKeyDown}
+            >
+                <lightning-menu-item
+                    value="one"
+                    label={dialogLabels.saveOneRecurrent}
+                ></lightning-menu-item>
+                <lightning-menu-item
+                    value="all"
+                    label={dialogLabels.saveAllRecurrent}
+                ></lightning-menu-item>
+            </lightning-button-menu>
+        </div>
+    </c-avonni-dialog>
+</template>

@@ -42,7 +42,7 @@ import {
     classListMutation
 } from 'c/utilsPrivate';
 import { InteractingState, FieldConstraintApi } from 'c/inputUtils';
-import { classSet, generateUniqueId } from 'c/utils';
+import { classSet, generateUUID } from 'c/utils';
 import { AutoPosition, Direction } from 'c/positionLibrary';
 
 const DROPDOWN_ALIGNMENTS = {
@@ -605,7 +605,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @type {string}
      */
     get generateKey() {
-        return generateUniqueId();
+        return generateUUID();
     }
 
     /**

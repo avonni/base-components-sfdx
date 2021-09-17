@@ -76,6 +76,15 @@ export { isChrome, isIE11, isSafari } from './browser';
 export { ContentMutation } from './contentMutation';
 export { observePosition } from './observers';
 export { hasOnlyAllowedVideoIframes } from './videoUtils';
+export {
+    addToDate,
+    containsAllowedDateTimes,
+    dateTimeObjectFrom,
+    nextAllowedDay,
+    nextAllowedMonth,
+    nextAllowedTime,
+    numberOfUnitsBetweenDates
+} from './dateTimeUtils';
 import { smartSetAttribute } from './smartSetAttribute';
 
 export function synchronizeAttrs(element, values) {

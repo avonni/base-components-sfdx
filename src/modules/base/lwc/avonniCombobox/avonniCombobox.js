@@ -634,7 +634,7 @@ export default class AvonniCombobox extends LightningElement {
 
     /**
      * Sets a custom error message to be displayed when a form is submitted.
-     * 
+     *
      * @param {string} message - The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
@@ -673,9 +673,9 @@ export default class AvonniCombobox extends LightningElement {
      */
     handleSearch(event) {
         /**
+         * The event fired when a user types into the combobox input.
          * @event
          * @name search
-         * The event fired when a user types into the combobox input.
          * @param {string} value The value of the search input.
          * @public
          */
@@ -694,9 +694,9 @@ export default class AvonniCombobox extends LightningElement {
     handleScopeChange(event) {
         /**
          * The event fired when a scope is selected.
-         * 
+         *
          * @event
-         * @name scopeChange
+         * @name scopechange
          * @param {string} value The value of the scope selected.
          * @bubbles
          * @public
@@ -716,9 +716,10 @@ export default class AvonniCombobox extends LightningElement {
      */
     handleActionClick(event) {
         /**
-         * @event
-         * @name actionClick
          * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
          * @param {string} name The name of the action clicked.
          * @bubbles
          * @public
@@ -740,7 +741,7 @@ export default class AvonniCombobox extends LightningElement {
         this._value = event.detail.value;
         /**
          * The event fired when a user clicks on an action.
-         * 
+         *
          * @event
          * @name change
          * @param {string[]} value The new value of the combobox.
@@ -764,7 +765,7 @@ export default class AvonniCombobox extends LightningElement {
         /**
          * The event fired when the drop-down is opened.
          * It is not fired when the drop-down is opened programmatically with the open() method.
-         * 
+         *
          * @event
          * @name open
          * @public

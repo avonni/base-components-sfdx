@@ -32,7 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { normalizeArray, normalizeBoolean } from 'c/utilsPrivate';
-import { generateUniqueId } from 'c/utils';
+import { generateUUID } from 'c/utils';
 
 export default class AvonniPrimitiveComboboxGroup extends LightningElement {
     @api label;
@@ -100,7 +100,7 @@ export default class AvonniPrimitiveComboboxGroup extends LightningElement {
     }
 
     get generateKey() {
-        return generateUniqueId();
+        return generateUUID();
     }
 
     handleAction(event) {

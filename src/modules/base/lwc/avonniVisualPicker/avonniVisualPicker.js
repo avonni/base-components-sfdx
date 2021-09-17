@@ -31,7 +31,7 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { classSet, generateUniqueId } from 'c/utils';
+import { classSet, generateUUID } from 'c/utils';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 
 const VISUAL_PICKER_VARIANTS = {
@@ -88,7 +88,7 @@ export default class AvonniVisualPicker extends LightningElement {
      * @public
      * @required
      */
-    @api name = generateUniqueId();
+    @api name = generateUUID();
 
     _value = [];
     _variant = VISUAL_PICKER_VARIANTS.default;

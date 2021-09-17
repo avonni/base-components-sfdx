@@ -36,7 +36,7 @@ import {
     normalizeBoolean,
     normalizeString
 } from 'c/utilsPrivate';
-import { classSet } from 'c/utils';
+import { classSet, generateUUID } from 'c/utils';
 
 const ICON_POSITIONS = {
     valid: ['left', 'right'],
@@ -55,7 +55,7 @@ const IMAGE_WIDTH = {
 
 /**
  * @class
- * @example example-list--base
+ * @storyId example-list--base
  * @description The List component allows for a user to enumerate a vertical list with items.
  * @descriptor avonni-list
  * @public
@@ -104,7 +104,6 @@ export default class AvonniList extends LightningElement {
     _hasImages;
     menuRole;
     itemRole;
-    denyItemClick = false;
 
     /**
      * Position of the sortable icon. Valid values include left and right.
@@ -247,6 +246,10 @@ export default class AvonniList extends LightningElement {
      */
     get firstAction() {
         return this.computedActions[0];
+    }
+
+    get generateKey() {
+        return generateUUID();
     }
 
     /**
@@ -489,12 +492,8 @@ export default class AvonniList extends LightningElement {
      * Compute drag event start element positions and indexes // Prevent certain elements from being dragged.
      *
      * @param {Event} event
-     * @returns {function | object} intiPositions() | _savedComputedItems
      */
     dragStart(event) {
-        // Reset denyItemClick attribute on item touch
-        this.denyItemClick = false;
-
         // Stop dragging if the click was on a button menu
         if (
             !this.sortable ||
@@ -509,9 +508,7 @@ export default class AvonniList extends LightningElement {
         this._draggedElement = event.currentTarget;
         this._currentItemDraggedHeight = this._draggedElement.offsetHeight;
         this._draggedIndex = Number(this._draggedElement.dataset.index);
-        this._draggedElement.classList.add(
-            'avonni-list__item-sortable_dragged'
-        );
+
         if (event.type !== 'keydown') {
             this.initPositions(event);
         } else {
@@ -535,10 +532,9 @@ export default class AvonniList extends LightningElement {
      */
     drag(event) {
         if (!this._draggedElement) return;
-        this._draggedElement.classList.add('sortable-item_dragged');
-
-        // Deny itemclick event dispatch on drag
-        this.denyItemClick = true;
+        this._draggedElement.classList.add(
+            'avonni-list__item-sortable_dragged'
+        );
 
         const mouseY =
             event.type === 'touchmove'
@@ -574,34 +570,36 @@ export default class AvonniList extends LightningElement {
         if (buttonMenu) buttonMenu.classList.remove('slds-is-open');
     }
 
-    dragEnd(event) {
+    dragEnd() {
         if (!this._draggedElement) return;
 
-        // Allow imperfect item click within a 4px drag margin
-        if (event && Math.abs(event.clientY - this._initialY) < 4) {
-            this.denyItemClick = false;
+        const orderHasChanged = this._itemElements.some((item, index) => {
+            return Number(item.dataset.index) !== index;
+        });
+
+        if (orderHasChanged) {
+            this.computedItems = [...this.computedItems];
+
+            /**
+             * The event fired when a user reordered the items.
+             *
+             * @event
+             * @name reorder
+             * @param {object} items
+             * @public
+             */
+            this.dispatchEvent(
+                new CustomEvent('reorder', {
+                    detail: {
+                        items: this.computedItems
+                    }
+                })
+            );
         }
 
-        this.computedItems = [...this.computedItems];
-
         this.clearSelection();
-
-        /**
-         * The event fired when a user reordered the items.
-         *
-         * @event
-         * @name reorder
-         * @param {object} items
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('reorder', {
-                detail: {
-                    items: this.computedItems
-                }
-            })
-        );
     }
+
     /**
      * Handler for keyboard access controls to sortable list.
      *
@@ -677,9 +675,7 @@ export default class AvonniList extends LightningElement {
         const actionName = this.hasMultipleActions
             ? event.detail.value
             : event.target.value;
-        const itemIndex = event.target.parentElement.parentElement.parentElement.getAttribute(
-            'data-index'
-        );
+        const itemIndex = event.currentTarget.dataset.itemIndex;
 
         /**
          * The event fired when a user clicks on an action.
@@ -708,7 +704,6 @@ export default class AvonniList extends LightningElement {
      */
     handleItemClick(event) {
         if (
-            this.denyItemClick ||
             event.target.tagName.startsWith('LIGHTNING') ||
             event.target.tagName === 'A'
         )
@@ -726,9 +721,7 @@ export default class AvonniList extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('itemclick', {
                 detail: {
-                    item: this.computedItems[
-                        event.currentTarget.getAttribute('data-index')
-                    ],
+                    item: this.computedItems[event.currentTarget.dataset.index],
                     bounds: event.currentTarget.getBoundingClientRect()
                 }
             })

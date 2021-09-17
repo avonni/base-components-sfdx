@@ -33,7 +33,7 @@
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
-import { generateUniqueId } from 'c/inputUtils';
+import { generateUUID } from 'c/inputUtils';
 
 const PAGINATION_ALIGNS = {valid: ['left', 'center', 'right', 'fill'], default: 'left'};
 
@@ -299,7 +299,7 @@ export default class AvonniPagination extends LightningElement {
      * @type {string}
      */
     get uniqueKey() {
-        return generateUniqueId();
+        return generateUUID();
     }
 
     /**

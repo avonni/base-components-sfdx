@@ -32,7 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { normalizeBoolean } from 'c/utilsPrivate';
-import { generateUniqueId } from 'c/utils';
+import { generateUUID } from 'c/utils';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
@@ -294,7 +294,7 @@ export default class AvonniCalendar extends LightningElement {
      * Generate unique ID key.
      */
     get generateKey() {
-        return generateUniqueId();
+        return generateUUID();
     }
 
     /**

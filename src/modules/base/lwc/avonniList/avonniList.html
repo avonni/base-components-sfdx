@@ -33,7 +33,9 @@
 -->
 
 <template>
-    <p if:true={label} class="slds-text-heading_small">{label}</p>
+    <p if:true={label} class="slds-text-heading_small slds-m-bottom_x-small">
+        {label}
+    </p>
     <span
         id="instructions"
         class="slds-assistive-text"
@@ -48,7 +50,7 @@
     <ul class={computedListClass} role={menuRole}>
         <template for:each={computedItems} for:item="item" for:index="index">
             <li
-                key={item.label}
+                key={generateKey}
                 class={computedItemClass}
                 onmousedown={dragStart}
                 onmousemove={drag}
@@ -66,12 +68,15 @@
                 aria-describedby="instructions"
             >
                 <div class="slds-grid slds-grid_vertical-align-center">
+                    <!-- Sort icon -->
                     <lightning-icon
                         if:true={showIconLeft}
-                        class="slds-p-horizontal_xx-small draggable-element icon-left avonni-list__item-sortable-icon-cursor"
+                        class="slds-p-horizontal_xx-small icon-left avonni-list__item-sortable-icon-cursor"
                         icon-name={sortableIconName}
                         size="x-small"
                     ></lightning-icon>
+
+                    <!-- Image -->
                     <div
                         if:true={item.imageSrc}
                         class={computedImageContainerClass}
@@ -87,9 +92,11 @@
                             draggable="false"
                         />
                     </div>
+
                     <div
-                        class="slds-grid slds-grow slds-grid_vertical-align-center slds-p-around_x-small"
+                        class="slds-grid slds-col slds-grid_vertical-align-center slds-p-around_x-small slds-has-flexi-truncate"
                     >
+                        <!-- Avatar -->
                         <c-avonni-avatar
                             if:true={item.avatarSrc}
                             class="slds-m-horizontal_x-small"
@@ -98,23 +105,26 @@
                             size="small"
                             hide-avatar-details="true"
                         ></c-avonni-avatar>
-                        <div class="slds-col slds-truncate">
+                        <div class="slds-col slds-has-flexi-truncate">
+                            <!-- Item label and icons -->
                             <div
-                                class="slds-grid slds-grid-align-center slds-truncate slds-no-space slds-margin-bottom_xx-small"
+                                class="slds-grid slds-grid_vertical-align-center slds-margin-bottom_xx-small"
                             >
-                                <template if:true={item.href}>
-                                    <a href={item.href}>{item.label}</a>
-                                </template>
-                                <template if:false={item.href}>
-                                    <h3>{item.label}</h3>
-                                </template>
-                                <div if:true={item.icons} class="slds-no-flex">
+                                <div class="slds-truncate">
+                                    <template if:true={item.href}>
+                                        <a href={item.href}>{item.label}</a>
+                                    </template>
+                                    <template if:false={item.href}>
+                                        {item.label}
+                                    </template>
+                                </div>
+                                <template if:true={item.icons}>
                                     <template
                                         for:each={item.icons}
                                         for:item="icon"
                                     >
                                         <lightning-icon
-                                            key={icon.title}
+                                            key={generateKey}
                                             icon-name={icon.iconName}
                                             alternative-text={icon.alternativeText}
                                             title={icon.title}
@@ -122,14 +132,18 @@
                                             class="slds-p-left_x-small"
                                         ></lightning-icon>
                                     </template>
-                                </div>
+                                </template>
                             </div>
+
+                            <!-- Description -->
                             <p
                                 if:true={item.description}
-                                class="slds-text-body_regular slds-line-clamp_x-small description-text"
+                                class="slds-text-body_regular slds-line-clamp_x-small"
                             >
                                 {item.description}
                             </p>
+
+                            <!-- Info -->
                             <template if:true={item.infos}>
                                 <ul
                                     if:true={item.infos.length}
@@ -146,62 +160,66 @@
                                 </ul>
                             </template>
                         </div>
-                        <lightning-icon
-                            if:true={showIconRight}
-                            class="slds-m-right_x-small icon-right draggable-element avonni-list__item-sortable-icon-cursor"
-                            icon-name={sortableIconName}
-                            size="x-small"
-                        ></lightning-icon>
-                        <div
-                            if:true={actions.length}
-                            class="slds-media slds-media_small"
+                    </div>
+
+                    <!-- Sort icon -->
+                    <lightning-icon
+                        if:true={showIconRight}
+                        class="slds-m-right_x-small icon-right avonni-list__item-sortable-icon-cursor"
+                        icon-name={sortableIconName}
+                        size="x-small"
+                    ></lightning-icon>
+
+                    <!-- Actions -->
+                    <div if:true={actions.length} class="slds-m-right_x-small">
+                        <lightning-button-menu
+                            if:true={hasMultipleActions}
+                            class="slds-m-right_none"
+                            menu-alignment="right"
+                            icon-size="x-small"
+                            data-item-index={index}
+                            ontouchstart={handleButtonMenuTouchStart}
+                            onselect={handleActionClick}
                         >
-                            <lightning-button-menu
-                                if:true={hasMultipleActions}
-                                class="slds-m-right_none"
-                                menu-alignment="right"
-                                icon-size="x-small"
-                                ontouchstart={handleButtonMenuTouchStart}
-                                onselect={handleActionClick}
+                            <template
+                                for:each={computedActions}
+                                for:item="action"
                             >
-                                <template
-                                    for:each={computedActions}
-                                    for:item="action"
-                                >
-                                    <lightning-menu-item
-                                        key={action.name}
-                                        value={action.name}
-                                        label={action.label}
-                                        disabled={action.disabled}
-                                        icon-name={action.iconName}
-                                    ></lightning-menu-item>
-                                </template>
-                            </lightning-button-menu>
-                            <template if:false={hasMultipleActions}>
-                                <lightning-button
-                                    if:true={firstAction.label}
-                                    class="slds-m-right_none"
-                                    ontouchstart={handleButtonMenuTouchStart}
-                                    key={firstAction.name}
-                                    value={firstAction.name}
-                                    label={firstAction.label}
-                                    disabled={firstAction.disabled}
-                                    icon-name={firstAction.iconName}
-                                    onclick={handleActionClick}
-                                ></lightning-button>
-                                <lightning-button-icon
-                                    if:false={firstAction.label}
-                                    class="slds-m-right_none"
-                                    ontouchstart={handleButtonMenuTouchStart}
-                                    key={firstAction.name}
-                                    value={firstAction.name}
-                                    disabled={firstAction.disabled}
-                                    icon-name={firstAction.iconName}
-                                    variant="bare"
-                                    onclick={handleActionClick}
-                                ></lightning-button-icon>
+                                <lightning-menu-item
+                                    key={action.name}
+                                    value={action.name}
+                                    label={action.label}
+                                    disabled={action.disabled}
+                                    icon-name={action.iconName}
+                                ></lightning-menu-item>
                             </template>
-                        </div>
+                        </lightning-button-menu>
+                        <template if:false={hasMultipleActions}>
+                            <lightning-button
+                                if:true={firstAction.label}
+                                class="slds-m-right_none"
+                                ontouchstart={handleButtonMenuTouchStart}
+                                key={firstAction.name}
+                                value={firstAction.name}
+                                label={firstAction.label}
+                                disabled={firstAction.disabled}
+                                icon-name={firstAction.iconName}
+                                data-item-index={index}
+                                onclick={handleActionClick}
+                            ></lightning-button>
+                            <lightning-button-icon
+                                if:false={firstAction.label}
+                                class="slds-m-right_none"
+                                ontouchstart={handleButtonMenuTouchStart}
+                                key={firstAction.name}
+                                value={firstAction.name}
+                                disabled={firstAction.disabled}
+                                icon-name={firstAction.iconName}
+                                variant="bare"
+                                data-item-index={index}
+                                onclick={handleActionClick}
+                            ></lightning-button-icon>
+                        </template>
                     </div>
                 </div>
             </li>

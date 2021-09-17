@@ -1,0 +1,185 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+.reference-line__badge {
+    border-radius: 0.35rem;
+    font-size: 0.55rem;
+    padding: 0.1rem 0.4rem;
+    height: var(--avonni-reference-line-badge-height);
+}
+
+.reference-line__line {
+    height: var(--avonni-reference-line-height, 20px);
+    position: absolute;
+    top: 0;
+}
+
+.reference-line__line > .reference-line__badge {
+    position: absolute;
+    top: var(--avonni-reference-line-badge-position-top);
+    bottom: var(--avonni-reference-line-badge-position-bottom, -10px);
+    left: var(--avonni-reference-line-badge-position-left);
+    right: var(--avonni-reference-line-badge-position-right, 0);
+    transform: var(--avonni-reference-line-badge-transform, translateX(50%));
+}
+
+.reference-line__badge_inverse {
+    background-color: #706e6b;
+    color: #fff;
+}
+
+.reference-line__badge_lightest {
+    background-color: #fff;
+    border-color: #dddbda;
+    border: none;
+}
+
+.reference-line__badge_success {
+    color: #fff;
+    background-color: #04844b;
+}
+
+.reference-line__badge_warning {
+    background-color: #ffb75d;
+    color: #080707;
+}
+
+.reference-line__badge_error {
+    color: #fff;
+    background-color: #c23934;
+}
+
+.reference-line__badge-border-thickness_large {
+    height: 24px;
+}
+
+.reference-line__badge-border-thickness_small {
+    height: 16px;
+}
+
+.reference-line__badge-border-thickness_x-small {
+    height: 14px;
+}
+
+.reference-line__badge-border-style_dashed {
+    border-right: 2px dashed #ecebea;
+}
+
+.reference-line__badge-border-style_solid {
+    border-right: 2px solid #ecebea;
+}
+
+.reference-line__badge-border-style_dotted {
+    border-right: 2px dotted #ecebea;
+}
+
+.reference-line__badge-border-color_inverse {
+    border-right-color: #706e6b;
+}
+
+.reference-line__badge-border-color_success {
+    border-right-color: #04844b;
+}
+
+.reference-line__badge-border-color_warning {
+    border-right-color: var(--lwc-colorBorderWarning, #ffb75d);
+}
+
+.reference-line__badge-border-color_error {
+    border-right-color: var(--lwc-colorBorderError, #c23934);
+}
+
+.reference-line__badge-border-color_lightest {
+    border-right-color: #ffffff;
+}
+
+.reference-line__line-vertical {
+    position: absolute;
+    width: 20px;
+}
+
+.reference-line__line-vertical {
+    position: absolute;
+    width: 20px;
+    left: -8px;
+}
+
+.reference-line__line-vertical > .reference-line__badge {
+    position: absolute;
+    bottom: 0;
+    left: 18px;
+    transform: translateY(50%);
+}
+
+.reference-line__badge-border-thickness-vertical_x-small {
+    left: -1px;
+}
+
+.reference-line__badge-border-thickness-vertical_small {
+    left: -4px;
+}
+
+.reference-line__badge-border-thickness-vertical_large {
+    left: -11px;
+}
+
+.reference-line__badge-border-vertical-style_dashed {
+    border-bottom: 2px dashed #ecebea;
+}
+
+.reference-line__badge-border-vertical-style_solid {
+    border-bottom: 2px solid #ecebea;
+}
+
+.reference-line__badge-border-vertical-style_dotted {
+    border-bottom: 2px dotted #ecebea;
+}
+
+.reference-line__badge-border-vertical-color_inverse {
+    border-bottom-color: #706e6b;
+}
+
+.reference-line__badge-border-vertical-color_success {
+    border-bottom-color: #027e46;
+}
+
+.reference-line__badge-border-vertical-color_warning {
+    border-bottom-color: var(--lwc-colorBorderWarning, #ffb75d);
+}
+
+.reference-line__badge-border-vertical-color_error {
+    border-bottom-color: var(--lwc-colorBorderError, #c23934);
+}
+
+.reference-line__badge-border-vertical-color_lightest {
+    border-bottom-color: #ffffff;
+}

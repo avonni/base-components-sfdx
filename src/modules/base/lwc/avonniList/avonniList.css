@@ -89,10 +89,6 @@
     border-bottom-left-radius: 0.16rem;
 }
 
-.avonni-list__item-menu {
-    display: grid;
-}
-
 @media (max-width: 320px) {
     .avonni-list__has-images {
         justify-content: center;

@@ -33,23 +33,28 @@
 -->
 
 <template>
-    <lightning-button
+    <button
         if:true={label}
-        label={label}
-        disabled={disabled}
+        class={computedButtonClass}
+        accesskey={accessKey}
         aria-expanded={computedAriaExpanded}
-        access-key={accessKey}
-        value={value}
         aria-haspopup="true"
-        icon-name={iconName}
-        variant={variant}
-        onclick={handleButtonClick}
+        disabled={disabled}
+        title={title}
+        value={value}
         onblur={handleBlur}
+        onclick={handleButtonClick}
         onfocus={focus}
         onmousedown={handleButtonMouseDown}
-        title={title}
     >
-    </lightning-button>
+        <c-avonni-primitive-icon
+            if:true={iconName}
+            icon-name={iconName}
+            svg-class="slds-button__icon slds-button__icon_left"
+            variant="bare"
+        ></c-avonni-primitive-icon>
+        {label}
+    </button>
 
     <lightning-button-icon
         if:false={label}

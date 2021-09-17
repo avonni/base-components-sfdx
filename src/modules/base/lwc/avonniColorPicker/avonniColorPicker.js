@@ -41,7 +41,7 @@ import {
 } from 'c/utilsPrivate';
 
 import { classSet } from 'c/utils';
-import { generateUniqueId } from 'c/utils';
+import { generateUUID } from 'c/utils';
 
 const validVariants = {
     valid: ['standard', 'label-inline', 'label-hidden', 'label-stacked'],
@@ -196,7 +196,7 @@ export default class AvonniColorPicker extends LightningElement {
 
     connectedCallback() {
         if (!this.name) {
-            this.name = generateUniqueId();
+            this.name = generateUUID();
         }
     }
 
@@ -475,7 +475,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     get uniqueKey() {
-        return generateUniqueId();
+        return generateUUID();
     }
 
     /**
@@ -620,19 +620,6 @@ export default class AvonniColorPicker extends LightningElement {
      *
      */
     dispatchClear() {
-        /**
-         * The event fired when the color value changed.
-         *
-         * @event
-         * @public
-         * @name change
-         * @param {string} hex Color in hexadecimal format.
-         * @param {string} hexa Color in hexadecimal format with alpha.
-         * @param {string} rgb Color in rgb format.
-         * @param {string} rgba Color in rgba format.
-         * @param {string} alpha Alpha value of the color.
-         */
-
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {

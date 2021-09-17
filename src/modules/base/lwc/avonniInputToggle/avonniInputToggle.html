@@ -35,10 +35,12 @@
 <template>
     <div class="slds-show_inline-block">
         <label class={computedWrapperClass} for="avonni-input-toggle">
-            <template if:true={required}>
-                <abbr class="slds-required" title={i18n.required}>*</abbr>
-            </template>
-            <span class={computedLabelClass}>{label}</span>
+            <span class={computedLabelClass}>
+                <template if:true={required}>
+                    <abbr class="slds-required" title={i18n.required}>*</abbr>
+                </template>
+                {label}
+            </span>
             <lightning-helptext
                 if:true={fieldLevelHelp}
                 content={fieldLevelHelp}

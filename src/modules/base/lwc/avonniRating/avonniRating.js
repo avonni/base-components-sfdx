@@ -32,7 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
-import { generateUniqueId, classSet } from 'c/utils';
+import { generateUUID, classSet } from 'c/utils';
 
 const RATING_SELECTIONS = {
     valid: ['continuous', 'single'],
@@ -78,7 +78,7 @@ export default class AvonniRating extends LightningElement {
      * 
      * @type {string}
      */
-    @api name = generateUniqueId();
+    @api name = generateUUID();
     /**
      * The Lightning Design System name of the icon. Specify the name in the format 'utility:favorite' where 'utility' is the category, and 'favorite' is the specific icon to be displayed.
      *

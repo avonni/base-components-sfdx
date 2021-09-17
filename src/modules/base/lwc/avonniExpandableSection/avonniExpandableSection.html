@@ -34,27 +34,28 @@
 
 <template>
     <div class={sectionClass}>
-        <h3 class={sectionTitleClass}>
+        <h3 class={headerClass} if:true={showHeader}>
             <template if:true={collapsible}>
-                <button
-                    class="slds-button slds-section__title-action"
-                    onclick={changeSectionStatus}
-                >
-                    <lightning-icon
-                        icon-name="utility:switch"
-                        size="x-small"
-                        class="slds-section__title-action-icon slds-button__icon slds-button__icon_left"
-                    ></lightning-icon>
-                    <span class="slds-truncate" title={title}> {title} </span>
+                <button class={titleButtonClass} onclick={toggleSection}>
+                    <template if:false={closed}>
+                        <lightning-icon
+                            icon-name="utility:chevrondown"
+                            size="x-small"
+                            class="slds-button__icon slds-button__icon_left"
+                        ></lightning-icon>
+                    </template>
+                    <template if:true={closed}>
+                        <lightning-icon
+                            icon-name="utility:chevronright"
+                            size="x-small"
+                            class="slds-button__icon slds-button__icon_left"
+                        ></lightning-icon>
+                    </template>
+                    <span class="slds-truncate" title={title}>{title}</span>
                 </button>
             </template>
             <template if:false={collapsible}>
-                <span
-                    class="slds-truncate slds-p-horizontal_small"
-                    title={title}
-                >
-                    {title}
-                </span>
+                <span class={titleClass} title={title}>{title}</span>
             </template>
         </h3>
         <div class="slds-section__content">

@@ -1,0 +1,142 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+@import './avonniShared.css';
+
+:host.avonni-scheduler__primitive-event {
+    z-index: 1;
+    display: block;
+}
+
+.avonni-scheduler__event {
+    width: 100%;
+    opacity: 0.8;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.avonni-scheduler__event-wrapper:focus {
+    outline: none;
+}
+.avonni-scheduler__event-wrapper_focused {
+    box-shadow: inset 0 0 0 1px var(--lwc-colorBorderRowSelectedHover, #1b96ff);
+}
+:host.avonni-scheduler__event-dragged .avonni-scheduler__event-wrapper_focused {
+    box-shadow: none;
+}
+
+.avonni-scheduler__event:hover {
+    opacity: 1;
+}
+:host.avonni-scheduler__event-dragged {
+    z-index: 3;
+}
+:host.avonni-scheduler__event-dragged .avonni-scheduler__event {
+    cursor: grabbing;
+}
+
+.avonni-scheduler__event-label_right {
+    right: 0;
+    transform: translateX(100%);
+}
+
+.avonni-scheduler__event-label_left {
+    left: 0;
+    transform: translateX(-100%);
+}
+
+.avonni-scheduler__event-label_center {
+    position: sticky;
+    position: -webkit-sticky;
+}
+
+/* Themes --------- */
+.avonni-scheduler__event_transparent {
+    border-left-width: 3px;
+    border-left-style: solid;
+}
+
+.avonni-scheduler__event_rounded {
+    border-radius: var(--lwc-borderRadiusLarge, 0.5rem);
+}
+
+.avonni-scheduler__event_hollow {
+    border-width: 2px;
+    border-style: solid;
+    border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
+}
+
+.avonni-scheduler__event_line {
+    border-top-width: 5px;
+    border-top-style: solid;
+    margin-top: 5px;
+}
+.avonni-scheduler__event_line::before,
+.avonni-scheduler__event_line::after {
+    content: '';
+    border-color: inherit;
+    border-style: solid;
+    border-radius: 2px;
+    border-width: 2px;
+    position: absolute;
+    top: -9px;
+    height: 13px;
+}
+.avonni-scheduler__event_line::before {
+    left: 0;
+}
+.avonni-scheduler__event_line::after {
+    right: 0;
+}
+
+/* Resize icon --------- */
+.avonni-scheduler__event:hover .avonni-scheduler__event-resize-icon {
+    visibility: visible;
+}
+
+.avonni-scheduler__event-resize-icon {
+    visibility: hidden;
+    opacity: 0.7;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: col-resize;
+}
+
+.avonni-scheduler__event-resize-icon_left {
+    left: 0;
+}
+
+.avonni-scheduler__event-resize-icon_right {
+    right: 0;
+}

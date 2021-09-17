@@ -1,0 +1,15 @@
+.avonni-primitive-collapsible-group__section_margin_bottom {
+    margin-bottom: 0;
+}
+
+.avonni-primitive-collapsible-group__section {
+    padding-top: 0;
+    overflow: visible;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+}
+
+.avonni-primitive-collapsible-group__section_padding_bottom {
+    padding-bottom: 0.5rem;
+}
