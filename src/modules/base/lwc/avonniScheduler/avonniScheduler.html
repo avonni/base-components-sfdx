@@ -41,16 +41,16 @@
     >
         <!-- Datatable -->
         <div class={datatableColClass}>
-            <c-avonni-primitive-datatable
+            <c-avonni-datatable
                 class="slds-show slds-border_top avonni-scheduler__datatable"
                 max-column-width="9999999999"
                 columns={columns}
-                data={rows}
+                records={rows}
                 hide-checkbox-column
                 key-field={rowsKeyField}
                 resize-column-disabled={resizeColumnDisabled}
                 onresize={handleDatatableResize}
-            ></c-avonni-primitive-datatable>
+            ></c-avonni-datatable>
 
             <!-- Resizing splitter -->
             <div class="slds-is-relative">

@@ -30,15 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const editableClassNameTrue =
-    'avonni-primitive-summarization-table-td_vertical-align_top avonni-primitive-summarization-table__padding_right';
-const editableClassNameFalse =
-    'avonni-primitive-summarization-table-td_vertical-align_top';
-const isNumberTypeClassNameTrue =
-    'avonni-primitive-summarization-table__display-flex_end';
-const isNumberTypeClassNameFalse =
-    'avonni-primitive-summarization-table__display-flex_start';
-
 /**
  * Method to count numbers of element in array.
  *
@@ -397,25 +388,20 @@ const computeSummarizeArray = (columns, data) => {
         let summarizeTypes = column.summarizeTypes;
         const columnType = column.type;
         const hasSummarizeType = column.summarizeTypes ? true : false;
-        const isColumnEditable = column.editable ? true : false;
         const dateType = isDateType(columnType);
         const formattedNumberType = isFormattedNumberType(columnType);
         const filteredDataValues = computeFilteredDataValues(columns, data);
         const formatType = formatNumberType(columnType);
         // If the column is a numberType, the alignement is right, otherwise it's left.
         const className = isNumberType(columnType)
-            ? isNumberTypeClassNameTrue
-            : isNumberTypeClassNameFalse;
-        // If the column is editable we need to add padding-right to match the styling.
-        const editableClassName = isColumnEditable
-            ? editableClassNameTrue
-            : editableClassNameFalse;
+            ? 'slds-truncate avonni-datatable-summarize_styling-number'
+            : 'slds-truncate avonni-datatable-summarize_styling';
+
         // Formatting of the object that we need to iterate on, in the markup.
         const summarizeColumnObject = {
             fieldName: column.fieldName,
             type: columnType,
             hasSummarizeType: hasSummarizeType,
-            editableClassName: editableClassName,
             summarizeTypes: summarizeTypes,
             formattedNumberType: formattedNumberType,
             dateType: dateType,

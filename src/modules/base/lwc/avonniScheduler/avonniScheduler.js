@@ -826,7 +826,7 @@ export default class AvonniScheduler extends LightningElement {
      * @type {HTMLElement}
      */
     get datatable() {
-        return this.template.querySelector('c-avonni-primitive-datatable');
+        return this.template.querySelector('c-avonni-datatable');
     }
 
     /**

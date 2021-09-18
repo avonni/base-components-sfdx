@@ -32,11 +32,7 @@
 
 import LightningDatatable from 'lightning/datatable';
 import { api } from 'lwc';
-import {
-    normalizeArray,
-    normalizeString,
-    normalizeBoolean
-} from 'c/utilsPrivate';
+import { normalizeArray, normalizeString } from 'c/utilsPrivate';
 
 import avatar from './avonniAvatar.html';
 import avatarGroup from './avonniAvatarGroup.html';
@@ -286,20 +282,6 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
 
     // Normalization of primitive datatable attributes
     @api
-    get columns() {
-        return super.columns;
-    }
-
-    set columns(value) {
-        super.columns = value;
-
-        this._columns = JSON.parse(JSON.stringify(this._columns));
-
-        this.removeWrapOption();
-        this.computeEditableOption();
-    }
-
-    @api
     get columnWidthsMode() {
         return super.columnWidthsMode;
     }
@@ -324,12 +306,25 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     }
 
     @api
-    get hideTableHeader() {
-        return super.hideTableHeader;
+    get sortedDirection() {
+        return super.sortedDirection;
     }
 
-    set hideTableHeader(value) {
-        super.hideTableHeader = normalizeBoolean(value);
+    set sortedDirection(value) {
+        super.sortedDirection = normalizeString(value, {
+            fallbackValue: SORT_DIRECTIONS.default,
+            validValues: SORT_DIRECTIONS.valid
+        });
+    }
+
+    @api
+    get wrapTextMaxLines() {
+        return super.wrapTextMaxLines;
+    }
+
+    set wrapTextMaxLines(value) {
+        if (value === undefined) return;
+        super.wrapTextMaxLines = value;
     }
 
     @api
@@ -350,16 +345,6 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     set maxColumnWidth(value) {
         if (value === undefined) return;
         super.maxColumnWidth = value;
-    }
-
-    @api
-    get maxRowSelection() {
-        return super.maxRowSelection;
-    }
-
-    set maxRowSelection(value) {
-        if (value === undefined) return;
-        super.maxRowSelection = value;
     }
 
     @api
@@ -393,6 +378,16 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     }
 
     @api
+    get maxRowSelection() {
+        return super.maxRowSelection;
+    }
+
+    set maxRowSelection(value) {
+        if (value === undefined) return;
+        super.maxRowSelection = value;
+    }
+
+    @api
     get selectedRows() {
         return super.selectedRows;
     }
@@ -401,30 +396,6 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
         if (value === undefined) return;
         super.selectedRows = value;
     }
-
-    @api
-    get sortedDirection() {
-        return super.sortedDirection;
-    }
-
-    set sortedDirection(value) {
-        super.sortedDirection = normalizeString(value, {
-            fallbackValue: SORT_DIRECTIONS.default,
-            validValues: SORT_DIRECTIONS.valid
-        });
-    }
-
-    @api
-    get wrapTextMaxLines() {
-        return super.wrapTextMaxLines;
-    }
-
-    set wrapTextMaxLines(value) {
-        if (value === undefined) return;
-        super.wrapTextMaxLines = value;
-    }
-
-    tableW = 0;
 
     connectedCallback() {
         super.connectedCallback();
@@ -443,58 +414,18 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
             'privateactionclick',
             this.handleDispatchEvents
         );
-
-        this.template.addEventListener('resizecol', (event) => {
-            this.dispatchEvent(
-                new CustomEvent(`${event.type}`, {
-                    detail: event.detail,
-                    bubbles: event.bubbles,
-                    composed: event.composed,
-                    cancelable: event.cancelable
-                })
-            );
-        });
-
-        this.template.addEventListener('selectallrows', (event) => {
-            this.dispatchEvent(
-                new CustomEvent(`${event.type}`, {
-                    detail: event.detail,
-                    bubbles: event.bubbles,
-                    composed: event.composed,
-                    cancelable: event.cancelable
-                })
-            );
-        });
-
-        this.template.addEventListener('deselectallrows', (event) => {
-            this.dispatchEvent(
-                new CustomEvent(`${event.type}`, {
-                    detail: event.detail,
-                    bubbles: event.bubbles,
-                    composed: event.composed,
-                    cancelable: event.cancelable
-                })
-            );
-        });
     }
 
     renderedCallback() {
         super.renderedCallback();
-        if (this.tableW !== this.tableWidth()) {
-            this.tableW = this.tableWidth();
-            this.dispatchEvent(
-                new CustomEvent('tablewidthchange', {
-                    detail: this.tableW,
-                    bubbles: true,
-                    composed: true
-                })
-            );
-        }
 
         this._data = JSON.parse(JSON.stringify(normalizeArray(super.data)));
         this.computeEditableOption();
 
-        this.tablesInitialization();
+        this.columnsWidthWithoutHeader();
+        this.columnsWidthWithHeader();
+        this.tableWidth();
+        this.unscrollableMainDatatable();
 
         if (this.isLoading) {
             this.template.querySelector(
@@ -526,68 +457,58 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
         );
     }
 
-    /**
-     * Returns the primitive ungrouped datatable if there is a group-by.
-     *
-     * @type {element}
-     */
-    get ungroupedDatatable() {
-        return this.template.querySelector(
-            'c-primitive-datatable[data-role="ungrouped"] .slds-table_header-fixed_container'
-        );
+    @api
+    get columns() {
+        return super.columns;
+    }
+
+    set columns(value) {
+        super.columns = value;
+
+        this._columns = JSON.parse(JSON.stringify(this._columns));
+        this.removeWrapOption();
+        this.computeEditableOption();
     }
 
     /**
-     * Returns all the primitive grouped datatables.
-     *
-     * @type {Array.<nodeList>}
-     */
-    get groupedDatatables() {
-        return this.template.querySelectorAll(
-            'c-primitive-datatable[data-role="grouped"] .slds-table_header-fixed_container'
-        );
-    }
-
-    /**
-     * Returns the primitive header datatable if there is a group-by.
-     *
-     * @type {element}
-     */
-    get headerDatatable() {
-        return this.template.querySelector(
-            'c-primitive-datatable[data-role="header"] .slds-table_header-fixed_container'
-        );
-    }
-
-    /**
-     * Calculates the width of the datatable depending on hideTableHeader is true or not.
+     * Gets the columns width of the datatable if hide-table-header is false.
      */
     @api
-    columnsWidthCalculation() {
-        let widthArray = [];
-        if (this.hideTableHeader) {
-            // when hide-table-header is true, all columns widths are equal.
-            const value =
-                super.widthsData.tableWidth /
-                super.widthsData.columnWidths.length;
-            const length = super.widthsData.columnWidths.length;
-            for (let i = 0; i < length; i++) {
-                widthArray.push(value);
-            }
-        } else {
-            widthArray = JSON.parse(
-                JSON.stringify(normalizeArray(super.widthsData.columnWidths))
-            );
+    columnsWidthWithHeader() {
+        this._columnsWidth = JSON.parse(
+            JSON.stringify(normalizeArray(super.widthsData.columnWidths))
+        );
+        return this._columnsWidth;
+    }
+
+    /**
+     * Gets the columns width of the datatable if hide-table-header is true.
+     */
+    @api
+    columnsWidthWithoutHeader() {
+        let columnsWidthWithoutHeader = [];
+        const row = this.template.querySelector('tbody > tr');
+
+        if (row) {
+            const data = Array.from(row.querySelectorAll('td, th'));
+
+            columnsWidthWithoutHeader = data.map((cell) => {
+                return cell.offsetWidth;
+            });
         }
-        return widthArray;
+
+        return columnsWidthWithoutHeader;
     }
 
     /**
-     * Gets the width of the datatable.
+     * Verifies if a column is editable or not.
      */
     @api
-    tableWidth() {
-        return JSON.parse(JSON.stringify(super.widthsData.tableWidth));
+    columnsEditable() {
+        this._columnsEditable = this.columns.map((column) => {
+            return column.editable;
+        });
+        return this._columnsEditable;
     }
 
     /**
@@ -595,27 +516,16 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
      */
     @api
     isDatatableEditable() {
-        const columnsEditable = this.columns.map((column) => {
-            return column.editable;
-        });
-        return columnsEditable.filter(Boolean).length > 0;
+        return this._columnsEditable.filter(Boolean).length;
     }
 
     /**
-     * Returns the draft values of changed data in the datatable.
-     */
-    @api
-    primitiveDatatableDraftValues() {
-        return this.draftValues;
-    }
-
-    /**
-     * Gets a row height.
-     *
-     * @param {string} rowKeyField The key field value of the row.
-     * @returns {number} The height of the row, in pixels.
-     * @public
-     */
+    * Gets a row height.
+    * 
+    * @param {string} rowKeyField The key field value of the row.
+    * @returns {number} The height of the row, in pixels.
+    * @public
+    */
     @api
     getRowHeight(rowKeyField) {
         const row = this.template.querySelector(
@@ -633,12 +543,12 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     }
 
     /**
-     * Sets the height of a row.
-     *
-     * @param {string} rowKeyField The key field value of the row.
-     * @param {number} height The new height of the row, in pixels.
-     * @public
-     */
+    * Sets the height of a row.
+    * 
+    * @param {string} rowKeyField The key field value of the row.
+    * @param {number} height The new height of the row, in pixels.
+    * @public
+    */
     @api
     setRowHeight(rowKeyField, height) {
         const row = this.template.querySelector(
@@ -651,90 +561,34 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     }
 
     /**
-     * Hides the visibility and padding of each c-primitive-datatables header.
+     * Gets the width of the datatable.
      */
-    hideTableHeaderPadding() {
-        const groupedDatatableHeaders = this.template.querySelectorAll(
-            'c-primitive-datatable[data-role="grouped"] thead'
+    @api
+    tableWidth() {
+        this._tableWidth = JSON.parse(
+            JSON.stringify(super.widthsData.tableWidth)
         );
-
-        const ungroupedDatatableHeader = this.template.querySelector(
-            'c-primitive-datatable[data-role="ungrouped"] thead'
-        );
-
-        if (this.hideTableHeader) {
-            if (this.ungroupedDatatable) {
-                this.ungroupedDatatable.style.paddingTop = '0px';
-            }
-            if (this.headerDatatable) {
-                this.headerDatatable.style.paddingTop = '0px';
-            }
-        }
-
-        if (this.ungroupedDatatable) {
-            this.ungroupedDatatable.style.paddingTop = '0px';
-            ungroupedDatatableHeader.style.visibility = 'hidden';
-        }
-
-        if (this.groupedDatatables) {
-            this.groupedDatatables.forEach((datatable) => {
-                datatable.style.paddingTop = '0px';
-            });
-
-            groupedDatatableHeaders.forEach((header) => {
-                header.style.visibility = 'hidden';
-            });
-        }
+        return this._tableWidth;
     }
 
     /**
-     * Styling for the datatable header.
+     * Returns the draft values of changed data in the datatable.
      */
-    headerDatatableStyling() {
-        const headerDatatableBorder = this.template.querySelector(
-            'c-primitive-datatable[data-role="header"] .slds-table_bordered'
-        );
-        const headerDatatableTable = this.template.querySelector(
-            'c-primitive-datatable[data-role="header"] tbody'
-        );
-
-        const headerDatatableOuterContainer = this.template.querySelector(
-            'c-primitive-datatable[data-role="header"] .dt-outer-container'
-        );
-
-        if (headerDatatableTable) {
-            headerDatatableOuterContainer.style.height = '';
-            headerDatatableTable.style.display = 'none';
-            headerDatatableBorder.style.borderBottom = 'none';
-        }
+    @api
+    primitiveDatatableDraftValues() {
+        return this.draftValues;
     }
 
     /**
-     * Makes the primitive datatables unscrollable to make the outer container scrollable.
+     * Makes the primitive datatable unscrollable since it is the main datatable that is scrollable.
      */
-    unscrollableDatatables() {
-        if (this.ungroupedDatatable) {
-            this.ungroupedDatatable.style.overflowX = 'hidden';
-        }
-
-        if (this.headerDatatable) {
-            this.headerDatatable.style.overflowX = 'hidden';
-        }
-
-        this.template
-            .querySelectorAll('.slds-scrollable_y')
-            .forEach((scrollable) => {
-                scrollable.style.overflowY = 'hidden';
-            });
-    }
-
-    /**
-     * Table initialization for every primitive-datatable.
-     */
-    tablesInitialization() {
-        this.hideTableHeaderPadding();
-        this.headerDatatableStyling();
-        this.unscrollableDatatables();
+    unscrollableMainDatatable() {
+        const mainDatatable = this.template.querySelector(
+            '.slds-table_header-fixed_container'
+        );
+        mainDatatable.style.overflowX = 'hidden';
+        mainDatatable.style.width = `${this._tableWidth}px`;
+        mainDatatable.style.maxWidth = 'none';
     }
 
     /**
@@ -769,11 +623,6 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
         }
     }
 
-    /**
-     * Formatting of data for dispatching event cellchange.
-     *
-     * @param {event} event
-     */
     handleEditCell = (event) => {
         event.stopPropagation();
 
@@ -862,7 +711,7 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     }
 
     /**
-     * Calls the save method of the lightning-datatable.
+     * Calls the save method of the lightning datatable.
      *
      * @param {event} event
      */
@@ -872,32 +721,12 @@ export default class AvonniPrimitiveDatatable extends LightningDatatable {
     }
 
     /**
-     * Calls the cancel method of the lightning-datatable.
+     * Calls the cancel method of the lightning datatable.
      *
      * @param {event} event
      */
     @api
     cancel(event) {
         super.handleInlineEditCancel(event);
-    }
-
-    /**
-     * Calls the resize column method of lightning-datatable.
-     *
-     * @param {event} event
-     */
-    @api
-    handleResizeColumn(event) {
-        super.handleResizeColumn(event);
-    }
-
-    /**
-     * Calls the selection cell method of lightning-datatable.
-     *
-     * @param {event} event
-     */
-    @api
-    handleSelectionCellClick(event) {
-        super.handleSelectionCellClick(event);
     }
 }
