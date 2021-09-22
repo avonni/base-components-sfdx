@@ -2,5 +2,5 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>50.0</apiVersion>
     <isExposed>true</isExposed>
-    <masterLabel>Avonni Primitive Group By Item</masterLabel>
+    <masterLabel>Avonni Datatable</masterLabel>
 </LightningComponentBundle>

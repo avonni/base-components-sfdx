@@ -39,3 +39,35 @@
 .avonni-expandable-section__title-button_base:focus {
     background-color: var(--lwc-colorBackgroundAlt, #ffffff);
 }
+
+.avonni-expandable-section__header_shaded .slds-section__title-action,
+.avonni-expandable-section__header_shaded:not(.avonni-expandable-section__header_collapsible) {
+    padding-left: var(
+        --avonni-expandable-section-shaded-header-spacing-block-start,
+        0.75rem
+    );
+    padding-right: var(
+        --avonni-expandable-section-shaded-header-spacing-block-end,
+        0.75rem
+    );
+}
+
+.avonni-expandable-section__header_base .slds-section__title-action,
+.avonni-expandable-section__header_base:not(.avonni-expandable-section__header_collapsible) {
+    padding-left: var(
+        --avonni-expandable-section-base-header-spacing-block-start,
+        0
+    );
+    padding-right: var(
+        --avonni-expandable-section-base-header-spacing-block-end,
+        0
+    );
+}
+
+.avonni-expandable-section__opened-icon {
+    margin-top: -2px;
+}
+
+.avonni-expandable-section__closed-icon {
+    margin-top: -3px;
+}

@@ -40,22 +40,26 @@
                     <template if:false={closed}>
                         <lightning-icon
                             icon-name="utility:chevrondown"
-                            size="x-small"
-                            class="slds-button__icon slds-button__icon_left"
+                            size="xx-small"
+                            class="slds-button__icon slds-button__icon_left avonni-expandable-section__opened-icon"
                         ></lightning-icon>
                     </template>
                     <template if:true={closed}>
                         <lightning-icon
                             icon-name="utility:chevronright"
-                            size="x-small"
-                            class="slds-button__icon slds-button__icon_left"
+                            size="xx-small"
+                            class="slds-button__icon slds-button__icon_left avonni-expandable-section__closed-icon"
                         ></lightning-icon>
                     </template>
                     <span class="slds-truncate" title={title}>{title}</span>
                 </button>
             </template>
             <template if:false={collapsible}>
-                <span class={titleClass} title={title}>{title}</span>
+                <span
+                    class="slds-truncate avonni-expandable-section__title"
+                    title={title}
+                    >{title}</span
+                >
             </template>
         </h3>
         <div class="slds-section__content">

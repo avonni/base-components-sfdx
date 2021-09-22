@@ -149,7 +149,13 @@ export default class AvonniExpandableSection extends LightningElement {
         return classSet('slds-section__title')
             .add({
                 'slds-theme_shade':
-                    !this.collapsible && this.variant === 'shaded'
+                    !this.collapsible && this.variant === 'shaded',
+                'avonni-expandable-section__header_shaded':
+                    this.variant === 'shaded',
+                'avonni-expandable-section__header_base':
+                    this.variant === 'base',
+                'avonni-expandable-section__header_collapsible': this
+                    .collapsible
             })
             .toString();
     }
@@ -165,21 +171,6 @@ export default class AvonniExpandableSection extends LightningElement {
             .add({
                 'slds-theme_default avonni-expandable-section__title-button_base':
                     this.variant === 'base'
-            })
-            .toString();
-    }
-
-    /**
-     * Computed list of the title classes, when the section is not collapsible.
-     *
-     * @type {string}
-     * @default slds-truncate
-     */
-    get titleClass() {
-        return classSet('slds-truncate')
-            .add({
-                'slds-p-horizontal_small': this.variant === 'shaded',
-                'slds-p-right_small': this.variant === 'base'
             })
             .toString();
     }
