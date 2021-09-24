@@ -38,20 +38,22 @@
             <lightning-button-icon
                 alternative-text="Open details"
                 icon-name={iconName}
-                onclick={changeSectionStatus}
                 variant="bare"
                 class="slds-button__icon slds-m-right_x-small"
                 aria-pressed={sectionIsOpen}
+                data-element-id="lightning-button-icon"
+                onclick={changeSectionStatus}
             ></lightning-button-icon>
         </template>
-        <div class={bodyClass}>
+        <div class={bodyClass} data-element-id="div-body">
             <div class="slds-summary-detail__title">
                 <div class="slds-grid">
-                    <div class={titleClass}>
+                    <div class={titleClass} data-element-id="div-title">
                         <h3
                             if:true={title}
                             class="slds-text-heading_small slds-truncate slds-p-right_small"
                             title={title}
+                            data-element-id="h3"
                         >
                             {title}
                         </h3>

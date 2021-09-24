@@ -56,7 +56,7 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
     _contentInLine = false;
 
     renderedCallback() {
-        let elements = this.template.querySelector('slot').assignedElements();
+        let elements = this.template.querySelector('[data-element-id="slot-default"]').assignedElements();
         let indexCompleted = 0;
 
         elements.forEach((element, index) => {

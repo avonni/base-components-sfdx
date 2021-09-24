@@ -38,6 +38,7 @@
             <a
                 href={href}
                 class="slds-media slds-box slds-box_link"
+                data-element-id="a"
                 onclick={handleClick}
             >
                 <template if:true={iconName}>
@@ -49,6 +50,7 @@
                             <div class="slds-welcome-mat__tile-icon-container">
                                 <lightning-icon
                                     icon-name={iconName}
+                                    data-element-id="lightning-icon-left"
                                 ></lightning-icon>
                                 <lightning-icon
                                     icon-name="utility:check"
@@ -89,6 +91,7 @@
                             <div class="slds-welcome-mat__tile-icon-container">
                                 <lightning-icon
                                     icon-name={iconName}
+                                    data-element-id="lightning-icon-right"
                                 ></lightning-icon>
                                 <lightning-icon
                                     icon-name="utility:check"

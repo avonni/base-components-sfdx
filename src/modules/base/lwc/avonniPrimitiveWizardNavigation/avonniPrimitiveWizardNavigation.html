@@ -50,8 +50,9 @@
                 label={previousButtonLabel}
                 variant={previousButtonVariant}
                 data-action="previous"
-                onclick={handleButtonClick}
+                data-element-id="lightning-button-previous"
                 class="slds-m-right_xx-small slds-m-left_small"
+                onclick={handleButtonClick}
             ></lightning-button>
         </lightning-layout-item>
 
@@ -67,8 +68,10 @@
                     <template if:false={sideNavigation}>
                         <lightning-progress-indicator
                             current-step={currentStep}
+                            has-error={currentStepHasError}
                             type={progressIndicatorType}
                             variant={progressIndicatorVariant}
+                            data-element-id="lightning-progress-indicator"
                         >
                             <template for:each={steps} for:item="step">
                                 <lightning-progress-step
@@ -82,7 +85,9 @@
                     <template if:true={sideNavigation}>
                         <c-avonni-vertical-progress-indicator
                             current-step={currentStep}
+                            has-error={currentStepHasError}
                             variant={progressIndicatorVariant}
+                            data-element-id="avonni-vertical-progress-indicator"
                         >
                             <template for:each={steps} for:item="step">
                                 <c-avonni-vertical-progress-step
@@ -107,6 +112,7 @@
                                     class={step.bulletClass}
                                     title={step.label}
                                     aria-selected={step.selected}
+                                    data-element-id="span-bullet"
                                 >
                                     <span class="slds-assistive-text"
                                         >{step.label}</span
@@ -131,6 +137,7 @@
                         value={progressBarValue}
                         orientation={progressBarOrientation}
                         thickness="large"
+                        data-element-id="avonni-progress-bar"
                     ></c-avonni-progress-bar>
                 </template>
             </template>
@@ -155,8 +162,9 @@
                         label={nextButtonLabel}
                         data-action="next"
                         variant={nextButtonVariant}
-                        onclick={handleButtonClick}
                         class="slds-m-left_xx-small"
+                        data-element-id="lightning-button-next"
+                        onclick={handleButtonClick}
                     ></lightning-button>
                     <lightning-button
                         if:true={lastStep}
@@ -165,8 +173,9 @@
                         data-action="finish"
                         label={finishButtonLabel}
                         variant={finishButtonVariant}
-                        onclick={handleButtonClick}
+                        data-element-id="lightning-button-last"
                         class="slds-m-left_xx-small"
+                        onclick={handleButtonClick}
                     ></lightning-button>
                 </lightning-layout-item>
             </lightning-layout>

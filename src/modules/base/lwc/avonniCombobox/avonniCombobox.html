@@ -42,6 +42,7 @@
     <lightning-helptext
         if:true={fieldLevelHelp}
         content={fieldLevelHelp}
+        data-element-id="lightning-helptext"
     ></lightning-helptext>
 
     <div class="slds-form-element__control">
@@ -118,6 +119,7 @@
                         name={option.value}
                         role="option"
                         tabindex="0"
+                        data-element-id="lightning-pill"
                         onremove={handleRemoveSelectedOption}
                     >
                         <c-avonni-avatar

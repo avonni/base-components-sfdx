@@ -49,6 +49,7 @@
                 hide-checkbox-column
                 key-field={rowsKeyField}
                 resize-column-disabled={resizeColumnDisabled}
+                data-element-id="avonni-datatable"
                 onresize={handleDatatableResize}
             ></c-avonni-datatable>
 
@@ -106,6 +107,7 @@
                     scroll-left-offset={datatableWidth}
                     start={start}
                     time-span={timeSpan}
+                    data-element-id="avonni-primitive-scheduler-header-group"
                     onprivateheaderregister={handleHeaderRegister}
                     onprivatecellwidthchange={handleHeaderCellWidthChange}
                     onprivateheaderchange={handleHeaderChange}
@@ -169,6 +171,7 @@
                                         title={occurrence.title}
                                         theme={event.theme}
                                         to={occurrence.to}
+                                        data-element-id="avonni-primitive-scheduler-event-occurrence"
                                         data-event-name={event.name}
                                         data-key={occurrence.key}
                                         data-row-key={occurrence.rowKey}
@@ -213,6 +216,7 @@
             if:true={isLoading}
             alternative-text={loadingStateAlternativeText}
             size="large"
+            data-element-id="lightning-spinner"
         ></lightning-spinner>
     </div>
 
@@ -252,6 +256,7 @@
         class="slds-is-fixed avonni-scheduler__context-menu"
         show={showContextMenu}
         items={contextMenuActions}
+        data-element-id="avonni-primitive-dropdown-menu"
         onclose={hideContextMenu}
         onprivateselect={handleActionSelect}
     ></c-avonni-primitive-dropdown-menu>
@@ -262,15 +267,20 @@
         show-dialog={showRecurrenceDialog}
         title={editDialogTitle}
         size="small"
+        data-element-id="avonni-dialog"
         onclosedialog={handleCloseRecurrenceDialog}
     >
-        <p class="slds-m-bottom_medium slds-text-align_center">
+        <p
+            class="slds-m-bottom_medium slds-text-align_center"
+            data-element-id="p-recurrence-dialog-description"
+        >
             {dialogLabels.editRecurrent}
         </p>
         <div slot="footer">
             <lightning-button
                 class="slds-m-right_xx-small"
                 label={dialogLabels.cancelButton}
+                data-element-id="lightning-button-recurrence-dialog-cancel"
                 onclick={handleCloseRecurrenceDialog}
             ></lightning-button>
             <lightning-button
@@ -278,6 +288,7 @@
                 label={dialogLabels.saveOneRecurrent}
                 variant="brand"
                 value="one"
+                data-element-id="lightning-button-recurrence-dialog-save-one"
                 onclick={handleSaveEvent}
             ></lightning-button>
             <lightning-button
@@ -285,6 +296,7 @@
                 label={dialogLabels.saveAllRecurrent}
                 variant="brand"
                 value="all"
+                data-element-id="lightning-button-recurrence-dialog-save-all"
                 onclick={handleSaveEvent}
                 onkeydown={handleEditSaveKeyDown}
             ></lightning-button>
@@ -297,21 +309,27 @@
         show-dialog={showDeleteConfirmationDialog}
         title={dialogLabels.deleteTitle}
         size="small"
+        data-element-id="avonni-dialog"
         onclosedialog={handleCloseDeleteConfirmationDialog}
     >
-        <p class="slds-m-bottom_medium slds-text-align_center">
+        <p
+            class="slds-m-bottom_medium slds-text-align_center"
+            data-element-id="lightning-button-delete-description"
+        >
             {dialogLabels.deleteMessage}
         </p>
         <div slot="footer">
             <lightning-button
                 class="slds-m-right_xx-small"
                 label={dialogLabels.cancelButton}
+                data-element-id="lightning-button-delete-dialog-cancel"
                 onclick={handleCloseDeleteConfirmationDialog}
             ></lightning-button>
             <lightning-button
                 class="slds-m-right_xx-small"
                 label={dialogLabels.deleteButton}
                 variant="brand"
+                data-element-id="lightning-button-delete-dialog-delete"
                 onclick={handleEventDelete}
             ></lightning-button>
         </div>
@@ -323,6 +341,7 @@
         show-dialog={showEditDialog}
         title={editDialogTitle}
         size="small"
+        data-element-id="avonni-dialog"
         onclosedialog={handleCloseEditDialog}
     >
         <lightning-input
@@ -332,6 +351,7 @@
             class="slds-m-bottom_small"
             autocomplete="off"
             required
+            data-element-id="lightning-input-event-title"
             onchange={handleEventTitleChange}
         ></lightning-input>
         <div class="slds-m-bottom_small">
@@ -343,6 +363,7 @@
                 type="datetime"
                 required
                 variant="label-hidden"
+                data-element-id="avonni-input-date-range-event-dates"
                 onchange={handleEventDateChange}
             ></c-avonni-input-date-range>
         </div>
@@ -357,6 +378,7 @@
                 remove-selected-options
                 dropdown-length="5-items"
                 required
+                data-element-id="avonni-combobox-event-resources"
                 onchange={handleEventKeyFieldsChange}
             ></c-avonni-combobox>
         </div>
@@ -364,12 +386,14 @@
             <lightning-button
                 class="slds-m-right_xx-small"
                 label={dialogLabels.cancelButton}
+                data-element-id="lightning-button-cancel-edit"
                 onclick={handleCloseEditDialog}
             ></lightning-button>
             <lightning-button
                 if:false={showRecurrenceSaveOptions}
                 label={dialogLabels.saveButton}
                 variant="brand"
+                data-element-id="lightning-button-save-edit"
                 onclick={handleSaveEvent}
                 onkeydown={handleEditSaveKeyDown}
             ></lightning-button>
@@ -377,16 +401,19 @@
                 if:true={showRecurrenceSaveOptions}
                 label={dialogLabels.saveButton}
                 menu-alignment="bottom-right"
+                data-element-id="lightning-button-menu-save-edit"
                 onselect={handleSaveEvent}
                 onkeydown={handleEditSaveKeyDown}
             >
                 <lightning-menu-item
                     value="one"
                     label={dialogLabels.saveOneRecurrent}
+                    data-element-id="lightning-menu-item-save-one"
                 ></lightning-menu-item>
                 <lightning-menu-item
                     value="all"
                     label={dialogLabels.saveAllRecurrent}
+                    data-element-id="lightning-menu-item-save-all"
                 ></lightning-menu-item>
             </lightning-button-menu>
         </div>

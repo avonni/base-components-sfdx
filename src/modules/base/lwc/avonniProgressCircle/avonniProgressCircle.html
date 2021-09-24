@@ -45,13 +45,15 @@
             aria-valuenow={value}
         >
             <svg viewBox="-1 -1 2 2">
-                <path fill={color} d={completeness}></path>
+                <path fill={color} d={completeness} data-element-id="path"></path>
             </svg>
         </div>
         <div class={progressRingContentClass}>
-            <span if:true={showValue} style={progressValueStyles}
-                >{value}%</span
-            >
+            <span
+                if:true={showValue}
+                style={progressValueStyles}
+                data-element-id="span"
+            >{value}%</span>
             <span if:true={label} class={progressLabelClass}> {label}</span>
         </div>
         <template if:true={showPositionBottom}>

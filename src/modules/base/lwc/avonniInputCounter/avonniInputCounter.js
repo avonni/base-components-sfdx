@@ -559,7 +559,7 @@ export default class AvonniInputCounter extends LightningElement {
      * Updates the value in lightning-input, updates proxy for validation and dispatches change event.
      */
     updateValue() {
-        [...this.template.querySelectorAll('lightning-input')].forEach(
+        [...this.template.querySelectorAll('[data-element-id="lightning-input"]')].forEach(
             (element) => {
                 element.value = this._value;
             }
@@ -601,7 +601,7 @@ export default class AvonniInputCounter extends LightningElement {
      */
     @api
     focus() {
-        this.template.querySelector('lightning-input').focus();
+        this.template.querySelector('[data-element-id="lightning-input"]').focus();
     }
 
     /**
@@ -611,7 +611,7 @@ export default class AvonniInputCounter extends LightningElement {
      */
     @api
     blur() {
-        this.template.querySelector('lightning-input').blur();
+        this.template.querySelector('[data-element-id="lightning-input"]').blur();
     }
 
     /**

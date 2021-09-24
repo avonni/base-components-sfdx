@@ -48,8 +48,9 @@
                     ></lightning-button-icon>
                     <template if:true={showHeader}>
                         <h2
-                            class="slds-modal__title slds-hyphenate"
                             if:true={hasStringTitle}
+                            class="slds-modal__title slds-hyphenate"
+                            data-element-id="h2"
                         >
                             {title}
                         </h2>
@@ -64,6 +65,7 @@
                             alternative-text={loadingStateAlternativeText}
                             size="large"
                             class="avonni-spinner"
+                            data-element-id="lightning-spinner"
                         ></lightning-spinner>
                     </template>
                     <template if:false={isLoading}>

@@ -34,7 +34,11 @@
 
 <template>
     <div class={sectionClass}>
-        <h3 class={headerClass} if:true={showHeader}>
+        <h3
+            if:true={showHeader}
+            class={headerClass}
+            data-element-id="h3"
+        >
             <template if:true={collapsible}>
                 <button class={titleButtonClass} onclick={toggleSection}>
                     <template if:false={closed}>
@@ -42,6 +46,7 @@
                             icon-name="utility:chevrondown"
                             size="xx-small"
                             class="slds-button__icon slds-button__icon_left avonni-expandable-section__opened-icon"
+                            data-element-id="lightning-icon-opened"
                         ></lightning-icon>
                     </template>
                     <template if:true={closed}>
@@ -49,6 +54,7 @@
                             icon-name="utility:chevronright"
                             size="xx-small"
                             class="slds-button__icon slds-button__icon_left avonni-expandable-section__closed-icon"
+                            data-element-id="lightning-icon-closed"
                         ></lightning-icon>
                     </template>
                     <span class="slds-truncate" title={title}>{title}</span>

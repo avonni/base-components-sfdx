@@ -43,7 +43,11 @@
                 class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
                 role="presentation"
             >
-                <h3 class="slds-listbox__option-header" role="presentation">
+                <h3
+                    class="slds-listbox__option-header"
+                    role="presentation"
+                    data-element-id="h3"
+                >
                     {label}
                 </h3>
             </div>
@@ -85,6 +89,7 @@
                                 src={option.avatarSrc}
                                 fallback-icon-name={option.avatarFallbackIconName}
                                 hide-avatar-details="true"
+                                data-element-id="avonni-avatar"
                             ></c-avonni-avatar>
                         </div>
                         <div class="slds-media__body">
@@ -124,6 +129,7 @@
                     options={group.options}
                     remove-selected-options={removeSelectedOptions}
                     groups={group.groups}
+                    data-element-id="avonni-primitive-combobox-group"
                 ></c-avonni-primitive-combobox-group>
             </template>
         </div>

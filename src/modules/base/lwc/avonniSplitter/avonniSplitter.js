@@ -54,7 +54,7 @@ export default class AvonniSplitter extends LightningElement {
         let splitter = this.template.querySelector(
             '.' + this.computedOrientationClass
         );
-        let slot = this.template.querySelector('slot');
+        let slot = this.template.querySelector('[data-element-id="slot-default"]');
         let slotElements = slot.assignedElements();
 
         if (slotElements.length > 0) {

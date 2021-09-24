@@ -90,7 +90,7 @@ export default class AvonniPrimitiveComboboxGroup extends LightningElement {
 
         if (this.groups) {
             const groups = Array.from(
-                this.template.querySelectorAll('c-primitive-combobox-group')
+                this.template.querySelectorAll('[data-element-id^="avonni-primitive-combobox-group"]')
             );
             groups.forEach((group) => {
                 options.push(group.optionElements);

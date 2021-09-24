@@ -166,7 +166,7 @@ export default class AvonniWizard extends LightningElement {
     renderedCallback() {
         if (this.steps.length > 0) {
             const navigations = this.template.querySelectorAll(
-                'c-primitive-wizard-navigation'
+                '[data-element-id^="avonni-primitive-wizard-navigation"]'
             );
             navigations.forEach((nav) => {
                 nav.steps = this.steps;
@@ -539,6 +539,10 @@ export default class AvonniWizard extends LightningElement {
             DEFAULT_FRACTION_LABEL;
     }
 
+    get currentStepHasError() {
+        return normalizeBoolean(this.errorMessage);
+    }
+
     /**
      * Get index of the current step.
      *
@@ -713,12 +717,6 @@ export default class AvonniWizard extends LightningElement {
      */
     async handleChange(event) {
         this.errorMessage = undefined;
-        const verticalIndicator = this.template.querySelector(
-            'c-vertical-progress-indicator'
-        );
-        if (verticalIndicator) {
-            verticalIndicator.hasError = false;
-        }
 
         // Execute beforeChange function set on the step
         // If the function returns false, the change does not happen
@@ -729,10 +727,6 @@ export default class AvonniWizard extends LightningElement {
             this.errorMessage = this.steps[
                 this.currentStepIndex
             ].beforeChangeErrorMessage;
-
-            if (verticalIndicator) {
-                verticalIndicator.hasError = true;
-            }
             return;
         }
 

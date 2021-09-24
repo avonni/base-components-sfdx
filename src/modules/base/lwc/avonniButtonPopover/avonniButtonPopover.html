@@ -47,7 +47,7 @@
         onmouseleave={handleMouseLeave}
         aria-haspopup="true"
         aria-expanded={computedAriaExpanded}
-        data-role="button-popover"
+        data-element-id="lightning-button"
     >
     </lightning-button>
 
@@ -66,6 +66,7 @@
             <lightning-spinner
                 alternative-text={loadingStateAlternativeText}
                 size="small"
+                data-element-id="lightning-spinner"
             ></lightning-spinner>
         </template>
         <template if:false={isLoading}>
@@ -83,6 +84,7 @@
                         size="medium"
                         onclick={close}
                         title="Close popover"
+                        data-element-id="lightning-button-icon"
                     ></lightning-button-icon>
                 </template>
             </header>

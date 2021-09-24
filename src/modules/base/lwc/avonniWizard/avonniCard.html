@@ -33,7 +33,11 @@
 -->
 
 <template>
-    <lightning-card if:true={showWizard} icon-name={iconName}>
+    <lightning-card
+        if:true={showWizard}
+        icon-name={iconName}
+        data-element-id="lightning-card"
+    >
         <!-- Header -->
         <div slot="title">
             <template if:false={title}>
@@ -50,10 +54,12 @@
                     position="top"
                     indicator-position={indicatorPosition}
                     current-step={currentStep}
+                    current-step-has-error={currentStepHasError}
                     indicator-type={indicatorType}
                     hide-indicator={hideIndicator}
                     fraction-prefix-label={fractionPrefixLabel}
                     fraction-label={fractionLabel}
+                    data-element-id="avonni-primitive-wizard-navigation-top"
                 >
                 </c-avonni-primitive-wizard-navigation>
             </div>
@@ -71,11 +77,13 @@
                         position="side"
                         onchange={handleChange}
                         current-step={currentStep}
+                        current-step-has-error={currentStepHasError}
                         indicator-type={indicatorType}
                         indicator-position={indicatorPosition}
                         hide-indicator={hideIndicator}
                         fraction-prefix-label={fractionPrefixLabel}
                         fraction-label={fractionLabel}
+                        data-element-id="avonni-primitive-wizard-navigation-side"
                     ></c-avonni-primitive-wizard-navigation>
                 </div>
             </div>
@@ -87,6 +95,7 @@
                 position="bottom"
                 onchange={handleChange}
                 current-step={currentStep}
+                current-step-has-error={currentStepHasError}
                 indicator-type={indicatorType}
                 indicator-position={indicatorPosition}
                 hide-indicator={hideIndicator}
@@ -106,6 +115,7 @@
                 action-position={actionPosition}
                 fraction-prefix-label={fractionPrefixLabel}
                 fraction-label={fractionLabel}
+                data-element-id="avonni-primitive-wizard-navigation-bottom"
             >
                 <slot name="actions"></slot>
             </c-avonni-primitive-wizard-navigation>

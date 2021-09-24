@@ -282,7 +282,7 @@ export default class AvonniFilterMenu extends LightningElement {
             // dom during initial rendering.
             this._tooltip = new Tooltip(value, {
                 root: this,
-                target: () => this.template.querySelector('button')
+                target: () => this.template.querySelector('[data-element-id="button"]')
             });
             this._tooltip.initialize();
         }
@@ -772,9 +772,9 @@ export default class AvonniFilterMenu extends LightningElement {
     @api
     focus() {
         if (this.variant === 'vertical') {
-            this.template.querySelector('lightning-checkbox-group').focus();
+            this.template.querySelector('[data-element-id="lightning-checkbox-group"]').focus();
         } else {
-            this.template.querySelector('button').focus();
+            this.template.querySelector('[data-element-id="button"]').focus();
         }
     }
 
@@ -926,7 +926,7 @@ export default class AvonniFilterMenu extends LightningElement {
                 this._autoPosition = startPositioning(
                     this,
                     {
-                        target: () => this.template.querySelector('button'),
+                        target: () => this.template.querySelector('[data-element-id="button"]'),
                         element: () =>
                             this.template.querySelector('.slds-dropdown'),
                         align,

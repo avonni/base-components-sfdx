@@ -33,7 +33,11 @@
 -->
 
 <template>
-    <article if:true={showWizard} class={wrapperClass}>
+    <article
+        if:true={showWizard}
+        class={wrapperClass}
+        data-element-id="article"
+    >
         <div class={mainColClass}>
             <!-- Header -->
             <header>
@@ -48,7 +52,12 @@
                             </div>
                         </template>
                         <template if:true={title}>
-                            <h1 class="slds-text-heading_small">{title}</h1>
+                            <h1
+                                class="slds-text-heading_small"
+                                data-element-id="h1"
+                            >
+                                {title}
+                            </h1>
                         </template>
                         <template if:false={title}>
                             <slot name="title"></slot>
@@ -64,10 +73,12 @@
                             position="top"
                             indicator-position={indicatorPosition}
                             current-step={currentStep}
+                            current-step-has-error={currentStepHasError}
                             indicator-type={indicatorType}
                             hide-indicator={hideIndicator}
                             fraction-prefix-label={fractionPrefixLabel}
                             fraction-label={fractionLabel}
+                            data-element-id="avonni-primitive-wizard-navigation-top"
                         >
                         </c-avonni-primitive-wizard-navigation>
                     </div>
@@ -76,17 +87,22 @@
             <!-- Steps -->
             <main class="slds-p-around_medium">
                 <p class="slds-text-color_error">{errorMessage}</p>
-                <slot onwizardstepregister={handleStepRegister}></slot>
+                <slot
+                    data-element-id="slot-default"
+                    onwizardstepregister={handleStepRegister}
+                ></slot>
             </main>
             <!-- Footer -->
             <footer
-                class="slds-p-horizontal_medium slds-p-bottom_medium"
                 if:false={hideNavigation}
+                class="slds-p-horizontal_medium slds-p-bottom_medium"
+                data-element-id="footer"
             >
                 <c-avonni-primitive-wizard-navigation
                     position="bottom"
                     onchange={handleChange}
                     current-step={currentStep}
+                    current-step-has-error={currentStepHasError}
                     indicator-type={indicatorType}
                     indicator-position={indicatorPosition}
                     hide-indicator={hideIndicator}
@@ -106,6 +122,7 @@
                     action-position={actionPosition}
                     fraction-prefix-label={fractionPrefixLabel}
                     fraction-label={fractionLabel}
+                    data-element-id="avonni-primitive-wizard-navigation-bottom"
                 >
                     <slot name="actions"></slot>
                 </c-avonni-primitive-wizard-navigation>
@@ -116,11 +133,13 @@
                 position="side"
                 onchange={handleChange}
                 current-step={currentStep}
+                current-step-has-error={currentStepHasError}
                 indicator-type={indicatorType}
                 indicator-position={indicatorPosition}
                 hide-indicator={hideIndicator}
                 fraction-prefix-label={fractionPrefixLabel}
                 fraction-label={fractionLabel}
+                data-element-id="avonni-primitive-wizard-navigation-side"
             ></c-avonni-primitive-wizard-navigation>
         </div>
     </article>

@@ -57,15 +57,19 @@
                                 onblur={handleBlur}
                             ></lightning-button-icon>
                         </div>
-                        <h2 class="slds-align-middle" id="month">{month}</h2>
+                        <h2
+                            class="slds-align-middle"
+                            data-element-id="h2"
+                        >{month}</h2>
                         <div class="slds-align-middle">
                             <lightning-button-icon
                                 icon-name="utility:right"
                                 variant="container"
                                 alternative-text="Next Month"
                                 title="Next Month"
-                                onclick={handlerNextMonth}
                                 disabled={disabledNext}
+                                data-element-id="lightning-button-icon"
+                                onclick={handlerNextMonth}
                                 onfocus={handleFocus}
                                 onblur={handleBlur}
                             ></lightning-button-icon>
@@ -79,8 +83,9 @@
                         value={year}
                         placeholder={year}
                         options={yearsList}
-                        onchange={handleYearChange}
                         disabled={disabled}
+                        data-element-id="lightning-combobox"
+                        onchange={handleYearChange}
                         onfocus={handleFocus}
                         onblur={handleBlur}
                     >
@@ -119,6 +124,7 @@
                                         <span
                                             class={day.dayClass}
                                             data-day={day.fullDate}
+                                            data-element-id="span-day-label"
                                             onclick={handlerSelectDate}
                                             >{day.label}</span
                                         >

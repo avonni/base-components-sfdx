@@ -36,7 +36,11 @@
     <fieldset aria-required={required}>
         <legend class={computedLegendClass}>
             <template if:true={required}>
-                <abbr class="slds-required" title={i18n.required}>*</abbr>
+                <abbr
+                    class="slds-required"
+                    title={i18n.required}
+                    data-element-id="abbr"
+                >*</abbr>
             </template>
             {label}
         </legend>
@@ -45,8 +49,9 @@
             <div class={computedButtonClass}>
                 <template for:each={transformedOptions} for:item="option">
                     <span
-                        class={computedCheckboxContainerClass}
                         key={option.value}
+                        class={computedCheckboxContainerClass}
+                        data-element-id="span-checkbox-container"
                     >
                         <input
                             type={computedInputType}
@@ -56,13 +61,18 @@
                             value={option.value}
                             disabled={disabled}
                             readonly={readOnly}
+                            data-element-id="input"
                             onclick={handleClick}
                             onchange={handleChange}
                             onfocus={handleFocus}
                             onblur={handleBlur}
                         />
 
-                        <label class={computedLabelClass} for={option.id}>
+                        <label
+                            class={computedLabelClass}
+                            for={option.id}
+                            data-element-id="label"
+                        >
                             <span>
                                 <template if:true={checkboxVariant}>
                                     <div>
@@ -86,6 +96,7 @@
                                                     class="slds-m-right_x-small"
                                                     icon-name={option.iconName}
                                                     size="x-small"
+                                                    data-element-id="lightning-icon-checkbox"
                                                 ></lightning-icon>
                                                 <div
                                                     if:true={option.isIconTopLeft}
@@ -111,6 +122,7 @@
                                             class={option.computedIconButtonClass}
                                             icon-name={option.iconName}
                                             size="x-small"
+                                            data-element-id="lightning-icon-button"
                                         ></lightning-icon>
                                         <span
                                             if:true={option.isIconTopLeft}

@@ -33,12 +33,13 @@
 -->
 
 <template>
-    <div class={computedContainerClass}>
+    <div class={computedContainerClass} data-element-id="div-wrapper">
         <template if:true={label}>
-            <label class={computedLegendClass}> {label} </label>
+            <label class={computedLegendClass} data-element-id="label"> {label} </label>
             <lightning-helptext
                 if:true={fieldLevelHelp}
                 content={fieldLevelHelp}
+                data-element-id="lightning-helptext"
             ></lightning-helptext>
         </template>
         <div class="avonni-rating-container">
@@ -49,8 +50,9 @@
                         key={item}
                         title={item}
                         value={item}
-                        onclick={selectRating}
                         disabled={disabled}
+                        data-element-id="button"
+                        onclick={selectRating}
                     >
                         {item}
                     </button>
@@ -63,11 +65,12 @@
                         key={item}
                         title={item}
                         value={item}
-                        onclick={selectRating}
                         disabled={disabled}
                         variant="bare"
                         size={iconSize}
                         class="avonni-icon"
+                        data-element-id="lightning-button-icon"
+                        onclick={selectRating}
                     ></lightning-button-icon>
                 </template>
             </span>

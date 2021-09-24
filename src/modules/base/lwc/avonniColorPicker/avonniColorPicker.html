@@ -34,7 +34,7 @@
 
 <template>
     <div class={computedContainerClass}>
-        <label if:true={showLabel} class={computedLegendClass}>
+        <label if:true={showLabel} class={computedLegendClass} data-element-id="label">
             <abbr if:true={required} title="required" class="slds-required"
                 >*</abbr
             >
@@ -43,6 +43,7 @@
         <lightning-helptext
             if:true={fieldLevelHelp}
             content={fieldLevelHelp}
+            data-element-id="lightning-helptext"
         ></lightning-helptext>
         <div class="avonni-flex">
             <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
@@ -52,6 +53,7 @@
                     aria-expanded={computedAriaExpanded}
                     accesskey={accessKey}
                     aria-haspopup="true"
+                    data-element-id="button"
                     onclick={handleButtonClick}
                     onblur={handleBlur}
                     onmousedown={handleButtonMouseDown}
@@ -63,13 +65,15 @@
                             icon-name={menuIconName}
                             size={menuIconSize}
                             class={iconClass}
+                            data-element-id="lightning-icon-menu-icon-name"
                         ></lightning-icon>
                     </template>
                     <template if:false={menuIconName}>
-                        <span class="slds-swatch"></span>
+                        <span class="slds-swatch" data-element-id="span"></span>
                         <lightning-icon
                             icon-name="utility:down"
                             size="xx-small"
+                            data-element-id="lightning-icon-no-menu-icon-name"
                         ></lightning-icon>
                     </template>
                 </button>
@@ -85,6 +89,7 @@
                             <div class="avonni-spinner-container">
                                 <lightning-spinner
                                     size="small"
+                                    data-element-id="lightning-spinner"
                                 ></lightning-spinner>
                             </div>
                         </template>
@@ -146,6 +151,7 @@
                                                     tile-height="25"
                                                     tile-width="25"
                                                     read-only={readOnly}
+                                                    data-element-id="avonni-color-palette-default"
                                                 ></c-avonni-color-palette>
                                             </div>
                                         </div>
@@ -180,6 +186,7 @@
                                         tile-height="25"
                                         tile-width="25"
                                         read-only={readOnly}
+                                        data-element-id="avonni-color-palette-custom"
                                     ></c-avonni-color-palette>
                                 </template>
                             </div>
@@ -190,6 +197,7 @@
                                     <lightning-button
                                         label="Cancel"
                                         title="Cancel"
+                                        data-element-id="lightning-button-cancel"
                                         onclick={handlerCancel}
                                     ></lightning-button>
                                     <lightning-button
@@ -197,6 +205,7 @@
                                         class="slds-m-left_x-small"
                                         label="Done"
                                         title="Done"
+                                        data-element-id="lightning-button-done"
                                         onclick={handlerDone}
                                     ></lightning-button>
                                 </div>
@@ -221,11 +230,13 @@
                         onchange={handleInputColor}
                         disabled={disabledInput}
                         read-only={isLabelDisplayed}
+                        data-element-id="lightning-input"
                     ></lightning-input>
                     <template if:true={isInputFilled}>
                         <button
                             class="slds-button slds-button_icon slds-input__icon slds-input__icon_right avonni-builder-icon-picker-clear-icon"
                             title="Clear"
+                            data-element-id="button"
                             onclick={clearInput}
                         >
                             <lightning-icon

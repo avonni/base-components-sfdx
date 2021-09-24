@@ -132,7 +132,7 @@ export default class AvonniHeroBanner extends LightningElement {
      * @type {element}
      */
     get slot() {
-        return this.template.querySelector('slot');
+        return this.template.querySelector('[data-element-id="slot-default"]');
     }
 
     /**

@@ -374,9 +374,9 @@ export default class AvonniDynamicMenu extends LightningElement {
     click() {
         if (this.isConnected) {
             if (this.label) {
-                this.template.querySelector('button').click();
+                this.template.querySelector('[data-element-id="button"]').click();
             } else {
-                this.template.querySelector('lightning-button-icon').click();
+                this.template.querySelector('[data-element-id="lightning-button-icon"]').click();
             }
         }
     }
@@ -510,9 +510,9 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     focusOnButton() {
         if (this.label) {
-            this.template.querySelector('button').focus();
+            this.template.querySelector('[data-element-id="button"]').focus();
         } else {
-            this.template.querySelector('lightning-button-icon').focus();
+            this.template.querySelector('[data-element-id="lightning-button-icon"]').focus();
         }
     }
 

@@ -42,7 +42,12 @@
             aria-valuenow={value}
         >
             <svg viewBox="-1 -1 2 2">
-                <path if:true={d} class="slds-progress-ring__path" d={d}></path>
+                <path
+                    if:true={d}
+                    class="slds-progress-ring__path"
+                    d={d}
+                    data-element-id="path"
+                ></path>
             </svg>
         </div>
         <div class="slds-progress-ring__content">
@@ -54,6 +59,7 @@
                     icon-name={iconName}
                     class={computedIconTheme}
                     alternative-text={computedAltText}
+                    data-element-id="lightning-icon"
                 ></lightning-icon>
             </template>
         </div>

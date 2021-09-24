@@ -40,17 +40,19 @@
             tabindex={tabIndex}
             accesskey={accessKey}
             aria-disabled={disabled}
+            aria-expanded={isOpen}
+            aria-haspop="true"
+            data-element-id="a"
             onmouseenter={handleMouseEnter}
             onfocus={handleFocus}
             onblur={handleBlur}
-            aria-expanded={isOpen}
-            aria-haspop="true"
         >
-            <span class="slds-truncate" title={label}>
+            <span class="slds-truncate" title={label} data-element-id="span-label">
                 <abbr
                     if:true={isDraft}
                     class="slds-indicator_unsaved"
                     title={draftAlternativeText}
+                    data-element-id="abbr"
                     >*</abbr
                 >
                 <template if:true={prefixIconName}>
@@ -58,6 +60,7 @@
                         icon-name={prefixIconName}
                         size="x-small"
                         class="slds-m-right_x-small slds-icon-text-default"
+                        data-element-id="lightning-icon-prefix"
                     ></lightning-icon>
                 </template>
                 {label}
@@ -67,6 +70,7 @@
                     icon-name={iconName}
                     size="x-small"
                     class="slds-icon-text-default slds-m-left_small slds-shrink-none"
+                    data-element-id="lightning-icon"
                 ></lightning-icon>
             </template>
         </a>

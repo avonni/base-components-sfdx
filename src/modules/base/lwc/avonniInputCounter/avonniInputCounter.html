@@ -35,14 +35,18 @@
 <template>
     <template if:true={isInline}>
         <label class="slds-form-element__label slds-no-flex">
-            <abbr if:true={required} title="required" class="slds-required"
-                >*</abbr
-            >
+            <abbr
+                if:true={required}
+                title="required"
+                class="slds-required"
+                data-element-id="abbr"
+            >*</abbr>
             {label}
         </label>
         <lightning-helptext
             if:true={fieldLevelHelp}
             content={fieldLevelHelp}
+            data-element-id="lightning-helptext"
         ></lightning-helptext>
     </template>
     <div class={formElementClass}>
@@ -52,11 +56,12 @@
                 icon-name="utility:ban"
                 size="medium"
                 title="Decrement counter"
-                onclick={decrementValue}
                 variant="bare"
                 alternative-text="Decrement counter"
                 class={buttonDecrementClass}
                 disabled={disabled}
+                data-element-id="lightning-button-icon-decrement"
+                onclick={decrementValue}
             ></lightning-button-icon>
             <lightning-input
                 name={name}
@@ -77,6 +82,7 @@
                 type="number"
                 formatter={type}
                 class={inputClass}
+                data-element-id="lightning-input"
                 oncommit={handlerCommit}
                 onfocus={handlerFocus}
                 onblur={handlerBlur}
@@ -88,11 +94,12 @@
                 icon-name="utility:new"
                 size="medium"
                 title="Increment counter"
-                onclick={incrementValue}
                 variant="bare"
                 alternative-text="Increment counter"
                 class={buttonIncrementClass}
                 disabled={disabled}
+                data-element-id="lightning-button-icon-increment"
+                onclick={incrementValue}
             ></lightning-button-icon>
             <template if:true={helpMessage}>
                 <div

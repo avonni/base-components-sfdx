@@ -45,6 +45,7 @@
                 if:true={fieldLevelHelp}
                 content={fieldLevelHelp}
                 class="slds-m-right_x-small"
+                data-element-id="lightning-helptext"
             ></lightning-helptext>
             <input
                 id="avonni-input-toggle"
@@ -53,13 +54,14 @@
                 checked={checked}
                 disabled={disabled}
                 name={name}
-                onblur={handleBlur}
-                onchange={handleChange}
-                onfocus={handleFocus}
                 readonly={readOnly}
                 required={required}
                 type="checkbox"
                 value={value}
+                data-element-id="input"
+                onblur={handleBlur}
+                onchange={handleChange}
+                onfocus={handleFocus}
             />
             <span
                 class="slds-checkbox_faux_container"

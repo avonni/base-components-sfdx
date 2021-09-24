@@ -200,7 +200,7 @@ export default class AvonniProgressIndicator extends LightningElement {
      */
     getSteps() {
         return Array.from(
-            this.template.querySelectorAll('c-primitive-progress-step')
+            this.template.querySelectorAll('[data-element-id="avonni-primitive-progress-step"]')
         );
     }
 

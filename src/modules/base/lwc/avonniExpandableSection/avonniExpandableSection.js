@@ -190,5 +190,21 @@ export default class AvonniExpandableSection extends LightningElement {
      */
     toggleSection() {
         this._closed = !this._closed;
+
+        /**
+         * The event fired when the expandable section is closed or opened.
+         *
+         * @event
+         * @name toggle
+         * @param {boolean} closed
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('toggle', {
+                detail: {
+                    closed: this._closed
+                }
+            })
+        );
     }
 }

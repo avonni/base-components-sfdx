@@ -92,7 +92,7 @@ export default class AvonniButtonDialog extends LightningElement {
     _dialogSlot;
 
     renderedCallback() {
-        this._dialogSlot = this.template.querySelector('slot');
+        this._dialogSlot = this.template.querySelector('[data-element-id="slot"]');
     }
 
     /**
@@ -211,7 +211,7 @@ export default class AvonniButtonDialog extends LightningElement {
      */
     @api
     focus() {
-        this.template.querySelector('lightning-button').focus();
+        this.template.querySelector('[data-element-id="lightning-button"]').focus();
         /**
          * @event
          * @name focus

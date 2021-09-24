@@ -38,7 +38,7 @@ import {
     getRealDOMId,
     getListHeight
 } from 'c/utilsPrivate';
-import { classSet, formatLabel } from 'c/utils';
+import { classSet, formatLabel, generateUUID } from 'c/utils';
 import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
 import { handleKeyDownOnOption } from './avonniKeyboard';
 
@@ -89,41 +89,6 @@ const i18n = {
  */
 export default class AvonniDualListbox extends LightningElement {
     /**
-     * Label for the source options listbox.
-     *
-     * @type {string}
-     * @public
-     */
-    @api sourceLabel;
-    /**
-     * Label for the selected options listbox.
-     *
-     * @type {string}
-     * @public
-     */
-    @api selectedLabel;
-    /**
-     * Text displayed when no options are selected.
-     *
-     * @type {string}
-     * @public
-     */
-    @api selectedPlaceholder;
-    /**
-     * Label for the dual listbox.
-     *
-     * @type {string}
-     * @public
-     */
-    @api label;
-    /**
-     * Specifies the name of an input element.
-     *
-     * @type {string}
-     * @public
-     */
-    @api name;
-    /**
      * The name of the icon to be used in the format 'utility:right'.
      *
      * @type {string}
@@ -131,6 +96,15 @@ export default class AvonniDualListbox extends LightningElement {
      * @default utility:right
      */
     @api addButtonIconName = DEFAULT_ADD_BUTTON_ICON_NAME;
+
+    /**
+     * Label for add button.
+     *
+     * @type {string}
+     * @public
+     */
+    @api addButtonLabel;
+
     /**
      * The name of the icon to be used in the format ‘utility:down’.
      *
@@ -139,43 +113,7 @@ export default class AvonniDualListbox extends LightningElement {
      * @default utility:down
      */
     @api downButtonIconName = DEFAULT_DOWN_BUTTON_ICON_NAME;
-    /**
-     * The name of the icon to be used in the format ‘utility:left’.
-     *
-     * @type {string}
-     * @public
-     * @default utility:left
-     */
-    @api removeButtonIconName = DEFAULT_REMOVE_BUTTON_ICON_NAME;
-    /**
-     * The name of the icon to be used in the format ‘utility:up’.
-     *
-     * @type {string}
-     * @public
-     * @default utility:up
-     */
-    @api upButtonIconName = DEFAULT_UP_BUTTON_ICON_NAME;
-    /**
-     * Label for add button.
-     *
-     * @type {string}
-     * @public
-     */
-    @api addButtonLabel;
-    /**
-     * Label for remove button.
-     *
-     * @type {string}
-     * @public
-     */
-    @api removeButtonLabel;
-    /**
-     * Label for up button.
-     *
-     * @type {string}
-     * @public
-     */
-    @api upButtonLabel;
+
     /**
      * Label for down button
      *
@@ -183,6 +121,7 @@ export default class AvonniDualListbox extends LightningElement {
      * @public
      */
     @api downButtonLabel;
+
     /**
      * Help text detailing the purpose and function of the dual listbox.
      *
@@ -191,24 +130,108 @@ export default class AvonniDualListbox extends LightningElement {
      */
     @api fieldLevelHelp;
 
+    /**
+     * Label for the dual listbox.
+     *
+     * @type {string}
+     * @public
+     */
+    @api label;
+
+    /**
+     * Error message to be displayed when the value is missing and input is required.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    messageWhenValueMissing = i18n.requiredError;
+
+    /**
+     * Specifies the name of an input element.
+     *
+     * @type {string}
+     * @public
+     */
+    @api name;
+
+    /**
+     * The name of the icon to be used in the format ‘utility:left’.
+     *
+     * @type {string}
+     * @public
+     * @default utility:left
+     */
+    @api removeButtonIconName = DEFAULT_REMOVE_BUTTON_ICON_NAME;
+
+    /**
+     * Label for remove button.
+     *
+     * @type {string}
+     * @public
+     */
+    @api removeButtonLabel;
+
+    /**
+     * Label for the selected options listbox.
+     *
+     * @type {string}
+     * @public
+     */
+    @api selectedLabel;
+
+    /**
+     * Text displayed when no options are selected.
+     *
+     * @type {string}
+     * @public
+     */
+    @api selectedPlaceholder;
+
+    /**
+     * Label for the source options listbox.
+     *
+     * @type {string}
+     * @public
+     */
+    @api sourceLabel;
+
+    /**
+     * The name of the icon to be used in the format ‘utility:up’.
+     *
+     * @type {string}
+     * @public
+     * @default utility:up
+     */
+    @api upButtonIconName = DEFAULT_UP_BUTTON_ICON_NAME;
+
+    /**
+     * Label for up button.
+     *
+     * @type {string}
+     * @public
+     */
+    @api upButtonLabel;
+
     _requiredOptions = [];
     _options = [];
-    _hideBottomDivider = false;
+    _allowSearch = false;
     _buttonSize = BUTTON_SIZES.default;
     _buttonVariant = BUTTON_VARIANTS.default;
-    _isLoading = false;
-    _searchEngine = false;
-    _variant = LABEL_VARIANTS.default;
     _disabled;
     _disableReordering = false;
     _draggable = false;
-    _required = false;
+    _hideBottomDivider = false;
+    _isLoading = false;
+    _max;
     _maxVisibleOptions = DEFAULT_MAX_VISIBLE_OPTIONS;
     _min = DEFAULT_MIN;
-    _max;
+    _required = false;
     _size = BOXES_SIZES.default;
+    _variant = LABEL_VARIANTS.default;
 
     _selectedValues = [];
+    _groupedValues = [];
     highlightedOptions = [];
     errorMessage = '';
     focusableInSource;
@@ -218,12 +241,13 @@ export default class AvonniDualListbox extends LightningElement {
     _upButtonDisabled = false;
     _downButtonDisabled = false;
     _oldIndex;
+    _newIndex;
+
     _sourceBoxHeight;
     _selectedBoxHeight;
 
     _dropItSelected = false;
     _dropItSource = false;
-    _newIndex;
 
     connectedCallback() {
         this.classList.add('slds-form-element');
@@ -268,130 +292,11 @@ export default class AvonniDualListbox extends LightningElement {
         }
         this.disabledButtons();
         this.updateBoxesHeight();
-    }
-
-    /**
-     * A list of options that are available for selection. Each option has the following attributes: label, description, value, iconName, iconSrc, initials and variant.
-     *
-     * @type {object[]}
-     * @public
-     */
-    @api
-    get options() {
-        return this._options;
-    }
-
-    set options(value) {
-        this._options = Array.isArray(value)
-            ? JSON.parse(JSON.stringify(value))
-            : [];
-
-        if (this.isConnected) {
-            this.updateBoxesHeight();
+        this.setOptionIndexes();
+        if (!this.rendered) {
+            this.getGroupValues();
         }
-    }
-
-    /**
-     * Error message to be displayed when the value is missing and input is required.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    messageWhenValueMissing = i18n.requiredError;
-
-    /**
-     * Error message to be displayed when a range overflow is detected.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get messageWhenRangeOverflow() {
-        return this._messageWhenRangeOverflow;
-    }
-
-    set messageWhenRangeOverflow(message) {
-        this._messageWhenRangeOverflow = message;
-    }
-
-    /**
-     * Error message to be displayed when a range underflow is detected.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get messageWhenRangeUnderflow() {
-        return this._messageWhenRangeUnderflow;
-    }
-
-    set messageWhenRangeUnderflow(message) {
-        this._messageWhenRangeUnderflow = message;
-    }
-
-    /**
-     * If present, hides the bottom divider.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideBottomDivider() {
-        return this._hideBottomDivider || false;
-    }
-
-    set hideBottomDivider(value) {
-        this._hideBottomDivider = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the listbox is disabled and users cannot interact with it.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get disabled() {
-        return this._disabled || false;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the source options listbox is in a loading state and shows a spinner.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get isLoading() {
-        return this._isLoading || false;
-    }
-
-    set isLoading(value) {
-        this._isLoading = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the user must add an item to the selected listbox before submitting the form.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get required() {
-        return this._required;
-    }
-
-    set required(value) {
-        this._required = normalizeBoolean(value);
+        this.rendered = true;
     }
 
     /**
@@ -402,70 +307,12 @@ export default class AvonniDualListbox extends LightningElement {
      * @default false
      */
     @api
-    get searchEngine() {
-        return this._searchEngine;
+    get allowSearch() {
+        return this._allowSearch;
     }
 
-    set searchEngine(value) {
-        this._searchEngine = normalizeBoolean(value);
-    }
-
-    /**
-     * A list of default options that are included in the selected options listbox. This list is populated with values from the options attribute.
-     *
-     * @type {string[]}
-     * @public
-     */
-    @api
-    get value() {
-        return this._selectedValues;
-    }
-
-    set value(newValue) {
-        this.updateHighlightedOptions(newValue);
-        this._selectedValues = newValue || [];
-        if (this.isConnected) {
-            this.addRequiredOptionsToValue();
-        }
-    }
-
-    /**
-     * A list of required options that cannot be removed from selected options listbox. This list is populated with values from the options attribute.
-     *
-     * @type {string[]}
-     * @public
-     */
-    @api
-    get requiredOptions() {
-        return this._requiredOptions;
-    }
-
-    set requiredOptions(newValue) {
-        this._requiredOptions = Array.isArray(newValue)
-            ? JSON.parse(JSON.stringify(newValue))
-            : [];
-        if (this.isConnected) {
-            this.addRequiredOptionsToValue();
-        }
-    }
-
-    /**
-     * The variant changes the appearance of the dual listbox. Valid variants include standard, label-hidden and label-stacked. Use label-hidden to hide the label but make it available to assistive technology. Use label-stacked to place the label above the dual listbox.
-     *
-     * @type {string}
-     * @public
-     * @default standard
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: LABEL_VARIANTS.default,
-            validValues: LABEL_VARIANTS.valid
-        });
+    set allowSearch(value) {
+        this._allowSearch = normalizeBoolean(value);
     }
 
     /**
@@ -503,6 +350,89 @@ export default class AvonniDualListbox extends LightningElement {
             fallbackValue: BUTTON_VARIANTS.default,
             validValues: BUTTON_VARIANTS.valid
         });
+    }
+
+    /**
+     * If present, the Up and Down buttons used for reordering are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get disableReordering() {
+        return this._disableReordering;
+    }
+
+    set disableReordering(value) {
+        this._disableReordering = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the listbox is disabled and users cannot interact with it.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get disabled() {
+        return this._disabled || false;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the options are draggable.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get draggable() {
+        if (this.disabled) {
+            return false;
+        }
+        return this._draggable;
+    }
+
+    set draggable(value) {
+        this._draggable = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, hides the bottom divider.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideBottomDivider() {
+        return this._hideBottomDivider || false;
+    }
+
+    set hideBottomDivider(value) {
+        this._hideBottomDivider = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the source options listbox is in a loading state and shows a spinner.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get isLoading() {
+        return this._isLoading || false;
+    }
+
+    set isLoading(value) {
+        this._isLoading = normalizeBoolean(value);
     }
 
     /**
@@ -560,38 +490,90 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * If present, the Up and Down buttons used for reordering are hidden.
+     * Error message to be displayed when a range overflow is detected.
      *
-     * @type {boolean}
+     * @type {string}
      * @public
-     * @default false
      */
     @api
-    get disableReordering() {
-        return this._disableReordering;
+    get messageWhenRangeOverflow() {
+        return this._messageWhenRangeOverflow;
     }
 
-    set disableReordering(value) {
-        this._disableReordering = normalizeBoolean(value);
+    set messageWhenRangeOverflow(message) {
+        this._messageWhenRangeOverflow = message;
     }
 
     /**
-     * If present, the options are draggable.
+     * Error message to be displayed when a range underflow is detected.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get messageWhenRangeUnderflow() {
+        return this._messageWhenRangeUnderflow;
+    }
+
+    set messageWhenRangeUnderflow(message) {
+        this._messageWhenRangeUnderflow = message;
+    }
+
+    /**
+     * A list of options that are available for selection. Each option has the following attributes: label, description, value, iconName, iconSrc, initials and variant.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get options() {
+        return this._options;
+    }
+
+    set options(value) {
+        this._options = Array.isArray(value)
+            ? JSON.parse(JSON.stringify(value))
+            : [];
+
+        if (this.isConnected) {
+            this.updateBoxesHeight();
+        }
+    }
+
+    /**
+     * If present, the user must add an item to the selected listbox before submitting the form.
      *
      * @type {boolean}
      * @public
      * @default false
      */
     @api
-    get draggable() {
-        if (this.disabled) {
-            return false;
-        }
-        return this._draggable;
+    get required() {
+        return this._required;
     }
 
-    set draggable(value) {
-        this._draggable = normalizeBoolean(value);
+    set required(value) {
+        this._required = normalizeBoolean(value);
+    }
+
+    /**
+     * A list of required options that cannot be removed from selected options listbox. This list is populated with values from the options attribute.
+     *
+     * @type {string[]}
+     * @public
+     */
+    @api
+    get requiredOptions() {
+        return this._requiredOptions;
+    }
+
+    set requiredOptions(newValue) {
+        this._requiredOptions = Array.isArray(newValue)
+            ? JSON.parse(JSON.stringify(newValue))
+            : [];
+        if (this.isConnected) {
+            this.addRequiredOptionsToValue();
+        }
     }
 
     /**
@@ -610,6 +592,44 @@ export default class AvonniDualListbox extends LightningElement {
         this._size = normalizeString(size, {
             fallbackValue: BOXES_SIZES.default,
             validValues: BOXES_SIZES.valid
+        });
+    }
+
+    /**
+     * A list of default options that are included in the selected options listbox. This list is populated with values from the options attribute.
+     *
+     * @type {string[]}
+     * @public
+     */
+    @api
+    get value() {
+        return this._selectedValues;
+    }
+
+    set value(newValue) {
+        this.updateHighlightedOptions(newValue);
+        this._selectedValues = newValue || [];
+        if (this.isConnected) {
+            this.addRequiredOptionsToValue();
+        }
+    }
+
+    /**
+     * The variant changes the appearance of the dual listbox. Valid variants include standard, label-hidden and label-stacked. Use label-hidden to hide the label but make it available to assistive technology. Use label-stacked to place the label above the dual listbox.
+     *
+     * @type {string}
+     * @public
+     * @default standard
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: LABEL_VARIANTS.default,
+            validValues: LABEL_VARIANTS.valid
         });
     }
 
@@ -680,50 +700,25 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Get fieldLevelHelp existence.
-     *
-     * @type {boolean}
-     */
-    get hasFieldLevelHelp() {
-        return !!this.fieldLevelHelp;
-    }
-
-    /**
      * Computed real DOM Id for Source List.
      *
-     * @type {string} 
+     * @type {string}
      */
     get computedSourceListId() {
-        return getRealDOMId(this.template.querySelector('[data-source-list]'));
+        return getRealDOMId(
+            this.template.querySelector('[data-element-id="ul-source-list"]')
+        );
     }
 
     /**
      * Computed real DOM Id for Selected List.
      *
-     * @type {string} 
+     * @type {string}
      */
     get computedSelectedListId() {
         return getRealDOMId(
-            this.template.querySelector('[data-selected-list]')
+            this.template.querySelector('[data-element-id="ul-selected-list"]')
         );
-    }
-
-    /**
-     * Computed Source Listbox.
-     *
-     * @type {Element}
-     */
-    get computedSourceListbox() {
-        return this.template.querySelector('[data-source-list]');
-    }
-
-    /**
-     * Computed Selected Listbox.
-     *
-     * @type {Element}
-     */
-    get computedSelectedListbox() {
-        return this.template.querySelector('[data-selected-list]');
     }
 
     /**
@@ -733,6 +728,10 @@ export default class AvonniDualListbox extends LightningElement {
      */
     get ariaDisabled() {
         return String(this.disabled);
+    }
+
+    get generateKey() {
+        return generateUUID();
     }
 
     /**
@@ -805,6 +804,24 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
+     * Get Computed Source List With Groups.
+     *
+     * @type {object}
+     */
+    get computedSourceGroups() {
+        return this.groupByName(this.computedSourceList, 'groupName');
+    }
+
+    /**
+     * Get Computed Selected List With Groups.
+     *
+     * @type {object}
+     */
+    get computedSelectedGroups() {
+        return this.groupByName(this.computedSelectedList, 'groupName');
+    }
+
+    /**
      * Compute List options from Selected and Source Lists.
      *
      * @param {object} options
@@ -869,10 +886,10 @@ export default class AvonniDualListbox extends LightningElement {
         let overSelectedHeight;
         let overSourceHeight;
         const sourceOptions = this.template.querySelectorAll(
-            'li[data-role="source"]'
+            '[data-element-id="li-source"]'
         );
         const selectedOptions = this.template.querySelectorAll(
-            'li[data-role="selected"]'
+            '[data-element-id="li-selected"]'
         );
 
         const sourceOptionsHeight = getListHeight(
@@ -885,7 +902,7 @@ export default class AvonniDualListbox extends LightningElement {
             sourceOptions.length > 0
         ) {
             overSourceHeight =
-                this.template.querySelector('li[data-role="source"]')
+                this.template.querySelector('[data-element-id="li-source"]')
                     .offsetHeight *
                 (this._maxVisibleOptions - this.computedSourceList.length);
         } else overSourceHeight = 0;
@@ -895,7 +912,7 @@ export default class AvonniDualListbox extends LightningElement {
             selectedOptions.length > 0
         ) {
             overSelectedHeight =
-                this.template.querySelector('li[data-role="selected"]')
+                this.template.querySelector('[data-element-id="li-selected"]')
                     .offsetHeight *
                 (this._maxVisibleOptions - this.computedSelectedList.length);
         } else overSelectedHeight = 0;
@@ -904,13 +921,13 @@ export default class AvonniDualListbox extends LightningElement {
             getListHeight(selectedOptions, this._maxVisibleOptions) +
             overSelectedHeight;
 
-        if (this.searchEngine) {
+        if (this.allowSearch) {
             if (this.computedSourceList.length > 0) {
                 this._sourceBoxHeight =
                     sourceOptionsHeight +
                     getListHeight(
                         this.template.querySelector(
-                            '.avonni-dual-listbox-search-engine'
+                            '.avonni-dual-listbox-allow-search'
                         )
                     ) +
                     overSourceHeight;
@@ -926,7 +943,7 @@ export default class AvonniDualListbox extends LightningElement {
      * @type {string}
      */
     get sourceHeight() {
-        if (this.searchEngine) {
+        if (this.allowSearch) {
             return this._selectedBoxHeight > this._sourceBoxHeight
                 ? `height: ${this._selectedBoxHeight - 48}px`
                 : `height: ${this._sourceBoxHeight}px`;
@@ -944,7 +961,7 @@ export default class AvonniDualListbox extends LightningElement {
      * @type {string}
      */
     get selectedHeight() {
-        if (this.searchEngine) {
+        if (this.allowSearch) {
             return this._selectedBoxHeight <= this._sourceBoxHeight
                 ? `height: ${this._sourceBoxHeight + 48}px`
                 : `height: ${this._selectedBoxHeight}px`;
@@ -1077,7 +1094,7 @@ export default class AvonniDualListbox extends LightningElement {
             .add({ 'slds-is-disabled': this._disabled })
             .add({
                 'avonni-dual-listbox-selected-list-with-search': this
-                    ._searchEngine
+                    ._allowSearch
             })
             .add({
                 'avonni-dual-listbox-empty-column': this.isSelectedBoxEmpty
@@ -1368,18 +1385,43 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Disabled buttons method.
+     * Disabled buttons method for up and down buttons.
      */
     disabledButtons() {
-        const selectedLength = this._selectedValues.length - 1;
+        const indexesArray = [];
+        // First we need to verify if the highlighted options are in the selected list.
+        if (
+            this._selectedValues.some((r) =>
+                this.highlightedOptions.includes(r)
+            )
+        ) {
+            this.highlightedOptions.forEach((option) => {
+                indexesArray.push(this.getOptionGroupIndexes(option));
+            });
+            // Then we need to verify if one of the highlighted options is the first one of its group.
+            const first = indexesArray.map((array) => {
+                return this.computedSelectedGroups[array[0]].options[
+                    Number(array[1]) - 1
+                ]
+                    ? false
+                    : true;
+            });
+            // And we need to verify if one of the highlighted options is the last one of its group.
+            const last = indexesArray.map((array) => {
+                return this.computedSelectedGroups[array[0]].options[
+                    Number(array[1]) + 1
+                ]
+                    ? false
+                    : true;
+            });
 
-        this._upButtonDisabled = this.highlightedOptions.find((option) => {
-            return this._selectedValues.indexOf(option) === 0;
-        });
-
-        this._downButtonDisabled = this.highlightedOptions.find((option) => {
-            return this._selectedValues.indexOf(option) === selectedLength;
-        });
+            this._upButtonDisabled = first.includes(true);
+            this._downButtonDisabled = last.includes(true);
+        } else {
+            // if the highlighted options are not in the selected list the up and down button are not disabled.
+            this._upButtonDisabled = false;
+            this._downButtonDisabled = false;
+        }
     }
 
     /**
@@ -1613,6 +1655,19 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
+     * Get the index of the group and the index of the option inside the group.
+     *
+     * @param {number} value
+     * @return {object[]} array containing the two indexes
+     */
+    getOptionGroupIndexes(value) {
+        const option = this.template.querySelector(
+            `div[data-value="${value}"]`
+        );
+        return [option.dataset.groupIndex, option.dataset.insideGroupIndex];
+    }
+
+    /**
      * Get DOM Id for the List element.
      *
      * @param {Element} optionElement
@@ -1635,16 +1690,6 @@ export default class AvonniDualListbox extends LightningElement {
             this.focusableInSelected = value;
         }
         this.optionToFocus = value;
-    }
-
-    /**
-     * Check whether value passed is a number.
-     *
-     * @param {string|number} value
-     * @returns {boolean}
-     */
-    isNumber(value) {
-        return value !== '' && value !== null && isFinite(value);
     }
 
     /**
@@ -1792,5 +1837,76 @@ export default class AvonniDualListbox extends LightningElement {
     handleDragOver(event) {
         event.preventDefault();
         this._newIndex = Number(event.target.getAttribute('data-index'));
+    }
+
+    /**
+     * Move the default group at the top.
+     */
+    sortGroups(groups) {
+        const defaultGroupIndex = groups.findIndex(
+            (group) => group.label === undefined
+        );
+        if (defaultGroupIndex > -1) {
+            const defaultGroup = groups.splice(defaultGroupIndex, 1)[0];
+            groups.unshift(defaultGroup);
+        }
+        return groups;
+    }
+
+    /**
+     * Method to create the groups of options.
+     *
+     * @param {array} array Array of options.
+     * @param {string} groupName groupName.
+     * @returns {array} Array of formatted list for the markup.
+     */
+    groupByName(array, groupName) {
+        return this.sortGroups(
+            Object.values(
+                array.reduce((obj, current) => {
+                    if (!obj[current[groupName]])
+                        obj[current[groupName]] = {
+                            label: current[groupName],
+                            options: []
+                        };
+                    obj[current[groupName]].options.push(current);
+                    return obj;
+                }, {})
+            )
+        );
+    }
+
+    /**
+     * Gets the new order of values after the group by.
+     */
+    getGroupValues() {
+        this.computedSelectedGroups.forEach((group) => {
+            group.options.forEach((option) => {
+                this._groupedValues.push(option.value);
+            });
+        });
+        this._selectedValues = this._groupedValues;
+    }
+
+    /**
+     * Sets the data-index attribute of each option.
+     */
+    setOptionIndexes() {
+        const sourceBox = this.template.querySelector(
+            '[data-element-id="ul-source-list"]'
+        );
+        sourceBox
+            .querySelectorAll('.slds-listbox__option')
+            .forEach((option, index) => {
+                option.setAttribute('data-index', index);
+            });
+        const selectedBox = this.template.querySelector(
+            '[data-element-id="ul-selected-list"]'
+        );
+        selectedBox
+            .querySelectorAll('.slds-listbox__option')
+            .forEach((option, index) => {
+                option.setAttribute('data-index', index);
+            });
     }
 }

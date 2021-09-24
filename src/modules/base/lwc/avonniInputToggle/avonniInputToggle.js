@@ -179,7 +179,7 @@ export default class AvonniInputToggle extends LightningElement {
      * Synchronize all inputs Aria help element ID.
      */
     _synchronizeA11y() {
-        const input = this.template.querySelector('input');
+        const input = this.template.querySelector('[data-element-id="input"]');
 
         if (input) {
             synchronizeAttrs(input, {
@@ -204,7 +204,7 @@ export default class AvonniInputToggle extends LightningElement {
     set ariaControls(references) {
         this._ariaControls = normalizeAriaAttribute(references);
         this.ariaObserver.link(
-            'input',
+            '[data-element-id="input"]',
             'aria-controls',
             this._ariaControls,
             '[data-aria]'
@@ -225,7 +225,7 @@ export default class AvonniInputToggle extends LightningElement {
     set ariaDescribedBy(references) {
         this._ariaDescribedBy = normalizeAriaAttribute(references);
         this.ariaObserver.link(
-            'input',
+            '[data-element-id="input"]',
             'aria-describedby',
             this._ariaDescribedBy,
             '[data-aria]'
@@ -246,7 +246,7 @@ export default class AvonniInputToggle extends LightningElement {
     set ariaLabelledBy(references) {
         this._ariaLabelledBy = normalizeAriaAttribute(references);
         this.ariaObserver.link(
-            'input',
+            '[data-element-id="input"]',
             'aria-labelledby',
             this._ariaLabelledBy,
             '[data-aria]'
@@ -396,7 +396,7 @@ export default class AvonniInputToggle extends LightningElement {
     @api
     blur() {
         if (this._rendered) {
-            this.template.querySelector('input').blur();
+            this.template.querySelector('[data-element-id="input"]').blur();
         }
     }
 
@@ -419,7 +419,7 @@ export default class AvonniInputToggle extends LightningElement {
     @api
     focus() {
         if (this._rendered) {
-            this.template.querySelector('input').focus();
+            this.template.querySelector('[data-element-id="input"]').focus();
         }
     }
 
@@ -579,7 +579,7 @@ export default class AvonniInputToggle extends LightningElement {
      * @type {element}
      */
     get _inputElement() {
-        return this.template.querySelector('input');
+        return this.template.querySelector('[data-element-id="input"]');
     }
 
     /**

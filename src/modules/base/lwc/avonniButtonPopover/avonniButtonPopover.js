@@ -522,7 +522,7 @@ export default class AvonniButtonPopover extends LightningElement {
      */
     focusOnButton() {
         this.allowBlur();
-        this.template.querySelector('lightning-button').focus();
+        this.template.querySelector('[data-element-id="lightning-button"]').focus();
         if (
             this._triggers === 'focus' &&
             !this.popoverVisible &&
@@ -557,7 +557,7 @@ export default class AvonniButtonPopover extends LightningElement {
     handlePopoverBlur(event) {
         const isButton =
             this.template.querySelector(
-                'lightning-button[data-role="button-popover"]'
+                '[data-element-id="lightning-button"]'
             ) === event.relatedTarget;
         if (this._cancelBlur) {
             return;

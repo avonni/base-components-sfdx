@@ -34,12 +34,13 @@
 
 <template>
     <template if:false={hideAlert}>
-        <div class={variantClass}>
+        <div class={variantClass} data-element-id="div">
             <lightning-icon
                 icon-name={iconName}
                 size="small"
                 class="slds-m-right_x-small"
                 variant={variantInverse}
+                data-element-id="lightning-icon"
             ></lightning-icon>
             <slot></slot>
             <template
@@ -54,6 +55,7 @@
                     icon-class={iconClass}
                     alternative-text="Close"
                     class="slds-notify__close"
+                    data-element-id="lightning-button-icon"
                 ></lightning-button-icon>
             </template>
         </div>

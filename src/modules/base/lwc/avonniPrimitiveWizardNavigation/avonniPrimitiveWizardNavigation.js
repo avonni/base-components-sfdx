@@ -85,6 +85,7 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
 
     _steps = [];
     _currentStep;
+    _currentStepHasError = false;
     _rendered = false;
     _indicatorType = INDICATOR_TYPES.default;
     _hideIndicator = false;
@@ -324,6 +325,14 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
         if (this._rendered && this.steps.length > 0) {
             this._updateSteps();
         }
+    }
+
+    @api
+    get currentStepHasError() {
+        return this._currentStepHasError;
+    }
+    set currentStepHasError(value) {
+        this._currentStepHasError = normalizeBoolean(value);
     }
 
     @api

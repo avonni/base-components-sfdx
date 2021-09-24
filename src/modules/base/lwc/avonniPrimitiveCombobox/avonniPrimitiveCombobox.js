@@ -614,7 +614,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @type {element}
      */
     get input() {
-        return this.template.querySelector('input');
+        return this.template.querySelector('[data-element-id="input"]');
     }
 
     /**
@@ -721,7 +721,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             if (backLink) elements.push(backLink);
 
             const groups = this.template.querySelectorAll(
-                'c-primitive-combobox-group'
+                '[data-element-id^="avonni-primitive-combobox-group"]'
             );
             groups.forEach((group) => {
                 elements.push(group.optionElements);
@@ -1025,7 +1025,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
 
         this._autoPosition.start({
-            target: () => this.template.querySelector('input'),
+            target: () => this.template.querySelector('[data-element-id="input"]'),
             element: () => this.template.querySelector('div.slds-dropdown'),
             align: {
                 horizontal: Direction.Left,
@@ -1056,7 +1056,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     updateDropdownHeight() {
         const groups = this.template.querySelectorAll(
-            'c-primitive-combobox-group'
+            '[data-element-id^="avonni-primitive-combobox-group"]'
         );
         const visibleItems = [];
         const visibleGroupTitles = [];

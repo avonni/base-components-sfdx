@@ -43,6 +43,7 @@
                 variant="border-filled"
                 disabled={disabledLeftButtons}
                 onclick={first}
+                data-element-id="lightning-button-icon-first"
             ></lightning-button-icon>
             <lightning-button
                 if:false={firstButtonIcon}
@@ -50,6 +51,7 @@
                 icon-name={firstButtonIconName}
                 icon-position="left"
                 disabled={disabledLeftButtons}
+                data-element-id="lightning-button-no-icon-first"
                 onclick={first}
             ></lightning-button>
         </template>
@@ -59,6 +61,7 @@
             icon-name={previousButtonIconName}
             icon-position="left"
             disabled={disabledLeftButtons}
+            data-element-id="lightning-button-no-icon-previous"
             onclick={previous}
         ></lightning-button>
         <lightning-button-icon
@@ -68,6 +71,7 @@
             icon-name={previousButtonIconName}
             variant="border-filled"
             disabled={disabledLeftButtons}
+            data-element-id="lightning-button-icon-previous"
             onclick={previous}
         ></lightning-button-icon>
         <template for:each={paginationButtons} for:item="index">
@@ -77,6 +81,7 @@
                 key={uniqueKey}
                 value={index}
                 disabled={disabled}
+                data-element-id="lightning-button-no-icon-page"
                 onclick={goToIndex}
             ></lightning-button>
         </template>
@@ -86,6 +91,7 @@
             icon-name={nextButtonIconName}
             icon-position="right"
             disabled={disabledRightButtons}
+            data-element-id="lightning-button-no-icon-next"
             onclick={next}
         ></lightning-button>
         <lightning-button-icon
@@ -95,6 +101,7 @@
             icon-name={nextButtonIconName}
             variant="border-filled"
             disabled={disabledRightButtons}
+            data-element-id="lightning-button-icon-next"
             onclick={next}
         ></lightning-button-icon>
         <template if:true={showLastButton}>
@@ -105,6 +112,7 @@
                 icon-name={lastButtonIconName}
                 variant="border-filled"
                 disabled={disabledRightButtons}
+                data-element-id="lightning-button-icon-last"
                 onclick={last}
             ></lightning-button-icon>
             <lightning-button
@@ -113,6 +121,7 @@
                 icon-name={lastButtonIconName}
                 icon-position="right"
                 disabled={disabledRightButtons}
+                data-element-id="lightning-button-no-icon-last"
                 onclick={last}
             ></lightning-button>
         </template>

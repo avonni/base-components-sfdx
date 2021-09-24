@@ -33,10 +33,14 @@
 -->
 
 <template>
-    <fieldset class="slds-form-element" aria-required={required}>
+    <fieldset
+        class="slds-form-element"
+        aria-required={required}
+        data-element-id="fieldset"
+    >
         <legend class="slds-form-element__legend slds-form-element__label">
             <template if:true={required}>
-                <abbr class="slds-required" title="Required">*</abbr>
+                <abbr class="slds-required" title="Required" data-element-id="abbr">*</abbr>
             </template>
             {label}
         </legend>
@@ -50,9 +54,10 @@
                             value={item.value}
                             name={name}
                             disabled={item.disabled}
+                            data-element-id="input"
                             onchange={handleChange}
                         />
-                        <label for={item.value}>
+                        <label for={item.value} data-element-id="label">
                             <span class={visualPickerTypeClass}>
                                 <template if:false={hideCheckMark}>
                                     <span

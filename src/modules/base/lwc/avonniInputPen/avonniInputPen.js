@@ -115,7 +115,7 @@ export default class AvonniInputPen extends LightningElement {
 
     renderedCallback() {
         if (!this.init) {
-            this.canvasElement = this.template.querySelector('canvas');
+            this.canvasElement = this.template.querySelector('[data-element-id="canvas"]');
             this.ctx = this.canvasElement.getContext('2d');
 
             if (this.value) {

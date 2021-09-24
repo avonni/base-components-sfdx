@@ -39,15 +39,14 @@
                 icon-name={iconName}
                 size={iconSize}
                 variant={computedIconVariant}
+                data-element-id="lightning-icon"
             ></lightning-icon>
         </div>
         <div class="slds-media__body">
             <template if:true={showTitle}>
                 <slot name="title"></slot>
             </template>
-            <template if:false={showTitle}>
-                <p>{title}</p>
-            </template>
+            <p if:false={showTitle} data-element-id="p-title">{title}</p>
             <slot></slot>
         </div>
     </div>

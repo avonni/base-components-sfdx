@@ -104,7 +104,7 @@ export default class AvonniRating extends LightningElement {
 
         if (!this.initStyles) {
             let selectedIcons = this.template.querySelector(
-                'lightning-button-icon'
+                '[data-element-id="lightning-button-icon"]'
             );
 
             if (selectedIcons) {
@@ -406,7 +406,7 @@ export default class AvonniRating extends LightningElement {
      * Calculate rating button and icon button classes and styling based on rating value selection and attributes.
      */
     ratingRecalculation() {
-        let buttons = this.template.querySelectorAll('button');
+        let buttons = this.template.querySelectorAll('[data-element-id="button"]');
 
         buttons.forEach((button) => {
             button.classList.remove('slds-button_outline-brand');
@@ -436,7 +436,7 @@ export default class AvonniRating extends LightningElement {
         });
 
         let iconButtons = this.template.querySelectorAll(
-            'lightning-button-icon'
+            '[data-element-id="lightning-button-icon"]'
         );
 
         iconButtons.forEach((button) => {

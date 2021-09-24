@@ -36,7 +36,7 @@
     <div class={computedMainContainerClass}>
         <article class="slds-card">
             <div class={computedContainerClass}>
-                <header class={computedHeaderClass}>
+                <header class={computedHeaderClass} data-element-id="header">
                     <span
                         if:true={backgroundAlternativeText}
                         class="slds-assistive-text"
@@ -49,6 +49,7 @@
                             icon-name={avatarFallbackIconName}
                             size="large"
                             alternative-text={avatarAlternativeText}
+                            data-element-id="lightning-icon"
                         ></lightning-icon>
                     </div>
                     <img
@@ -56,6 +57,7 @@
                         class={isCircle}
                         alt={avatarAlternativeText}
                         src={avatarSrc}
+                        data-element-id="img"
                         onerror={setFallbackIcon}
                     />
                     <template if:true={showAvatarActions}>

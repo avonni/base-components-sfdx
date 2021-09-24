@@ -2,6 +2,7 @@
     <div class="slds-m-bottom_x-small" if:true={showSelectedItems}>
         <lightning-pill-container
             items={selectedItems}
+            data-element-id="lightning-pill-container"
             onitemremove={handleSelectedItemRemove}
         ></lightning-pill-container>
     </div>
@@ -21,6 +22,7 @@
             content={fieldLevelHelp}
             class="slds-m-left_xx-small slds-is-absolute"
             style="top: -0.25rem"
+            data-element-id="lightning-helptext"
         ></lightning-helptext>
     </div>
 
@@ -32,6 +34,7 @@
             <lightning-spinner
                 size="small"
                 alternative-text={loadingStateAlternativeText}
+                data-element-id="lightning-spinner"
             ></lightning-spinner>
         </div>
     </template>
@@ -50,6 +53,7 @@
             is-loading={isLoading}
             value={searchTerm}
             autocomplete="off"
+            data-element-id="lightning-input"
             onchange={handleSearch}
         ></lightning-input>
         <lightning-checkbox-group
@@ -60,6 +64,7 @@
             variant="label-hidden"
             options={checkboxComputedItems}
             value={value}
+            data-element-id="lightning-checkbox-group"
             onchange={handleCheckboxChange}
         ></lightning-checkbox-group>
         <lightning-menu-divider
@@ -74,6 +79,7 @@
                 variant="base"
                 label={resetButtonLabel}
                 title={resetButtonLabel}
+                data-element-id="lightning-button-reset"
                 onclick={handleResetClick}
                 disabled={disabled}
             ></lightning-button>
@@ -81,6 +87,7 @@
                 variant="brand"
                 label={applyButtonLabel}
                 title={applyButtonLabel}
+                data-element-id="lightning-button-apply"
                 onclick={handleApplyClick}
                 disabled={disabled}
             ></lightning-button>

@@ -103,7 +103,7 @@ export default class AvonniButtonIconDialog extends LightningElement {
     _dialogSlot;
 
     renderedCallback() {
-        this._dialogSlot = this.template.querySelector('slot');
+        this._dialogSlot = this.template.querySelector('[data-element-id="slot"]');
     }
 
     /**
@@ -233,7 +233,7 @@ export default class AvonniButtonIconDialog extends LightningElement {
      */
     @api
     focus() {
-        this.template.querySelector('lightning-button-icon').focus();
+        this.template.querySelector('[data-element-id="lightning-button-icon"]').focus();
         /**
          * Event that fires when focusing the button.
          * 

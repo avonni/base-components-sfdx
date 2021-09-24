@@ -126,7 +126,7 @@ export default class AvonniProfileCard extends LightningElement {
     showAvatarActions = true;
 
     renderedCallback() {
-        let header = this.template.querySelector('header');
+        let header = this.template.querySelector('[data-element-id="header"]');
 
         if (this.backgroundColor) {
             header.style.backgroundColor = this.backgroundColor;

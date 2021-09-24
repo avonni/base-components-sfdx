@@ -828,7 +828,7 @@ export default class AvonniImage extends LightningElement {
      * @returns {number} imgHeight , imgWidth
      */
     getImageDimensions() {
-        const img = this.template.querySelector('img');
+        const img = this.template.querySelector('[data-element-id="img"]');
         this._imgWidth = img.clientWidth;
         this._imgHeight = img.clientHeight;
     }

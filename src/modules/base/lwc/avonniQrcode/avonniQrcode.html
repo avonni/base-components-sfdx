@@ -33,6 +33,11 @@
 -->
 
 <template>
-    <span if:true={renderAsSvg} class="qrcode" lwc:dom="manual"></span>
-    <canvas if:false={renderAsSvg}></canvas>
+    <span
+        if:true={renderAsSvg}
+        class="qrcode"
+        lwc:dom="manual"
+        data-element-id="span"
+    ></span>
+    <canvas if:false={renderAsSvg} data-element-id="canvas"></canvas>
 </template>

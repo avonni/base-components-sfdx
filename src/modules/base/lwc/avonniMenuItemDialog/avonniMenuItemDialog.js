@@ -149,7 +149,7 @@ export default class AvonniMenuItemDialog extends LightningElement {
      */
     @api
     focus() {
-        this.template.querySelector('a').focus();
+        this.template.querySelector('[data-element-id="a"]').focus();
         /**
          * Event that fires when setting focus on anchor element in menu item.
          *
@@ -238,7 +238,7 @@ export default class AvonniMenuItemDialog extends LightningElement {
 
         if (event.keyCode === keyCodes.space) {
             if (this.href) {
-                this.template.querySelector('a').click();
+                this.template.querySelector('[data-element-id="a"]').click();
             }
         }
     }

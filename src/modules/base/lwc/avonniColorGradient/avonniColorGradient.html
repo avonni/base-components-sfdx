@@ -51,13 +51,14 @@
             <input
                 type="range"
                 class="slds-color-picker__hue-slider"
+                disabled={disabledInput}
                 min="0"
                 max="359"
                 value={colors.H}
+                data-element-id="input"
                 onblur={handleBlur}
                 onfocus={handleFocus}
                 oninput={handlerInput}
-                disabled={disabledInput}
             />
             <span class="slds-swatch"></span>
         </div>
@@ -68,14 +69,15 @@
             <input
                 type="range"
                 class="slds-color-picker__hue-slider avonni-opacity-input"
+                disabled={disabledInput}
                 min="0"
                 max="1"
                 step="0.01"
                 value={colors.A}
+                data-element-id="input"
                 onblur={handleBlur}
                 onfocus={handleFocus}
                 oninput={handlerInputOpacity}
-                disabled={disabledInput}
             />
         </div>
         <div class="slds-color-picker__custom-inputs">
@@ -90,6 +92,7 @@
                         class="slds-input"
                         value={colorValue}
                         disabled={disabledInput}
+                        data-element-id="input"
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         oninput={handleInputColor}
@@ -107,6 +110,7 @@
                         class="slds-input"
                         value={colors.hex}
                         disabled={disabledInput}
+                        data-element-id="input"
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         oninput={handleInputColor}
@@ -123,6 +127,7 @@
                         class="slds-input"
                         value={colors.R}
                         disabled={disabledInput}
+                        data-element-id="input"
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         oninput={handleInputRed}
@@ -139,6 +144,7 @@
                         class="slds-input"
                         value={colors.G}
                         disabled={disabledInput}
+                        data-element-id="input"
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         oninput={handleInputGreen}
@@ -155,6 +161,7 @@
                         class="slds-input"
                         value={colors.B}
                         disabled={disabledInput}
+                        data-element-id="input"
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         oninput={handleInputBlue}
@@ -171,6 +178,7 @@
                         class="slds-input"
                         value={colors.A}
                         disabled={disabledInput}
+                        data-element-id="input"
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         oninput={handleInputAlpha}

@@ -33,9 +33,9 @@
 -->
 
 <template>
-    <label class="slds-form-element__label" for="input">
+    <label class="slds-form-element__label" for="input" data-element-id="label">
         <span class="slds-slider-label">
-            <span class={computedLabelClass}>{label}</span>
+            <span class={computedLabelClass} data-element-id="span-label">{label}</span>
         </span>
     </label>
     <div if:true={isVertical} class="avonni-unit-container">
@@ -49,9 +49,10 @@
             minimum-fraction-digits={unitAttributes.minimumFractionDigits}
             minimum-integer-digits={unitAttributes.minimumIntegerDigits}
             minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+            data-element-id="lightning-formatted-number-max-vertical"
         ></lightning-formatted-number>
     </div>
-    <div class={computedContainerClass}>
+    <div class={computedContainerClass} data-element-id="div-wrapper">
         <div class="avonni-container">
             <div class="inverse-left">
                 <div class="slds-form-element">
@@ -63,9 +64,10 @@
                                 max={calculateMax}
                                 step={step}
                                 value={valueLower}
-                                oninput={handleChangeLeft}
                                 class="slds-slider__range slider-left"
                                 disabled={disabled}
+                                data-element-id="input-left"
+                                oninput={handleChangeLeft}
                                 onmousedown={showLeftBubble}
                                 onmouseup={hideLeftBubble}
                             />
@@ -81,6 +83,7 @@
                                         minimum-fraction-digits={unitAttributes.minimumFractionDigits}
                                         minimum-integer-digits={unitAttributes.minimumIntegerDigits}
                                         minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                        data-element-id="lightning-formatted-number-left"
                                     ></lightning-formatted-number>
                                 </p>
                             </div>
@@ -98,9 +101,10 @@
                                 max={max}
                                 step={step}
                                 value={valueUpper}
-                                oninput={handleChangeRight}
                                 class="slds-slider__range slider-right"
                                 disabled={disabled}
+                                data-element-id="input-right"
+                                oninput={handleChangeRight}
                                 onmousedown={showRightBubble}
                                 onmouseup={hideRightBubble}
                             />
@@ -116,6 +120,7 @@
                                         minimum-fraction-digits={unitAttributes.minimumFractionDigits}
                                         minimum-integer-digits={unitAttributes.minimumIntegerDigits}
                                         minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                        data-element-id="lightning-formatted-number-right"
                                     ></lightning-formatted-number>
                                 </p>
                             </div>
@@ -135,6 +140,7 @@
                 minimum-fraction-digits={unitAttributes.minimumFractionDigits}
                 minimum-integer-digits={unitAttributes.minimumIntegerDigits}
                 minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                data-element-id="lightning-formatted-number-min"
             ></lightning-formatted-number>
             <lightning-formatted-number
                 value={max}
@@ -146,6 +152,7 @@
                 minimum-fraction-digits={unitAttributes.minimumFractionDigits}
                 minimum-integer-digits={unitAttributes.minimumIntegerDigits}
                 minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                data-element-id="lightning-formatted-number-max"
             ></lightning-formatted-number>
         </div>
     </div>
@@ -160,6 +167,7 @@
             minimum-fraction-digits={unitAttributes.minimumFractionDigits}
             minimum-integer-digits={unitAttributes.minimumIntegerDigits}
             minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+            data-element-id="lightning-formatted-number-min-vertical"
         ></lightning-formatted-number>
     </div>
     <template if:true={_helpMessage}>

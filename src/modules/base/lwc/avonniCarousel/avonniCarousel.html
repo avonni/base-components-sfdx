@@ -43,10 +43,11 @@
                         class="slds-m-right_medium slds-m-bottom_large avonni-carousel__nav-button"
                         disabled={previousPanelNavigationDisabled}
                         icon-name="utility:chevronleft"
-                        onclick={previous}
                         size="small"
                         title={assistiveText.previousPanel}
                         variant="border-filled"
+                        data-element-id="lightning-button-icon-previous"
+                        onclick={previous}
                     ></lightning-button-icon>
                 </lightning-layout-item>
             </template>
@@ -80,6 +81,7 @@
                                             class="slds-carousel__panel-action slds-text-link_reset"
                                             data-panel-index={panelIndex}
                                             data-item-index={itemIndex}
+                                            data-element-id="a-actions"
                                             href={item.href}
                                             onclick={handleItemClicked}
                                         >
@@ -109,6 +111,7 @@
                                                                     name={action.name}
                                                                     disabled={action.disabled}
                                                                     variant={computedActionsVariantButton}
+                                                                    data-element-id="lightning-button-actions"
                                                                     onclick={handleActionClick}
                                                                 ></lightning-button>
                                                                 <lightning-button-icon
@@ -119,6 +122,7 @@
                                                                     name={action.name}
                                                                     disabled={action.disabled}
                                                                     variant={computedActionsVariantButtonIcon}
+                                                                    data-element-id="lightning-button-icon-actions"
                                                                     onclick={handleActionClick}
                                                                 ></lightning-button-icon>
                                                             </template>
@@ -131,6 +135,7 @@
                                                                 icon-size="x-small"
                                                                 menu-alignment="auto"
                                                                 variant="border-filled"
+                                                                data-element-id="lightning-button-menu"
                                                             >
                                                                 <template
                                                                     for:each={item.actions}
@@ -153,6 +158,7 @@
                                                 <img
                                                     src={item.src}
                                                     alt={item.imageAssistiveText}
+                                                    data-element-id="img"
                                                 />
                                             </div>
                                             <div
@@ -194,6 +200,7 @@
                                                                     name={action.name}
                                                                     disabled={action.disabled}
                                                                     variant={computedActionsVariantButton}
+                                                                    data-element-id="lightning-button-actions"
                                                                     onclick={handleActionClick}
                                                                 ></lightning-button>
                                                                 <lightning-button-icon
@@ -204,6 +211,7 @@
                                                                     name={action.name}
                                                                     disabled={action.disabled}
                                                                     variant={computedActionsVariantButtonIcon}
+                                                                    data-element-id="lightning-button-icon-actions"
                                                                     onclick={handleActionClick}
                                                                 ></lightning-button-icon>
                                                             </template>
@@ -216,6 +224,7 @@
                                                                 icon-size="x-small"
                                                                 menu-alignment="auto"
                                                                 variant="border-filled"
+                                                                data-element-id="lightning-button-menu"
                                                             >
                                                                 <template
                                                                     for:each={item.actions}
@@ -259,6 +268,7 @@
                                 class="slds-carousel__indicator"
                                 role="presentation"
                                 onclick={onPanelSelect}
+                                data-element-id="li-pagination"
                                 data-index={paginationIndex}
                             >
                                 <a
@@ -269,6 +279,7 @@
                                     tabindex={paginationItem.tabIndex}
                                     aria-selected={paginationItem.ariaSelected}
                                     title={paginationItem.tabTitle}
+                                    data-element-id="a-pagination"
                                 >
                                     <span class="slds-assistive-text"
                                         >{paginationItem.tabTitle}</span
@@ -283,10 +294,11 @@
                             alternative-text={assistiveText.autoplayButton}
                             class={computedAutoScrollAutoplayButton}
                             icon-name={autoScrollIcon}
-                            onclick={toggleAutoScroll}
                             size="x-small"
                             title={assistiveText.autoplayButton}
                             variant="border-filled"
+                            data-element-id="lightning-button-icon"
+                            onclick={toggleAutoScroll}
                         ></lightning-button-icon>
                     </template>
                 </div>
@@ -299,10 +311,11 @@
                         class="slds-m-left_medium slds-m-bottom_large avonni-carousel__nav-button"
                         disabled={nextPanelNavigationDisabled}
                         icon-name="utility:chevronright"
-                        onclick={next}
                         size="small"
                         title={assistiveText.nextPanel}
                         variant="border-filled"
+                        data-element-id="lightning-button-icon-next"
+                        onclick={next}
                     ></lightning-button-icon>
                 </lightning-layout-item>
             </template>

@@ -39,8 +39,9 @@
                 icon-name={iconName}
                 size={iconSize}
                 class={computedIconClass}
+                data-element-id="lightning-icon"
             ></lightning-icon>
-            <h1 if:true={label}>{label}</h1>
+            <h1 if:true={label} data-element-id="h1">{label}</h1>
         </div>
         <div class={computedLineTwoClass}></div>
     </div>

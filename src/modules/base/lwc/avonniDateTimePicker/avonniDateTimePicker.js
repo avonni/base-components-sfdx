@@ -748,7 +748,7 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.reportValidity();
 
         // Show errors on date picker
-        const datePicker = this.template.querySelector('lightning-input');
+        const datePicker = this.template.querySelector('[data-element-id="lightning-input"]');
         if (datePicker) datePicker.reportValidity();
     }
 

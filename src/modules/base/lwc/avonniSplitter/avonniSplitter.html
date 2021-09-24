@@ -33,6 +33,6 @@
 -->
 
 <template>
-    <slot></slot>
-    <div class={computedOrientationClass} lwc:dom="manual"></div>
+    <slot data-element-id="slot-default"></slot>
+    <div class={computedOrientationClass} data-element-id="div" lwc:dom="manual"></div>
 </template>

@@ -39,10 +39,11 @@
         disabled={disabled}
         variant={variant}
         icon-name={iconName}
-        onclick={click}
         icon-position={iconPosition}
+        data-element-id="lightning-button"
+        onclick={click}
     >
     </lightning-button>
     <span class="slds-assistive-text">{alternativeText}</span>
-    <slot></slot>
+    <slot data-element-id="slot"></slot>
 </template>

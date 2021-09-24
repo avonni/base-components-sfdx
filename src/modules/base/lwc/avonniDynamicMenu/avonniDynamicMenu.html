@@ -42,6 +42,7 @@
         disabled={disabled}
         title={title}
         value={value}
+        data-element-id="button"
         onblur={handleBlur}
         onclick={handleButtonClick}
         onfocus={focus}
@@ -52,6 +53,7 @@
             icon-name={iconName}
             svg-class="slds-button__icon slds-button__icon_left"
             variant="bare"
+            data-element-id="avonni-primitive-icon"
         ></c-avonni-primitive-icon>
         {label}
     </button>
@@ -60,19 +62,20 @@
         if:false={label}
         disabled={disabled}
         aria-expanded={computedAriaExpanded}
+        alternative-text={alternativeText}
         access-key={accessKey}
         value={value}
         aria-haspopup="true"
         icon-name={iconName}
         size={iconSize}
         variant={variant}
+        title={title}
         tooltip={tooltip}
+        data-element-id="lightning-button-icon"
         onclick={handleButtonClick}
         onblur={handleBlur}
         onfocus={focus}
         onmousedown={handleButtonMouseDown}
-        alternative-text={alternativeText}
-        title={title}
     >
     </lightning-button-icon>
 
@@ -89,6 +92,7 @@
                 <lightning-spinner
                     alternative-text={loadingStateAlternativeText}
                     size="small"
+                    data-element-id="lightning-spinner"
                 ></lightning-spinner>
             </template>
             <template if:false={isLoading}>
@@ -102,6 +106,7 @@
                                 placeholder={searchInputPlaceholder}
                                 type="search"
                                 class="slds-m-around_small"
+                                data-element-id="lightning-input"
                                 onblur={handleBlur}
                                 onchange={clearFilter}
                             ></lightning-input>

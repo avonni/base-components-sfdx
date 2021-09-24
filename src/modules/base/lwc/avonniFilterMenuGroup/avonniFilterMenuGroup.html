@@ -37,6 +37,7 @@
         <div class="slds-m-bottom_medium" if:true={showSelectedItems}>
             <lightning-pill-container
                 items={selectedPills}
+                data-element-id="lightning-pill-container-vertical"
                 onitemremove={handleSelectedItemRemove}
             ></lightning-pill-container>
         </div>
@@ -69,6 +70,7 @@
                     dropdown-length={menu.dropdownLength}
                     dropdown-nubbin={menu.dropdownNubbin}
                     hide-selected-items
+                    data-element-id="avonni-filter-menu"
                     data-name={menu.name}
                     onapply={handleValueChange}
                     onreset={handleValueChange}
@@ -82,6 +84,7 @@
             <lightning-pill-container
                 if:true={showSelectedItems}
                 items={selectedPills}
+                data-element-id="lightning-pill-container-horizontal"
                 onitemremove={handleSelectedItemRemove}
             ></lightning-pill-container>
         </div>
@@ -92,12 +95,14 @@
             variant="base"
             label={resetButtonLabel}
             title={resetButtonLabel}
+            data-element-id="lightning-button-reset"
             onclick={handleResetClick}
         ></lightning-button>
         <lightning-button
             variant="brand"
             label={applyButtonLabel}
             title={applyButtonLabel}
+            data-element-id="lightning-button-apply"
             onclick={handleApplyClick}
         ></lightning-button>
     </template>

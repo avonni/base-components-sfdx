@@ -178,7 +178,7 @@ export default class AvonniScheduler extends LightningElement {
         // If a new event was just created, set the dragged event
         if (this.selection && this.selection.newEvent && !this._draggedEvent) {
             this._draggedEvent = this.template.querySelector(
-                `c-primitive-scheduler-event-occurrence[data-key="${this.selection.occurrence.key}"]`
+                `[data-element-id="avonni-primitive-scheduler-event-occurrence"][data-key="${this.selection.occurrence.key}"]`
             );
             if (this._draggedEvent) {
                 this.initDraggedEventState(
@@ -190,7 +190,7 @@ export default class AvonniScheduler extends LightningElement {
 
         // If the edit dialog is opened, focus on the first input
         if (this.showEditDialog || this.showRecurrenceDialog) {
-            this.template.querySelector('c-avonni-dialog').focusOnCloseButton();
+            this.template.querySelector('[data-element-id="avonni-dialog"]').focusOnCloseButton();
         }
     }
 
@@ -826,7 +826,7 @@ export default class AvonniScheduler extends LightningElement {
      * @type {HTMLElement}
      */
     get datatable() {
-        return this.template.querySelector('c-avonni-datatable');
+        return this.template.querySelector('[data-element-id="avonni-datatable"]');
     }
 
     /**
@@ -1271,7 +1271,7 @@ export default class AvonniScheduler extends LightningElement {
      */
     updateDatatablePosition() {
         const headers = this.template.querySelector(
-            'c-primitive-scheduler-header-group'
+            '[data-element-id="avonni-primitive-scheduler-header-group"]'
         );
         this.datatable.style.marginTop = `${headers.offsetHeight - 39}px`;
     }
@@ -1421,7 +1421,7 @@ export default class AvonniScheduler extends LightningElement {
      */
     updateOccurrencesPosition() {
         const eventOccurrences = this.template.querySelectorAll(
-            'c-primitive-scheduler-event-occurrence'
+            '[data-element-id="avonni-primitive-scheduler-event-occurrence"]'
         );
         eventOccurrences.forEach((occurrence) => {
             if (occurrence.disabled) {
@@ -2343,7 +2343,7 @@ export default class AvonniScheduler extends LightningElement {
     handleEditSaveKeyDown(event) {
         if (event.key === 'Tab') {
             event.preventDefault();
-            this.template.querySelector('c-avonni-dialog').focusOnCloseButton();
+            this.template.querySelector('[data-element-id^="avonni-dialog"]').focusOnCloseButton();
         }
     }
 

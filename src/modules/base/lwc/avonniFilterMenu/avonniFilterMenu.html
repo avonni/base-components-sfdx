@@ -43,6 +43,7 @@
             accesskey={accessKey}
             value={value}
             type="button"
+            data-element-id="button"
             onclick={handleButtonClick}
             onblur={handleButtonBlur}
             onfocus={handleButtonFocus}
@@ -54,12 +55,14 @@
                 icon-name={iconName}
                 svg-class="slds-button__icon"
                 variant="bare"
+                data-element-id="avonni-primitive-icon-main"
             ></c-avonni-primitive-icon>
             <template if:true={computedShowDownIcon}>
                 <c-avonni-primitive-icon
                     icon-name="utility:down"
                     svg-class="slds-button__icon slds-button__icon_x-small slds-m-left_xx-small"
                     variant="bare"
+                    data-element-id="avonni-primitive-icon-down"
                 ></c-avonni-primitive-icon>
             </template>
             <span class="slds-assistive-text">{alternativeText}</span>
@@ -78,6 +81,7 @@
                     <lightning-spinner
                         size="small"
                         alternative-text={loadingStateAlternativeText}
+                        data-element-id="lightning-spinner"
                     ></lightning-spinner>
                 </template>
                 <template if:false={isLoading}>
@@ -93,6 +97,7 @@
                             is-loading={isLoading}
                             value={searchTerm}
                             autocomplete="off"
+                            data-element-id="lightning-input"
                             onchange={handleSearch}
                             onblur={handlePrivateBlur}
                             onfocus={handlePrivateFocus}
@@ -114,6 +119,7 @@
                                     checked={item.checked}
                                     disabled={item.disabled}
                                     tab-index={item.tabindex}
+                                    data-element-id="lightning-menu-item"
                                     data-index={index}
                                     onkeydown={handleKeyDown}
                                 >
@@ -132,6 +138,7 @@
                                 variant="base"
                                 label={resetButtonLabel}
                                 title={resetButtonLabel}
+                                data-element-id="lightning-button-reset"
                                 onfocus={handlePrivateFocus}
                                 onblur={handlePrivateBlur}
                                 onclick={handleResetClick}
@@ -141,6 +148,7 @@
                                 variant="brand"
                                 label={applyButtonLabel}
                                 title={applyButtonLabel}
+                                data-element-id="lightning-button-apply"
                                 onfocus={handlePrivateFocus}
                                 onblur={handlePrivateBlur}
                                 onclick={handleApplyClick}
@@ -155,6 +163,7 @@
     <div if:true={showSelectedItems} class="slds-m-top_x-small">
         <lightning-pill-container
             items={selectedItems}
+            data-element-id="lightning-pill-container"
             onitemremove={handleSelectedItemRemove}
         ></lightning-pill-container>
     </div>

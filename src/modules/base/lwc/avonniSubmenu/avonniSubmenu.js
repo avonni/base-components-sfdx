@@ -143,7 +143,7 @@ export default class AvonniSubmenu extends LightningElement {
      */
     @api
     focus() {
-        this.template.querySelector('a').focus();
+        this.template.querySelector('[data-element-id="a"]').focus();
         /**
          * The event fired when you focus the menu item.
          *

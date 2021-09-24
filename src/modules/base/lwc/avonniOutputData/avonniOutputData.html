@@ -39,7 +39,11 @@
     <div class="slds-truncate" title={value}>
         <!-- Boolean -->
         <template if:true={showBoolean}>
-            <lightning-icon size="x-small" icon-name="utility:check">
+            <lightning-icon 
+                size="x-small"
+                icon-name="utility:check"
+                data-element-id="lightning-icon"
+            >
             </lightning-icon>
         </template>
 
@@ -58,6 +62,7 @@
                 time-zone-name={typeAttributes.timeZoneName}
                 weekday={typeAttributes.weekday}
                 year={typeAttributes.year}
+                data-element-id="lightning-formatted-date-time"
             ></lightning-formatted-date-time>
         </template>
 
@@ -66,6 +71,7 @@
             <lightning-formatted-email
                 value={value}
                 hide-icon={typeAttributes.hideIcon}
+                data-element-id="lightning-formatted-email"
             ></lightning-formatted-email>
         </template>
 
@@ -74,6 +80,7 @@
             <lightning-formatted-location
                 latitude={typeAttributes.latitude}
                 longitude={typeAttributes.longitude}
+                data-element-id="lightning-formatted-location"
             ></lightning-formatted-location>
         </template>
 
@@ -89,6 +96,7 @@
                 maximum-fraction-digits={typeAttributes.maximumFractionDigits}
                 minimum-significant-digits={typeAttributes.minimumSignificantDigits}
                 maximum-significant-digits={typeAttributes.maximumSignificantDigits}
+                data-element-id="lightning-formatted-number"
             ></lightning-formatted-number>
         </template>
 
@@ -96,6 +104,7 @@
         <template if:true={isPhone}>
             <lightning-formatted-phone
                 value={value}
+                data-element-id="lightning-formatted-phone"
             ></lightning-formatted-phone>
         </template>
 
@@ -104,6 +113,7 @@
             <lightning-formatted-text
                 value={value}
                 linkify={typeAttributes.linkify}
+                data-element-id="lightning-formatted-text"
             ></lightning-formatted-text>
         </template>
 
@@ -114,6 +124,7 @@
                 tooltip={typeAttributes.tooltip}
                 target={typeAttributes.target}
                 label={typeAttributes.label}
+                data-element-id="lightning-formatted-url"
             ></lightning-formatted-url>
         </template>
     </div>

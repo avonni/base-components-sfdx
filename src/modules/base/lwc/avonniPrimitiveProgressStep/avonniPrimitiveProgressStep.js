@@ -305,7 +305,7 @@ export default class AvonniProgressStep extends LightningElement {
     }
 
     isDisabled() {
-        const buttons = this.template.querySelectorAll('button');
+        const buttons = this.template.querySelectorAll('[data-element-id^="button"]');
         buttons.forEach((button) => {
             if (this.disabledSteps.includes(this.value)) {
                 button.setAttribute('disabled', 'true');

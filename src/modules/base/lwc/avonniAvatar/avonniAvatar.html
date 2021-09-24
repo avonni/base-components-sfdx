@@ -53,11 +53,13 @@
         entity-src={entitySrc}
         entity-title={entityTitle}
         entity-position={entityPosition}
+        data-element-id="avonni-primitive-avatar-no-details"
     ></c-avonni-primitive-avatar>
     <c-avonni-media-object
         if:false={hideAvatarDetails}
         inline={computedMediaObjectInline}
         class={mediaObjectClass}
+        data-element-id="avonni-media-object"
     >
         <template if:true={showAvatar}>
             <div if:true={textPositionLeft} slot="figure-inverse">
@@ -80,6 +82,7 @@
                     entity-src={entitySrc}
                     entity-title={entityTitle}
                     entity-position={entityPosition}
+                    data-element-id="avonni-primitive-avatar-details-left"
                 ></c-avonni-primitive-avatar>
             </div>
             <div if:false={textPositionLeft} slot="figure">
@@ -102,6 +105,7 @@
                     entity-src={entitySrc}
                     entity-title={entityTitle}
                     entity-position={entityPosition}
+                    data-element-id="avonni-primitive-avatar-details-right"
                 ></c-avonni-primitive-avatar>
             </div>
         </template>
@@ -116,6 +120,7 @@
                     class={tag.class}
                     key={tag.label}
                     label={tag.label}
+                    data-element-id="lightning-badge"
                 ></lightning-badge>
             </template>
         </div>

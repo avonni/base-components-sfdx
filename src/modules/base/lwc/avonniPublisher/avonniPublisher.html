@@ -45,20 +45,22 @@
                     if:false={isActive}
                     label="Publisher"
                     class="slds-publisher__input"
-                    onfocus={focus}
                     type="text"
                     variant="label-hidden"
                     placeholder={placeholder}
                     disabled={disabled}
+                    data-element-id="lightning-input"
+                    onfocus={focus}
                 ></lightning-input>
                 <div>
                     <lightning-input-rich-text
                         if:true={isActive}
+                        class="richTextPublisher"
                         value={value}
                         placeholder={placeholder}
                         variant="bottom-toolbar"
+                        data-element-id="avonni-input-rich-text"
                         onchange={handleChange}
-                        class="richTextPublisher"
                     ></lightning-input-rich-text>
                     <div class={actionsSectionClass}>
                         <template if:true={isActive}>
@@ -71,9 +73,10 @@
                             variant="brand"
                             label={buttonLabel}
                             title={buttonLabel}
-                            onclick={hanlerClick}
                             disabled={buttonDisabled}
                             class="slds-m-left_x-small"
+                            data-element-id="lightning-button"
+                            onclick={hanlerClick}
                         ></lightning-button>
                     </div>
                 </div>

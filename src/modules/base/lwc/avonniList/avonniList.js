@@ -565,7 +565,7 @@ export default class AvonniList extends LightningElement {
         const hoveredItem = this.getHoveredItem(center);
         if (hoveredItem) this.switchWithItem(hoveredItem);
         const buttonMenu = event.currentTarget.querySelector(
-            'lightning-button-menu'
+            '[data-element-id="lightning-button-menu"]'
         );
         if (buttonMenu) buttonMenu.classList.remove('slds-is-open');
     }
@@ -715,7 +715,7 @@ export default class AvonniList extends LightningElement {
          * @event
          * @name itemclick
          * @param {object}  item Item clicked.
-         * @param {DOMRect} name Bounds of the item clicked.
+         * @param {DOMRect} bounds Bounds of the item clicked.
          * @public
          */
         this.dispatchEvent(

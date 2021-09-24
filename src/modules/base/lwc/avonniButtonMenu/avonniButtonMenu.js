@@ -370,7 +370,7 @@ export default class AvonniButtonMenu extends LightningElement {
             // dom during initial rendering.
             this._tooltip = new Tooltip(value, {
                 root: this,
-                target: () => this.template.querySelector('button')
+                target: () => this.template.querySelector('[data-element-id="button"]')
             });
             this._tooltip.initialize();
         }
@@ -396,7 +396,7 @@ export default class AvonniButtonMenu extends LightningElement {
     @api
     click() {
         if (this.isConnected) {
-            this.template.querySelector('button').click();
+            this.template.querySelector('[data-element-id="button"]').click();
         }
     }
 
@@ -610,7 +610,7 @@ export default class AvonniButtonMenu extends LightningElement {
             );
             if (dialog) {
                 dialog.show();
-                this.template.querySelector('button').blur();
+                this.template.querySelector('[data-element-id="button"]').blur();
             }
         }
 
@@ -703,7 +703,7 @@ export default class AvonniButtonMenu extends LightningElement {
      * Button focus.
      */
     focusOnButton() {
-        this.template.querySelector('button').focus();
+        this.template.querySelector('[data-element-id="button"]').focus();
     }
 
     /**

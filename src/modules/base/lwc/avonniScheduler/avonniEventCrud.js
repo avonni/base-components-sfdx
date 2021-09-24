@@ -58,7 +58,7 @@ function deleteEvent(eventName) {
  */
 function focusEvent(eventName) {
     const event = this.template.querySelector(
-        `c-primitive-scheduler-event-occurrence[data-event-name="${eventName}"]`
+        `[data-element-id="avonni-primitive-scheduler-event-occurrence"][data-event-name="${eventName}"]`
     );
     if (event) {
         event.focus();

@@ -52,6 +52,7 @@
     <lightning-helptext
         if:true={fieldLevelHelp}
         content={fieldLevelHelp}
+        data-element-id="lightning-helptext"
     ></lightning-helptext>
 
     <lightning-layout multiple-rows="true" pull-to-boundary="small">
@@ -73,9 +74,10 @@
                 value={selectedTimeZone}
                 placeholder="Select time zone"
                 options={timeZones}
-                onchange={handleTimeZoneChange}
                 variant="label-hidden"
                 class="slds-m-bottom_small avonni-date-time-picker__time-zone"
+                data-element-id="lightning-combobox"
+                onchange={handleTimeZoneChange}
             ></lightning-combobox>
         </lightning-layout-item>
 
@@ -93,9 +95,11 @@
                     variant="border-filled"
                     disabled={prevButtonIsDisabled}
                     data-direction="previous"
+                    data-element-id="lightning-button-icon-previous"
                 ></lightning-button-icon>
                 <lightning-button
                     label="Today"
+                    data-element-id="lightning-button-today"
                     onclick={handleTodayClick}
                 ></lightning-button>
                 <lightning-button-icon
@@ -106,6 +110,7 @@
                     variant="border-filled"
                     disabled={nextButtonIsDisabled}
                     data-direction="next"
+                    data-element-id="lightning-button-icon-next"
                 ></lightning-button-icon>
             </lightning-button-group>
         </lightning-layout-item>
@@ -120,16 +125,17 @@
                 name={name}
                 max={maxToString}
                 min={minToString}
-                onchange={handleDateChange}
                 type="date"
                 value={datePickerValue}
                 variant="label-hidden"
+                data-element-id="lightning-input"
+                onchange={handleDateChange}
             ></lightning-input>
         </lightning-layout-item>
     </lightning-layout>
 
     <template if:true={entirePeriodIsDisabled}>
-        <p if:false={isMonthly}>No available time slots for this period.</p>
+        <p if:false={isMonthly} data-element-id="p-empty-message">No available time slots for this period.</p>
     </template>
 
     <lightning-layout multiple-rows="true" pull-to-boundary="medium">
@@ -142,6 +148,7 @@
                     disabled={disabled}
                     max={max}
                     min={min}
+                    data-element-id="avonni-calendar"
                     onchange={handleDateChange}
                 ></c-avonni-calendar>
             </lightning-layout-item>
@@ -255,8 +262,9 @@
                                                 class="avonni-date-time-picker__time-button slds-p-around_medium slds-theme_default"
                                                 disabled={time.disabled}
                                                 type="button"
-                                                onclick={handleTimeSlotClick}
                                                 aria-readonly={readOnly}
+                                                data-element-id="button-default"
+                                                onclick={handleTimeSlotClick}
                                                 onblur={handleValueBlur}
                                                 onfocus={handleValueFocus}
                                             >
@@ -267,6 +275,7 @@
                                                     minute={timeFormatMinute}
                                                     second={timeFormatSecond}
                                                     hour12={timeFormatHour12}
+                                                    data-element-id="lightning-formatted-date-time-default-start"
                                                 ></lightning-formatted-date-time>
                                                 <template if:true={showEndTime}>
                                                     &nbsp;-&nbsp;
@@ -278,6 +287,7 @@
                                                         minute={timeFormatMinute}
                                                         second={timeFormatSecond}
                                                         hour12={timeFormatHour12}
+                                                        data-element-id="lightning-formatted-date-time-default-end"
                                                     ></lightning-formatted-date-time>
                                                 </template>
                                             </button>

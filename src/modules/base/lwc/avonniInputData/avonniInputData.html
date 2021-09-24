@@ -47,6 +47,7 @@
         type={inputType}
         formatter={inputFormat}
         step="any"
+        data-element-id="lightning-input-base"
         onchange={handleInputChange}
         oncommit={handleInputCommit}
         onblur={handleBlur}
@@ -67,6 +68,7 @@
         type="tel"
         message-when-pattern-mismatch="Invalid phone number"
         pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}$"
+        data-element-id="lightning-input-phone"
         onchange={handlePhoneInputChange}
         oncommit={handleInputCommit}
         onblur={handleBlur}
@@ -83,6 +85,7 @@
         disabled={disabled}
         read-only={readOnly}
         required={required}
+        data-element-id="lightning-input-location"
         onchange={handleInputChange}
         onblur={handleBlur}
         onfocus={handleFocus}

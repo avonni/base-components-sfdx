@@ -33,15 +33,16 @@
 -->
 
 <template>
-    <div class={computedWrapperClass}>
+    <div class={computedWrapperClass} data-element-id="div-wrapper">
         <div class={computedLabelClass}>
             <abbr if:true={required} title="required" class="slds-required"
                 >*</abbr
             >
-            <p if:true={label}>{label}</p>
+            <p if:true={label} data-element-id="p-label">{label}</p>
             <lightning-helptext
                 if:true={fieldLevelHelp}
                 content={fieldLevelHelp}
+                data-element-id="lightning-helptext"
             ></lightning-helptext>
         </div>
         <div class="avonni-date-range-container">
@@ -60,12 +61,13 @@
                         id="start-date"
                         class="slds-input start-date"
                         value={startDateString}
-                        onfocus={handleFocusStartDate}
-                        onblur={handleBlurStartDate}
                         disabled={disabled}
                         aria-readonly={readOnly}
                         readonly={readOnly}
                         required={required}
+                        data-element-id="input-start-date"
+                        onblur={handleBlurStartDate}
+                        onfocus={handleFocusStartDate}
                     />
                     <lightning-icon
                         icon-name="utility:event"
@@ -96,10 +98,11 @@
                 variant="label-hidden"
                 value={startTime}
                 time-style={timeStyle}
-                onchange={handleChangeStartTime}
                 disabled={disabled}
                 read-only={readOnly}
                 class="start-time"
+                data-element-id="lightning-input-start-time"
+                onchange={handleChangeStartTime}
             ></lightning-input>
             <div class="slds-form-element">
                 <label
@@ -116,11 +119,12 @@
                         id="end-date"
                         class="slds-input end-date"
                         value={endDateString}
-                        onfocus={handleFocusEndDate}
-                        onblur={handleBlurEndDate}
                         disabled={disabled}
                         aria-readonly={readOnly}
                         readonly={readOnly}
+                        data-element-id="input-end-date"
+                        onblur={handleBlurEndDate}
+                        onfocus={handleFocusEndDate}
                     />
                     <lightning-icon
                         icon-name="utility:event"
@@ -151,10 +155,11 @@
                 variant="label-hidden"
                 value={endTime}
                 time-style={timeStyle}
-                onchange={handleChangeEndTime}
                 disabled={disabled}
                 read-only={readOnly}
                 class="end-time"
+                data-element-id="lightning-input-end-time"
+                onchange={handleChangeEndTime}
             ></lightning-input>
         </div>
     </div>

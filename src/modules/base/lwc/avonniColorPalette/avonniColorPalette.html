@@ -51,8 +51,9 @@
                             href="javascript:void(0)"
                             role="menuitemcheckbox"
                             tabindex="0"
+                            data-element-id="a-list"
                         >
-                            <span class="slds-truncate" title="Table View">
+                            <span class="slds-truncate" title="Table View" data-element-id="span-list-icon-wrapper">
                                 <svg
                                     class="slds-icon slds-icon_selected slds-icon_x-small slds-icon-text-default slds-m-right_x-small"
                                     aria-hidden="true"
@@ -92,6 +93,7 @@
             <lightning-spinner
                 if:true={isLoading}
                 size="small"
+                data-element-id="lightning-spinner"
             ></lightning-spinner>
             <ul
                 if:false={isLoading}
@@ -115,9 +117,10 @@
                             read-only={readOnly}
                             role="option"
                             tabindex="0"
+                            data-element-id="a-base"
                         >
-                            <span class="slds-swatch">
-                                <span class="slds-assistive-text"
+                            <span class="slds-swatch" data-element-id="span-base">
+                                <span class="slds-assistive-text" 
                                     >{color}
                                 </span>
                             </span>

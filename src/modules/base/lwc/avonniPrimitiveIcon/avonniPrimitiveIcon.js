@@ -57,7 +57,7 @@ export default class AvonniPrimitiveIcon extends LightningElement {
     renderedCallback() {
         if (this.iconName !== this.prevIconName && !this.inlineSvgProvided) {
             this.prevIconName = this.iconName;
-            const svgElement = this.template.querySelector('svg');
+            const svgElement = this.template.querySelector('[data-element-id="svg"]');
             iconUtils.polyfill(svgElement);
         }
     }

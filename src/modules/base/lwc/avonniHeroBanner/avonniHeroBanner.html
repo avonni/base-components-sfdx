@@ -42,17 +42,26 @@
                         style={computedContentStyling}
                     >
                         <template if:true={caption}>
-                            <h1 class="avonni-hero-banner-caption-class">
+                            <h1
+                                class="avonni-hero-banner-caption-class"
+                                data-element-id="h1"
+                            >
                                 {caption}
                             </h1>
                         </template>
                         <template if:true={title}>
-                            <h2 class="avonni-hero-banner-title-class">
+                            <h2
+                                class="avonni-hero-banner-title-class"
+                                data-element-id="h2"
+                            >
                                 {title}
                             </h2>
                         </template>
                         <template if:true={subtitle}>
-                            <p class="avonni-hero-banner-subtitle-class">
+                            <p
+                                class="avonni-hero-banner-subtitle-class"
+                                data-element-id="p-subtitle"
+                            >
                                 {subtitle}
                             </p>
                         </template>
@@ -75,7 +84,7 @@
                             </div>
                         </template>
                         <template if:true={showSlot}>
-                            <slot></slot>
+                            <slot data-element-id="slot-default"></slot>
                         </template>
                     </div>
                 </div>

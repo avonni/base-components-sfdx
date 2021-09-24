@@ -33,15 +33,21 @@
 -->
 
 <template>
-    <label if:true={label} class={computedLabelClass} for="combobox-input">
+    <label
+        if:true={label}
+        class={computedLabelClass}
+        for="combobox-input"
+        data-element-id="label"
+    >
         <template if:true={required}>
-            <abbr class="slds-required" title="Required">*</abbr>
+            <abbr class="slds-required" title="Required" data-element-id="abbr">*</abbr>
         </template>
         {label}
     </label>
     <lightning-helptext
         if:true={fieldLevelHelp}
         content={fieldLevelHelp}
+        data-element-id="lightning-helptext"
     ></lightning-helptext>
 
     <div class={computedDropdownTriggerClass}>
@@ -82,6 +88,7 @@
                 aria-autocomplete={computedAriaAutocomplete}
                 aria-owns="dropdown-element"
                 value={inputValue}
+                data-element-id="input"
                 onfocus={handleFocus}
                 onblur={handleBlur}
                 onkeydown={handleInputKeyDown}
@@ -120,6 +127,7 @@
                 <lightning-spinner
                     size="small"
                     alternative-text={loadingStateAlternativeText}
+                    data-element-id="lightning-spinner"
                 ></lightning-spinner>
             </div>
             <ul
@@ -201,6 +209,7 @@
                             options={group.options}
                             groups={group.groups}
                             remove-selected-options={removeSelectedOptions}
+                            data-element-id="avonni-primitive-combobox-group"
                             onprivateoptionclick={handleOptionClick}
                             onprivateoptionmouseenter={handleMouseEnter}
                             onclick={focus}
@@ -228,6 +237,7 @@
                                 icon-name={action.iconName}
                                 size="x-small"
                                 aria-hidden="true"
+                                data-element-id="lightning-icon-bottom-action"
                             ></lightning-icon>
                         </div>
                         <div class="slds-media__body">
@@ -262,6 +272,7 @@
                     name={option.value}
                     role="option"
                     tabindex="0"
+                    data-element-id="lightning-pill"
                     onremove={handleRemoveSelectedOption}
                 >
                     <c-avonni-avatar

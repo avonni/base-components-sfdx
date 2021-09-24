@@ -115,7 +115,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * Synchronize all inputs Aria help element ID.
      */
     synchronizeA11y() {
-        const inputs = this.template.querySelectorAll('input');
+        const inputs = this.template.querySelectorAll('[data-element-id^="input"]');
         Array.prototype.slice.call(inputs).forEach((input) => {
             synchronizeAttrs(input, {
                 'aria-describedby': this.computedUniqueHelpElementId
@@ -389,7 +389,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
      */
     @api
     focus() {
-        const firstCheckbox = this.template.querySelector('input');
+        const firstCheckbox = this.template.querySelector('[data-element-id="input"]');
         if (firstCheckbox) {
             firstCheckbox.focus();
         }
@@ -460,7 +460,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
         event.stopPropagation();
 
         let value = event.target.value;
-        const checkboxes = this.template.querySelectorAll('input');
+        const checkboxes = this.template.querySelectorAll('[data-element-id^="input"]');
         if (this.isMultiSelect) {
             this._value = this.handleValueChange(checkboxes);
         } else {
@@ -475,7 +475,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
         if (this.type === 'button') {
             checkboxes.forEach((checkbox) => {
                 const label = checkbox.labels[0];
-                let icon = label.querySelector('lightning-icon');
+                let icon = label.querySelector('[data-element-id="lightning-icon-button"]');
                 if (icon) {
                     if (value.includes(label.control.value))
                         icon.variant = 'inverse';
