@@ -30,11 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-pallet-container {
-    position: relative;
-    display: inline-block;
-}
-
 a[read-only='true'],
 a[is-disabled='true'] {
     cursor: default;
@@ -50,16 +45,16 @@ a[is-disabled='true']:focus {
     white-space: initial;
 }
 
-.label:hover{
-	color:#0176d3;
+.label:hover {
+    color: #0176d3;
 }
 
-.list-container{
-	height: 100%;
+.list-container {
+    height: 100%;
 }
 
-.grid{
-	display: grid; 
-	grid-template-columns: 150px 1fr;
-	justify-items: start;
+.grid {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    justify-items: start;
 }

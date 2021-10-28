@@ -124,6 +124,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             );
 
         this.initLabels();
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -198,7 +199,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         this._dateFormat =
             typeof value === 'string' ? value : DEFAULT_DATE_FORMAT;
 
-        if (this.isConnected) this.initLabels();
+        if (this._connected) this.initLabels();
     }
 
     /**
@@ -230,7 +231,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set eventData(value) {
         this._eventData = typeof value === 'object' ? value : {};
 
-        if (this.isConnected) this.initLabels();
+        if (this._connected) this.initLabels();
     }
 
     /**
@@ -262,7 +263,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set labels(value) {
         this._labels = typeof value === 'object' ? { ...value } : {};
 
-        if (this.isConnected) this.initLabels();
+        if (this._connected) this.initLabels();
     }
 
     /**
@@ -324,7 +325,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set rowKey(value) {
         this._rowKey = value;
 
-        if (this.isConnected) this.initLabels();
+        if (this._connected) this.initLabels();
     }
 
     /**
@@ -340,7 +341,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set rows(value) {
         this._rows = normalizeArray(value);
 
-        if (this.isConnected) this.initLabels();
+        if (this._connected) this.initLabels();
     }
 
     /**
@@ -372,7 +373,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set title(value) {
         this._title = value;
 
-        if (this.isConnected) this.initLabels();
+        if (this._connected) this.initLabels();
     }
 
     /**

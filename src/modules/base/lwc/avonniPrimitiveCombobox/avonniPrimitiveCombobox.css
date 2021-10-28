@@ -43,3 +43,33 @@
 .combobox__action_disabled lightning-icon {
     color: #dddbda;
 }
+
+input.avonni-primitive-combobox__input {
+    border-color: var(--avonni-primitive-combobox-border-color, #dddbda);
+    border-top-right-radius: var(
+        --avonni-primitive-combobox-border-top-right-radius,
+        0.25rem
+    );
+    border-top-left-radius: var(
+        --avonni-primitive-combobox-border-top-left-radius,
+        0.25rem
+    );
+    border-bottom-right-radius: var(
+        --avonni-primitive-combobox-border-bottom-right-radius,
+        0.25rem
+    );
+    border-bottom-left-radius: var(
+        --avonni-primitive-combobox-border-bottom-left-radius,
+        0.25rem
+    );
+    border-top-width: var(--avonni-primitive-combobox-border-top-width, 1px);
+    border-bottom-width: var(
+        --avonni-primitive-combobox-border-bottom-width,
+        1px
+    );
+    border-right-width: var(
+        --avonni-primitive-combobox-border-right-width,
+        1px
+    );
+    border-left-width: var(--avonni-primitive-combobox-border-left-width, 1px);
+}

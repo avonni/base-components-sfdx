@@ -192,7 +192,8 @@ export default class AvonniButtonMenu extends LightningElement {
             }
         });
 
-        this.dispatchEvent(privatebuttonregister);
+        this.dispatchEvent(privatebuttonregister);        
+        this._connected = true;
     }
 
     disconnectedCallback() {
@@ -383,7 +384,7 @@ export default class AvonniButtonMenu extends LightningElement {
      */
     @api
     focus() {
-        if (this.isConnected) {
+        if (this._connected) {
             this.focusOnButton();
         }
     }
@@ -395,7 +396,7 @@ export default class AvonniButtonMenu extends LightningElement {
      */
     @api
     click() {
-        if (this.isConnected) {
+        if (this._connected) {
             this.template.querySelector('[data-element-id="button"]').click();
         }
     }
@@ -942,7 +943,7 @@ export default class AvonniButtonMenu extends LightningElement {
         if (this.isAutoAlignment() && this._dropdownVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
             setTimeout(() => {
-                if (this.isConnected) {
+                if (this._connected) {
                     observePosition(this, 300, this._boundingRect, () => {
                         this.close();
                     });

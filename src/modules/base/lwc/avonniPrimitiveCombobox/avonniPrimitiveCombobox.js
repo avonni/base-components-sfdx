@@ -97,6 +97,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     @api label;
 
     /**
+     * Error message to be displayed when a bad input is detected.
+     *
+     * @type {string}
+     * @public
+     */
+    @api messageWhenBadInput;
+
+    /**
      * Error message to be displayed when the value is missing and input is required.
      *
      * @type {string}
@@ -161,6 +169,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -333,7 +342,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
     set isMultiSelect(value) {
         this._isMultiSelect = normalizeBoolean(value);
-        if (this.isConnected) this.initValue();
+        if (this._connected) this.initValue();
     }
 
     /**
@@ -391,7 +400,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._options = optionObjects;
         this.visibleOptions = optionObjects;
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initValue();
         }
     }
@@ -537,7 +546,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     set value(value) {
         this._value =
             typeof value === 'string' ? [value] : normalizeArray(value);
-        if (this.isConnected) this.initValue();
+        if (this._connected) this.initValue();
     }
 
     /**
@@ -577,11 +586,31 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
     set visibleOptions(value) {
         this._visibleOptions =
-            this.isConnected && this.removeSelectedOptions
+            this._connected && this.removeSelectedOptions
                 ? this.removeSelectedOptionsFrom(value)
                 : value;
 
         this.computeGroups();
+    }
+
+    /**
+     * Returns a boolean indicating if the value is valid or not.
+     *
+     * @type {boolean}
+     */
+    get hasBadInput() {
+        let values = [];
+        this.options.forEach((option) => {
+            if (option.options) {
+                option.options.forEach((innerOption) => {
+                    values.push(innerOption.value);
+                });
+            }
+            values.push(option.value);
+        });
+        return this._value.length === 0 || this._value[0] === ''
+            ? true
+            : values.some((e) => this._value.includes(e));
     }
 
     /**
@@ -593,7 +622,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (!this._constraintApi) {
             this._constraintApi = new FieldConstraintApi(() => this, {
                 valueMissing: () =>
-                    !this.disabled && this.required && this.value.length === 0
+                    !this.disabled && this.required && this.value.length === 0,
+                badInput: () => !this.hasBadInput
             });
         }
         return this._constraintApi;
@@ -770,7 +800,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @type {boolean}
      */
     get showClearInputIcon() {
-        return this.showClearInput && this.input && this.inputValue !== '';
+        return this.showClearInput && this.inputValue !== '';
     }
 
     /**
@@ -804,8 +834,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         )
             .add({
                 'slds-is-open': this.dropdownVisible,
-                'slds-has-icon-only slds-combobox_container': this
-                    .showInputValueIcon
+                'slds-has-icon-only slds-combobox_container':
+                    this.showInputValueIcon
             })
             .toString();
     }
@@ -849,6 +879,24 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                     !this.showInputValueAvatar && !this.showInputValueIcon
             })
             .toString();
+    }
+
+    /**
+     * True if read-only and is-multi-select is false.
+     *
+     * @type {boolean}
+     */
+    get readOnlyNotMultiSelect() {
+        return this.readOnly && !this.isMultiSelect;
+    }
+
+    /**
+     * True if value is valid returns the input value, if else return the value.
+     *
+     * @type {string}
+     */
+    get readOnlyValue() {
+        return this.validity.valid ? this.inputValue : this.value[0];
     }
 
     /**
@@ -1025,7 +1073,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         }
 
         this._autoPosition.start({
-            target: () => this.template.querySelector('[data-element-id="input"]'),
+            target: () =>
+                this.template.querySelector('[data-element-id="input"]'),
             element: () => this.template.querySelector('div.slds-dropdown'),
             align: {
                 horizontal: Direction.Left,

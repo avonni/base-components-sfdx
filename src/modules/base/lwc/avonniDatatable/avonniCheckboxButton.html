@@ -33,12 +33,14 @@
 -->
 
 <template>
-    <c-avonni-primitive-cell-checkbox-button
-        col-key-value={colKeyValue}
-        row-key-value={rowKeyValue}
-        value={value}
-        disabled={typeAttributes.disabled}
-        label={typeAttributes.label}
-        name={typeAttributes.name}
-    ></c-avonni-primitive-cell-checkbox-button>
+    <div class="slds-p-around_x-small">
+        <c-avonni-primitive-cell-checkbox-button
+            col-key-value={colKeyValue}
+            row-key-value={rowKeyValue}
+            value={value}
+            disabled={typeAttributes.disabled}
+            label={typeAttributes.label}
+            name={typeAttributes.name}
+        ></c-avonni-primitive-cell-checkbox-button>
+    </div>
 </template>

@@ -336,7 +336,6 @@ export default class AvonniAvatarGroup extends LightningElement {
         if (this.items.length === 2) {
             return this.items[0];
         }
-
         return {};
     }
 
@@ -348,7 +347,6 @@ export default class AvonniAvatarGroup extends LightningElement {
         if (this.items.length === 2) {
             return this.items[1];
         }
-
         return {};
     }
 
@@ -400,7 +398,6 @@ export default class AvonniAvatarGroup extends LightningElement {
             });
             return items;
         }
-
         return [];
     }
 
@@ -582,7 +579,6 @@ export default class AvonniAvatarGroup extends LightningElement {
         if (!this._allowBlur) {
             return;
         }
-
         this.showPopover = false;
     }
 

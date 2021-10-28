@@ -35,86 +35,89 @@ import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import { generateUUID } from 'c/inputUtils';
 
-const PAGINATION_ALIGNS = {valid: ['left', 'center', 'right', 'fill'], default: 'left'};
+const PAGINATION_ALIGNS = {
+    valid: ['left', 'center', 'right', 'fill'],
+    default: 'left'
+};
 
-const DEFAULT_PER_PAGE = 20
-const DEFAULT_TOTAL_ROWS = 0
+const DEFAULT_PER_PAGE = 20;
+const DEFAULT_TOTAL_ROWS = 0;
 const DEFAULT_ELLIPSIS_TEXT = '...';
-const DEFAULT_VALUE = 1
-const DEFAULT_LIMIT = 5
+const DEFAULT_VALUE = 1;
+const DEFAULT_LIMIT = 5;
 
 /**
-* @class
-* @descriptor avonni-pagination
-* @storyId example-pagination--base
-* @public
-*/
+ * @class
+ * @descriptor avonni-pagination
+ * @storyId example-pagination--base
+ * @public
+ */
 export default class AvonniPagination extends LightningElement {
     /**
-    * Number of rows per page
-    *
-    * @type {number}
-    * @public
-    * @default 20
-    */
+     * Number of rows per page
+     *
+     * @type {number}
+     * @public
+     * @default 20
+     */
     @api perPage = DEFAULT_PER_PAGE;
     /**
-    * Total number of rows in the dataset.
-    * 
-    * @type {number}
-    * @public
-    * @default 0
-    */
+     * Total number of rows in the dataset.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
     @api totalRows = DEFAULT_TOTAL_ROWS;
     /**
-    * Content to place in the ellipsis placeholder.
-    *
-    * @type {string}
-    * @public
-    * @default ...
-    */
+     * Content to place in the ellipsis placeholder.
+     *
+     * @type {string}
+     * @public
+     * @default ...
+     */
     @api ellipsisText = DEFAULT_ELLIPSIS_TEXT;
     /**
-    * Label for the first button.
-    *
-    * @type {string}
-    * @public
-    */
+     * Label for the first button.
+     *
+     * @type {string}
+     * @public
+     */
     @api firstButtonLabel;
     /**
-    * The name of an icon to display after the label of the first button.
-    *
-    * @type {string}
-    * @public
-    */
+     * The name of an icon to display after the label of the first button.
+     *
+     * @type {string}
+     * @public
+     */
     @api firstButtonIconName;
     /**
-    * Label for the previous button.
-    *
-    * @type {string}
-    * @public
-    */
+     * Label for the previous button.
+     *
+     * @type {string}
+     * @public
+     */
     @api previousButtonLabel;
     /**
-    * Label for the next button.
-    *
-    * @type {string}
-    * @public
-    */
+     * Label for the next button.
+     *
+     * @type {string}
+     * @public
+     */
     @api nextButtonLabel;
     /**
-    * Label for the last button.
-    *
-    * @type {string}
-    * @public
-    */
+     * Label for the last button.
+     *
+     * @type {string}
+     * @public
+     */
     @api lastButtonLabel;
     /**
-    * The name of an icon to display after the label for the last button.
-    *
-    * @type {string}
-    * @public
-    */
+     * The name of an icon to display after the label for the last button.
+     *
+     * @type {string}
+     * @public
+     */
     @api lastButtonIconName;
 
     _value = DEFAULT_VALUE;
@@ -166,12 +169,12 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-    * Current page number, starting from 1
-    *
-    * @type {number}
-    * @public
-    * @default 1
-    */
+     * Current page number, starting from 1
+     *
+     * @type {number}
+     * @public
+     * @default 1
+     */
     @api
     get value() {
         return this._value;
@@ -182,12 +185,12 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-    * Maximum number of buttons to show (including ellipsis if shown, but excluding the bookend buttons). The minimum value is 3.
-    *
-    * @type {number}
-    * @public
-    * @default 5
-    */
+     * Maximum number of buttons to show (including ellipsis if shown, but excluding the bookend buttons). The minimum value is 3.
+     *
+     * @type {number}
+     * @public
+     * @default 5
+     */
     @api
     get limit() {
         return this._limit;
@@ -202,12 +205,12 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-    * The name of an icon to display after the label for the next button.
-    *
-    * @type {string}
-    * @public
-    * @default utility:chevronright 
-    */
+     * The name of an icon to display after the label for the next button.
+     *
+     * @type {string}
+     * @public
+     * @default utility:chevronright
+     */
     @api
     get nextButtonIconName() {
         if (!this.nextButtonLabel && !this._nextButtonIconName) {
@@ -222,12 +225,12 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-    * The name of an icon to display after the label for the previous button.
-    *
-    * @type {string}
-    * @public
-    * @default utility:chevronleft
-    */
+     * The name of an icon to display after the label for the previous button.
+     *
+     * @type {string}
+     * @public
+     * @default utility:chevronleft
+     */
     @api
     get previousButtonIconName() {
         if (!this.previousButtonLabel && !this._previousButtonIconName) {
@@ -242,12 +245,12 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-    * Alignment of the page buttons. Values include left, center, right and fill.
-    *
-    * @type {string}
-    * @public
-    * @default left
-    */
+     * Alignment of the page buttons. Values include left, center, right and fill.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
     @api get align() {
         return this._align;
     }
@@ -260,12 +263,12 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-    * When set to 'true', disables the component's functionality and places it in a disabled state.
-    *
-    * @type {boolean}
-    * @public
-    * @default false
-    */
+     * When set to 'true', disables the component's functionality and places it in a disabled state.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get disabled() {
         return this._disabled;
     }
@@ -276,7 +279,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Get index of pagination buttons.
-     * 
+     *
      * @type {number}
      */
     get index() {
@@ -285,7 +288,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check pagination size to display.
-     * 
+     *
      * @type {number}
      */
     get paginationSize() {
@@ -295,7 +298,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Generate unique Key iD for buttons.
-     * 
+     *
      * @type {string}
      */
     get uniqueKey() {
@@ -304,7 +307,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check whether Left button is disabled.
-     * 
+     *
      * @type {boolean | number}
      */
     get disabledLeftButtons() {
@@ -313,7 +316,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check whether Right button is disabled.
-     * 
+     *
      * @type {boolean | number}
      */
     get disabledRightButtons() {
@@ -322,7 +325,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check which label or icon to display on the first button.
-     * 
+     *
      * @type {boolean}
      */
     get showFirstButton() {
@@ -331,7 +334,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check whether the label is not specified and that the icon is present to display on the first button.
-     * 
+     *
      * @type {string}
      */
     get firstButtonIcon() {
@@ -340,7 +343,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check which label or icon to display on the last button.
-     * 
+     *
      * @type {boolean}
      */
     get showLastButton() {
@@ -349,7 +352,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Check whether the label is not specified and that the icon is present to display on the first button.
-     * 
+     *
      * @type {string}
      */
     get lastButtonIcon() {
@@ -358,7 +361,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Computed container class styling for alignement attribute.
-     * 
+     *
      * @type {string}
      */
     get computedContainerClass() {
@@ -369,7 +372,7 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Compute pagination buttons to array object and display according to index and limit.
-     * 
+     *
      * @type {object}
      */
     get paginationButtons() {
@@ -430,67 +433,67 @@ export default class AvonniPagination extends LightningElement {
 
     /**
      * Go to first page.
-     * 
+     *
      * @public
      */
     @api
     first() {
-        this.value = 1;
+        this._value = 1;
         this.handlerChange();
     }
 
     /**
      * Go to previous page.
-     * 
+     *
      * @public
      */
     @api
     previous() {
         if (this.value > 1) {
-            this.value = this.value - 1;
+            this._value = this.value - 1;
             this.handlerChange();
         }
     }
 
     /**
      * Go to next page.
-     * 
+     *
      * @public
      */
     @api
     next() {
         if (this.value < this.paginationSize) {
-            this.value = this.value + 1;
+            this._value = this.value + 1;
             this.handlerChange();
         }
     }
 
     /**
      * Go to last page.
-     * 
+     *
      * @public
      */
     @api
     last() {
-        this.value = this.paginationSize;
+        this._value = this.paginationSize;
         this.handlerChange();
     }
 
     /**
      * Go to page at index.
-     * 
-     * @param {number} index 
+     *
+     * @param {number} index
      */
     @api
     goto(index) {
-        this.value = Number(index);
+        this._value = Number(index);
         this.handlerChange();
     }
 
     /**
      * Go to button index event handler.
-     * 
-     * @param {Event} event 
+     *
+     * @param {Event} event
      */
     goToIndex(event) {
         if (event.target.value !== this.ellipsisText) {
@@ -503,13 +506,13 @@ export default class AvonniPagination extends LightningElement {
      */
     handlerChange() {
         /**
-        * The event fired when the page changed.
-        *
-        * @event
-        * @name change
-        * @param {string} value The page number selected.
-        * @public
-        */
+         * The event fired when the page changed.
+         *
+         * @event
+         * @name change
+         * @param {string} value The page number selected.
+         * @public
+         */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {

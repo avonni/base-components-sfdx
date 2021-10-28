@@ -151,7 +151,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
     @api tooltip;
 
     _disabled = false;
-    _handleCloseButton = false;
+    _hideCloseButton = false;
     _isLoading = false;
     _loadingStateAlternativeText = DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
     _size = BUTTON_SIZES.default;
@@ -170,6 +170,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
             'slds-dropdown-trigger',
             'slds-dropdown-trigger_click'
         );
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -479,12 +480,12 @@ export default class AvonniButtonIconPopover extends LightningElement {
      */
     @api
     click() {
-        if (this.isConnected) {
+        if (this._connected) {
             this.clickOnButton();
         }
         /**
          * The event fired when the popover is clicked.
-         * 
+         *
          * @event
          * @name click
          * @public
@@ -499,7 +500,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
      */
     @api
     focus() {
-        if (this.isConnected) {
+        if (this._connected) {
             this.focusOnButton();
         }
     }
@@ -528,7 +529,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
         }
         /**
          * The event fired when the popover is closed.
-         * 
+         *
          * @event
          * @name close
          * @public
@@ -786,7 +787,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
         if (this.isAutoAlignment() && this.popoverVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
             setTimeout(() => {
-                if (this.isConnected) {
+                if (this._connected) {
                     observePosition(this, 300, this._boundingRect, () => {
                         this.close();
                     });

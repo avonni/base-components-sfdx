@@ -35,61 +35,69 @@
 <template>
     <template if:true={isList}>
         <div class="list-container slds-scrollable">
-            <template for:each={bundles} for:item="bundle">
+            <template for:each={colors} for:item="color">
                 <div
                     key={uniqKey}
-					item-label={bundle.label}
-					item-token={bundle.token}
-                    item-color={bundle.value}
+                    class="slds-dropdown__item"
+                    role="presentation"
+                    data-label={color.label}
+                    data-token={color.value}
+                    data-color={color.color}
                     onclick={handleClick}
-                    onblur={handleBlur}
-                    onfocus={handleFocus}
                 >
-                    <div class="slds-dropdown__item" role="presentation">
-                        <a
-                            aria-checked="true"
-                            href="javascript:void(0)"
-                            role="menuitemcheckbox"
-                            tabindex="0"
-                            data-element-id="a-list"
+                    <a
+                        aria-checked="true"
+                        aria-disabled={disabled}
+                        aria-readonly={readOnly}
+                        href="javascript:void(0)"
+                        role="menuitemcheckbox"
+                        data-element-id="a-list"
+                        onblur={handleBlur}
+                        ondblclick={handleDblClick}
+                        onfocus={handleFocus}
+                    >
+                        <span
+                            class="slds-truncate"
+                            title="Table View"
+                            data-element-id="span-list-icon-wrapper"
                         >
-                            <span class="slds-truncate" title="Table View" data-element-id="span-list-icon-wrapper">
-                                <svg
-                                    class="slds-icon slds-icon_selected slds-icon_x-small slds-icon-text-default slds-m-right_x-small"
-                                    aria-hidden="true"
+                            <lightning-icon
+                                class="
+                                    slds-icon_selected
+                                    slds-icon-text-default
+                                    slds-m-right_x-small
+                                "
+                                alternative-text="Checked"
+                                icon-name="utility:check"
+                                size="x-small"
+                            ></lightning-icon>
+                            {color.label}
+                        </span>
+                        <div role="presentation">
+                            <div class="slds-color-picker__swatch-trigger">
+                                <span
+                                    class="slds-swatch"
+                                    data-color={color.color}
+                                    data-element-id="span-list"
+                                    data-group-name="swatches"
                                 >
-                                    <use
-                                        xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#check"
-                                    ></use>
-                                </svg>
-                                {bundle.label}</span
-                            >
-                            <div role="presentation">
-                                <div
-                                    class="slds-color-picker__swatch-trigger"
-                                    href="javascript:void(0)"
-                                    item-color={bundle.value}
-                                    is-disabled={disabled}
-                                    read-only={readOnly}
-                                    role="option"
-                                    tabindex="0"
-                                >
-                                    <span class="slds-swatch">
-                                        <p class="slds-assistive-text">
-                                            {bundle.value}
-                                        </p>
-                                    </span>
-                                </div>
+                                    <p class="slds-assistive-text">
+                                        {color.color}
+                                    </p>
+                                </span>
                             </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
             </template>
         </div>
     </template>
 
     <template if:true={isBase}>
-        <div class="avonni-pallet-container">
+        <div
+            class="slds-is-relative slds-show_inline-block"
+            data-element-id="div-palette-container"
+        >
             <lightning-spinner
                 if:true={isLoading}
                 size="small"
@@ -110,17 +118,22 @@
                             class="slds-color-picker__swatch-trigger"
                             href="javascript:void(0)"
                             onclick={handleClick}
+                            ondblclick={handleDblClick}
                             onblur={handleBlur}
                             onfocus={handleFocus}
-                            item-color={color}
-                            is-disabled={disabled}
-                            read-only={readOnly}
+                            data-color={color}
+                            aria-disabled={disabled}
+                            aria-readonly={readOnly}
                             role="option"
-                            tabindex="0"
                             data-element-id="a-base"
                         >
-                            <span class="slds-swatch" data-element-id="span-base">
-                                <span class="slds-assistive-text" 
+                            <span
+                                class="slds-swatch"
+                                data-color={color}
+                                data-element-id="span-base"
+                                data-group-name="swatches"
+                            >
+                                <span class="slds-assistive-text"
                                     >{color}
                                 </span>
                             </span>

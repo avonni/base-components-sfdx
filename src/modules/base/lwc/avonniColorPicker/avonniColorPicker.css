@@ -29,7 +29,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 lightning-input {
     padding-left: 0.5rem;
     width: 7rem;
@@ -59,14 +59,12 @@ div:focus {
     margin-left: 0.25rem;
 }
 
-.slds-tabs_default__content {
-    padding-bottom: 0;
+.slds-swatch-read-only {
+    padding: 0.3rem 0.5rem;
 }
 
-.slds-form-error {
-    padding-top: 0.5rem;
-    color: #c23934;
-    font-size: 0.75rem;
+.slds-tabs_default__content {
+    padding-bottom: 0;
 }
 
 .slds-nubbin_top {
@@ -140,6 +138,6 @@ button:disabled {
     height: 4rem;
 }
 
-.palette-height{
-	height: 180px;
+.avonni-color-picker__default-palette {
+    max-height: 180px;
 }

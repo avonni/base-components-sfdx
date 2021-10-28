@@ -34,18 +34,14 @@
 
 <template>
     <div class={mediaObjectClass}>
-        <template if:true={showFigureSlot}>
-            <div class="slds-media__figure">
-                <slot name="figure"></slot>
-            </div>
-        </template>
+        <div class="slds-media__figure">
+            <slot name="figure"></slot>
+        </div>
         <div class="slds-media__body">
             <slot></slot>
         </div>
-        <template if:true={showFigureInverseSlot}>
-            <div class="slds-media__figure slds-media__figure_reverse">
-                <slot name="figure-inverse"></slot>
-            </div>
-        </template>
+        <div class="slds-media__figure slds-media__figure_reverse">
+            <slot name="figure-inverse"></slot>
+        </div>
     </div>
 </template>

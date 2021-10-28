@@ -7,7 +7,11 @@
         ></lightning-pill-container>
     </div>
     <div
-        class="slds-form-element__legend slds-float_none slds-truncate slds-is-relative"
+        class="
+            slds-form-element__legend
+            slds-float_none
+            slds-truncate slds-is-relative
+        "
         title={title}
     >
         <lightning-icon
@@ -56,23 +60,28 @@
             data-element-id="lightning-input"
             onchange={handleSearch}
         ></lightning-input>
-        <lightning-checkbox-group
+        <c-avonni-input-choice-set
             class="slds-p-bottom_xx-small"
             accesskey={accessKey}
             disabled={disabled}
+            is-multi-select={isMultiSelect}
             label={label}
             variant="label-hidden"
             options={checkboxComputedItems}
             value={value}
-            data-element-id="lightning-checkbox-group"
+            data-element-id="avonni-input-choice-set"
             onchange={handleCheckboxChange}
-        ></lightning-checkbox-group>
+        ></c-avonni-input-choice-set>
         <lightning-menu-divider
             if:false={hideApplyResetButtons}
         ></lightning-menu-divider>
         <div
             if:false={hideApplyResetButtons}
-            class="slds-p-horizontal_small slds-p-bottom_x-small slds-text-align_right"
+            class="
+                slds-p-horizontal_small
+                slds-p-bottom_x-small
+                slds-text-align_right
+            "
         >
             <lightning-button
                 class="slds-m-right_x-small"

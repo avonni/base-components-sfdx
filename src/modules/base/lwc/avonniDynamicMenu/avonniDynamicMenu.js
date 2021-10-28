@@ -189,6 +189,7 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
 
         this.dispatchEvent(privatebuttonregister);
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -352,7 +353,7 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     @api
     focus() {
-        if (this.isConnected) {
+        if (this._connected) {
             this.focusOnButton();
         }
         /**
@@ -372,7 +373,7 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     @api
     click() {
-        if (this.isConnected) {
+        if (this._connected) {
             if (this.label) {
                 this.template.querySelector('[data-element-id="button"]').click();
             } else {
@@ -603,7 +604,7 @@ export default class AvonniDynamicMenu extends LightningElement {
         if (this.isAutoAlignment() && this._dropdownVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
             setTimeout(() => {
-                if (this.isConnected) {
+                if (this._connected) {
                     observePosition(this, 300, this._boundingRect, () => {
                         this.close();
                     });

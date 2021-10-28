@@ -31,7 +31,11 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeBoolean } from 'c/utilsPrivate';
+import {
+    normalizeBoolean,
+    normalizeString,
+    normalizeArray
+} from 'c/utilsPrivate';
 import { generateUUID } from 'c/utils';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -56,6 +60,13 @@ const DEFAULT_MIN = new Date(1900, 0, 1);
 
 const DEFAULT_DATE = new Date(new Date().setHours(0, 0, 0, 0));
 
+const NULL_DATE = new Date('12/31/1969').setHours(0, 0, 0, 0);
+
+const SELECTION_MODES = {
+    valid: ['single', 'multiple', 'interval'],
+    default: 'single'
+};
+
 /**
  * @class
  * @name Calendar
@@ -64,18 +75,18 @@ const DEFAULT_DATE = new Date(new Date().setHours(0, 0, 0, 0));
  * @public
  */
 export default class AvonniCalendar extends LightningElement {
+    _disabled = false;
     _disabledDates = [];
     _markedDates = [];
-    _value;
     _max = DEFAULT_MAX;
     _min = DEFAULT_MIN;
-    _multiValue;
-    _disabled = false;
+    _selectionMode = SELECTION_MODES.default;
+    _value = [];
     _weekNumber = false;
+    date = DEFAULT_DATE;
     year;
     month;
     day;
-    date = DEFAULT_DATE;
     calendarData;
 
     months = MONTHS;
@@ -85,116 +96,8 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
-     * An array that will be used to determine which dates to be disabled in the calendar.
-     * 
-     * @public
-     * @type {object[]}
-     */
-    @api
-    get disabledDates() {
-        return this._disabledDates;
-    }
-
-    set disabledDates(value) {
-        this._disabledDates = value;
-        this.updateDateParameters();
-    }
-
-    /**
-     * An array that will be used to determine which dates to be marked in the calendar.
-     * 
-     * @public
-     * @type {object[]}
-     */
-    @api
-    get markedDates() {
-        return this._markedDates;
-    }
-
-    set markedDates(value) {
-        this._markedDates = value;
-        this.updateDateParameters();
-    }
-
-    /**
-     * The value of the date selected, which can be a Date object, timestamp, or an ISO8601 formatted string.
-     * 
-     * @public
-     * @type {string}
-     */
-    @api
-    get value() {
-        return this._value;
-    }
-
-    set value(value) {
-        if (value) {
-            this._value = new Date(value);
-            this.date = new Date(value);
-            this._value.setHours(0, 0, 0, 0);
-            this.date.setHours(0, 0, 0, 0);
-            this.updateDateParameters();
-        }
-    }
-
-    /**
-     * Specifies the maximum date, which the calendar can show.
-     * 
-     * @public
-     * @type {object}
-     * @default Date(2099, 11, 31)
-     */
-    @api
-    get max() {
-        return this._max;
-    }
-
-    set max(value) {
-        this._max = new Date(value);
-        this._max.setHours(0, 0, 0, 0);
-        this.updateDateParameters();
-    }
-
-    /**
-     * Specifies the minimum date, which the calendar can show.
-     * 
-     * @public
-     * @type {object}
-     * @default Date(1900, 0, 1)
-     */
-    @api
-    get min() {
-        return this._min;
-    }
-
-    set min(value) {
-        this._min = new Date(value);
-        this._min.setHours(0, 0, 0, 0);
-        this.updateDateParameters();
-    }
-
-    /**
-     * The value of the date which will use for the draw multi-select line. Multi-value can be before or after the selected date value.
-     * 
-     * @public
-     * @type {string}
-     */
-    @api
-    get multiValue() {
-        return this._multiValue;
-    }
-
-    set multiValue(value) {
-        if (value) {
-            this._multiValue = new Date(value);
-            this._multiValue.setHours(0, 0, 0, 0);
-            this.updateDateParameters();
-        }
-    }
-
-    /**
      * If true, the calendar is disabled.
-     * 
+     *
      * @public
      * @type {boolean}
      * @default false
@@ -210,8 +113,123 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
+     * An array that will be used to determine which dates to be disabled in the calendar.
+     *
+     * @public
+     * @type {object[]}
+     */
+    @api
+    get disabledDates() {
+        return this._disabledDates;
+    }
+
+    set disabledDates(value) {
+        this._disabledDates = value;
+        this.updateDateParameters();
+    }
+
+    /**
+     * An array that will be used to determine which dates to be marked in the calendar.
+     *
+     * @public
+     * @type {object[]}
+     */
+    @api
+    get markedDates() {
+        return this._markedDates;
+    }
+
+    set markedDates(value) {
+        this._markedDates = value;
+        this.updateDateParameters();
+    }
+
+    /**
+     * Specifies the maximum date, which the calendar can show.
+     *
+     * @public
+     * @type {object}
+     * @default Date(2099, 11, 31)
+     */
+    @api
+    get max() {
+        return this._max;
+    }
+
+    set max(max) {
+        this._max = new Date(max);
+        this._max.setHours(0, 0, 0, 0);
+    }
+
+    /**
+     * Specifies the minimum date, which the calendar can show.
+     *
+     * @public
+     * @type {object}
+     * @default Date(1900, 0, 1)
+     */
+    @api
+    get min() {
+        return this._min;
+    }
+
+    set min(min) {
+        this._min = new Date(min);
+        this._min.setHours(0, 0, 0, 0);
+    }
+
+    /**
+     * Specifies the selection mode of the calendar. Valid values include single, multiple and interval.
+     * If single, only one date can be selected at a time. If multiple, the user can select multiple dates.
+     * If interval, the user can only select a date range (two dates).
+     *
+     * @public
+     * @type {string}
+     * @default single
+     */
+    @api
+    get selectionMode() {
+        return this._selectionMode;
+    }
+
+    set selectionMode(value) {
+        this._selectionMode = normalizeString(value, {
+            validValues: SELECTION_MODES.valid,
+            fallbackValue: SELECTION_MODES.default
+        });
+        this.updateDateParameters();
+    }
+
+    /**
+     * The value of the date selected, which can be a Date object, timestamp, or an ISO8601 formatted string.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        if (value) {
+            this._value =
+                typeof value === 'string' || !Array.isArray(value)
+                    ? [new Date(value)]
+                    : [...normalizeArray(value.map((x) => new Date(x)))];
+            this._value = this._value.filter(
+                (x) => x.setHours(0, 0, 0, 0) !== NULL_DATE
+            );
+            this.date = this._value.length
+                ? new Date(this._value[0])
+                : DEFAULT_DATE;
+            this.updateDateParameters();
+        }
+    }
+
+    /**
      * If true, display a week number column.
-     * 
+     *
      * @public
      * @type {boolean}
      * @default false
@@ -261,7 +279,7 @@ export default class AvonniCalendar extends LightningElement {
         previousDate.setMonth(this.date.getMonth() - 1);
         previousDate.setDate(1);
 
-        let minDate = new Date(this.min);
+        let minDate = new Date(this._min);
         minDate.setDate(1);
 
         if (previousDate < minDate) {
@@ -298,8 +316,17 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
+     * Generate array of dates from marked dates object.
+     */
+    get markedDatesArray() {
+        return this.markedDates.map((date) => {
+            return date.date;
+        });
+    }
+
+    /**
      * Create Dates array.
-     * 
+     *
      * @param {object[]} array
      * @returns dates
      */
@@ -317,7 +344,7 @@ export default class AvonniCalendar extends LightningElement {
 
     /**
      * Create weekdays from dates array.
-     * 
+     *
      * @param {object[]} array
      * @returns dates
      */
@@ -335,7 +362,7 @@ export default class AvonniCalendar extends LightningElement {
 
     /**
      * Create days + months from dates array.
-     * 
+     *
      * @param {object[]} array
      * @returns dates
      */
@@ -359,6 +386,17 @@ export default class AvonniCalendar extends LightningElement {
         this.month = MONTHS[this.date.getMonth()];
         this.day = this.date.getDay();
         this.generateViewData();
+    }
+
+    /**
+     * Returns last date of array.
+     *
+     * @param {object[]} array
+     */
+    endDateInInterval(array) {
+        array.map((x) => x.getTime()).sort((a, b) => a - b);
+        const length = array.length;
+        this.endDate = array[length - 1];
     }
 
     /**
@@ -404,9 +442,12 @@ export default class AvonniCalendar extends LightningElement {
                 let dayClass = 'slds-day';
                 let fullDate = '';
                 let disabled = this.isInArray(date, this.disabledDates);
-                const marked = this.isInArray(date, this.markedDates);
+                const marked = this.isInArray(date, this.markedDatesArray);
+                const markedColors = this.isInArrayMarker(date);
                 let time = date.getTime();
-                let valueTime = this.value ? this.value.getTime() : '';
+                let valueTime = this._value.length
+                    ? this._value[0].getTime()
+                    : '';
 
                 if (date.getMonth() !== currentMonth || disabled) {
                     if (i > 3 && a === 0) {
@@ -428,15 +469,28 @@ export default class AvonniCalendar extends LightningElement {
                     currentDate = true;
                 }
 
+                // interval
+                this.endDateInInterval(this._value);
                 if (
-                    this.value &&
-                    this.multiValue &&
-                    ((this.multiValue.getTime() <= time && time <= valueTime) ||
-                        (valueTime <= time &&
-                            time <= this.multiValue.getTime()))
+                    this._value.length >= 2 &&
+                    this._selectionMode === 'interval' &&
+                    ((this.endDate.getTime() <= time && time <= valueTime) ||
+                        (valueTime <= time && time <= this.endDate.getTime()))
                 ) {
                     dateClass += ' slds-is-selected slds-is-selected-multi';
-                } else if (this.value && valueTime === time) {
+                }
+
+                // multiple choices
+                else if (
+                    this._value.length > 1 &&
+                    this._selectionMode === 'multiple'
+                ) {
+                    this._value.forEach((day) => {
+                        if (day.getTime() === time) {
+                            dateClass += ' slds-is-selected';
+                        }
+                    });
+                } else if (this._value && valueTime === time) {
                     dateClass += ' slds-is-selected';
                 }
 
@@ -449,8 +503,9 @@ export default class AvonniCalendar extends LightningElement {
                     fullDate = '';
                 }
 
+                let markedDate = false;
                 if (marked && label > 0) {
-                    dayClass += ' avonni-marked-cell';
+                    markedDate = true;
                 }
 
                 weekData.push({
@@ -459,12 +514,13 @@ export default class AvonniCalendar extends LightningElement {
                     dayClass: dayClass,
                     selected: selected,
                     currentDate: currentDate,
-                    fullDate: fullDate
+                    fullDate: fullDate,
+                    marked: markedDate,
+                    markedColors: markedColors
                 });
 
                 date.setDate(date.getDate() + 1);
             }
-
             calendarData.push(weekData);
         }
 
@@ -473,7 +529,7 @@ export default class AvonniCalendar extends LightningElement {
 
     /**
      * Find if date entry is in the date array.
-     * 
+     *
      * @param {object | Date} date
      * @param {object[]} array
      * @returns disabled
@@ -496,8 +552,38 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
+     * Find if date entry is in the markedDate array.
+     *
+     * @param {object | Date} date
+     * @returns marked
+     */
+    isInArrayMarker(date) {
+        let marked = [];
+        let time = date.getTime();
+        let weekDay = date.getDay();
+        let monthDay = date.getDate();
+
+        this._markedDates.forEach((marker) => {
+            const dateArray = [marker.date];
+            if (
+                this.fullDatesFromArray(dateArray).indexOf(time) > -1 ||
+                this.weekDaysFromArray(dateArray).indexOf(weekDay) > -1 ||
+                this.monthDaysFromArray(dateArray).indexOf(monthDay) > -1
+            ) {
+                marked.push({
+                    marked: true,
+                    color: marker.color
+                        ? `background-color: ${marker.color}`
+                        : ''
+                });
+            }
+        });
+        return marked;
+    }
+
+    /**
      * Year change handler.
-     * 
+     *
      * @param {object} event
      */
     handleYearChange(event) {
@@ -532,16 +618,85 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
+     * Returns an array of dates base on the selection mode multiple.
+     *
+     * @param {object[]} array - array of dates
+     * @param {string | Date} newDate - new date
+     * @returns array of dates
+     */
+    isSelectedMultiple(array, newDate) {
+        const timestamp = newDate.getTime();
+        let timestamps = array.map((x) => x.getTime());
+
+        if (!timestamps.includes(timestamp)) {
+            timestamps.push(timestamp);
+        } else {
+            timestamps.splice(timestamps.indexOf(timestamp), 1);
+        }
+        return timestamps.map((x) => new Date(x));
+    }
+
+    /**
+     * Returns an array of dates base on the selection mode interval.
+     *
+     * @param {object[]} array - array of dates
+     * @param {string | Date} newDate - new date
+     * @returns array of dates
+     */
+    isSelectedInterval(array, newDate) {
+        const timestamp = newDate.getTime();
+        let timestamps = array.map((x) => x.getTime()).sort((a, b) => a - b);
+        const timesLength = timestamps.length - 1;
+
+        if (timestamps.includes(timestamp)) {
+            timestamps.splice(timestamps.indexOf(timestamp), 1);
+        } else {
+            if (timestamps.length === 0) {
+                timestamps.push(timestamp);
+            } else if (timestamps.length === 1) {
+                if (timestamp > timestamps[0]) {
+                    timestamps.push(timestamp);
+                } else {
+                    timestamps = [timestamp];
+                }
+            } else {
+                if (timestamp > timestamps[0]) {
+                    timestamps.splice(timesLength, 1);
+                    timestamps.push(timestamp);
+                } else {
+                    timestamps = [timestamp];
+                }
+            }
+        }
+
+        return timestamps.map((x) => new Date(x));
+    }
+
+    /**
      * Date selection handler.
-     * 
+     *
      * @param {object} event
      */
     handlerSelectDate(event) {
-        let date = event.target.dataset.day;
+        let date = new Date(Number(event.target.dataset.day));
+        const disabledDate = Array.from(event.target.classList).includes(
+            'avonni-disabled-cell'
+        );
 
-        if (date) {
-            this.value = new Date(Number(date));
-            this.date = new Date(Number(date));
+        if (date && !disabledDate) {
+            if (this._selectionMode === 'single') {
+                this._value =
+                    this._value.length > 0 &&
+                    this._value[0].getTime() === date.getTime()
+                        ? []
+                        : [date];
+            } else if (this._selectionMode === 'multiple') {
+                this._value = this.isSelectedMultiple(this._value, date);
+            } else if (this._selectionMode === 'interval') {
+                this._value = this.isSelectedInterval(this._value, date);
+            }
+            this.date = date;
+
             this.updateDateParameters();
             this.dispatchChange();
         }
@@ -551,17 +706,9 @@ export default class AvonniCalendar extends LightningElement {
      * Change event dispatcher.
      */
     dispatchChange() {
-        const date = this.date.getDate();
-        const datePrefix = date < 10 ? '0' : '';
-        const month = this.date.getMonth() + 1;
-        const monthPrefix = month < 10 ? '0' : '';
-        const year = this.date.getFullYear();
-
-        const dateStr = `${year}-${monthPrefix}${month}-${datePrefix}${date}`;
-
         /**
          * The event fired when the selected date is changed.
-         * 
+         *
          * @event
          * @public
          * @name change
@@ -570,7 +717,7 @@ export default class AvonniCalendar extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value: dateStr
+                    value: this._value
                 }
             })
         );
@@ -615,11 +762,61 @@ export default class AvonniCalendar extends LightningElement {
             })
         );
     }
+
+    handleMouseOver(event) {
+        const day = event.target.getAttribute('data-day');
+        const dayCell = this.template.querySelector(`[data-day="${day}"]`);
+        const timeArray = this._value
+            .map((x) => x.getTime())
+            .sort((a, b) => a - b);
+        if (this._selectionMode === 'interval') {
+            if (timeArray.length === 1) {
+                if (day > timeArray[0]) {
+                    dayCell.classList.add(
+                        'avonni-calendar-cell__bordered_right'
+                    );
+                }
+                this.template.querySelectorAll('td').forEach((x) => {
+                    if (
+                        x.getAttribute('data-cell-day') >= timeArray[0] &&
+                        x.getAttribute('data-cell-day') <= day
+                    ) {
+                        x.classList.add(
+                            'avonni-calendar-cell__bordered_top_bottom'
+                        );
+                    }
+                });
+            } else if (timeArray.length === 2) {
+                if (day > timeArray[1]) {
+                    dayCell.classList.add(
+                        'avonni-calendar-cell__bordered_right'
+                    );
+                }
+                this.template.querySelectorAll('td').forEach((x) => {
+                    if (
+                        x.getAttribute('data-cell-day') >= timeArray[1] &&
+                        x.getAttribute('data-cell-day') <= day
+                    ) {
+                        x.classList.add(
+                            'avonni-calendar-cell__bordered_top_bottom'
+                        );
+                    }
+                });
+            }
+        }
+    }
+
+    handleMouseOut() {
+        this.template.querySelectorAll('td').forEach((x) => {
+            x.classList.remove('avonni-calendar-cell__bordered_top_bottom');
+            x.classList.remove('avonni-calendar-cell__bordered_right');
+        });
+    }
 }
 
 /**
  * Compute week Number from date input.
- * 
+ *
  * @returns week number
  */
 // eslint-disable-next-line no-extend-native

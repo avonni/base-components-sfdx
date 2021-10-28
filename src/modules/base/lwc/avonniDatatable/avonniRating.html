@@ -33,17 +33,19 @@
 -->
 
 <template>
-    <c-avonni-primitive-cell-rating
-        col-key-value={colKeyValue}
-        row-key-value={rowKeyValue}
-        value={value}
-        disabled={disabled}
-        icon-name={typeAttributes.iconName}
-        icon-size={typeAttributes.iconSize}
-        label={typeAttributes.label}
-        max={typeAttributes.max}
-        min={typeAttributes.min}
-        selection={typeAttributes.selection}
-        value-hidden={typeAttributes.valueHidden}
-    ></c-avonni-primitive-cell-rating>
+    <div class="slds-p-around_x-small">
+        <c-avonni-primitive-cell-rating
+            col-key-value={colKeyValue}
+            row-key-value={rowKeyValue}
+            value={value}
+            disabled={disabled}
+            icon-name={typeAttributes.iconName}
+            icon-size={typeAttributes.iconSize}
+            label={typeAttributes.label}
+            max={typeAttributes.max}
+            min={typeAttributes.min}
+            selection={typeAttributes.selection}
+            value-hidden={typeAttributes.valueHidden}
+        ></c-avonni-primitive-cell-rating>
+    </div>
 </template>

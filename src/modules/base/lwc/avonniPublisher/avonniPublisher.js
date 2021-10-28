@@ -37,25 +37,25 @@ import { classSet } from 'c/utils';
 const validVariants = ['base', 'comment'];
 
 /**
-* @class
-* @descriptor avonni-publisher
-* @storyId example-publisher--variant-base
-* @public
-*/
+ * @class
+ * @descriptor avonni-publisher
+ * @storyId example-publisher--variant-base
+ * @public
+ */
 export default class AvonniPublisher extends LightningElement {
     /**
-    * Text that is displayed when the field is empty, to prompt the user for a valid entry.
-    *
-    * @type {string}
-    * @public
-    */  
+     * Text that is displayed when the field is empty, to prompt the user for a valid entry.
+     *
+     * @type {string}
+     * @public
+     */
     @api placeholder;
     /**
-    * Optional text to be shown on the button.
-    *
-    * @type {string}
-    * @public
-    */
+     * Optional text to be shown on the button.
+     *
+     * @type {string}
+     * @public
+     */
     @api buttonLabel;
     @api submitAction; //? in use ??
 
@@ -85,7 +85,7 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Get figure slot DOM element.
-     * 
+     *
      * @type {Element}
      */
     get figureSlot() {
@@ -94,7 +94,7 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Get figure slot DOM element.
-     * 
+     *
      * @type {Element}
      */
     get actionsSlot() {
@@ -102,12 +102,12 @@ export default class AvonniPublisher extends LightningElement {
     }
 
     /**
-    * Valid variants include base and comment
-    *
-    * @type {string}
-    * @public
-    * @default base
-    */
+     * Valid variants include base and comment
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
     @api get variant() {
         return this._variant;
     }
@@ -120,12 +120,12 @@ export default class AvonniPublisher extends LightningElement {
     }
 
     /**
-    * If present, the publisher can't be used by users.
-    *
-    * @type {boolean}
-    * @public
-    * @default false
-    */
+     * If present, the publisher can't be used by users.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
     @api get disabled() {
         return this._disabled;
     }
@@ -135,11 +135,11 @@ export default class AvonniPublisher extends LightningElement {
     }
 
     /**
-    * The HTML content in the rich text editor.
-    *
-    * @type {string}
-    * @public
-    */
+     * The HTML content in the rich text editor.
+     *
+     * @type {string}
+     * @public
+     */
     @api get value() {
         return this._value;
     }
@@ -150,7 +150,7 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Compute Publisher class isActive.
-     * 
+     *
      * @type {string}
      */
     get publisherClass() {
@@ -163,7 +163,7 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Compute actions section class.
-     * 
+     *
      * @type {string}
      */
     get actionsSectionClass() {
@@ -177,7 +177,7 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Set focus on the publisher.
-     * 
+     *
      * @public
      */
     @api
@@ -187,7 +187,7 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Removes focus from the publisher.
-     * 
+     *
      * @public
      */
     @api
@@ -199,26 +199,26 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Change event handler.
-     * 
-     * @param {Event} event 
+     *
+     * @param {Event} event
      */
     handleChange(event) {
-        this.value = event.detail.value;
+        this._value = event.detail.value;
     }
 
     /**
      * Click submit event handler.
      */
-    hanlerClick() {
+    handlerClick() {
         if (this.isActive) {
             /**
-            * The event fired when the publisher submit data.
-            *
-            * @event
-            * @name submit
-            * @param {string} value The input value.
-            * @public
-            */
+             * The event fired when the publisher submit data.
+             *
+             * @event
+             * @name submit
+             * @param {string} value The input value.
+             * @public
+             */
             const selectedEvent = new CustomEvent('submit', {
                 detail: {
                     value: this._value
@@ -235,13 +235,12 @@ export default class AvonniPublisher extends LightningElement {
 
     /**
      * Check if the button is disabled.
-     * 
+     *
      * @type {boolean}
      */
     get buttonDisabled() {
         return (this.isActive && !this.value) || this._disabled;
     }
-
 
     /**
      * Render button on base variant or isActive.

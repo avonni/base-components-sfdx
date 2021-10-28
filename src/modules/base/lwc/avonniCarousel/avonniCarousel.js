@@ -158,6 +158,7 @@ export default class AvonniCarousel extends LightningElement {
 
     connectedCallback() {
         this.initCarousel();
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -206,6 +207,7 @@ export default class AvonniCarousel extends LightningElement {
 
     set items(value) {
         const allItems = normalizeArray(value);
+        this._carouselItems = [];
         allItems.forEach((item) => {
             this._carouselItems.push({
                 key: item.id,
@@ -217,7 +219,7 @@ export default class AvonniCarousel extends LightningElement {
                 actions: item.actions || []
             });
         });
-        if (this.isConnected) {
+        if (this._connected) {
             this.initCarousel();
         }
     }
@@ -257,9 +259,6 @@ export default class AvonniCarousel extends LightningElement {
             fallbackValue: INDICATOR_VARIANTS.default,
             validValues: INDICATOR_VARIANTS.valid
         });
-        if (this.isConnected) {
-            this.initCarousel();
-        }
     }
 
     /**
@@ -724,9 +723,8 @@ export default class AvonniCarousel extends LightningElement {
      * Selection removed from current panel.
      */
     unselectCurrentPanel() {
-        const activePaginationItem = this.paginationItems[
-            this.activeIndexPanel
-        ];
+        const activePaginationItem =
+            this.paginationItems[this.activeIndexPanel];
         const activePanelItem = this.panelItems[this.activeIndexPanel];
 
         if (!activePaginationItem || !activePanelItem) return;

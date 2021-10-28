@@ -132,6 +132,7 @@ export default class AvonniScheduler extends LightningElement {
     connectedCallback() {
         this.crud = eventCrudMethods(this);
         this.initHeaders();
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -214,7 +215,7 @@ export default class AvonniScheduler extends LightningElement {
 
         // The variable change will trigger the primitive header rerender,
         // which will trigger the creation of events and rows if they are empty
-        if (this.isConnected) {
+        if (this._connected) {
             this.computedRows = [];
             this.computedEvents = [];
         }
@@ -240,7 +241,7 @@ export default class AvonniScheduler extends LightningElement {
 
         // The variable change will trigger the primitive header rerender,
         // which will trigger the creation of events and rows if they are empty
-        if (this.isConnected) {
+        if (this._connected) {
             this.computedRows = [];
             this.computedEvents = [];
         }
@@ -266,7 +267,7 @@ export default class AvonniScheduler extends LightningElement {
 
         // The variable change will trigger the primitive header rerender,
         // which will trigger the creation of events and rows if they are empty
-        if (this.isConnected) {
+        if (this._connected) {
             this.computedRows = [];
             this.computedEvents = [];
         }
@@ -330,7 +331,7 @@ export default class AvonniScheduler extends LightningElement {
     set customEventsPalette(value) {
         this._customEventsPalette = normalizeArray(value);
 
-        if (this.isConnected) this.initRows();
+        if (this._connected) this.initRows();
     }
 
     /**
@@ -346,7 +347,7 @@ export default class AvonniScheduler extends LightningElement {
     set customHeaders(value) {
         this._customHeaders = normalizeArray(value);
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.computedEvents = [];
             this.computedRows = [];
             this.initHeaders();
@@ -406,7 +407,7 @@ export default class AvonniScheduler extends LightningElement {
             }
         );
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initEvents();
             this.updateVisibleRows();
         }
@@ -485,7 +486,7 @@ export default class AvonniScheduler extends LightningElement {
     set events(value) {
         this._events = normalizeArray(value);
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initEvents();
             this.updateVisibleRows();
         }
@@ -516,7 +517,7 @@ export default class AvonniScheduler extends LightningElement {
         this._eventsLabels =
             typeof value === 'object' ? value : DEFAULT_EVENTS_LABELS;
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initEvents();
             this.updateVisibleRows();
         }
@@ -539,7 +540,7 @@ export default class AvonniScheduler extends LightningElement {
             validValues: EVENTS_PALETTES.valid
         });
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initRows();
         }
     }
@@ -561,7 +562,7 @@ export default class AvonniScheduler extends LightningElement {
             validValues: EVENTS_THEMES.valid
         });
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initEvents();
             this.updateVisibleRows();
         }
@@ -597,7 +598,7 @@ export default class AvonniScheduler extends LightningElement {
             toLowerCase: false
         });
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.computedRows = [];
             this.computedEvents = [];
             this.initHeaders();
@@ -708,7 +709,7 @@ export default class AvonniScheduler extends LightningElement {
             };
         });
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.initEvents();
             this.updateVisibleRows();
         }
@@ -743,7 +744,7 @@ export default class AvonniScheduler extends LightningElement {
     set rows(value) {
         this._rows = normalizeArray(value);
 
-        if (this.isConnected) this.initRows();
+        if (this._connected) this.initRows();
     }
 
     /**
@@ -760,7 +761,7 @@ export default class AvonniScheduler extends LightningElement {
     set rowsKeyField(value) {
         this._rowsKeyField = value.toString();
 
-        if (this.isConnected) this.initRows();
+        if (this._connected) this.initRows();
     }
 
     /**
@@ -778,7 +779,7 @@ export default class AvonniScheduler extends LightningElement {
         const computedDate = dateTimeObjectFrom(value);
         this._start = computedDate || dateTimeObjectFrom(DEFAULT_START_DATE);
 
-        if (this.isConnected) this.initHeaders();
+        if (this._connected) this.initHeaders();
     }
 
     /**
@@ -799,7 +800,7 @@ export default class AvonniScheduler extends LightningElement {
     set timeSpan(value) {
         this._timeSpan = typeof value === 'object' ? value : DEFAULT_TIME_SPAN;
 
-        if (this.isConnected) this.initHeaders();
+        if (this._connected) this.initHeaders();
     }
 
     /**

@@ -54,44 +54,6 @@ export default class AvonniMediaObject extends LightningElement {
     _responsive = false;
     _inline = false;
     _size = MEDIA_OBJECT_SIZES.default;
-    _rendered = false;
-
-    showFigureSlot = true;
-    showFigureInverseSlot = true;
-
-    renderedCallback() {
-        if (!this._rendered) {
-            this._rendered = true;
-
-            this.showFigureSlot =
-                this.figureSlot &&
-                this.figureSlot.assignedElements() &&
-                this.figureSlot.assignedElements().length > 0;
-
-            this.showFigureInverseSlot =
-                this.figureInverseSlot &&
-                this.figureInverseSlot.assignedElements() &&
-                this.figureInverseSlot.assignedElements().length > 0;
-        }
-    }
-
-    /**
-     * Get the figure slot DOM Element
-     *
-     * @type {Element}
-     */
-    get figureSlot() {
-        return this.template.querySelector('slot[name=figure]');
-    }
-
-    /**
-     * Get the firgure-inverse slot DOM Element
-     *
-     * @type {Element}
-     */
-    get figureInverseSlot() {
-        return this.template.querySelector('slot[name=figure-inverse]');
-    }
 
     /**
      * Determines how to align the media object items vertically in the container. The alignment options are start, center and end.

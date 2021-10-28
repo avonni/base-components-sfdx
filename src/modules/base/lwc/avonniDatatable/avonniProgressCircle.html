@@ -33,13 +33,15 @@
 -->
 
 <template>
-    <c-avonni-progress-circle
-        value={value}
-        color={typeAttributes.color}
-        direction={typeAttributes.direction}
-        label={typeAttributes.label}
-        size={typeAttributes.size}
-        thickness={typeAttributes.thickness}
-        variant={typeAttributes.variant}
-    ></c-avonni-progress-circle>
+    <div class="slds-p-around_x-small">
+        <c-avonni-progress-circle
+            value={value}
+            color={typeAttributes.color}
+            direction={typeAttributes.direction}
+            label={typeAttributes.label}
+            size={typeAttributes.size}
+            thickness={typeAttributes.thickness}
+            variant={typeAttributes.variant}
+        ></c-avonni-progress-circle>
+    </div>
 </template>

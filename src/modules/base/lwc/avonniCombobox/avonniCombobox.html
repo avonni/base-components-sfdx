@@ -33,7 +33,7 @@
 -->
 
 <template>
-    <span class={computedLabelClass}>
+    <span class={computedLabelClass} data-element-id="span-label">
         <template if:true={required}>
             <abbr class="slds-required" title="Required">*</abbr>
         </template>
@@ -50,7 +50,11 @@
             <!-- Scopes -->
             <c-avonni-primitive-combobox
                 if:true={showScopes}
-                class="slds-combobox_object-switcher slds-combobox-addon_start"
+                class="
+                    slds-combobox_object-switcher
+                    slds-combobox-addon_start
+                    avonni-combobox__scopes
+                "
                 disabled={disabled}
                 dropdown-alignment={dropdownAlignment}
                 dropdown-length={dropdownLength}
@@ -60,6 +64,7 @@
                 options={scopes}
                 read-only={readOnly}
                 value={scopesValue}
+                data-element-id="avonni-primitive-combobox-scopes"
                 onchange={handleScopeChange}
             ></c-avonni-primitive-combobox>
 
@@ -77,6 +82,7 @@
                 is-loading={isLoading}
                 is-multi-select={isMultiSelect}
                 loading-state-alternative-text={loadingStateAlternativeText}
+                message-when-bad-input={messageWhenBadInput}
                 message-when-value-missing={messageWhenValueMissing}
                 multi-level-groups={multiLevelGroups}
                 name={name}
@@ -90,6 +96,7 @@
                 show-clear-input
                 value={value}
                 variant="label-hidden"
+                data-element-id="avonni-primitive-combobox-main"
                 onblur={handleBlur}
                 onfocus={handleFocus}
                 onopen={handleOpen}
@@ -102,7 +109,11 @@
         <!-- Selected options -->
         <ul
             if:true={showSelectedOptions}
-            class="slds-grid slds-wrap slds-p-vertical_xx-small combobox__selected-options"
+            class="
+                slds-grid slds-wrap
+                slds-p-vertical_xx-small
+                combobox__selected-options
+            "
             role="listbox"
             aria-label={selectedOptionsAriaLabel}
             aria-orientation="horizontal"

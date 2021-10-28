@@ -52,14 +52,14 @@ export default class AvonniInputChoiceOption {
         this.label = option.label;
         this.value = option.value;
         this.id = `checkbox-${index}`;
-        this.isChecked = value.indexOf(option.value) !== -1;
+        this.isChecked = value && value.indexOf(option.value) !== -1;
         this.iconName = option.iconName;
         this.iconPosition = option.iconPosition;
     }
 
     /**
      * True if options's icon position is top or left or no icon position or no icon name.
-     * 
+     *
      * @type {boolean}
      */
     get isIconTopLeft() {
@@ -73,7 +73,7 @@ export default class AvonniInputChoiceOption {
 
     /**
      * True if options's icon position is bottom or right.
-     * 
+     *
      * @type {boolean}
      */
     get isIconBottomRight() {
@@ -85,7 +85,7 @@ export default class AvonniInputChoiceOption {
 
     /**
      * Class of options's icon button.
-     * 
+     *
      * @type {string}
      */
     get computedIconButtonClass() {
@@ -96,17 +96,18 @@ export default class AvonniInputChoiceOption {
                 'slds-align_absolute-center slds-m-bottom_x-small':
                     this.iconPosition === POSITION_ICON.BOTTOM,
                 'slds-m-left_x-small':
-                    this.iconPosition === POSITION_ICON.RIGHT,
+                    this.label && this.iconPosition === POSITION_ICON.RIGHT,
                 'slds-m-right_x-small':
-                    this.iconPosition === POSITION_ICON.LEFT ||
-                    !this.iconPosition
+                    this.label &&
+                    (this.iconPosition === POSITION_ICON.LEFT ||
+                        !this.iconPosition)
             })
             .toString();
     }
 
     /**
      * Class of options's label button.
-     * 
+     *
      * @type {string}
      */
     get computedLabelButtonClass() {
@@ -121,7 +122,7 @@ export default class AvonniInputChoiceOption {
 
     /**
      * Class of options's button variant.
-     * 
+     *
      * @type {string}
      */
     get computedVariantButton() {

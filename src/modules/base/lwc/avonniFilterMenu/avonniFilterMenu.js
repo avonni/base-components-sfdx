@@ -141,6 +141,7 @@ export default class AvonniFilterMenu extends LightningElement {
     _iconName = DEFAULT_ICON_NAME;
     _iconSize = ICON_SIZES.default;
     _isLoading = false;
+    _isMultiSelect = false;
     _items = [];
     _dropdownAlignment = MENU_ALIGNMENTS.default;
     _dropdownNubbin = false;
@@ -192,6 +193,7 @@ export default class AvonniFilterMenu extends LightningElement {
         });
 
         this.dispatchEvent(privatebuttonregister);
+        this._connected = true;
     }
 
     disconnectedCallback() {
@@ -282,7 +284,8 @@ export default class AvonniFilterMenu extends LightningElement {
             // dom during initial rendering.
             this._tooltip = new Tooltip(value, {
                 root: this,
-                target: () => this.template.querySelector('[data-element-id="button"]')
+                target: () =>
+                    this.template.querySelector('[data-element-id="button"]')
             });
             this._tooltip.initialize();
         }
@@ -366,6 +369,21 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
+     * If present, multiple items can be selected.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get isMultiSelect() {
+        return this._isMultiSelect;
+    }
+    set isMultiSelect(bool) {
+        this._isMultiSelect = normalizeBoolean(bool);
+    }
+
+    /**
      * Array of item objects.
      *
      * @type {object[]}
@@ -394,8 +412,8 @@ export default class AvonniFilterMenu extends LightningElement {
     get value() {
         return this._value;
     }
-    set value(proxy) {
-        const array = normalizeArray(proxy);
+    set value(val) {
+        const array = typeof val === 'string' ? [val] : normalizeArray(val);
         this._value = JSON.parse(JSON.stringify(array));
 
         this.computeValue();
@@ -772,7 +790,9 @@ export default class AvonniFilterMenu extends LightningElement {
     @api
     focus() {
         if (this.variant === 'vertical') {
-            this.template.querySelector('[data-element-id="lightning-checkbox-group"]').focus();
+            this.template
+                .querySelector('[data-element-id="avonni-input-choice-set"]')
+                .focus();
         } else {
             this.template.querySelector('[data-element-id="button"]').focus();
         }
@@ -926,7 +946,10 @@ export default class AvonniFilterMenu extends LightningElement {
                 this._autoPosition = startPositioning(
                     this,
                     {
-                        target: () => this.template.querySelector('[data-element-id="button"]'),
+                        target: () =>
+                            this.template.querySelector(
+                                '[data-element-id="button"]'
+                            ),
                         element: () =>
                             this.template.querySelector('.slds-dropdown'),
                         align,
@@ -998,7 +1021,7 @@ export default class AvonniFilterMenu extends LightningElement {
         if (this.isAutoAlignment() && this._dropdownVisible) {
             setTimeout(
                 () => {
-                    if (this.isConnected) {
+                    if (this._connected) {
                         observePosition(this, 300, this._boundingRect, () => {
                             this.close();
                         });
@@ -1093,8 +1116,11 @@ export default class AvonniFilterMenu extends LightningElement {
             (itemValue) => itemValue === event.detail.value
         );
         if (index > -1) {
+            // Unselect the current item
             this.value.splice(index, 1);
         } else {
+            // Select a new item
+            if (!this.isMultiSelect) this._value = [];
             this.value.push(event.detail.value);
         }
 

@@ -43,7 +43,11 @@
             <div class="slds-datepicker">
                 <div class="slds-datepicker__filter slds-grid">
                     <div
-                        class="slds-datepicker__filter_month slds-grid slds-grid_align-spread slds-grow"
+                        class="
+                            slds-datepicker__filter_month
+                            slds-grid slds-grid_align-spread
+                            slds-grow
+                        "
                     >
                         <div class="slds-align-middle">
                             <lightning-button-icon
@@ -53,14 +57,14 @@
                                 title="Previous Month"
                                 onclick={handlerPreviousMonth}
                                 disabled={disabledPrevious}
+                                data-element-id="previous-lightning-button-icon"
                                 onfocus={handleFocus}
                                 onblur={handleBlur}
                             ></lightning-button-icon>
                         </div>
-                        <h2
-                            class="slds-align-middle"
-                            data-element-id="h2"
-                        >{month}</h2>
+                        <h2 class="slds-align-middle" data-element-id="h2">
+                            {month}
+                        </h2>
                         <div class="slds-align-middle">
                             <lightning-button-icon
                                 icon-name="utility:right"
@@ -68,7 +72,7 @@
                                 alternative-text="Next Month"
                                 title="Next Month"
                                 disabled={disabledNext}
-                                data-element-id="lightning-button-icon"
+                                data-element-id="next-lightning-button-icon"
                                 onclick={handlerNextMonth}
                                 onfocus={handleFocus}
                                 onblur={handleBlur}
@@ -120,14 +124,43 @@
                                         key={generateKey}
                                         aria-selected={day.selected}
                                         aria-current={day.currentDate}
+                                        onmouseover={handleMouseOver}
+                                        onmouseout={handleMouseOut}
+                                        data-cell-day={day.fullDate}
+                                        data-day={day.fullDate}
                                     >
                                         <span
                                             class={day.dayClass}
                                             data-day={day.fullDate}
+                                            data-date={day.label}
                                             data-element-id="span-day-label"
                                             onclick={handlerSelectDate}
-                                            >{day.label}</span
+                                            >{day.label}
+                                        </span>
+                                        <div
+                                            if:true={day.marked}
+                                            class="slds-is-relative"
                                         >
+                                            <div
+                                                class="
+                                                    avonni-calendar-marker-container
+                                                "
+                                            >
+                                                <template
+                                                    for:each={day.markedColors}
+                                                    for:item="marker"
+                                                >
+                                                    <div
+                                                        key={generateKey}
+                                                        class="
+                                                            avonni-calendar-marked-cells
+                                                        "
+                                                        data-element-id="div-marked-cells"
+                                                        style={marker.color}
+                                                    ></div>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </td>
                                 </template>
                             </tr>

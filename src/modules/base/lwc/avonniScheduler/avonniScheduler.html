@@ -34,7 +34,11 @@
 
 <template>
     <div
-        class="slds-grid slds-is-relative avonni-scheduler__wrapper"
+        class="
+            slds-grid slds-is-relative
+            avonni-scheduler__wrapper
+            slds-theme_default
+        "
         onmouseup={handleMouseUp}
         onmousemove={handleMouseMove}
         onscroll={handleScroll}
@@ -60,18 +64,28 @@
                     onmousedown={handleSplitterMouseDown}
                 >
                     <div
-                        class="slds-theme_shade slds-grid slds-grid_vertical-align-center slds-wrap"
+                        class="
+                            slds-theme_shade
+                            slds-grid slds-grid_vertical-align-center
+                            slds-wrap
+                        "
                     >
                         <lightning-button-icon
                             if:true={showCollapseLeft}
-                            class="avonni-scheduler__splitter-icon slds-is-relative"
+                            class="
+                                avonni-scheduler__splitter-icon
+                                slds-is-relative
+                            "
                             icon-name="utility:left"
                             variant="bare"
                             onclick={handleHideDatatable}
                         ></lightning-button-icon>
                         <lightning-button-icon
                             if:true={showCollapseRight}
-                            class="avonni-scheduler__splitter-icon slds-is-relative"
+                            class="
+                                avonni-scheduler__splitter-icon
+                                slds-is-relative
+                            "
                             icon-name="utility:right"
                             variant="bare"
                             onclick={handleOpenDatatable}
@@ -87,7 +101,10 @@
             <div if:true={showLeftInfiniteLoadSpinner} class="slds-is-relative">
                 <div
                     role="status"
-                    class="avonni-scheduler__infinite-load-spinner_left slds-spinner slds-spinner_medium"
+                    class="
+                        avonni-scheduler__infinite-load-spinner_left
+                        slds-spinner slds-spinner_medium
+                    "
                 >
                     <span class="slds-assistive-text"
                         >{loadingStateAlternativeText}</span
@@ -123,14 +140,23 @@
                     >
                         <div
                             key={row.key}
-                            class="slds-grid slds-is-relative avonni-scheduler__row"
+                            class="
+                                slds-grid slds-is-relative
+                                avonni-scheduler__row
+                            "
                             data-index={index}
                             data-key={row.key}
                         >
                             <template for:each={row.columns} for:item="column">
                                 <div
                                     key={column.start}
-                                    class="slds-border_right slds-border_bottom slds-col slds-p-around_none slds-wrap avonni-scheduler__cell"
+                                    class="
+                                        slds-border_right slds-border_bottom
+                                        slds-col
+                                        slds-p-around_none
+                                        slds-wrap
+                                        avonni-scheduler__cell
+                                    "
                                     data-start={column.start}
                                     data-end={column.end}
                                     oncontextmenu={handleEmptySpotContextMenu}
@@ -200,7 +226,10 @@
             >
                 <div
                     role="status"
-                    class="avonni-scheduler__infinite-load-spinner slds-spinner slds-spinner_medium"
+                    class="
+                        avonni-scheduler__infinite-load-spinner
+                        slds-spinner slds-spinner_medium
+                    "
                 >
                     <span class="slds-assistive-text"
                         >{loadingStateAlternativeText}</span
@@ -223,7 +252,10 @@
     <!-- Event detail popover -->
     <div
         if:true={showDetailPopover}
-        class="avonni-scheduler__event-detail-popover slds-is-fixed slds-popover slds-dropdown slds-dropdown_left"
+        class="
+            avonni-scheduler__event-detail-popover
+            slds-is-fixed slds-popover slds-dropdown slds-dropdown_left
+        "
         role="tooltip"
         aria-live="polite"
     >
@@ -233,7 +265,10 @@
             </div>
             <div class="slds-grid">
                 <lightning-icon
-                    class="avonni-scheduler__event-detail-icon slds-m-right_xx-small"
+                    class="
+                        avonni-scheduler__event-detail-icon
+                        slds-m-right_xx-small
+                    "
                     icon-name="utility:clock"
                     size="x-small"
                 ></lightning-icon>
@@ -241,7 +276,10 @@
             </div>
             <div class="slds-grid">
                 <lightning-icon
-                    class="avonni-scheduler__event-detail-icon slds-m-right_xx-small"
+                    class="
+                        avonni-scheduler__event-detail-icon
+                        slds-m-right_xx-small
+                    "
                     icon-name="utility:clock"
                     size="x-small"
                 ></lightning-icon>

@@ -34,6 +34,7 @@ import { LightningElement, api } from 'lwc';
 import {
     normalizeBoolean,
     normalizeString,
+    normalizeArray,
     synchronizeAttrs,
     getRealDOMId,
     classListMutation
@@ -75,13 +76,12 @@ export default class AvonniInputChoiceSet extends LightningElement {
      */
     @api label;
     /**
-     * Array of option objects.
+     * Help text detailing the purpose and function of the input.
      *
-     * @type {object[]}
+     * @type {string}
      * @public
-     * @required
      */
-    @api options;
+    @api fieldLevelHelp;
     /**
      * Optional message to be displayed when no option is selected and the required attribute is set.
      *
@@ -97,14 +97,24 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * @required
      */
     @api name;
+    /**
+     * Array of option objects.
+     *
+     * @type {object[]}
+     * @public
+     * @required
+     */
+    @api options;
 
-    _orientation = INPUT_CHOICE_ORIENTATIONS.default;
-    _type = INPUT_CHOICE_TYPES.default;
-    _helpMessage;
     _disabled = false;
-    _required = false;
-    _value = [];
     _isMultiSelect = false;
+    _orientation = INPUT_CHOICE_ORIENTATIONS.default;
+    _required = false;
+    _type = INPUT_CHOICE_TYPES.default;
+    _value = [];
+    _variant;
+
+    _helpMessage;
 
     constructor() {
         super();
@@ -115,7 +125,9 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * Synchronize all inputs Aria help element ID.
      */
     synchronizeA11y() {
-        const inputs = this.template.querySelectorAll('[data-element-id^="input"]');
+        const inputs = this.template.querySelectorAll(
+            '[data-element-id^="input"]'
+        );
         Array.prototype.slice.call(inputs).forEach((input) => {
             synchronizeAttrs(input, {
                 'aria-describedby': this.computedUniqueHelpElementId
@@ -124,6 +136,14 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     connectedCallback() {
+        if (this.isMultiSelect && this.value) {
+            // Make sure the value is an array when the input is multiselect
+            this._value =
+                typeof this.value === 'string'
+                    ? [this.value]
+                    : normalizeArray(this.value);
+        }
+
         this.classList.add('slds-form-element');
         this.updateClassList();
         this.interactingState = new InteractingState();
@@ -158,7 +178,12 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     set value(value) {
-        this._value = value ? value : [];
+        this._value = value;
+
+        if (value && this.isConnected && this.isMultiSelect) {
+            this._value =
+                typeof value === 'string' ? [value] : normalizeArray(value);
+        }
     }
 
     /**
@@ -389,7 +414,9 @@ export default class AvonniInputChoiceSet extends LightningElement {
      */
     @api
     focus() {
-        const firstCheckbox = this.template.querySelector('[data-element-id="input"]');
+        const firstCheckbox = this.template.querySelector(
+            '[data-element-id="input"]'
+        );
         if (firstCheckbox) {
             firstCheckbox.focus();
         }
@@ -448,9 +475,12 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * @returns {array} Checked values.
      */
     handleValueChange(inputs) {
-        return Array.from(inputs)
+        const checkedValues = Array.from(inputs)
             .filter((checkbox) => checkbox.checked)
             .map((checkbox) => checkbox.value);
+
+        if (!checkedValues.length) return null;
+        return this.isMultiSelect ? checkedValues : checkedValues[0];
     }
 
     /**
@@ -459,11 +489,20 @@ export default class AvonniInputChoiceSet extends LightningElement {
     handleChange(event) {
         event.stopPropagation();
 
-        let value = event.target.value;
-        const checkboxes = this.template.querySelectorAll('[data-element-id^="input"]');
+        const value = event.currentTarget.value;
+        const checkboxes = this.template.querySelectorAll(
+            '[data-element-id^="input"]'
+        );
         if (this.isMultiSelect) {
             this._value = this.handleValueChange(checkboxes);
         } else {
+            if (this.required && this.value === value) {
+                // Prevent unselecting the current option when the input is required
+                // (make sure the radio behaviour works when the type is 'button')
+                event.currentTarget.checked = true;
+                return;
+            }
+
             const checkboxesToUncheck = Array.from(checkboxes).filter(
                 (checkbox) => checkbox.value !== value
             );
@@ -471,21 +510,6 @@ export default class AvonniInputChoiceSet extends LightningElement {
                 checkbox.checked = false;
             });
             this._value = this.handleValueChange(checkboxes);
-        }
-        if (this.type === 'button') {
-            checkboxes.forEach((checkbox) => {
-                const label = checkbox.labels[0];
-                let icon = label.querySelector('[data-element-id="lightning-icon-button"]');
-                if (icon) {
-                    if (value.includes(label.control.value))
-                        icon.variant = 'inverse';
-                    else icon.variant = '';
-
-                    if (!checkbox.checked && icon.variant === 'inverse') {
-                        icon.variant = '';
-                    }
-                }
-            });
         }
 
         /**
@@ -502,7 +526,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value: this.value
+                    value: this._value
                 },
                 composed: true,
                 bubbles: true,
@@ -520,7 +544,9 @@ export default class AvonniInputChoiceSet extends LightningElement {
         if (!this._constraintApi) {
             this._constraintApi = new FieldConstraintApi(() => this, {
                 valueMissing: () =>
-                    !this.disabled && this.required && !this.value.length
+                    !this.disabled &&
+                    this.required &&
+                    (!this.value || !this.value.length)
             });
         }
         return this._constraintApi;
@@ -532,13 +558,11 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * @type {string}
      */
     get computedLegendClass() {
-        const classnames = classSet(
-            'slds-form-element__legend slds-form-element__label'
-        );
-
-        return classnames
+        return classSet('')
             .add({
-                'slds-assistive-text': this.variant === VARIANT.LABEL_HIDDEN
+                'slds-assistive-text': this.variant === VARIANT.LABEL_HIDDEN,
+                'avonni-input-choice-set__display_flex':
+                    this.variant !== VARIANT.LABEL_INLINE
             })
             .toString();
     }

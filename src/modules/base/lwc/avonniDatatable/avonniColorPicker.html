@@ -33,19 +33,21 @@
 -->
 
 <template>
-    <c-avonni-primitive-cell-color-picker
-        col-key-value={colKeyValue}
-        row-key-value={rowKeyValue}
-        value={value}
-        colors={typeAttributes.colors}
-        disabled={typeAttributes.disabled}
-        hide-color-input={typeAttributes.hideColorInput}
-        label={typeAttributes.label}
-        menu-alignment={typeAttributes.menuAlignment}
-        menu-icon-name={typeAttributes.menuIconName}
-        menu-icon-size={typeAttributes.menuIconSize}
-        menu-variant={typeAttributes.menuVariant}
-        opacity={typeAttributes.opacity}
-        type={typeAttributes.type}
-    ></c-avonni-primitive-cell-color-picker>
+    <div class="slds-p-around_x-small">
+        <c-avonni-primitive-cell-color-picker
+            col-key-value={colKeyValue}
+            row-key-value={rowKeyValue}
+            value={value}
+            colors={typeAttributes.colors}
+            disabled={typeAttributes.disabled}
+            hide-color-input={typeAttributes.hideColorInput}
+            label={typeAttributes.label}
+            menu-alignment={typeAttributes.menuAlignment}
+            menu-icon-name={typeAttributes.menuIconName}
+            menu-icon-size={typeAttributes.menuIconSize}
+            menu-variant={typeAttributes.menuVariant}
+            opacity={typeAttributes.opacity}
+            type={typeAttributes.type}
+        ></c-avonni-primitive-cell-color-picker>
+    </div>
 </template>

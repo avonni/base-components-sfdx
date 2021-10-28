@@ -33,16 +33,17 @@
 -->
 
 <template>
-    <c-avonni-primitive-cell-combobox
-        col-key-value={colKeyValue}
-        row-key-value={rowKeyValue}
-        disabled={typeAttributes.disabled}
-        dropdown-alignment={typeAttributes.dropdownAlignement}
-        dropdown-length={typeAttributes.dropdownLength}
-        is-multi-select={typeAttributes.isMultiSelect}
-        label={typeAttributes.label}
-        options={typeAttributes.options}
-        value={value}
-        placeholder={typeAttributes.placeholder}
-    ></c-avonni-primitive-cell-combobox>
+    <div class="slds-p-around_x-small">
+        <c-avonni-primitive-cell-combobox
+            col-key-value={colKeyValue}
+            row-key-value={rowKeyValue}
+            disabled={typeAttributes.disabled}
+            dropdown-alignment={typeAttributes.dropdownAlignement}
+            dropdown-length={typeAttributes.dropdownLength}
+            is-multi-select={typeAttributes.isMultiSelect}
+            options={typeAttributes.options}
+            value={value}
+            placeholder={typeAttributes.placeholder}
+        ></c-avonni-primitive-cell-combobox>
+    </div>
 </template>

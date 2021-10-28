@@ -269,6 +269,7 @@ export default class AvonniDualListbox extends LightningElement {
             // reset the optionToFocus otherwise dualListbox will steal the focus any time it's rerendered.
             this.optionToFocus = null;
         });
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -452,7 +453,7 @@ export default class AvonniDualListbox extends LightningElement {
             typeof value === 'number' ? value : DEFAULT_MAX_VISIBLE_OPTIONS;
         this._maxVisibleOptions = parseInt(number, 10);
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.updateBoxesHeight();
         }
     }
@@ -535,7 +536,7 @@ export default class AvonniDualListbox extends LightningElement {
             ? JSON.parse(JSON.stringify(value))
             : [];
 
-        if (this.isConnected) {
+        if (this._connected) {
             this.updateBoxesHeight();
         }
     }
@@ -571,7 +572,7 @@ export default class AvonniDualListbox extends LightningElement {
         this._requiredOptions = Array.isArray(newValue)
             ? JSON.parse(JSON.stringify(newValue))
             : [];
-        if (this.isConnected) {
+        if (this._connected) {
             this.addRequiredOptionsToValue();
         }
     }
@@ -609,7 +610,7 @@ export default class AvonniDualListbox extends LightningElement {
     set value(newValue) {
         this.updateHighlightedOptions(newValue);
         this._selectedValues = newValue || [];
-        if (this.isConnected) {
+        if (this._connected) {
             this.addRequiredOptionsToValue();
         }
     }

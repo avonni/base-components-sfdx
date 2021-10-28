@@ -241,15 +241,6 @@ export default class AvonniPageHeader extends LightningElement {
     }
 
     /**
-     * Check if variant is 'object-home'.
-     *
-     * @type {string}
-     */
-    get isObjectHomeVariant() {
-        return this._variant === 'object-home';
-    }
-
-    /**
      * Check if variant is 'record-home'.
      *
      * @type {string}

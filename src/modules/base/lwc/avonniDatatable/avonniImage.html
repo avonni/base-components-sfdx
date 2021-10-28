@@ -33,18 +33,20 @@
 -->
 
 <template>
-    <c-avonni-image
-        src={value}
-        alt={typeAttributes.alt}
-        srcset={typeAttributes.srcset}
-        sizes={typeAttributes.sizes}
-        width={typeAttributes.width}
-        height={typeAttributes.height}
-        block="true"
-        fluid="true"
-        rounded={typeAttributes.rounded}
-        thumbnail={typeAttributes.thumbnail}
-        blank={typeAttributes.blank}
-        blank-color={typeAttributes.blankColor}
-    ></c-avonni-image>
+    <div class="slds-p-around_x-small">
+        <c-avonni-image
+            src={value}
+            alt={typeAttributes.alt}
+            srcset={typeAttributes.srcset}
+            sizes={typeAttributes.sizes}
+            width={typeAttributes.width}
+            height={typeAttributes.height}
+            block="true"
+            fluid="true"
+            rounded={typeAttributes.rounded}
+            thumbnail={typeAttributes.thumbnail}
+            blank={typeAttributes.blank}
+            blank-color={typeAttributes.blankColor}
+        ></c-avonni-image>
+    </div>
 </template>

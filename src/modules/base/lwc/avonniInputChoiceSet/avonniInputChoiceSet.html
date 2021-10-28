@@ -34,17 +34,24 @@
 
 <template>
     <fieldset aria-required={required}>
-        <legend class={computedLegendClass}>
-            <template if:true={required}>
-                <abbr
-                    class="slds-required"
-                    title={i18n.required}
-                    data-element-id="abbr"
-                >*</abbr>
-            </template>
-            {label}
-        </legend>
-
+        <div class={computedLegendClass}>
+            <legend class="slds-form-element__label">
+                <template if:true={required}>
+                    <abbr
+                        class="slds-required"
+                        title={i18n.required}
+                        data-element-id="abbr"
+                        >*</abbr
+                    >
+                </template>
+                {label}
+            </legend>
+            <lightning-helptext
+                if:true={fieldLevelHelp}
+                content={fieldLevelHelp}
+                data-element-id="lightning-helptext"
+            ></lightning-helptext>
+        </div>
         <div class="slds-form-element__control">
             <div class={computedButtonClass}>
                 <template for:each={transformedOptions} for:item="option">

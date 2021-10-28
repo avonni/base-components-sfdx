@@ -1,0 +1,53 @@
+.avonni-combobox__main-combobox,
+.avonni-combobox__scopes {
+    --avonni-primitive-combobox-border-color: var(
+        --avonni-combobox-border-color,
+        #dddbda
+    );
+    --avonni-primitive-combobox-border-top-width: var(
+        --avonni-combobox-border-top-width,
+        1px
+    );
+    --avonni-primitive-combobox-border-bottom-width: var(
+        --avonni-combobox-border-bottom-width,
+        1px
+    );
+}
+
+.avonni-combobox__main-combobox {
+    --avonni-primitive-combobox-border-top-right-radius: var(
+        --avonni-combobox-border-top-right-radius,
+        0.25rem
+    );
+    --avonni-primitive-combobox-border-bottom-right-radius: var(
+        --avonni-combobox-border-bottom-right-radius,
+        0.25rem
+    );
+    --avonni-primitive-combobox-border-top-left-radius: 0;
+    --avonni-primitive-combobox-border-bottom-left-radius: 0;
+    --avonni-primitive-combobox-border-right-width: var(
+        --avonni-combobox-border-right-width,
+        1px
+    );
+}
+
+.avonni-combobox__scopes {
+    --avonni-primitive-combobox-border-bottom-right-radius: 0;
+    --avonni-primitive-combobox-border-top-right-radius: 0;
+}
+
+.avonni-combobox__scopes,
+.avonni-combobox__main-combobox.avonni-combobox__main-combobox_no-scopes {
+    --avonni-primitive-combobox-border-top-left-radius: var(
+        --avonni-combobox-border-top-left-radius,
+        0.25rem
+    );
+    --avonni-primitive-combobox-border-bottom-left-radius: var(
+        --avonni-combobox-border-bottom-left-radius,
+        0.25rem
+    );
+    --avonni-primitive-combobox-border-left-width: var(
+        --avonni-combobox-border-left-width,
+        1px
+    );
+}

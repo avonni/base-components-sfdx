@@ -100,7 +100,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @public
      * @default false
      */
-    @api get collapsed() {
+    @api
+    get collapsed() {
         return this._collapsed;
     }
 
@@ -115,7 +116,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @type {string}
      * @public
      */
-    @api get collapsedSize() {
+    @api
+    get collapsedSize() {
         return this._collapsedSize;
     }
 
@@ -131,7 +133,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @public
      * @default false
      */
-    @api get scrollable() {
+    @api
+    get scrollable() {
         return this._scrollable;
     }
 
@@ -147,7 +150,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @public
      * @default false
      */
-    @api get collapsible() {
+    @api
+    get collapsible() {
         return this._collapsible;
     }
 
@@ -163,7 +167,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @public
      * @default false
      */
-    @api get resizable() {
+    @api
+    get resizable() {
         return this._resizable;
     }
 
@@ -178,7 +183,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @type {string}
      * @public
      */
-    @api get max() {
+    @api
+    get max() {
         return this._max;
     }
 
@@ -193,7 +199,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @type {string}
      * @public
      */
-    @api get min() {
+    @api
+    get min() {
         return this._min;
     }
 
@@ -208,7 +215,8 @@ export default class AvonniSplitterPane extends LightningElement {
      * @type {string}
      * @public
      */
-    @api get size() {
+    @api
+    get size() {
         return this._size;
     }
 

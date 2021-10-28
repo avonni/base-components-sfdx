@@ -1,0 +1,120 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <section
+        if:true={visible}
+        class={computedPanelClass}
+        role="dialog"
+        tabindex="-1"
+        onblur={handleTypeElemBlur}
+        onfocus={handleTypeElemFocus}
+        onkeydown={handleCellKeydown}
+    >
+        <span
+            class="inline-edit-form-start"
+            tabindex="0"
+            onfocus={handleFormStartFocus}
+        ></span>
+        <div class="slds-popover__body">
+            <form onsubmit={handleEditFormSubmit} novalidate>
+                <c-avonni-primitive-datatable-iedit-input-wrapper-custom
+                    required={required}
+                    class="slds-grid slds-p-left_xx-small"
+                >
+                    <c-avonni-primitive-datatable-iedit-type-factory-custom
+                        required={required}
+                        class="dt-type-edit-factory slds-col"
+                        column-def={columnDef}
+                        edited-value={editedValue}
+                        onblur={handleTypeElemBlur}
+                        onfocus={handleTypeElemFocus}
+                        key={inputKey}
+                        dropdown-length={dropdownLength}
+                        is-multi-select={isMultiSelect}
+                        options={options}
+                        placeholder={placeholder}
+                        disabled={disabled}
+                    ></c-avonni-primitive-datatable-iedit-type-factory-custom>
+                </c-avonni-primitive-datatable-iedit-input-wrapper-custom>
+                <template if:true={isMassEditEnabled}>
+                    <lightning-input
+                        data-mass-selection="true"
+                        type="checkbox"
+                        name="dt-iedit-mass-edit"
+                        label={massEditCheckboxLabel}
+                        onblur={handleTypeElemBlur}
+                        onfocus={handleTypeElemFocus}
+                    ></lightning-input>
+                </template>
+                <template if:false={isMassEditEnabled}>
+                    <button
+                        type="submit"
+                        aria-hidden="true"
+                        tabindex="-1"
+                        class="slds-hide"
+                        value="save"
+                    ></button>
+                </template>
+            </form>
+        </div>
+        <template if:true={isMassEditEnabled}>
+            <div class="slds-popover__footer">
+                <div class="slds-grid slds-grid_align-end">
+                    <lightning-button
+                        label="cancel"
+                        onblur={handleTypeElemBlur}
+                        onfocus={handleTypeElemFocus}
+                        onclick={cancelEdition}
+                    ></lightning-button>
+                    <lightning-button
+                        data-form-last-element="true"
+                        label="apply"
+                        style="margin-left: 0.25rem"
+                        variant="brand"
+                        onblur={handleTypeElemBlur}
+                        onfocus={handleTypeElemFocus}
+                        onclick={processSubmission}
+                    >
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+        <div
+            class="inline-edit-form-end"
+            onfocus={handleFormEndsFocus}
+            tabindex="0"
+        ></div>
+    </section>
+</template>

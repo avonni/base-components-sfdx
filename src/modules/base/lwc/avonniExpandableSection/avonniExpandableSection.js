@@ -110,22 +110,6 @@ export default class AvonniExpandableSection extends LightningElement {
     }
 
     /**
-     * Computed list of the collapse icon classes.
-     *
-     * @type {string}
-     * @default slds-section__title-action-icon slds-button__icon slds-button__icon_left
-     */
-    get collapseIconClass() {
-        return classSet(
-            'slds-section__title-action-icon slds-button__icon slds-button__icon_left'
-        )
-            .add({
-                'slds-m-bottom_xx-small': !this.closed
-            })
-            .toString();
-    }
-
-    /**
      * Computed list of the section classes.
      *
      * @type {string}

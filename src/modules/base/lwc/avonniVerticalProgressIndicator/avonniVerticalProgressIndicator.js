@@ -98,7 +98,8 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
      * @public
      * @default base
      */
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -116,7 +117,8 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
      * @public
      * @default false
      */
-    @api get hasError() {
+    @api
+    get hasError() {
         return this._hasError;
     }
 
@@ -132,7 +134,8 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
      * @public
      * @default false
      */
-    @api get contentInLine() {
+    @api
+    get contentInLine() {
         return this._contentInLine;
     }
 

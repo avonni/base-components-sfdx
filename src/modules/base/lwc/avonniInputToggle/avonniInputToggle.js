@@ -517,16 +517,6 @@ export default class AvonniInputToggle extends LightningElement {
     }
 
     /**
-     * Gets element described by ID.
-     *
-     * @type {string}
-     */
-    get computedUniqueToggleElementDescribedById() {
-        const toggle = this.template.querySelector('[data-toggle-description]');
-        return getRealDOMId(toggle);
-    }
-
-    /**
      * Gets Aria Described By.
      */
     get computedAriaDescribedBy() {
@@ -534,10 +524,6 @@ export default class AvonniInputToggle extends LightningElement {
 
         if (this.messageWhenValueMissing) {
             ariaValues.push(this.computedUniqueHelpElementId);
-        }
-
-        if (this.isTypeToggle) {
-            ariaValues.push(this.computedUniqueToggleElementDescribedById);
         }
 
         if (this.ariaDescribedBy) {

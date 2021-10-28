@@ -34,14 +34,17 @@ import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
 import './avonniConfettiLib';
 
-const CONFETTI_VARIANTS = {valid: [
-    'base',
-    'random-direction',
-    'realistic',
-    'fireworks',
-    'snow',
-    'pride'
-], default: 'base'};
+const CONFETTI_VARIANTS = {
+    valid: [
+        'base',
+        'random-direction',
+        'realistic',
+        'fireworks',
+        'snow',
+        'pride'
+    ],
+    default: 'base'
+};
 
 const DEFAULT_COLORS = [
     '#529EE0',
@@ -53,11 +56,11 @@ const DEFAULT_COLORS = [
     '#E287B2'
 ];
 
-const DEFAULT_ORIGIN_X = 0.5
+const DEFAULT_ORIGIN_X = 0.5;
 
-const DEFAULT_ORIGIN_Y = 0.5
+const DEFAULT_ORIGIN_Y = 0.5;
 
-const DEFAULT_Z_INDEX = 100
+const DEFAULT_Z_INDEX = 100;
 
 /**
  * @class
@@ -68,7 +71,7 @@ const DEFAULT_Z_INDEX = 100
 export default class AvonniConfetti extends LightningElement {
     /**
      * An array of color strings, in the HEX format.
-     * 
+     *
      * @public
      * @type {string[]}
      * @default ['#529EE0','#F0E442','#FFB03B','#E16032','#4FD2D2','#006699','#E287B2']
@@ -76,7 +79,7 @@ export default class AvonniConfetti extends LightningElement {
     @api colors = DEFAULT_COLORS;
     /**
      * The x position on the page, with 0 being the left edge and 1 being the right edge.
-     * 
+     *
      * @public
      * @type {number}
      * @default 0.5
@@ -84,7 +87,7 @@ export default class AvonniConfetti extends LightningElement {
     @api originX = DEFAULT_ORIGIN_X;
     /**
      * The y position on the page, with 0 being the top edge and 1 being the bottom edge.
-     * 
+     *
      * @public
      * @type {number}
      * @default 0.5
@@ -92,7 +95,7 @@ export default class AvonniConfetti extends LightningElement {
     @api originY = DEFAULT_ORIGIN_Y;
     /**
      * The confetti should be on top, after all. But if you have a crazy high page, you can set it even higher.
-     * 
+     *
      * @public
      * @type {number}
      * @default 100
@@ -104,7 +107,7 @@ export default class AvonniConfetti extends LightningElement {
 
     /**
      * The variant changes the appearance of the confetti. Accepted variants include include base, random-direction, realistic, fireworks, snow and pride.
-     * 
+     *
      * @public
      * @type {string}
      * @default base
@@ -123,7 +126,7 @@ export default class AvonniConfetti extends LightningElement {
 
     /**
      * Name of the confetti.
-     * 
+     *
      * @public
      * @type {string}
      */
@@ -139,7 +142,7 @@ export default class AvonniConfetti extends LightningElement {
 
     /**
      * Confetti Fire method.
-     * 
+     *
      * @public
      */
     @api
@@ -258,7 +261,7 @@ export default class AvonniConfetti extends LightningElement {
     fireworks() {
         let animationEnd = Date.now() + 6000;
 
-        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        // eslint-disable-next-line consistent-return
         this.interval = setInterval(() => {
             let timeLeft = animationEnd - Date.now();
 
@@ -291,7 +294,7 @@ export default class AvonniConfetti extends LightningElement {
         let animationEnd = Date.now() + 6000;
         let skew = 1;
 
-        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        // eslint-disable-next-line consistent-return
         this.interval = setInterval(() => {
             let timeLeft = animationEnd - Date.now();
 
@@ -327,7 +330,7 @@ export default class AvonniConfetti extends LightningElement {
     pride() {
         let end = Date.now() + 6000;
 
-        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        // eslint-disable-next-line consistent-return
         this.interval = setInterval(() => {
             if (Date.now() > end) {
                 return clearInterval(this.interval);
@@ -358,9 +361,9 @@ export default class AvonniConfetti extends LightningElement {
 
     /**
      * Random number generator for min max range.
-     * 
-     * @param {number} min 
-     * @param {number} max 
+     *
+     * @param {number} min
+     * @param {number} max
      * @returns number
      */
     randomInRange(min, max) {

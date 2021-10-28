@@ -34,7 +34,7 @@
 
 <template>
     <div class={computedContainerClass}>
-        <label if:true={showLabel} class={computedLegendClass} data-element-id="label">
+        <label class={computedLabelClass} data-element-id="label">
             <abbr if:true={required} title="required" class="slds-required"
                 >*</abbr
             >
@@ -46,7 +46,10 @@
             data-element-id="lightning-helptext"
         ></lightning-helptext>
         <div class="avonni-flex">
-            <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+            <div
+                class="slds-dropdown-trigger slds-dropdown-trigger_click"
+                data-element-id="div-dropdown-trigger"
+            >
                 <button
                     class={computedButtonClass}
                     disabled={disabled}
@@ -57,34 +60,46 @@
                     onclick={handleButtonClick}
                     onblur={handleBlur}
                     onmousedown={handleButtonMouseDown}
-                    type="button"
                 >
-                    {menuLabel}
-                    <template if:true={menuIconName}>
-                        <lightning-icon
-                            icon-name={menuIconName}
-                            size={menuIconSize}
-                            class={iconClass}
-                            data-element-id="lightning-icon-menu-icon-name"
-                        ></lightning-icon>
+                    <template if:false={readOnly}>
+                        {menuLabel}
+                        <template if:true={menuIconName}>
+                            <lightning-icon
+                                icon-name={menuIconName}
+                                size={menuIconSize}
+                                class={iconClass}
+                                data-element-id="lightning-icon-menu-icon-name"
+                            ></lightning-icon>
+                        </template>
+                        <template if:false={menuIconName}>
+                            <span
+                                class="slds-swatch"
+                                data-element-id="swatch"
+                            ></span>
+                            <lightning-icon
+                                icon-name="utility:down"
+                                size="xx-small"
+                                data-element-id="lightning-icon-no-menu-icon-name"
+                            ></lightning-icon>
+                        </template>
                     </template>
-                    <template if:false={menuIconName}>
-                        <span class="slds-swatch" data-element-id="span"></span>
-                        <lightning-icon
-                            icon-name="utility:down"
-                            size="xx-small"
-                            data-element-id="lightning-icon-no-menu-icon-name"
-                        ></lightning-icon>
+                    <template if:true={readOnly}>
+                        <span
+                            class="slds-swatch"
+                            data-element-id="swatch"
+                        ></span>
                     </template>
                 </button>
-                <template if:true={_dropdownOpened}>
+                <template if:true={dropdownOpened}>
                     <div
                         class={computedDropdownClass}
                         onmousedown={handleDropdownMouseDown}
                         onmouseup={handleDropdownMouseUp}
                         onblur={handleBlur}
+                        data-element-id="div-dropdown"
                         tabindex="0"
                     >
+                        <!-- Loading spinner -->
                         <template if:true={isLoading}>
                             <div class="avonni-spinner-container">
                                 <lightning-spinner
@@ -93,35 +108,67 @@
                                 ></lightning-spinner>
                             </div>
                         </template>
+
                         <template if:false={isLoading}>
                             <div
                                 class="slds-popover__body"
+                                oncolordblclick={handlerDone}
                                 onprivateblur={handlePrivateBlur}
                                 onprivatefocus={handlePrivateFocus}
                                 onmouseover={cancelBlur}
                                 onmouseout={allowBlur}
                                 onchange={handlerChange}
                             >
+                                <!-- Base type -->
                                 <template if:true={isBase}>
                                     <div class="slds-tabs_default">
+                                        <!-- Tabs -->
                                         <ul
                                             class="slds-tabs_default__nav"
                                             role="tablist"
                                         >
                                             <li
-                                                class="slds-tabs_default__item slds-is-active"
+                                                class="
+                                                    slds-tabs_default__item
+                                                    slds-is-active
+                                                "
                                                 title="Default"
                                                 role="presentation"
                                             >
                                                 <a
-                                                    id="default__item"
-                                                    class="slds-tabs_default__link"
+                                                    class="
+                                                        slds-tabs_default__link
+                                                    "
                                                     href="javascript:void(0);"
                                                     role="tab"
+                                                    data-group-name="tabs"
+                                                    data-tab-name="default"
                                                     onclick={handlerTabClick}
                                                     onblur={handlePrivateBlur}
                                                     onfocus={handlePrivateFocus}
                                                     >Default</a
+                                                >
+                                            </li>
+                                            <li
+                                                if:true={tokens.length}
+                                                class="slds-tabs_default__item"
+                                                title="Tokens"
+                                                role="presentation"
+                                                data-element-id="li-tokens-tab"
+                                            >
+                                                <a
+                                                    class="
+                                                        slds-tabs_default__link
+                                                    "
+                                                    href="javascript:void(0);"
+                                                    role="tab"
+                                                    data-element-id="a-tokens-tab"
+                                                    data-group-name="tabs"
+                                                    data-tab-name="tokens"
+                                                    onclick={handlerTabClick}
+                                                    onblur={handlePrivateBlur}
+                                                    onfocus={handlePrivateFocus}
+                                                    >Tokens</a
                                                 >
                                             </li>
                                             <li
@@ -130,10 +177,13 @@
                                                 role="presentation"
                                             >
                                                 <a
-                                                    id="custom__item"
-                                                    class="slds-tabs_default__link"
+                                                    class="
+                                                        slds-tabs_default__link
+                                                    "
                                                     href="javascript:void(0);"
                                                     role="tab"
+                                                    data-group-name="tabs"
+                                                    data-tab-name="custom"
                                                     onclick={handlerTabClick}
                                                     onblur={handlePrivateBlur}
                                                     onfocus={handlePrivateFocus}
@@ -141,57 +191,60 @@
                                                 >
                                             </li>
                                         </ul>
-                                        <div
-                                            if:true={isDefault}
-                                            class="slds-tabs_default__content"
-                                        >
-                                            <div class="palette-height">
-                                                <c-avonni-color-palette
-                                                    colors={colors}
-                                                    tile-height="25"
-                                                    tile-width="25"
-                                                    read-only={readOnly}
-                                                    data-element-id="avonni-color-palette-default"
-                                                ></c-avonni-color-palette>
-                                            </div>
-                                        </div>
-                                        <div
-                                            if:false={isDefault}
-                                            class="slds-tabs_default__content"
-                                        >
+
+                                        <div class="slds-tabs_default__content">
+                                            <!-- Default tab -->
+                                            <c-avonni-color-palette
+                                                if:false={customTabIsSelected}
+                                                class="
+                                                    slds-show
+                                                    slds-scrollable_y
+                                                    avonni-color-picker__default-palette
+                                                "
+                                                colors={computedColors}
+                                                tile-height="25"
+                                                tile-width="25"
+                                                read-only={readOnly}
+                                                data-element-id="avonni-color-palette-default"
+                                            ></c-avonni-color-palette>
+
+                                            <!-- Custom tab -->
                                             <c-avonni-color-gradient
-                                                if:true={_dropdownVisible}
-                                                data-name="colorGradient"
+                                                if:true={customTabIsSelected}
                                                 message-when-bad-input={messageWhenBadInput}
                                                 opacity={opacity}
                                                 value={value}
                                                 read-only={readOnly}
+                                                data-element-id="avonni-color-gradient"
                                             ></c-avonni-color-gradient>
                                         </div>
                                     </div>
                                 </template>
+
+                                <!-- Custom type -->
                                 <template if:true={isCustom}>
                                     <c-avonni-color-gradient
-                                        if:true={_dropdownVisible}
-                                        data-name="colorGradient"
+                                        if:true={dropdownVisible}
                                         message-when-bad-input={messageWhenBadInput}
                                         opacity={opacity}
                                         value={value}
                                         read-only={readOnly}
+                                        data-element-id="avonni-color-gradient"
                                     ></c-avonni-color-gradient>
                                 </template>
-                                <template if:true={isPredefined}>
-                                    <c-avonni-color-palette
-                                        colors={colors}
-                                        tile-height="25"
-                                        tile-width="25"
-                                        read-only={readOnly}
-                                        data-element-id="avonni-color-palette-custom"
-                                    ></c-avonni-color-palette>
-                                </template>
+
+                                <!-- Predefined type -->
+                                <c-avonni-color-palette
+                                    if:true={isPredefined}
+                                    colors={colors}
+                                    tile-height="25"
+                                    tile-width="25"
+                                    read-only={readOnly}
+                                    data-element-id="avonni-color-palette-custom"
+                                ></c-avonni-color-palette>
                             </div>
-                        </template>
-                        <template if:false={isLoading}>
+
+                            <!-- Footer -->
                             <footer class="slds-popover__footer">
                                 <div class="slds-color-picker__selector-footer">
                                     <lightning-button
@@ -214,44 +267,79 @@
                     </div>
                 </template>
             </div>
+
+            <!-- Input -->
             <div
-                class="slds-form-element slds-p-left_xx-small avonni-builder-icon-picker-input-container"
+                class="
+                    slds-form-element
+                    slds-p-left_xx-small
+                    avonni-builder-icon-picker-input-container
+                "
                 if:false={hideColorInput}
             >
                 <div
-                    class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"
+                    class="
+                        slds-form-element__control
+                        slds-input-has-icon slds-input-has-icon_right
+                    "
                 >
-                    <lightning-input
-                        type="text"
-                        variant="label-hidden"
-                        label="color"
-                        value={inputValue}
-                        name={name}
-                        onchange={handleInputColor}
-                        disabled={disabledInput}
-                        read-only={isLabelDisplayed}
-                        data-element-id="lightning-input"
-                    ></lightning-input>
-                    <template if:true={isInputFilled}>
-                        <button
-                            class="slds-button slds-button_icon slds-input__icon slds-input__icon_right avonni-builder-icon-picker-clear-icon"
-                            title="Clear"
-                            data-element-id="button"
-                            onclick={clearInput}
-                        >
-                            <lightning-icon
-                                size="xx-small"
-                                class="slds-button__icon slds-icon-text-light"
-                                icon-name="utility:clear"
-                            ></lightning-icon>
-                            <span class="slds-assistive-text">Clear</span>
-                        </button>
+                    <template if:false={readOnly}>
+                        <input
+                            class="slds-input"
+                            type="text"
+                            label="color"
+                            value={inputValue}
+                            name={name}
+                            onchange={handleInputColor}
+                            onfocus={handleInputFocus}
+                            onblur={handleInputBlur}
+                            disabled={disabled}
+                            data-element-id="input"
+                            required={required}
+                        />
+                        <template if:true={isInputFilled}>
+                            <button
+                                class="
+                                    slds-button slds-button_icon
+                                    slds-input__icon slds-input__icon_right
+                                    avonni-builder-icon-picker-clear-icon
+                                "
+                                title="Clear"
+                                data-element-id="button"
+                                onclick={clearInput}
+                            >
+                                <lightning-icon
+                                    size="xx-small"
+                                    class="
+                                        slds-button__icon
+                                        slds-icon-text-light
+                                    "
+                                    icon-name="utility:clear"
+                                ></lightning-icon>
+                                <span class="slds-assistive-text">Clear</span>
+                            </button>
+                        </template>
+                    </template>
+                    <template if:true={readOnly}>
+                        <lightning-input
+                            data-element-id="lightning-input-read-only"
+                            label={label}
+                            value={inputValue}
+                            variant="label-hidden"
+                            read-only
+                        ></lightning-input>
                     </template>
                 </div>
             </div>
-            <p if:true={showError} class="slds-form-error">
-                {messageWhenBadInput}
-            </p>
         </div>
+    </div>
+    <div
+        if:true={helpMessage}
+        class="slds-form-element__help"
+        aria-live="assertive"
+        data-help-message
+        role="alert"
+    >
+        {helpMessage}
     </div>
 </template>

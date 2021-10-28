@@ -415,15 +415,6 @@ export default class AvonniProgressBar extends LightningElement {
     }
 
     /**
-     * Verify if progress bar is Horizontal.
-     *
-     * @type {string}
-     */
-    get isHorizontal() {
-        return this._orientation === 'horizontal';
-    }
-
-    /**
      * Computed orientation width or height depending on vertical or horizontal display.
      *
      * @type {string}

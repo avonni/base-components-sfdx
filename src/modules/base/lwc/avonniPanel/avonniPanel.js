@@ -166,8 +166,8 @@ export default class AvonniPagination extends LightningElement {
                 'slds-panel_docked-left': this._position === 'left'
             })
             .add({
-                'slds-is-open': this._showPanel === true,
-                'slds-is-hidden': this._showPanel === false
+                'slds-is-open': this._showPanel,
+                'slds-is-hidden': !this._showPanel
             })
             .toString();
     }

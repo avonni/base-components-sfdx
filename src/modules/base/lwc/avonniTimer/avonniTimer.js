@@ -139,7 +139,8 @@ export default class AvonniTimer extends LightningElement {
      * @public
      * @default neutral
      */
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -157,7 +158,8 @@ export default class AvonniTimer extends LightningElement {
      * @public
      * @default count-up
      */
-    @api get type() {
+    @api
+    get type() {
         return this._type;
     }
 
@@ -175,7 +177,8 @@ export default class AvonniTimer extends LightningElement {
      * @public
      * @default left
      */
-    @api get iconPosition() {
+    @api
+    get iconPosition() {
         return this._iconPosition;
     }
 
@@ -193,7 +196,8 @@ export default class AvonniTimer extends LightningElement {
      * @public
      * @default "hh:mm:ss"
      */
-    @api get format() {
+    @api
+    get format() {
         return this._format;
     }
 
@@ -211,7 +215,8 @@ export default class AvonniTimer extends LightningElement {
      * @public
      * @default false
      */
-    @api get autoStart() {
+    @api
+    get autoStart() {
         return this._autoStart;
     }
 
@@ -230,7 +235,8 @@ export default class AvonniTimer extends LightningElement {
      * @public
      * @default false
      */
-    @api get repeat() {
+    @api
+    get repeat() {
         return this._repeat;
     }
 

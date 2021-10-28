@@ -33,16 +33,18 @@
 -->
 
 <template>
-    <c-avonni-primitive-cell-input-toggle
-        col-key-value={colKeyValue}
-        row-key-value={rowKeyValue}
-        value={value}
-        disabled={typeAttributes.disabled}
-        hide-mark={typeAttributes.hideMark}
-        label={typeAttributes.label}
-        message-toggle-active={typeAttributes.messageToggleActive}
-        message-toggle-inactive={typeAttributes.messageToggleInactive}
-        name={typeAttributes.name}
-        size={typeAttributes.size}
-    ></c-avonni-primitive-cell-input-toggle>
+    <div class="slds-p-around_x-small">
+        <c-avonni-primitive-cell-input-toggle
+            col-key-value={colKeyValue}
+            row-key-value={rowKeyValue}
+            value={value}
+            disabled={typeAttributes.disabled}
+            hide-mark={typeAttributes.hideMark}
+            label={typeAttributes.label}
+            message-toggle-active={typeAttributes.messageToggleActive}
+            message-toggle-inactive={typeAttributes.messageToggleInactive}
+            name={typeAttributes.name}
+            size={typeAttributes.size}
+        ></c-avonni-primitive-cell-input-toggle>
+    </div>
 </template>

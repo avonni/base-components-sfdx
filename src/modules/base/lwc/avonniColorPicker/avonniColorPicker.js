@@ -39,6 +39,7 @@ import {
     normalizeString,
     normalizeArray
 } from 'c/utilsPrivate';
+import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
 
 import { classSet } from 'c/utils';
 import { generateUUID } from 'c/utils';
@@ -113,10 +114,6 @@ const DEFAULT_COLORS = [
     '#b85d0d'
 ];
 
-const DEFAULT_VALUE = '#ffffff';
-
-const DEFAULT_MESSAGE_WHEN_BAD_INPUT = 'Please ensure value is correct';
-
 /**
  * @class
  * @descriptor avonni-color-picker
@@ -147,13 +144,6 @@ export default class AvonniColorPicker extends LightningElement {
      */
     @api label;
     /**
-     * Specifies the name of an input element.
-     *
-     * @public
-     * @type {string}
-     */
-    @api name;
-    /**
      * If no icon-name specified, display default dropdown icon and color box.
      *
      * @public
@@ -167,8 +157,23 @@ export default class AvonniColorPicker extends LightningElement {
      * @type {string}
      */
     @api menuLabel;
+    /**
+     * Error message to be displayed when a bad input is detected.
+     *
+     * @type {string}
+     * @public
+     */
+    @api messageWhenBadInput;
+    /**
+     * Error message to be displayed when the value is missing and input is required.
+     *
+     * @type {string}
+     * @public
+     */
+    @api messageWhenValueMissing;
 
     _value;
+    _name;
     _variant = validVariants.default;
     _type = LABEL_TYPES.default;
     _menuVariant = MENU_VARIANTS.default;
@@ -182,29 +187,48 @@ export default class AvonniColorPicker extends LightningElement {
     _menuNubbin = false;
     _colors = DEFAULT_COLORS;
     _opacity = false;
-    _messageWhenBadInput = DEFAULT_MESSAGE_WHEN_BAD_INPUT;
+    _tokens = [];
 
-    _dropdownVisible = false;
-    _dropdownOpened = false;
+    _currentTab = 'default';
+    _draftToken;
+
+    dropdownOpened = false;
+    dropdownVisible = false;
     init = false;
     showError = false;
-    isDefault = true;
     newValue;
-
+    helpMessage;
     currentLabel;
     currentToken;
 
+    _inputValue;
+    _rendered = false;
+
     connectedCallback() {
-        if (!this.name) {
-            this.name = generateUUID();
-        }
+        this.interactingState = new InteractingState();
+        this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
     }
 
     renderedCallback() {
-        if (!this.init) {
+        if (!this._rendered) {
             this.initSwatchColor();
-            this.init = true;
+            this._rendered = true;
         }
+    }
+
+    /**
+     * Specifies the name of an input element.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value ? value : generateUUID();
     }
 
     /**
@@ -220,10 +244,10 @@ export default class AvonniColorPicker extends LightningElement {
 
     set value(value) {
         if (!value) {
-            this._value = '';
-            this._inputValue = '';
-            this.currentLabel = '';
-            this.currentToken = '';
+            this._value = null;
+            this._inputValue = null;
+            this.currentLabel = null;
+            this.currentToken = null;
         } else {
             this._value = value;
             this.inputValue = value;
@@ -456,26 +480,39 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Error message to be displayed when a bad input is detected.
+     * Array of token objects. If present, a token tab will be added in the menu.
      *
      * @public
-     * @type {string}
-     * @default Please ensure value is correct
+     * @type {object[]}
      */
     @api
-    get messageWhenBadInput() {
-        return this._messageWhenBadInput;
+    get tokens() {
+        return this._tokens;
     }
 
-    set messageWhenBadInput(value) {
-        this._messageWhenBadInput =
-            typeof value === 'string'
-                ? value.trim()
-                : DEFAULT_MESSAGE_WHEN_BAD_INPUT;
+    set tokens(value) {
+        this._tokens = normalizeArray(value);
     }
 
-    get uniqueKey() {
-        return generateUUID();
+    /**
+     * Tokens array or colors array, depending on the selected tab.
+     *
+     * @type {(object[]|string[])}
+     */
+    get computedColors() {
+        return this.tokens.length && this._currentTab === 'tokens'
+            ? this.tokens
+            : this.colors;
+    }
+
+    /**
+     * True if the selected tab is "Custom".
+     *
+     * @type {boolean}
+     * @default false
+     */
+    get customTabIsSelected() {
+        return this._currentTab === 'custom';
     }
 
     /**
@@ -515,31 +552,6 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Show label.
-     *
-     * @returns {boolean}
-     */
-    get showLabel() {
-        return this.label || this.required;
-    }
-
-    /**
-     * Disabled input.
-     *
-     * @returns {boolean}
-     */
-    get disabledInput() {
-        return this.disabled || this.readOnly;
-    }
-
-    /*
-     * Whether there a label next to each default color.
-     */
-    get isLabelDisplayed() {
-        return !!this.currentLabel;
-    }
-
-    /**
      * Retrieve the input value.
      *
      * @type {string}
@@ -548,11 +560,9 @@ export default class AvonniColorPicker extends LightningElement {
         return this.currentLabel ? this.currentLabel : this._inputValue;
     }
 
-    set inputValue(val){
+    set inputValue(val) {
         this._inputValue = val;
     }
-
-    _inputValue;
 
     /**
      * Whether the color input field contains a value.
@@ -560,96 +570,46 @@ export default class AvonniColorPicker extends LightningElement {
      * @type {string}
      */
     get isInputFilled() {
-        let input = this.template.querySelector('[data-element-id="lightning-input"]');
+        let input = this.template.querySelector('[data-element-id="input"]');
         if (input == null) {
             return this.inputValue;
         }
-        return !!input.value;
+        return !!this.inputValue;
     }
 
     /**
-     * Sets focus on the input element.
+     * Returns true if the input value is color type.
      *
-     * @public
+     * @type {boolean}
      */
-    @api
-    focus() {
-        if (this.isConnected) {
-            this.focusOnButton();
-        }
-    }
-
-    /**
-     * Change event dispatcher.
-     *
-     * @param {object} colors
-     */
-    dispatchChange(colors) {
-        if (!this.disabled && !this.readOnly) {
-            /**
-             * The event fired when the color value changed.
-             *
-             * @event
-             * @public
-             * @name change
-             * @param {string} hex Color in hexadecimal format.
-             * @param {string} hexa Color in hexadecimal format with alpha.
-             * @param {string} rgb Color in rgb format.
-             * @param {string} rgba Color in rgba format.
-             * @param {string} alpha Alpha value of the color.
-             */
-
-
-            this.dispatchEvent(
-                new CustomEvent('change', {
-                    detail: {
-                        hex: colors.hex,
-                        hexa: colors.hexa,
-                        rgb: colors.rgb,
-                        rgba: colors.rgba,
-                        alpha: colors.alpha,
-                        token: this.currentToken
-                    }
-                })
-            );
-        }
-    }
-
-    /**
-     * Dispatches an event when the input is cleared.
-     *
-     */
-    dispatchClear() {
-        this.dispatchEvent(
-            new CustomEvent('change', {
-                detail: {
-                    hex: undefined,
-                    hexa: undefined,
-                    rgb: undefined,
-                    rgba: undefined,
-                    alpha: undefined,
-                    token: undefined
-                }
-            })
+    get hasBadInput() {
+        return (
+            !this.tokens.length &&
+            !(
+                colorType(this.inputValue) === 'hex' ||
+                (colorType(this.inputValue) === 'hexa' && this.opacity)
+            )
         );
     }
 
     /**
-     * Initialize swatch colors.
+     * Returns swatch element.
+     *
+     * @type {element}
      */
-    initSwatchColor() {
-        let element = this.template.querySelector('.slds-swatch');
-
-        if (element) {
-            element.style.background = this.value;
-        }
+    get elementSwatch() {
+        return this.template.querySelector('[data-element-id="swatch"]');
     }
 
     /**
-     * Button focus handler.
+     * Returns colorGradient element.
+     *
+     * @type {element}
      */
-    focusOnButton() {
-        this.template.querySelector('[data-element-id="button"]').focus();
+    get colorGradient() {
+        return this.template.querySelector(
+            '[data-element-id="avonni-color-gradient"]'
+        );
     }
 
     /**
@@ -659,7 +619,7 @@ export default class AvonniColorPicker extends LightningElement {
      * @return {String} from dropdownVisible
      */
     get computedAriaExpanded() {
-        return String(this._dropdownVisible);
+        return String(this.dropdownVisible);
     }
 
     /**
@@ -681,7 +641,7 @@ export default class AvonniColorPicker extends LightningElement {
      *
      * @type {string}
      */
-    get computedLegendClass() {
+    get computedLabelClass() {
         return classSet('slds-form-element__label slds-no-flex')
             .add({
                 'slds-assistive-text': this.variant === 'label-hidden'
@@ -706,13 +666,13 @@ export default class AvonniColorPicker extends LightningElement {
             this.menuVariant === 'bare-inverse' ||
             this.menuVariant === 'border-inverse';
 
-        if (this.menuLabel) {
+        if (this.menuLabel && !this.readOnly) {
             classes.add({
                 'slds-button_neutral':
                     this.menuVariant === 'border' && isDropdownIcon,
                 'slds-button_inverse': this.menuVariant === 'border-inverse'
             });
-        } else {
+        } else if (!this.menuLabel && !this.readOnly) {
             classes.add({
                 'slds-button_icon': !isDropdownIcon,
                 'slds-button_icon-bare': isBare,
@@ -741,8 +701,11 @@ export default class AvonniColorPicker extends LightningElement {
                 'slds-icon_large':
                     this.menuIconSize === 'large' && this.menuIconName
             });
+        } else {
+            classes.add({
+                'slds-swatch-read-only': this.readOnly
+            });
         }
-
         return classes.toString();
     }
 
@@ -793,23 +756,133 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Check if auto aligned.
+     * Represents the validity states that an element can be in, with respect to constraint validation.
      *
-     * @returns {boolean}
+     * @type {string}
+     * @public
      */
-    isAutoAlignment() {
-        return this.menuAlignment.startsWith('auto');
+    @api
+    get validity() {
+        return this._constraint.validity;
     }
 
+    /**
+     * Gets FieldConstraintApi.
+     *
+     * @type {object}
+     */
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled && this.required && !this.value,
+                badInput: () => this.inputValue && this.hasBadInput
+            });
+        }
+        return this._constraintApi;
+    }
+
+    /*-------- Public methods --------*/
+
+    /**
+     * Indicates whether the element meets all constraint validations.
+     *
+     * @returns {boolean} the valid attribute value on the ValidityState object.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Displays the error messages and returns false if the input is invalid.
+     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     *
+     * @returns {boolean} - The validity status of the input fields.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this.helpMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message - The string that describes the error.
+     * If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     *
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /**
+     * Sets focus on the input element.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        const input = this.template.querySelector('[data-element-id="input"]');
+        if (input) input.focus();
+    }
+
+    /**
+     * Removes keyboard focus from the input element.
+     *
+     * @public
+     */
+    @api
+    blur() {
+        const input = this.template.querySelector('[data-element-id="input"]');
+        if (input) input.blur();
+    }
+
+    /*-------- Private methods --------*/
+
+    /**
+     * Initialize swatch colors.
+     */
+    initSwatchColor() {
+        if (this.elementSwatch) {
+            this.elementSwatch.style.background = this.value;
+        }
+    }
+
+    /**
+     * Button focus handler.
+     */
+    focusOnButton() {
+        this.template.querySelector('[data-element-id="button"]').focus();
+    }
+
+    /**
+     * Clear color picker input.
+     */
     clearInput() {
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.value = undefined;
-        this.inputValue = undefined;
+        this.inputValue = null;
         this.currentLabel = undefined;
         this.currentToken = undefined;
-        this.showError = false;
-            this.template
-                .querySelector('[data-element-id="lightning-input"]')
-                .classList.remove('slds-has-error');
+        this._draftToken = undefined;
+        this.focus();
 
         this.dispatchClear();
     }
@@ -825,8 +898,10 @@ export default class AvonniColorPicker extends LightningElement {
                 this.opacity && Number(event.detail.alpha) < 1
                     ? event.detail.hexa
                     : event.detail.hex;
-            this.currentLabel = event.detail.label;
-            this.currentToken = event.detail.token;
+            this._draftToken = {
+                label: event.detail.label,
+                value: event.detail.token
+            };
         }
     }
 
@@ -835,48 +910,34 @@ export default class AvonniColorPicker extends LightningElement {
      */
     handlerDone() {
         if (!this.readOnly && this.newValue) {
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.value = this.newValue;
-            this.newValue = '';
-
-            if (this.showError) {
-                this.showError = false;
-                this.template
-                    .querySelector('[data-element-id="lightning-input"]')
-                    .classList.remove('slds-has-error');
-            }
+            this.currentLabel = this._draftToken.label;
+            this.currentToken = this._draftToken.value;
+            this.newValue = null;
 
             if (!this.menuIconName) {
-                this.template.querySelector(
-                    '.slds-swatch'
-                ).style.background = this.value;
+                this.elementSwatch.style.background = this.value;
             }
-
-            let gradientPalette = this.template.querySelector(
-                '[data-name="colorGradient"]'
-            );
-
-            if (gradientPalette) {
-                gradientPalette.renderValue(this.value);
+            if (this.colorGradient) {
+                this.colorGradient.renderValue(this.value);
             }
 
             this.dispatchChange(generateColors(this.value));
         }
 
         this.handleBlur();
+        this.focus();
     }
 
     /**
      * Handle new value canceled.
      */
     handlerCancel() {
-        this.newValue = '';
+        this.newValue = null;
 
-        let gradientPalette = this.template.querySelector(
-            '[data-name="colorGradient"]'
-        );
-
-        if (gradientPalette) {
-            gradientPalette.renderValue(this.value);
+        if (this.colorGradient) {
+            this.colorGradient.renderValue(this.value);
         }
 
         this.handleBlur();
@@ -886,9 +947,11 @@ export default class AvonniColorPicker extends LightningElement {
      * Button click handler.
      */
     handleButtonClick() {
-        this.allowBlur();
-        this.toggleMenuVisibility();
-        this.focus();
+        if (!this.readOnly) {
+            this.allowBlur();
+            this.toggleMenuVisibility();
+            this.focusOnButton();
+        }
     }
 
     /**
@@ -923,33 +986,6 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Dropdown menu mouse leave handler.
-     */
-    handleDropdownMouseLeave() {
-        if (!this._menuHasFocus) {
-            this.close();
-        }
-    }
-
-    /**
-     * Tab click event handler.
-     *
-     * @param {Event} event
-     */
-    handlerTabClick(event) {
-        event.preventDefault();
-
-        [...this.template.querySelectorAll('a')].forEach((tab) => {
-            if (tab.id === event.target.id) {
-                tab.parentElement.classList.add('slds-is-active');
-                this.isDefault = tab.parentElement.title === 'Default';
-            } else {
-                tab.parentElement.classList.remove('slds-is-active');
-            }
-        });
-    }
-
-    /**
      * Sets blur.
      */
     allowBlur() {
@@ -971,9 +1007,95 @@ export default class AvonniColorPicker extends LightningElement {
             return;
         }
 
-        if (this._dropdownVisible) {
+        if (this.dropdownVisible) {
             this.toggleMenuVisibility();
         }
+    }
+
+    /**
+     * Dropdown menu visibility toggle.
+     */
+    toggleMenuVisibility() {
+        if (!this.disabled) {
+            this.dropdownVisible = !this.dropdownVisible;
+
+            if (!this.dropdownOpened && this.dropdownVisible) {
+                this.dropdownOpened = true;
+            }
+
+            if (this.dropdownVisible) {
+                this._boundingRect = this.getBoundingClientRect();
+                this.pollBoundingRect();
+            }
+
+            this.template
+                .querySelector('.slds-dropdown-trigger')
+                .classList.toggle('slds-is-open');
+        }
+    }
+
+    /**
+     * Close dropdown menu.
+     */
+    close() {
+        if (this.dropdownVisible) {
+            this.toggleMenuVisibility();
+        }
+    }
+
+    /**
+     * Check if auto aligned.
+     *
+     * @returns {boolean}
+     */
+    isAutoAlignment() {
+        return this.menuAlignment.startsWith('auto');
+    }
+
+    /**
+     * Poll bounding rect of the dropdown menu.
+     */
+    pollBoundingRect() {
+        if (this.isAutoAlignment() && this.dropdownVisible) {
+            // eslint-disable-next-line @lwc/lwc/no-async-operation
+            setTimeout(() => {
+                if (this.isConnected) {
+                    observePosition(this, 300, this._boundingRect, () => {
+                        this.close();
+                    });
+
+                    this.pollBoundingRect();
+                }
+            }, 250);
+        }
+    }
+
+    /**
+     * Tab click event handler.
+     *
+     * @param {Event} event
+     */
+    handlerTabClick(event) {
+        event.preventDefault();
+
+        this.template
+            .querySelectorAll('[data-group-name="tabs"]')
+            .forEach((tab) => {
+                const tabName = tab.dataset.tabName;
+                const targetName = event.currentTarget.dataset.tabName;
+
+                if (tabName === targetName) {
+                    tab.parentElement.classList.add('slds-is-active');
+                    this._currentTab = tabName;
+                } else {
+                    tab.parentElement.classList.remove('slds-is-active');
+                }
+            });
+
+        const palette = this.template.querySelector(
+            '[data-element-id="avonni-color-palette-default"]'
+        );
+        if (palette) palette.colors = [...this.computedColors];
     }
 
     /**
@@ -1008,89 +1130,107 @@ export default class AvonniColorPicker extends LightningElement {
     handleInputColor(event) {
         let color = event.target.value;
         this.inputValue = color;
-
         if (
             colorType(color) === 'hex' ||
             (colorType(color) === 'hexa' && this.opacity)
         ) {
-            this.showError = false;
-            this.template
-                .querySelector('[data-element-id="lightning-input"]')
-                .classList.remove('slds-has-error');
-
             if (!this.menuIconName) {
-                this.template.querySelector(
-                    '.slds-swatch'
-                ).style.background = color;
+                this.elementSwatch.style.background = color;
             }
-
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.value = color;
 
-            let gradientPalette = this.template.querySelector(
-                '[data-name="colorGradient"]'
-            );
-
-            if (gradientPalette) {
-                gradientPalette.renderValue(color);
+            if (this.colorGradient) {
+                this.colorGradient.renderValue(color);
             }
-
             this.dispatchChange(generateColors(color));
-        } else {
-            this.showError = true;
-            this.template
-                .querySelector('[data-element-id="lightning-input"]')
-                .classList.add('slds-has-error');
         }
-
         event.stopPropagation();
     }
 
+    /*-------- Public events --------*/
+
     /**
-     * Dropdown menu visibility toggle.
+     * Focus event dispatcher.
+     *
      */
-    toggleMenuVisibility() {
-        if (!this.disabled) {
-            this._dropdownVisible = !this._dropdownVisible;
+    handleInputFocus() {
+        this.interactingState.enter();
+        /**
+         * The event fired when you focus the color picker input.
+         *
+         * @event
+         * @name focus
+         * @public
+         */
+        this.dispatchEvent(new CustomEvent('focus'));
+    }
 
-            if (!this._dropdownOpened && this._dropdownVisible) {
-                this._dropdownOpened = true;
-            }
+    /**
+     * Blur event dispatcher.
+     *
+     */
+    handleInputBlur() {
+        this.interactingState.leave();
+        /**
+         * The event fired when the focus is removed from the color picker input.
+         *
+         * @event
+         * @name blur
+         * @public
+         */
+        this.dispatchEvent(new CustomEvent('blur'));
+    }
 
-            if (this._dropdownVisible) {
-                this._boundingRect = this.getBoundingClientRect();
-                this.pollBoundingRect();
-            }
-
-            this.template
-                .querySelector('.slds-dropdown-trigger')
-                .classList.toggle('slds-is-open');
+    /**
+     * Change event dispatcher.
+     *
+     * @param {object} colors
+     */
+    dispatchChange(colors) {
+        if (!this.disabled && !this.readOnly) {
+            /**
+             * The event fired when the color value changed.
+             *
+             * @event
+             * @public
+             * @name change
+             * @param {string} hex Color in hexadecimal format.
+             * @param {string} hexa Color in hexadecimal format with alpha.
+             * @param {string} rgb Color in rgb format.
+             * @param {string} rgba Color in rgba format.
+             * @param {string} alpha Alpha value of the color.
+             */
+            this.dispatchEvent(
+                new CustomEvent('change', {
+                    detail: {
+                        hex: colors.hex,
+                        hexa: colors.hexa,
+                        rgb: colors.rgb,
+                        rgba: colors.rgba,
+                        alpha: colors.alpha,
+                        token: this.currentToken
+                    },
+                    bubbles: true,
+                    cancelable: true,
+                    composed: false
+                })
+            );
         }
     }
 
     /**
-     * Close dropdown menu.
+     * Dispatches an event when the input is cleared.
+     *
      */
-    close() {
-        if (this._dropdownVisible) {
-            this.toggleMenuVisibility();
-        }
-    }
-
-    /**
-     * Poll bounding rect of the dropdown menu.
-     */
-    pollBoundingRect() {
-        if (this.isAutoAlignment() && this._dropdownVisible) {
-            // eslint-disable-next-line @lwc/lwc/no-async-operation
-            setTimeout(() => {
-                if (this.isConnected) {
-                    observePosition(this, 300, this._boundingRect, () => {
-                        this.close();
-                    });
-
-                    this.pollBoundingRect();
-                }
-            }, 250);
-        }
+    dispatchClear() {
+        this.dispatchChange({
+            hex: undefined,
+            hexa: undefined,
+            rgb: undefined,
+            rgba: undefined,
+            alpha: undefined,
+            token: undefined
+        });
     }
 }

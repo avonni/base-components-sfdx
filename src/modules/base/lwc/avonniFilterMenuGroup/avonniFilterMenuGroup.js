@@ -194,7 +194,9 @@ export default class AvonniFilterMenuGroup extends LightningElement {
      * @type {NodeListof<Element>}
      */
     get menuComponents() {
-        return this.template.querySelectorAll('[data-element-id^="avonni-filter-menu"]');
+        return this.template.querySelectorAll(
+            '[data-element-id^="avonni-filter-menu"]'
+        );
     }
 
     /**
@@ -240,7 +242,10 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         const pills = [];
 
         this.menus.forEach((menu) => {
-            const values = menu.value;
+            const values =
+                typeof menu.value === 'string'
+                    ? [menu.value]
+                    : normalizeArray(menu.value);
             const items = menu.items;
 
             if (values && items) {
@@ -302,6 +307,10 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         );
 
         // Find the value
+        this.menus[menuIndex].value =
+            typeof this.menus[menuIndex].value === 'string'
+                ? [this.menus[menuIndex].value]
+                : normalizeArray(this.menus[menuIndex].value);
         const valueIndex = this.menus[menuIndex].value.findIndex(
             (name) => name === valueName
         );
