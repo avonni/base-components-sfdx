@@ -34,7 +34,7 @@
 
 <template>
     <div class={wrapperClass} tabindex="-1">
-        <avonni-summary-detail
+        <c-avonni-summary-detail
             full-width="true"
             remove-body-indentation="true"
             shrink-icon-name={shrinkIconName}
@@ -43,16 +43,16 @@
             closed={closed}
             hide-icon={isEmpty}
         >
-            <avonni-media-object slot="title">
+            <c-avonni-media-object slot="title">
                 <template if:true={hasAvatar}>
-                    <avonni-avatar
+                    <c-avonni-avatar
                         slot="figure"
                         alternative-text={label}
                         fallback-icon-name={avatarFallbackIconName}
                         src={avatarSrc}
                         hide-avatar-details="true"
                         size="small"
-                    ></avonni-avatar>
+                    ></c-avonni-avatar>
                 </template>
                 <h2 class="slds-truncate group-title">
                     <a if:true={href} href={href}>{title}</a>
@@ -103,7 +103,7 @@
                         </template>
                     </template>
                 </div>
-            </avonni-media-object>
+            </c-avonni-media-object>
 
             <!-- Items -->
             <template if:true={items}>
@@ -158,6 +158,6 @@
                     </template>
                 </template>
             </template>
-        </avonni-summary-detail>
+        </c-avonni-summary-detail>
     </div>
 </template>

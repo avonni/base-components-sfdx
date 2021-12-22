@@ -35,20 +35,20 @@
 <template>
     <!-- Root avatar / title -->
     <div class={headerClass}>
-        <avonni-media-object vertical-align="center" inline={inlineHeader}>
-            <avonni-avatar
+        <c-avonni-media-object vertical-align="center" inline={inlineHeader}>
+            <c-avonni-avatar
                 if:true={hasAvatar}
                 slot="figure"
                 alternative-text={label}
                 fallback-icon-name={avatarFallbackIconName}
                 src={avatarSrc}
                 hide-avatar-details="true"
-            ></avonni-avatar>
+            ></c-avonni-avatar>
             <h1 class="slds-text-heading_small">
                 <a if:true={href} href={href}>{label}</a>
                 <span if:false={href}>{label}</span>
             </h1>
-        </avonni-media-object>
+        </c-avonni-media-object>
     </div>
 
     <div if:true={hasActions} class={actionsClass}>

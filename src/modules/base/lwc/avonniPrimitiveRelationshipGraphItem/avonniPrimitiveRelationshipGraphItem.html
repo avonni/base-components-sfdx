@@ -42,16 +42,16 @@
         aria-expanded={ariaExpanded}
     >
         <!-- Avatar / Title / Actions -->
-        <avonni-media-object vertical-align="center">
+        <c-avonni-media-object vertical-align="center">
             <template if:true={hasAvatar}>
-                <avonni-avatar
+                <c-avonni-avatar
                     slot="figure"
                     alternative-text={label}
                     fallback-icon-name={avatarFallbackIconName}
                     src={avatarSrc}
                     hide-avatar-details="true"
                     size="small"
-                ></avonni-avatar>
+                ></c-avonni-avatar>
             </template>
             <div class="slds-text-heading_small slds-truncate">
                 <a if:true={href} href={href}>{label}</a>
@@ -77,7 +77,7 @@
                     </template>
                 </lightning-button-menu>
             </div>
-        </avonni-media-object>
+        </c-avonni-media-object>
         <!-- Data -->
         <div class="slds-m-top_small" if:true={contentData}>
             <dl class="slds-dl_horizontal">
