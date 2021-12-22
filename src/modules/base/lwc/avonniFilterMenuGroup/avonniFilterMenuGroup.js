@@ -200,7 +200,7 @@ export default class AvonniFilterMenuGroup extends LightningElement {
     }
 
     /**
-     * Clear method to empty/reset computed value.
+     * Clear the selected items.
      *
      * @public
      */
@@ -218,7 +218,7 @@ export default class AvonniFilterMenuGroup extends LightningElement {
     }
 
     /**
-     * Apply method to computed value.
+     * Simulate a click on the apply button.
      *
      * @public
      */
@@ -349,12 +349,12 @@ export default class AvonniFilterMenuGroup extends LightningElement {
      */
     dispatchSelect(event) {
         /**
-         * Select event.
+         * The event fired when a user clicks on a menu item.
          *
          * @event
          * @name select
-         * @param {string} name
-         * @param {string[]} value
+         * @param {string} name Name of the menu.
+         * @param {string} value Value of the selected item.
          * @public
          * @cancelable
          */

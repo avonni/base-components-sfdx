@@ -131,7 +131,7 @@ export default class AvonniPagination extends LightningElement {
     renderedCallback() {
         if (!this.init) {
             let container = this.template.querySelector(
-                '.avonni-pagination-container'
+                '.avonni-pagination__container'
             );
             let style = document.createElement('style');
 
@@ -153,11 +153,11 @@ export default class AvonniPagination extends LightningElement {
                     background-color: #1b5297;
                     color: #ffffff;
                 }
-                .avonni-pagination-container-fill .avonni-pagination-button {
+                .avonni-pagination__container_fill .avonni-pagination-button {
                     flex: auto;
                     display: flex;
                 }   
-                .avonni-pagination-container-fill .avonni-pagination-button button {
+                .avonni-pagination__container_fill .avonni-pagination-button button {
                     flex: 1;
                 }                 
             `;
@@ -263,13 +263,14 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-     * When set to 'true', disables the component's functionality and places it in a disabled state.
+     * If present, the pagination is disabled and the user cannot interact with it.
      *
      * @type {boolean}
      * @public
      * @default false
      */
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -360,13 +361,13 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-     * Computed container class styling for alignement attribute.
+     * Computed container class styling for alignment attribute.
      *
      * @type {string}
      */
     get computedContainerClass() {
-        return classSet('avonni-pagination-container')
-            .add(`avonni-pagination-container-${this._align}`)
+        return classSet('avonni-pagination__container')
+            .add(`avonni-pagination__container_${this._align}`)
             .toString();
     }
 
@@ -482,7 +483,7 @@ export default class AvonniPagination extends LightningElement {
     /**
      * Go to page at index.
      *
-     * @param {number} index
+     * @param {number} index Index of the page.
      */
     @api
     goto(index) {

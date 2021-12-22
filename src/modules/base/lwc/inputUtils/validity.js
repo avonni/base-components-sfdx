@@ -63,7 +63,7 @@ function resolveBestMatch(validity) {
     if (validity && validity.valid === false) {
         validityState = 'badInput';
         constraintsSortedByPriority.some((stateName) => {
-            if (validity[stateName] === true) {
+            if (validity[stateName]) {
                 validityState = stateName;
                 return true;
             }

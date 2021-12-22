@@ -209,7 +209,7 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
-     * Whether the timer control automatically starts to play when the user navigates to the component.
+     * If present, the timer automatically starts.
      *
      * @type {boolean}
      * @public
@@ -229,7 +229,7 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
-     * Whether a timer automatically restarts when it finishes running.
+     * If present, the timer automatically restarts when it finishes running.
      *
      * @type {boolean}
      * @public

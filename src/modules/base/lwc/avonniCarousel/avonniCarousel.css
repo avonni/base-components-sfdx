@@ -36,15 +36,6 @@
     max-width: 100%;
 }
 
-.avonni-carousel__content-title {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: pre-line;
-}
-
 .avonni-carousel__nav-button {
     display: block;
 }
@@ -61,41 +52,102 @@
     left: var(--lwc-spacingMedium, 1rem);
 }
 
-.avonni-carousel-progress-indicator-shaded-active {
-    background-color: #dddbda;
-    border: #dddbda;
+.avonni-carousel__progress-indicator_active {
+    background: var(
+        --avonni-carousel-active-indicator-color-background,
+        #0176d3
+    ) !important;
+    border-color: var(
+        --avonni-carousel-active-indicator-color-border,
+        #0176d3
+    ) !important;
 }
 
-.avonni-carousel-progress-indicator-shaded-active:hover,
-.avonni-carousel-progress-indicator-shaded-active:focus {
-    background-color: #dddbda;
-    border: #dddbda;
+.avonni-carousel__progress-indicator_active:hover {
+    background: var(
+        --avonni-carousel-active-indicator-color-background-hover,
+        #0176d3
+    );
+    border-color: var(
+        --avonni-carousel-active-indicator-color-border-hover,
+        #0176d3
+    );
 }
 
-.avonni-carousel-progress-indicator-shaded-inactive:focus {
-    background-color: #dddbda;
-    border: #dddbda;
+.avonni-carousel__progress-indicator_inactive {
+    background: var(
+        --avonni-carousel-inactive-indicator-color-background,
+        #ffffff
+    );
+    border-color: var(
+        --avonni-carousel-inactive-indicator-color-border,
+        #dddbda
+    );
 }
 
-.avonni-carousel__actions {
-    display: flex;
-    width: 100%;
+.avonni-carousel__progress-indicator_inactive:hover {
+    background: var(
+        --avonni-carousel-inactive-indicator-color-background-hover,
+        #fafaf9
+    );
+    border-color: var(
+        --avonni-carousel-inactive-indicator-color-border-hover,
+        #dddbda
+    );
 }
 
-.avonni-carousel__actions-bottom-center {
-    justify-content: center;
+.avonni-carousel__progress-indicator_shaded-active {
+    background-color: var(
+        --avonni-carousel-active-indicator-shaded-color-background,
+        #dddbda
+    ) !important;
+    border-color: var(
+        --avonni-carousel-active-indicator-shaded-color-border,
+        #dddbda
+    ) !important;
 }
 
-.avonni-carousel__actions-right {
-    justify-content: flex-end;
+.avonni-carousel__progress-indicator_shaded-active:hover,
+.avonni-carousel__progress-indicator_shaded-active:focus {
+    background-color: var(
+        --avonni-carousel-active-indicator-shaded-color-background-hover,
+        #dddbda
+    );
+    border-color: var(
+        --avonni-carousel-active-indicator-shaded-color-border-hover,
+        #dddbda
+    );
 }
 
-.avonni-carousel__actions-left {
-    justify-content: flex-start;
+.avonni-carousel__progress-indicator_shaded-inactive {
+    background-color: var(
+        --avonni-carousel-inactive-indicator-shaded-color-background,
+        #ffffff
+    );
+    border-color: var(
+        --avonni-carousel-inactive-indicator-shaded-color-border,
+        #dddbda
+    );
 }
 
-.avonni-carousel__content-bottom {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.avonni-carousel__progress-indicator_shaded-inactive:hover {
+    background-color: var(
+        --avonni-carousel-inactive-indicator-shaded-color-background,
+        #fafaf9
+    );
+    border-color: var(
+        --avonni-carousel-inactive-indicator-shaded-color-border,
+        #dddbda
+    );
+}
+
+.avonni-carousel__progress-indicator_shaded-inactive:focus {
+    background-color: var(
+        --avonni-carousel-active-indicator-shaded-color-background,
+        #dddbda
+    );
+    border-color: var(
+        --avonni-carousel-active-indicator-shaded-color-border,
+        #dddbda
+    );
 }

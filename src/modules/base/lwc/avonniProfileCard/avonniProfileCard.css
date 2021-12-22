@@ -30,9 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-flex-container {
+.avonni-profile-card__flex-container {
     display: flex;
     flex-direction: column;
+}
+
+.avonni-profile-card_color-background {
+    background-color: var(--avonni-profile-card-color-background, #ffffff);
 }
 
 .slds-media {
@@ -41,13 +45,13 @@
     background-position: center;
 }
 
-.avonni-icon-container {
+.avonni-profile-card__icon-container {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.avatar-img {
+.avonni-profile-card__avatar-img {
     position: absolute;
     background-color: rgb(255, 255, 255);
     background-position: center center;
@@ -59,90 +63,94 @@
     z-index: 50;
 }
 
-.avatar-img-circle {
+.avonni-profile-card__avatar-img-circle {
     border-radius: 50%;
 }
 
-.avatar-x-small {
+.avonni-profile-card__avatar_size-x-small {
     height: 3.25rem;
     width: 3.25rem;
     border: 1px solid rgb(255, 255, 255);
 }
 
-.avatar-small {
+.avonni-profile-card__avatar_size-small {
     height: 4.5rem;
     width: 4.5rem;
     border: 2px solid rgb(255, 255, 255);
 }
 
-.avatar-medium {
+.avonni-profile-card__avatar_size-medium {
     height: 5.75rem;
     width: 5.75rem;
     border: 3px solid rgb(255, 255, 255);
 }
 
-.avatar-large {
+.avonni-profile-card__avatar_size-large {
     height: 9.25rem;
     width: 9.25rem;
     border: 4px solid rgb(255, 255, 255);
 }
 
-.avatar-x-large {
+.avonni-profile-card__avatar_size-x-large {
     height: 11.25rem;
     width: 11.25rem;
     border: 5px solid rgb(255, 255, 255);
 }
 
-.background-x-small {
+.avonni-profile-card__background_size-x-small {
     min-height: 56px;
     width: 100%;
 }
 
-.background-small {
+.avonni-profile-card__background_size-small {
     min-height: 70px;
     width: 100%;
 }
 
-.background-medium {
+.avonni-profile-card__background_size-medium {
     min-height: 96px;
     width: 100%;
 }
 
-.background-large {
+.avonni-profile-card__background_size-large {
     min-height: 144px;
     width: 100%;
 }
 
-.background-x-large {
+.avonni-profile-card__background_size-x-large {
     min-height: 182px;
     width: 100%;
 }
 
-.avonni-title {
+.avonni-profile-card__title {
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 18px;
-    color: black;
+    font-size: var(--avonni-profile-card-title-font-size, 18px);
+    font-style: var(--avonni-profile-card-title-font-style, normal);
+    font-weight: var(--avonni-profile-card-title-font-weight, 400);
+    color: var(--avonni-profile-card-title-text-color, #000000);
     line-height: 1.33333em;
     overflow: hidden;
 }
 
-.avonni-subtitle {
+.avonni-profile-card__subtitle {
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 14px;
-    color: black;
+    font-size: var(--avonni-profile-card-subtitle-font-size, 14px);
+    font-weight: var(--avonni-profile-card-subtitle-font-weight, 400);
+    font-style: var(--avonni-profile-card-subtitle-font-style, normal);
+    color: var(--avonni-profile-card-subtitle-text-color, #000000);
     line-height: 1.71429em;
     overflow: hidden;
 }
 
-.avonni-avatar-actions {
+.avonni-profile-card__avatar-actions {
     position: absolute;
 }
 
-.card-x-small .avonni-avatar-actions,
-.card-small .avonni-avatar-actions,
-.card-medium .avonni-avatar-actions {
+.avonni-profile-card__card_size-x-small .avonni-profile-card__avatar-actions,
+.avonni-profile-card__card_size-small .avonni-profile-card__avatar-actions,
+.avonni-profile-card__card_size-medium .avonni-profile-card__avatar-actions {
     bottom: 0;
     right: 0;
 }
@@ -152,307 +160,351 @@
     margin-bottom: var(--lwc-varSpacingVerticalSmall, 0.75rem);
 }
 
-.card-medium .slds-card__body {
+.avonni-profile-card__card_size-medium .slds-card__body {
     padding: 0 1.25rem;
 }
 
-.card-large .slds-card__body {
+.avonni-profile-card__card_size-large .slds-card__body {
     padding: 0 1.5rem;
 }
 
-.card-x-large .slds-card__body {
+.avonni-profile-card__card_size-x-large .slds-card__body {
     padding: 0 1.75rem;
 }
 
-.card-large .avonni-avatar-actions {
+.avonni-profile-card__card_size-large .avonni-profile-card__avatar-actions {
     bottom: 0.25rem;
     right: 0.25rem;
 }
 
-.card-x-large .avonni-avatar-actions {
+.avonni-profile-card__card_size-x-large .avonni-profile-card__avatar-actions {
     bottom: 0.5rem;
     right: 0.5rem;
 }
 
-.avonni-title-container {
+.avonni-profile-card__title-container {
     width: 100%;
 }
 
 @media (min-width: 480px) {
-    .avonni-flex-align-center {
+    .avonni-profile-card__flex-container_align-center {
         align-items: center;
     }
 
-    .avonni-flex-align-end {
+    .avonni-profile-card__flex-container_align-end {
         align-items: flex-end;
     }
 
-    .avonni-actions-right {
+    .avonni-profile-card__actions-right {
         position: absolute;
         right: 0.5rem;
         top: 0.5rem;
         z-index: 1000;
     }
 
-    .avonni-actions-left {
+    .avonni-profile-card__actions-left {
         position: absolute;
         left: 0.5rem;
         top: 0.5rem;
         z-index: 1000;
     }
 
-    [class^='top-'].card-x-small {
+    [class^='top-'].avonni-profile-card__card_size-x-small {
         margin-top: 0.75rem;
     }
 
-    [class^='top-'].card-x-small .avatar-img {
+    [class^='top-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: -0.75rem;
     }
 
-    [class^='bottom-'].card-x-small .avatar-img {
+    [class^='bottom-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: 0.75rem;
     }
 
-    [class*='-left-desktop'][class$='card-x-small'] .avatar-img {
+    [class*='-left-desktop'][class$='card_size-x-small']
+        .avonni-profile-card__avatar-img {
         left: 0.75rem;
     }
 
-    [class*='-right-desktop'][class$='card-x-small'] .avatar-img {
+    [class*='-right-desktop'][class$='card_size-x-small']
+        .avonni-profile-card__avatar-img {
         right: 0.75rem;
     }
 
-    [class^='top-'].card-small {
+    [class^='top-'].avonni-profile-card__card_size-small {
         margin-top: 1rem;
     }
 
-    [class^='top-'].card-small .avatar-img {
+    [class^='top-'].avonni-profile-card__card_size-small
+        .avonni-profile-card__avatar-img {
         top: -1rem;
     }
 
-    [class^='bottom-'].card-small .avatar-img {
+    [class^='bottom-'].avonni-profile-card__card_size-small
+        .avonni-profile-card__avatar-img {
         top: 1rem;
     }
 
-    [class*='-left-desktop'][class$='card-small'] .avatar-img {
+    [class*='-left-desktop'][class$='card_size-small']
+        .avonni-profile-card__avatar-img {
         left: 1rem;
     }
 
-    [class*='-right-desktop'][class$='card-small'] .avatar-img {
+    [class*='-right-desktop'][class$='card_size-small']
+        .avonni-profile-card__avatar-img {
         right: 1rem;
     }
 
-    [class^='top-'].card-medium {
+    [class^='top-'].avonni-profile-card__card_size-medium {
         margin-top: 1.25rem;
     }
 
-    [class^='top-'].card-medium .avatar-img {
+    [class^='top-'].avonni-profile-card__card_size-medium
+        .avonni-profile-card__avatar-img {
         top: -1.25rem;
     }
 
-    [class^='bottom-'].card-medium .avatar-img {
+    [class^='bottom-'].avonni-profile-card__card_size-medium
+        .avonni-profile-card__avatar-img {
         top: 1.25rem;
     }
 
-    [class*='-left-desktop'][class$='card-medium'] .avatar-img {
+    [class*='-left-desktop'][class$='card_size-medium']
+        .avonni-profile-card__avatar-img {
         left: 1.25rem;
     }
 
-    [class*='-right-desktop'][class$='card-medium'] .avatar-img {
+    [class*='-right-desktop'][class$='card_size-medium']
+        .avonni-profile-card__avatar-img {
         right: 1.25rem;
     }
 
-    [class^='top-'].card-large {
+    [class^='top-'].avonni-profile-card__card_size-large {
         margin-top: 1.5rem;
     }
 
-    [class^='top-'].card-large .avatar-img {
+    [class^='top-'].avonni-profile-card__card_size-large
+        .avonni-profile-card__avatar-img {
         top: -1.5rem;
     }
 
-    [class^='bottom-'].card-large .avatar-img {
+    [class^='bottom-'].avonni-profile-card__card_size-large
+        .avonni-profile-card__avatar-img {
         top: 1.5rem;
     }
 
-    [class*='-left-desktop'][class$='card-large'] .avatar-img {
+    [class*='-left-desktop'][class$='card_size-large']
+        .avonni-profile-card__avatar-img {
         left: 1.5rem;
     }
 
-    [class*='-right-desktop'][class$='card-large'] .avatar-img {
+    [class*='-right-desktop'][class$='card_size-large']
+        .avonni-profile-card__avatar-img {
         right: 1.5rem;
     }
 
-    [class^='top-'].card-x-large {
+    [class^='top-'].avonni-profile-card__card_size-x-large {
         margin-top: 1.75rem;
     }
 
-    [class^='top-'].card-x-large .avatar-img {
+    [class^='top-'].avonni-profile-card__card_size-x-large
+        .avonni-profile-card__avatar-img {
         top: -1.75rem;
     }
 
-    [class^='bottom-'].card-x-large .avatar-img {
+    [class^='bottom-'].avonni-profile-card__card_size-x-large
+        .avonni-profile-card__avatar-img {
         top: 1.75rem;
     }
 
-    [class*='-left-desktop'][class$='card-x-large'] .avatar-img {
+    [class*='-left-desktop'][class$='card_size-x-large']
+        .avonni-profile-card__avatar-img {
         left: 1.75rem;
     }
 
-    [class*='-right-desktop'][class$='card-x-large'] .avatar-img {
+    [class*='-right-desktop'][class$='card_size-x-large']
+        .avonni-profile-card__avatar-img {
         right: 1.75rem;
     }
 
-    .bottom-center-desktop .avonni-title-container {
+    .bottom-center-desktop .avonni-profile-card__title-container {
         padding: 0 1rem;
     }
 
-    .bottom-center-desktop.card-x-small .avonni-title-container {
+    .bottom-center-desktop.avonni-profile-card__card_size-x-small
+        .avonni-profile-card__title-container {
         margin-top: 1.5rem;
     }
 
-    .bottom-center-desktop.card-small .avonni-title-container {
+    .bottom-center-desktop.avonni-profile-card__card_size-small
+        .avonni-profile-card__title-container {
         margin-top: 1.75rem;
     }
 
-    .bottom-center-desktop.card-medium .avonni-title-container {
+    .bottom-center-desktop.avonni-profile-card__card_size-medium
+        .avonni-profile-card__title-container {
         margin-top: 2rem;
     }
 
-    .bottom-center-desktop.card-large .avonni-title-container {
+    .bottom-center-desktop.avonni-profile-card__card_size-large
+        .avonni-profile-card__title-container {
         margin-top: 2.25rem;
     }
 
-    .bottom-center-desktop.card-x-large .avonni-title-container {
+    .bottom-center-desktop.avonni-profile-card__card_size-x-large
+        .avonni-profile-card__title-container {
         margin-top: 2.5rem;
         padding: 0 1rem;
     }
 
-    .top-center-desktop .avonni-title-container {
+    .top-center-desktop .avonni-profile-card__title-container {
         padding: 1rem 1rem 0 1rem;
     }
 
-    .bottom-center-desktop .avonni-title-container {
+    .bottom-center-desktop .avonni-profile-card__title-container {
         padding: 0 1rem;
     }
 
-    [class*='-left-desktop'][class$='card-x-small'] .avonni-title-container {
+    [class*='-left-desktop'][class$='card_size-x-small']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.5rem;
         padding-left: 4.75rem;
         padding-right: 0.75rem;
     }
 
-    [class*='-left-desktop'][class$='card-small'] .avonni-title-container {
+    [class*='-left-desktop'][class$='card_size-small']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.8rem;
         padding-left: 6.5rem;
         padding-right: 1rem;
     }
 
-    [class*='-left-desktop'][class$='card-medium'] .avonni-title-container {
+    [class*='-left-desktop'][class$='card_size-medium']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 1.5rem;
         padding-left: 8.25rem;
         padding-right: 1.25rem;
     }
 
-    [class*='-left-desktop'][class$='card-large'] .avonni-title-container {
+    [class*='-left-desktop'][class$='card_size-large']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 2.8rem;
         padding-left: 12.25rem;
         padding-right: 1.5rem;
     }
 
-    [class*='-left-desktop'][class$='card-x-large'] .avonni-title-container {
+    [class*='-left-desktop'][class$='card_size-x-large']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 3.8rem;
         padding-left: 14.75rem;
         padding-right: 1.75rem;
     }
 
-    [class*='-right-desktop'][class$='card-x-small'] .avonni-title-container {
+    [class*='-right-desktop'][class$='card_size-x-small']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.5rem;
         padding-right: 4.75rem;
         padding-left: 0.75rem;
     }
 
-    [class*='-right-desktop'][class$='card-small'] .avonni-title-container {
+    [class*='-right-desktop'][class$='card_size-small']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.8rem;
         padding-right: 6.5rem;
         padding-left: 1rem;
     }
 
-    [class*='-right-desktop'][class$='card-medium'] .avonni-title-container {
+    [class*='-right-desktop'][class$='card_size-medium']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 1.5rem;
         padding-right: 8.25rem;
         padding-left: 1.25rem;
     }
 
-    [class*='-right-desktop'][class$='card-large'] .avonni-title-container {
+    [class*='-right-desktop'][class$='card_size-large']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 2.8rem;
         padding-right: 12.25rem;
         padding-left: 1.5rem;
     }
 
-    [class*='-right-desktop'][class$='card-x-large'] .avonni-title-container {
+    [class*='-right-desktop'][class$='card_size-x-large']
+        .avonni-profile-card__title-container {
         position: absolute;
         padding: 3.8rem;
         padding-right: 14.75rem;
         padding-left: 1.75rem;
     }
 
-    .bottom-left-desktop.card-x-small .slds-card__body,
-    .bottom-right-desktop.card-x-small .slds-card__body {
+    .bottom-left-desktop.avonni-profile-card__card_size-x-small
+        .slds-card__body,
+    .bottom-right-desktop.avonni-profile-card__card_size-x-small
+        .slds-card__body {
         margin-top: 1.5rem;
         margin-bottom: 1rem;
     }
 
-    .bottom-left-desktop.card-small .slds-card__body,
-    .bottom-right-desktop.card-small .slds-card__body {
+    .bottom-left-desktop.avonni-profile-card__card_size-small .slds-card__body,
+    .bottom-right-desktop.avonni-profile-card__card_size-small
+        .slds-card__body {
         margin-top: 1.75rem;
         margin-bottom: 1rem;
     }
 
-    .bottom-left-desktop.card-medium .slds-card__body,
-    .bottom-right-desktop.card-medium .slds-card__body {
+    .bottom-left-desktop.avonni-profile-card__card_size-medium .slds-card__body,
+    .bottom-right-desktop.avonni-profile-card__card_size-medium
+        .slds-card__body {
         margin-top: 2rem;
         margin-bottom: 1rem;
     }
 
-    .bottom-left-desktop.card-large .slds-card__body,
-    .bottom-right-desktop.card-large .slds-card__body {
+    .bottom-left-desktop.avonni-profile-card__card_size-large .slds-card__body,
+    .bottom-right-desktop.avonni-profile-card__card_size-large
+        .slds-card__body {
         margin-top: 2.25rem;
         margin-bottom: 1rem;
     }
 
-    .bottom-left-desktop.card-x-large .slds-card__body,
-    .bottom-right-desktop.card-x-large .slds-card__body {
+    .bottom-left-desktop.avonni-profile-card__card_size-x-large
+        .slds-card__body,
+    .bottom-right-desktop.avonni-profile-card__card_size-x-large
+        .slds-card__body {
         margin-top: 2.5rem;
         margin-bottom: 1rem;
     }
 
-    [class^='top-'].card-x-small {
+    [class^='top-'].avonni-profile-card__card_size-x-small {
         margin-top: 0.75rem;
     }
 
-    [class^='top-'].card-x-small .avatar-img {
+    [class^='top-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: -0.75rem;
     }
 
-    [class^='bottom-'].card-x-small .avatar-img {
+    [class^='bottom-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: 0.75rem;
     }
 }
 
 @media (max-width: 480px) {
-    .avonni-flex-mobile-align-center {
+    .avonni-profile-card__flex-container-mobile_align-center {
         align-items: center;
     }
 
-    .avonni-flex-mobile-align-end {
+    .avonni-profile-card__flex-container-mobile_align-end {
         align-items: flex-end;
     }
 
@@ -469,248 +521,268 @@
         z-index: 1000;
     }
 
-    [class*='mobile-top-'].card-x-small {
+    [class*='mobile-top-'].avonni-profile-card__card_size-x-small {
         margin-top: 0.75rem;
     }
 
-    [class*='mobile-top-'].card-x-small .avatar-img {
+    [class*='mobile-top-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: -0.75rem;
     }
 
-    [class*='mobile-bottom-'].card-x-small .avatar-img {
+    [class*='mobile-bottom-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: 0.75rem;
     }
 
-    [class$='-left card-x-small'] .avatar-img {
+    [class$='-left card_size-x-small'] .avonni-profile-card__avatar-img {
         left: 0.75rem;
     }
 
-    [class$='-right card-x-small'] .avatar-img {
+    [class$='-right card_size-x-small'] .avonni-profile-card__avatar-img {
         right: 0.75rem;
     }
 
-    [class*='mobile-top-'].card-small {
+    [class*='mobile-top-'].avonni-profile-card__card_size-small {
         margin-top: 1rem;
     }
 
-    [class*='mobile-top-'].card-small .avatar-img {
+    [class*='mobile-top-'].avonni-profile-card__card_size-small
+        .avonni-profile-card__avatar-img {
         top: -1rem;
     }
 
-    [class*='mobile-bottom-'].card-small .avatar-img {
+    [class*='mobile-bottom-'].avonni-profile-card__card_size-small
+        .avonni-profile-card__avatar-img {
         top: 1rem;
     }
 
-    [class$='-left card-small'] .avatar-img {
+    [class$='-left card_size-small'] .avonni-profile-card__avatar-img {
         left: 1rem;
     }
 
-    [class$='-right card-small'] .avatar-img {
+    [class$='-right card_size-small'] .avonni-profile-card__avatar-img {
         right: 1rem;
     }
 
-    [class*='mobile-top-'].card-medium {
+    [class*='mobile-top-'].avonni-profile-card__card_size-medium {
         margin-top: 1.25rem;
     }
 
-    [class*='mobile-top-'].card-medium .avatar-img {
+    [class*='mobile-top-'].avonni-profile-card__card_size-medium
+        .avonni-profile-card__avatar-img {
         top: -1.25rem;
     }
 
-    [class*='mobile-bottom-'].card-medium .avatar-img {
+    [class*='mobile-bottom-'].avonni-profile-card__card_size-medium
+        .avonni-profile-card__avatar-img {
         top: 1.25rem;
     }
 
-    [class$='-left card-medium'] .avatar-img {
+    [class$='-left card_size-medium'] .avonni-profile-card__avatar-img {
         left: 1.25rem;
     }
 
-    [class$='-right card-medium'] .avatar-img {
+    [class$='-right card_size-medium'] .avonni-profile-card__avatar-img {
         right: 1.25rem;
     }
 
-    [class*='mobile-top-'].card-large {
+    [class*='mobile-top-'].avonni-profile-card__card_size-large {
         margin-top: 1.5rem;
     }
 
-    [class*='mobile-top-'].card-large .avatar-img {
+    [class*='mobile-top-'].avonni-profile-card__card_size-large
+        .avonni-profile-card__avatar-img {
         top: -1.5rem;
     }
 
-    [class*='mobile-bottom-'].card-large .avatar-img {
+    [class*='mobile-bottom-'].avonni-profile-card__card_size-large
+        .avonni-profile-card__avatar-img {
         top: 1.5rem;
     }
 
-    [class$='-left card-large'] .avatar-img {
+    [class$='-left card_size-large'] .avonni-profile-card__avatar-img {
         left: 1.5rem;
     }
 
-    [class$='-right card-large'] .avatar-img {
+    [class$='-right card_size-large'] .avonni-profile-card__avatar-img {
         right: 1.5rem;
     }
 
-    [class*='mobile-top-'].card-x-large {
+    [class*='mobile-top-'].avonni-profile-card__card_size-x-large {
         margin-top: 1.75rem;
     }
 
-    [class*='mobile-top-'].card-x-large .avatar-img {
+    [class*='mobile-top-'].avonni-profile-card__card_size-x-large
+        .avonni-profile-card__avatar-img {
         top: -1.75rem;
     }
 
-    [class*='mobile-bottom-'].card-x-large .avatar-img {
+    [class*='mobile-bottom-'].avonni-profile-card__card_size-x-large
+        .avonni-profile-card__avatar-img {
         top: 1.75rem;
     }
 
-    [class$='-left card-x-large'] .avatar-img {
+    [class$='-left card_size-x-large'] .avonni-profile-card__avatar-img {
         left: 1.75rem;
     }
 
-    [class$='-right card-x-large'] .avatar-img {
+    [class$='-right card_size-x-large'] .avonni-profile-card__avatar-img {
         right: 1.75rem;
     }
 
-    .mobile-bottom-center .avonni-title-container {
+    .mobile-bottom-center .avonni-profile-card__title-container {
         padding: 0 1rem;
     }
 
-    .mobile-bottom-center.card-x-small .avonni-title-container {
+    .mobile-bottom-center.avonni-profile-card__card_size-x-small
+        .avonni-profile-card__title-container {
         margin-top: 1.5rem;
     }
 
-    .mobile-bottom-center.card-small .avonni-title-container {
+    .mobile-bottom-center.avonni-profile-card__card_size-small
+        .avonni-profile-card__title-container {
         margin-top: 1.75rem;
     }
 
-    .mobile-bottom-center.card-medium .avonni-title-container {
+    .mobile-bottom-center.avonni-profile-card__card_size-medium
+        .avonni-profile-card__title-container {
         margin-top: 2rem;
     }
 
-    .mobile-bottom-center.card-large .avonni-title-container {
+    .mobile-bottom-center.avonni-profile-card__card_size-large
+        .avonni-profile-card__title-container {
         margin-top: 2.25rem;
     }
 
-    .mobile-bottom-center.card-x-large .avonni-title-container {
+    .mobile-bottom-center.avonni-profile-card__card_size-x-large
+        .avonni-profile-card__title-container {
         margin-top: 2.5rem;
         padding: 0 1rem;
     }
 
-    .mobile-top-center .avonni-title-container {
+    .mobile-top-center .avonni-profile-card__title-container {
         padding: 1rem 1rem 0 1rem;
     }
 
-    .mobile-bottom-center .avonni-title-container {
+    .mobile-bottom-center .avonni-profile-card__title-container {
         padding: 0 1rem;
     }
 
-    [class$='-left card-x-small'] .avonni-title-container {
+    [class$='-left card_size-x-small'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.5rem;
         padding-left: 4.75rem;
         padding-right: 0.75rem;
     }
 
-    [class$='-left card-small'] .avonni-title-container {
+    [class$='-left card_size-small'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.8rem;
         padding-left: 6.5rem;
         padding-right: 1rem;
     }
 
-    [class$='-left card-medium'] .avonni-title-container {
+    [class$='-left card_size-medium'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 1.5rem;
         padding-left: 8.25rem;
         padding-right: 1.25rem;
     }
 
-    [class$='-left card-large'] .avonni-title-container {
+    [class$='-left card_size-large'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 2.8rem;
         padding-left: 12.25rem;
         padding-right: 1.5rem;
     }
 
-    [class$='-left card-x-large'] .avonni-title-container {
+    [class$='-left card_size-x-large'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 3.8rem;
         padding-left: 14.75rem;
         padding-right: 1.75rem;
     }
 
-    [class$='-right card-x-small'] .avonni-title-container {
+    [class$='-right card_size-x-small'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.5rem;
         padding-right: 4.75rem;
         padding-left: 0.75rem;
     }
 
-    [class$='-right card-small'] .avonni-title-container {
+    [class$='-right card_size-small'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 0.8rem;
         padding-right: 6.5rem;
         padding-left: 1rem;
     }
 
-    [class$='-right card-medium'] .avonni-title-container {
+    [class$='-right card_size-medium'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 1.5rem;
         padding-right: 8.25rem;
         padding-left: 1.25rem;
     }
 
-    [class$='-right card-large'] .avonni-title-container {
+    [class$='-right card_size-large'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 2.8rem;
         padding-right: 12.25rem;
         padding-left: 1.5rem;
     }
 
-    [class$='-right card-x-large'] .avonni-title-container {
+    [class$='-right card_size-x-large'] .avonni-profile-card__title-container {
         position: absolute;
         padding: 3.8rem;
         padding-right: 14.75rem;
         padding-left: 1.75rem;
     }
 
-    .mobile-bottom-left.card-x-small .slds-card__body,
-    .mobile-bottom-right.card-x-small .slds-card__body {
+    .mobile-bottom-left.avonni-profile-card__card_size-x-small .slds-card__body,
+    .mobile-bottom-right.avonni-profile-card__card_size-x-small
+        .slds-card__body {
         margin-top: 1.5rem;
         margin-bottom: 1rem;
     }
 
-    .mobile-bottom-left.card-small .slds-card__body,
-    .mobile-bottom-right.card-small .slds-card__body {
+    .mobile-bottom-left.avonni-profile-card__card_size-small .slds-card__body,
+    .mobile-bottom-right.avonni-profile-card__card_size-small .slds-card__body {
         margin-top: 1.75rem;
         margin-bottom: 1rem;
     }
 
-    .mobile-bottom-left.card-medium .slds-card__body,
-    .mobile-bottom-right.card-medium .slds-card__body {
+    .mobile-bottom-left.avonni-profile-card__card_size-medium .slds-card__body,
+    .mobile-bottom-right.avonni-profile-card__card_size-medium
+        .slds-card__body {
         margin-top: 2rem;
         margin-bottom: 1rem;
     }
 
-    .mobile-bottom-left.card-large .slds-card__body,
-    .mobile-bottom-right.card-large .slds-card__body {
+    .mobile-bottom-left.avonni-profile-card__card_size-large .slds-card__body,
+    .mobile-bottom-right.avonni-profile-card__card_size-large .slds-card__body {
         margin-top: 2.25rem;
         margin-bottom: 1rem;
     }
 
-    .mobile-bottom-left.card-x-large .slds-card__body,
-    .mobile-bottom-right.card-x-large .slds-card__body {
+    .mobile-bottom-left.avonni-profile-card__card_size-x-large .slds-card__body,
+    .mobile-bottom-right.avonni-profile-card__card_size-x-large
+        .slds-card__body {
         margin-top: 2.5rem;
         margin-bottom: 1rem;
     }
 
-    [class*='mobile-top-'].card-x-small {
+    [class*='mobile-top-'].avonni-profile-card__card_size-x-small {
         margin-top: 0.75rem;
     }
 
-    [class*='mobile-top-'].card-x-small .avatar-img {
+    [class*='mobile-top-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: -0.75rem;
     }
 
-    [class*='mobile-bottom-'].card-x-small .avatar-img {
+    [class*='mobile-bottom-'].avonni-profile-card__card_size-x-small
+        .avonni-profile-card__avatar-img {
         top: 0.75rem;
     }
 }

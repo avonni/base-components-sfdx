@@ -72,3 +72,10 @@
 .avonni-input-choice-set__display_flex {
     display: flex;
 }
+
+.avonni-input-choice-set__label {
+    color: var(--avonni-input-choice-set-header-text-color, #3e3e3c);
+    font-size: var(--avonni-input-choice-set-header-font-size, 0.75rem);
+    font-style: var(--avonni-input-choice-set-header-font-style, normal);
+    font-weight: var(--avonni-input-choice-set-header-font-weight, 400);
+}

@@ -52,6 +52,40 @@
     );
 }
 
+.avonni-expandable-section__header_base {
+    background: var(
+        --avonni-expandable-section-base-header-color-background,
+        transparent
+    );
+}
+
+.avonni-expandable-section__header_base .avonni-expandable-section__title {
+    color: var(--avonni-expandable-section-base-header-text-color, #080707);
+    font-size: var(--avonni-expandable-section-base-header-font-size, 1rem);
+    font-weight: var(--avonni-expandable-section-base-header-font-weight, 400);
+    font-style: var(--avonni-expandable-section-base-header-font-style, normal);
+}
+
+.avonni-expandable-section__header_shaded {
+    background: var(
+        --avonni-expandable-section-shaded-header-color-background,
+        #f3f2f2
+    );
+}
+
+.avonni-expandable-section__header_shaded .avonni-expandable-section__title {
+    color: var(--avonni-expandable-section-shaded-header-text-color, #080707);
+    font-size: var(--avonni-expandable-section-shaded-header-font-size, 1rem);
+    font-weight: var(
+        --avonni-expandable-section-shaded-header-font-weight,
+        400
+    );
+    font-style: var(
+        --avonni-expandable-section-shaded-header-font-style,
+        normal
+    );
+}
+
 .avonni-expandable-section__header_base .slds-section__title-action,
 .avonni-expandable-section__header_base:not(.avonni-expandable-section__header_collapsible) {
     padding-left: var(

@@ -97,7 +97,7 @@ div:focus {
     outline: none;
 }
 
-.avonni-button-popover-space-between {
+.avonni-button-popover_space-between {
     display: flex;
     justify-content: space-between;
 }

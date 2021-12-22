@@ -352,7 +352,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
     /**
      * Checks if the input is valid.
      *
-     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -361,10 +361,9 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {boolean} - The validity status of the input fields.
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -377,8 +376,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message - The string that describes the error.
-     * If message is an empty string, the error message is reset.
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -388,7 +386,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -408,7 +406,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     /**
-     * Focus method. Sets focus on the first input option.
+     * Sets the focus on the first input option.
      *
      * @public
      */

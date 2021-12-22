@@ -41,8 +41,8 @@ const QR_RENDER_AS = { valid: ['canvas', 'svg'], default: 'svg' };
 const DEFAULT_BORDER_WIDTH = 0;
 const DEFAULT_PADDING = 0;
 const DEFAULT_SIZE = 200;
-const DEFAULT_COLOR = '#000';
-const DEFAULT_BACKGROUND_COLOR = '#fff';
+const DEFAULT_COLOR = '#000000';
+const DEFAULT_BACKGROUND_COLOR = '#ffffff';
 
 /**
  * @class
@@ -51,22 +51,81 @@ const DEFAULT_BACKGROUND_COLOR = '#fff';
  * @public
  */
 export default class AvonniQrcode extends LightningElement {
+    _background;
+    _borderColor;
     _borderWidth = DEFAULT_BORDER_WIDTH;
-    _padding = DEFAULT_PADDING;
-    _value;
-    _size = DEFAULT_SIZE;
+    _color;
     _encoding = QR_ENCODINGS.default;
     _errorCorrection = QR_ERROR_CORRECTIONS.default;
+    _padding = DEFAULT_PADDING;
     _renderAs = QR_RENDER_AS.default;
-    _background = DEFAULT_BACKGROUND_COLOR;
-    _borderColor;
-    _color = DEFAULT_COLOR;
+    _size = DEFAULT_SIZE;
+    _value;
 
-    rendered = false;
+    _rendered = false;
 
     renderedCallback() {
         this.redraw();
-        this.rendered = true;
+        this._rendered = true;
+    }
+
+    /**
+     * Background color of the qr-code. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     * @default #ffffff
+     */
+    @api
+    get background() {
+        return this._background;
+    }
+
+    set background(color) {
+        if (color && typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
+
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._background = color;
+            }
+        }
+
+        if (this._rendered) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * The color of the border. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get borderColor() {
+        return this._borderColor;
+    }
+
+    set borderColor(color) {
+        if (color && typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
+
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._borderColor = color;
+            }
+        }
+
+        if (this._rendered) {
+            this.redraw();
+        }
     }
 
     /**
@@ -85,7 +144,91 @@ export default class AvonniQrcode extends LightningElement {
         this._borderWidth =
             typeof value === 'number' ? value : DEFAULT_BORDER_WIDTH;
 
-        if (this.rendered) {
+        if (this._rendered) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * The color of the QR code. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     * @default #000000
+     */
+    @api
+    get color() {
+        return this._color;
+    }
+
+    set color(color) {
+        if (color && typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
+
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._color = color;
+            }
+        }
+
+        if (this._rendered) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * The encoding mode used to encode the value.The possible values are:
+     * * "ISO_8859_1" - supports all characters from the ISO/IEC 8859-1 character set.
+     * * "UTF_8" - supports all Unicode characters.
+     *
+     * @type {string}
+     * @public
+     * @default ISO_8859_1
+     */
+    @api
+    get encoding() {
+        return this._encoding;
+    }
+
+    set encoding(encoding) {
+        this._encoding = normalizeString(encoding, {
+            fallbackValue: QR_ENCODINGS.default,
+            validValues: QR_ENCODINGS.valid,
+            toLowerCase: false
+        });
+
+        if (this._rendered) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * The error correction level used to encode the value. The possible values are:
+     * * "L" - approximately 7% of the codewords can be restored.
+     * * "M" - approximately 15% of the codewords can be restored.
+     * * "Q" - approximately 25% of the codewords can be restored.
+     * * "H" - approximately 30% of the codewords can be restored.
+     *
+     * @type {string}
+     * @public
+     * @default L
+     */
+    @api
+    get errorCorrection() {
+        return this._errorCorrection;
+    }
+
+    set errorCorrection(value) {
+        this._errorCorrection = normalizeString(value, {
+            fallbackValue: QR_ERROR_CORRECTIONS.default,
+            validValues: QR_ERROR_CORRECTIONS.valid,
+            toLowerCase: false
+        });
+
+        if (this._rendered) {
             this.redraw();
         }
     }
@@ -105,7 +248,64 @@ export default class AvonniQrcode extends LightningElement {
     set padding(value) {
         this._padding = typeof value === 'number' ? value : DEFAULT_PADDING;
 
-        if (this.rendered) {
+        if (this._rendered) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * Sets the preferred rendering engine. If it is not supported by the browser, the QRCode will switch to the first available mode. The supported values are:
+     * * "canvas" - renders the widget as a Canvas element, if available.
+     * * "svg" - renders the widget as inline SVG document, if available
+     *
+     * @type {string}
+     * @public
+     * @default svg
+     */
+    @api
+    get renderAs() {
+        return this._renderAs;
+    }
+
+    set renderAs(value) {
+        this._renderAs = normalizeString(value, {
+            fallbackValue: QR_RENDER_AS.default,
+            validValues: QR_RENDER_AS.valid
+        });
+
+        this._color =
+            this._renderAs === 'canvas' && !this._color ? DEFAULT_COLOR : null;
+        this._background =
+            this._renderAs === 'canvas' && !this._background
+                ? DEFAULT_BACKGROUND_COLOR
+                : null;
+
+        if (this._rendered) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * Specifies the size of a QR code in pixels (i.e. "200px"). Numeric values are treated as pixels.
+     * If no size is specified, it will be determined from the element width and height. In case the element has width or height of zero, a default value of 200 pixels will be used.
+     *
+     * @type {number}
+     * @public
+     * @default 200
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(value) {
+        if ((!isNaN(value) && Number(value) < 1) || isNaN(value)) {
+            this._size = DEFAULT_SIZE;
+        } else {
+            this._size = Number(value);
+        }
+
+        if (this._rendered) {
             this.redraw();
         }
     }
@@ -125,199 +325,7 @@ export default class AvonniQrcode extends LightningElement {
     set value(value) {
         this._value = value;
 
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * Specifies the size of a QR code in pixels (i.e. "200px").
-     * Numeric values are treated as pixels.
-     * If no size is specified, it will be determined from the element width and height. In case the element has width or height of zero, a default value of 200 pixels will be used.
-     *
-     * @type {number}
-     * @public
-     * @default 200
-     */
-    @api
-    get size() {
-        return this._size;
-    }
-
-    set size(value) {
-        if ((!isNaN(value) && Number(value) < 1) || isNaN(value)) {
-            this._size = DEFAULT_SIZE;
-        } else {
-            this._size = Number(value);
-        }
-
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * The encoding mode used to encode the value.The possible values are:
-     * "ISO_8859_1" - supports all characters from the ISO/IEC 8859-1 character set.
-     * "UTF_8" - supports all Unicode characters.
-     *
-     * @type {string}
-     * @public
-     * @default ISO_8859_1
-     */
-    @api get encoding() {
-        return this._encoding;
-    }
-
-    set encoding(encoding) {
-        this._encoding = normalizeString(encoding, {
-            fallbackValue: QR_ENCODINGS.default,
-            validValues: QR_ENCODINGS.valid,
-            toLowerCase: false
-        });
-
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * The error correction level used to encode the value. The possible values are:
-     * "L" - approximately 7% of the codewords can be restored.
-     * "M" - approximately 15% of the codewords can be restored.
-     * "Q" - approximately 25% of the codewords can be restored.
-     * "H" - approximately 30% of the codewords can be restored.
-     *
-     * @type {string}
-     * @public
-     * @default L
-     */
-    @api get errorCorrection() {
-        return this._errorCorrection;
-    }
-
-    set errorCorrection(value) {
-        this._errorCorrection = normalizeString(value, {
-            fallbackValue: QR_ERROR_CORRECTIONS.default,
-            validValues: QR_ERROR_CORRECTIONS.valid,
-            toLowerCase: false
-        });
-
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * Sets the preferred rendering engine. If it is not supported by the browser, the QRCode will switch to the first available mode. The supported values are:
-     * "canvas" - renders the widget as a Canvas element, if available.
-     * "svg" - renders the widget as inline SVG document, if available
-     *
-     * @type {string}
-     * @public
-     * @default svg
-     */
-    @api get renderAs() {
-        return this._renderAs;
-    }
-
-    set renderAs(value) {
-        this._renderAs = normalizeString(value, {
-            fallbackValue: QR_RENDER_AS.default,
-            validValues: QR_RENDER_AS.valid
-        });
-
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * Background color of the qr-code. Accepts a valid CSS color string, including hex and rgb.
-     *
-     * @type {string}
-     * @public
-     * @default #fff
-     */
-    @api get background() {
-        return this._background;
-    }
-
-    set background(color) {
-        if (typeof color === 'string') {
-            let styles = new Option().style;
-            styles.color = color;
-
-            if (
-                styles.color === color ||
-                this.isHexColor(color.replace('#', ''))
-            ) {
-                this._background = color;
-            }
-        } else {
-            this._background = DEFAULT_BACKGROUND_COLOR;
-        }
-
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * The color of the border. Accepts a valid CSS color string, including hex and rgb.
-     *
-     * @type {string}
-     * @public
-     */
-    @api get borderColor() {
-        return this._borderColor;
-    }
-
-    set borderColor(color) {
-        if (typeof color === 'string') {
-            let styles = new Option().style;
-            styles.color = color;
-
-            if (
-                styles.color === color ||
-                this.isHexColor(color.replace('#', ''))
-            ) {
-                this._borderColor = color;
-            }
-        }
-
-        if (this.rendered) {
-            this.redraw();
-        }
-    }
-
-    /**
-     * The color of the QR code. Accepts a valid CSS color string, including hex and rgb.
-     *
-     * @type {string}
-     * @public
-     * @default #000
-     */
-    @api get color() {
-        return this._color;
-    }
-
-    set color(color) {
-        if (typeof color === 'string') {
-            let styles = new Option().style;
-            styles.color = color;
-
-            if (
-                styles.color === color ||
-                this.isHexColor(color.replace('#', ''))
-            ) {
-                this._color = color;
-            }
-        } else {
-            this._color = DEFAULT_COLOR;
-        }
-
-        if (this.rendered) {
+        if (this._rendered) {
             this.redraw();
         }
     }
@@ -329,6 +337,14 @@ export default class AvonniQrcode extends LightningElement {
      */
     get renderAsSvg() {
         return this._renderAs === 'svg';
+    }
+
+    get isColorNull() {
+        return !this._color;
+    }
+
+    get isBackgroundNull() {
+        return !this._background;
     }
 
     /**
@@ -347,7 +363,7 @@ export default class AvonniQrcode extends LightningElement {
 
     /**
      * Redraws the QR code using the current value and options.
-     * 
+     *
      * @public
      */
     @api
@@ -370,7 +386,10 @@ export default class AvonniQrcode extends LightningElement {
                     fill: this._background
                 },
                 margin: 0,
-                svgSize: this.size
+                svgSize: this.size,
+                renderAsSvg: this.renderAsSvg,
+                isColorNull: this.isColorNull,
+                isBackgroundNull: this.isBackgroundNull
             });
 
             if (this.renderAsSvg) {

@@ -56,7 +56,9 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
     _contentInLine = false;
 
     renderedCallback() {
-        let elements = this.template.querySelector('[data-element-id="slot-default"]').assignedElements();
+        let elements = this.template
+            .querySelector('[data-element-id="slot-default"]')
+            .assignedElements();
         let indexCompleted = 0;
 
         elements.forEach((element, index) => {
@@ -127,8 +129,7 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
     }
 
     /**
-     * If present, add the class slds-progress__item_content to all vertical-progress-step items.
-     * Example: https://www.lightningdesignsystem.com/components/setup-assistant/#Hub-with-Expandable-Steps
+     * If present, the steps are separated by lines.
      *
      * @type {boolean}
      * @public

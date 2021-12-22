@@ -139,7 +139,7 @@ export function updateDirtyValues(state, rowColKeyValues) {
  * It will process when the datatable had finished an edition.
  *
  * @param {Object} dtState - the datatable state
- * @param {string} reason - the reason to finish the edition. valid reasons are: edit-canceled | loosed-focus | tab-pressed | submit-action
+ * @param {string} reason - the reason to finish the edition. valid reasons are: edit-canceled | loosed-focus | tab-pressed | submit-action | on-change
  * @param {string} rowKeyValue - the row key of the edited cell
  * @param {string} colKeyValue - the column key of the edited cell
  * @param {string} value - the edited value

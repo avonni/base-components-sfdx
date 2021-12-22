@@ -73,13 +73,6 @@ export default class AvonniProfileCard extends LightningElement {
      */
     @api subtitle;
     /**
-     * Background color in hexadecimal.
-     *
-     * @type {string}
-     * @public
-     */
-    @api backgroundColor;
-    /**
      * URL for the optional image.
      *
      * @type {string}
@@ -128,10 +121,6 @@ export default class AvonniProfileCard extends LightningElement {
     renderedCallback() {
         let header = this.template.querySelector('[data-element-id="header"]');
 
-        if (this.backgroundColor) {
-            header.style.backgroundColor = this.backgroundColor;
-        }
-
         if (this.backgroundSrc) {
             header.style.backgroundImage = `url(${this.backgroundSrc})`;
         }
@@ -148,28 +137,28 @@ export default class AvonniProfileCard extends LightningElement {
                 this.showActions &&
                 this._avatarPosition.indexOf('right') > -1
             ) {
-                let actionsContainer = this.template.querySelector(
-                    '.avonni-actions'
+                let actionsContainer =
+                    this.template.querySelector('.avonni-actions');
+                actionsContainer.classList.add(
+                    'avonni-profile-card__actions-left'
                 );
-                actionsContainer.classList.add('avonni-actions-left');
             } else {
-                let actionsContainer = this.template.querySelector(
-                    '.avonni-actions'
+                let actionsContainer =
+                    this.template.querySelector('.avonni-actions');
+                actionsContainer.classList.add(
+                    'avonni-profile-card__actions-right'
                 );
-                actionsContainer.classList.add('avonni-actions-right');
             }
             if (
                 this.showActions &&
                 this._avatarMobilePosition.indexOf('right') > -1
             ) {
-                let actionsContainer = this.template.querySelector(
-                    '.avonni-actions'
-                );
+                let actionsContainer =
+                    this.template.querySelector('.avonni-actions');
                 actionsContainer.classList.add('avonni-mobile-actions-left');
             } else {
-                let actionsContainer = this.template.querySelector(
-                    '.avonni-actions'
-                );
+                let actionsContainer =
+                    this.template.querySelector('.avonni-actions');
                 actionsContainer.classList.add('avonni-mobile-actions-right');
             }
         }
@@ -181,7 +170,7 @@ export default class AvonniProfileCard extends LightningElement {
 
     /**
      * Get the avatar action slot DOM element.
-     * 
+     *
      * @type {Element}
      */
     get avatarActionsSlot() {
@@ -190,7 +179,7 @@ export default class AvonniProfileCard extends LightningElement {
 
     /**
      * Get the action slot DOM element.
-     * 
+     *
      * @type {Element}
      */
     get actionsSlot() {
@@ -199,7 +188,7 @@ export default class AvonniProfileCard extends LightningElement {
 
     /**
      * Get the footer slot DOM element.
-     * 
+     *
      * @type {Element}
      */
     get footerSlot() {
@@ -287,20 +276,20 @@ export default class AvonniProfileCard extends LightningElement {
      * @type {string}
      */
     get computedContainerClass() {
-        return classSet('avonni-flex-container')
+        return classSet('avonni-profile-card__flex-container')
             .add({
-                'avonni-flex-align-center':
+                'avonni-profile-card__flex-container_align-center':
                     this._avatarPosition === 'top-center' ||
                     this._avatarPosition === 'bottom-center',
-                'avonni-flex-align-end':
+                'avonni-profile-card__flex-container_align-end':
                     this._avatarPosition === 'top-right' ||
                     this._avatarPosition === 'bottom-right'
             })
             .add({
-                'avonni-flex-mobile-align-center':
+                'avonni-profile-card__flex-container-mobile_align-center':
                     this._avatarMobilePosition === 'top-center' ||
                     this._avatarMobilePosition === 'bottom-center',
-                'avonni-flex-mobile-align-end':
+                'avonni-profile-card__flex-container-mobile_align-end':
                     this._avatarMobilePosition === 'top-right' ||
                     this._avatarMobilePosition === 'bottom-right'
             })
@@ -309,33 +298,14 @@ export default class AvonniProfileCard extends LightningElement {
 
     /**
      * Computed Main container class styling based on selected attributes.
-     * 
+     *
      * @type {string}
      */
     get computedMainContainerClass() {
         return classSet('')
-            .add({
-                'top-left-desktop': this._avatarPosition === 'top-left',
-                'bottom-left-desktop': this._avatarPosition === 'bottom-left',
-                'bottom-right-desktop': this._avatarPosition === 'bottom-right',
-                'top-right-desktop': this._avatarPosition === 'top-right',
-                'top-center-desktop': this._avatarPosition === 'top-center',
-                'bottom-center-desktop':
-                    this._avatarPosition === 'bottom-center'
-            })
-            .add({
-                'mobile-top-left': this._avatarMobilePosition === 'top-left',
-                'mobile-bottom-left':
-                    this._avatarMobilePosition === 'bottom-left',
-                'mobile-bottom-right':
-                    this._avatarMobilePosition === 'bottom-right',
-                'mobile-top-right': this._avatarMobilePosition === 'top-right',
-                'mobile-top-center':
-                    this._avatarMobilePosition === 'top-center',
-                'mobile-bottom-center':
-                    this._avatarMobilePosition === 'bottom-center'
-            })
-            .add(`card-${this._size}`)
+            .add(`${this._avatarPosition}-desktop`)
+            .add(`mobile-${this._avatarMobilePosition}`)
+            .add(`avonni-profile-card__card_size-${this._size}`)
             .toString();
     }
 
@@ -345,8 +315,10 @@ export default class AvonniProfileCard extends LightningElement {
      * @type {string}
      */
     get computedHeaderClass() {
-        return classSet('slds-media slds-media_center slds-has-flexi-truncate')
-            .add(`background-${this._size}`)
+        return classSet(
+            'slds-media slds-media_center slds-has-flexi-truncate avonni-profile-card_color-background'
+        )
+            .add(`avonni-profile-card__background_size-${this._size}`)
             .toString();
     }
 
@@ -356,11 +328,12 @@ export default class AvonniProfileCard extends LightningElement {
      * @type {string}
      */
     get computedAvatarClass() {
-        return classSet('avatar-img')
-            .add(`avatar-${this._size}`)
+        return classSet('avonni-profile-card__avatar-img')
+            .add(`avonni-profile-card__avatar_size-${this._size}`)
             .add({
-                'avatar-img-circle': this._avatarVariant === 'circle',
-                'avonni-icon-container': this.isError
+                'avonni-profile-card__avatar-img-circle':
+                    this._avatarVariant === 'circle',
+                'avonni-profile-card__icon-container': this.isError
             })
             .toString();
     }
@@ -380,7 +353,9 @@ export default class AvonniProfileCard extends LightningElement {
      * @type {string}
      */
     get isCircle() {
-        return this._avatarVariant === 'circle' ? 'avatar-img-circle' : '';
+        return this._avatarVariant === 'circle'
+            ? 'avonni-profile-card__avatar-img-circle'
+            : '';
     }
 
     /**

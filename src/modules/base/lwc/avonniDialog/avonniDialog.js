@@ -44,7 +44,7 @@ const DIALOG_SIZES = { valid: ['small', 'medium', 'large'], default: 'medium' };
  */
 export default class AvonniDialog extends LightningElement {
     /**
-     * Name of dialog.
+     * Dialog name.
      *
      * @type {string}
      * @public
@@ -140,7 +140,7 @@ export default class AvonniDialog extends LightningElement {
     }
 
     /**
-     * Show Dialog - boolean to show or hide the dialog.
+     * If present, the dialog is open by default.
      *
      * @type {boolean}
      * @default false
@@ -222,11 +222,7 @@ export default class AvonniDialog extends LightningElement {
      */
     get computedModalClass() {
         return classSet('slds-modal slds-fade-in-open')
-            .add({
-                'slds-modal_small': this._size === 'small',
-                'slds-modal_medium': this._size === 'medium',
-                'slds-modal_large': this._size === 'large'
-            })
+            .add(`slds-modal_${this._size}`)
             .toString();
     }
 }

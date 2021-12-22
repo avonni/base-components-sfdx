@@ -89,7 +89,7 @@ const DEFAULT_FRACTION_LABEL = 'of';
  */
 export default class AvonniWizard extends LightningElement {
     /**
-     * The title can include text, and is displayed in the header.
+     * Title of the wizard, displayed in the header.
      * To include additional markup or another component, use the title slot.
      *
      * @type {string}
@@ -297,7 +297,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * If true, hide the indicator.
+     * If present, hide the indicator.
      *
      * @type {boolean}
      * @public
@@ -312,7 +312,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Describes the position of the icon with respect to body. Options include left and right.
+     * Position of the icon with respect to the body. Options include left and right.
      *
      * @type {string}
      * @public
@@ -347,7 +347,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Change the appearance of the previous button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     * Changes the appearance of the previous button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text and success.
      *
      * @type {string}
      * @public
@@ -365,7 +365,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Describes the position of the icon with respect to body. Options include left and right.
+     * Position of the icon with respect to body. Options include left and right.
      *
      * @type {string}
      * @public
@@ -400,7 +400,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Change the appearance of the next button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     * Changes the appearance of the next button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text and success.
      *
      * @type {string}
      * @public
@@ -471,7 +471,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Valid values include left and right.
+     * Bump to apply to the buttons. Valid values include left and right.
      *
      * @type {string}
      * @public
@@ -488,7 +488,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Valid values include left and right.
+     * Position of the actions. Valid values include left and right.
      *
      * @type {string}
      * @public
@@ -506,7 +506,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Label displayed in front of fraction. Example: fraction-prefix-label == “Step” => Step 1 of 3
+     * Label displayed before the fraction indicator. For example, if "Page" is used, the indicator would display "Page 1 of 3". Only used by the fractions indicator type.
      *
      * @type {string}
      * @public
@@ -523,7 +523,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Label displayed between current index and max number of slides. Example: fraction-label == “of” => 1 of 3
+     * Label displayed between the current index and the maximum number of slides. For example, if "of" is used, the indicator would display "1 of 3". Only used by the fractions indicator type.
      *
      * @type {string}
      * @public
@@ -642,7 +642,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Display the next step of the wizard.
+     * Go to the next step of the wizard.
      *
      * @public
      */
@@ -673,7 +673,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Display the previous step of the wizard.
+     * Go to the previous step of the wizard.
      *
      * @public
      */
@@ -724,9 +724,8 @@ export default class AvonniWizard extends LightningElement {
             this.steps[this.currentStepIndex]
         ));
         if (hasError) {
-            this.errorMessage = this.steps[
-                this.currentStepIndex
-            ].beforeChangeErrorMessage;
+            this.errorMessage =
+                this.steps[this.currentStepIndex].beforeChangeErrorMessage;
             return;
         }
 
@@ -734,6 +733,13 @@ export default class AvonniWizard extends LightningElement {
 
         switch (action) {
             case 'finish':
+                /**
+                 * The event fired when the wizard finishes and the user clicks on Finish button.
+                 *
+                 * @event
+                 * @name complete
+                 * @public
+                 */
                 this.dispatchEvent(new CustomEvent('complete'));
                 break;
             case 'previous':

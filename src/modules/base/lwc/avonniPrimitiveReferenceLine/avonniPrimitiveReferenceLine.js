@@ -119,13 +119,7 @@ export default class AvonniPrimitiveReferenceLine extends LightningElement {
 
     get computedBadgeClass() {
         return classSet('reference-line__badge')
-            .add({
-                'reference-line__badge_inverse': this._variant === 'inverse',
-                'reference-line__badge_lightest': this._variant === 'lightest',
-                'reference-line__badge_success': this._variant === 'success',
-                'reference-line__badge_warning': this._variant === 'warning',
-                'reference-line__badge_error': this._variant === 'error'
-            })
+            .add(`reference-line__badge_${this._variant}`)
             .toString();
     }
 
@@ -150,18 +144,7 @@ export default class AvonniPrimitiveReferenceLine extends LightningElement {
                 'reference-line__badge-border-thickness_large':
                     this.thickness === 'large' && this.isHorizontal
             })
-            .add({
-                'reference-line__badge-border-color_inverse':
-                    this._variant === 'inverse',
-                'reference-line__badge-border-color_success':
-                    this._variant === 'success',
-                'reference-line__badge-border-color_warning':
-                    this._variant === 'warning',
-                'reference-line__badge-border-color_error':
-                    this._variant === 'error',
-                'reference-line__badge-border-color_lightest':
-                    this._variant === 'lightest'
-            })
+            .add(`reference-line__badge-border-color_${this._variant}`)
             .add({
                 'reference-line__line-vertical': !this.isHorizontal
             })
@@ -181,18 +164,7 @@ export default class AvonniPrimitiveReferenceLine extends LightningElement {
                 'reference-line__badge-border-thickness-vertical_large':
                     this.thickness === 'large' && !this.isHorizontal
             })
-            .add({
-                'reference-line__badge-border-vertical-color_inverse':
-                    this._variant === 'inverse',
-                'reference-line__badge-border-vertical-color_success':
-                    this._variant === 'success',
-                'reference-line__badge-border-vertical-color_warning':
-                    this._variant === 'warning',
-                'reference-line__badge-border-vertical-color_error':
-                    this._variant === 'error',
-                'reference-line__badge-border-vertical-color_lightest':
-                    this._variant === 'lightest'
-            })
+            .add(`reference-line__badge-border-vertical-color_${this._variant}`)
             .toString();
     }
 

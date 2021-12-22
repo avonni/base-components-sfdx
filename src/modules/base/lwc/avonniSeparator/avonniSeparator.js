@@ -56,24 +56,24 @@ const VALID_ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
  */
 export default class AvonniSeparator extends LightningElement {
     /**
-     * Text to display in the separator.
-     *
-     * @type {string}
-     * @public
-     */
-    @api label;
-    /**
      * The name of the icon to be used in the format 'utility:down'.
      *
      * @type {string}
      * @public
      */
     @api iconName;
+    /**
+     * Text to display in the separator.
+     *
+     * @type {string}
+     * @public
+     */
+    @api label;
 
     _alignContent = VALID_ALIGN_CONTENTS;
+    _iconPosition = VALID_ICON_POSITIONS;
     _iconSize = VALID_ICON_SIZES;
     _orientation = VALID_ORIENTATIONS;
-    _iconPosition = VALID_ICON_POSITIONS;
 
     /**
      * Position of the content in the separator. Valid values include start, center and end.
@@ -82,7 +82,8 @@ export default class AvonniSeparator extends LightningElement {
      * @public
      * @default center
      */
-    @api get alignContent() {
+    @api
+    get alignContent() {
         return this._alignContent;
     }
 
@@ -94,13 +95,33 @@ export default class AvonniSeparator extends LightningElement {
     }
 
     /**
+     * Describes the position of the icon. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
+    @api
+    get iconPosition() {
+        return this._iconPosition;
+    }
+
+    set iconPosition(value) {
+        this._iconPosition = normalizeString(value, {
+            fallbackValue: VALID_ICON_POSITIONS.default,
+            validValues: VALID_ICON_POSITIONS.valid
+        });
+    }
+
+    /**
      * The size of the icon. Options include xx-small, x-small, small, medium and large.
      *
      * @type {string}
      * @public
      * @default small
      */
-    @api get iconSize() {
+    @api
+    get iconSize() {
         return this._iconSize;
     }
 
@@ -112,13 +133,14 @@ export default class AvonniSeparator extends LightningElement {
     }
 
     /**
-     * Valid values include horizontal and vertical.
+     * Orientation of the separator. Valid values include horizontal and vertical.
      *
      * @type {string}
      * @public
      * @default horizontal
      */
-    @api get orientation() {
+    @api
+    get orientation() {
         return this._orientation;
     }
 
@@ -126,24 +148,6 @@ export default class AvonniSeparator extends LightningElement {
         this._orientation = normalizeString(value, {
             fallbackValue: VALID_ORIENTATIONS.default,
             validValues: VALID_ORIENTATIONS.valid
-        });
-    }
-
-    /**
-     * Describes the position of the icon. Valid values include left and right.
-     *
-     * @type {string}
-     * @public
-     * @default left
-     */
-    @api get iconPosition() {
-        return this._iconPosition;
-    }
-
-    set iconPosition(value) {
-        this._iconPosition = normalizeString(value, {
-            fallbackValue: VALID_ICON_POSITIONS.default,
-            validValues: VALID_ICON_POSITIONS.valid
         });
     }
 
@@ -163,7 +167,7 @@ export default class AvonniSeparator extends LightningElement {
      */
     get computedContainerClass() {
         return classSet(
-            'avonni-separator_container slds-grid slds-grid_vertical-align-center slds-nowrap'
+            'avonni-separator__container slds-grid slds-grid_vertical-align-center slds-nowrap'
         )
             .add({
                 'slds-grid_vertical slds-grid_align-center':
@@ -178,7 +182,9 @@ export default class AvonniSeparator extends LightningElement {
      * @type {string}
      */
     get computedLineOneClass() {
-        return classSet('avonni-separator_line-one')
+        return classSet(
+            'avonni-separator__line-one avonni-separator__lines_styling'
+        )
             .add({
                 'slds-border_bottom slds-col':
                     this.orientation === 'horizontal',
@@ -195,7 +201,9 @@ export default class AvonniSeparator extends LightningElement {
      * @type {string}
      */
     get computedLineTwoClass() {
-        return classSet('avonni-separator_line-two')
+        return classSet(
+            'avonni-separator__line-two avonni-separator__lines_styling'
+        )
             .add({
                 'slds-border_bottom slds-col':
                     this.orientation === 'horizontal',
@@ -227,7 +235,7 @@ export default class AvonniSeparator extends LightningElement {
      * @type {string}
      */
     get computedIconClass() {
-        return classSet('avonni-separator_icon-margin')
+        return classSet('avonni-separator__icon')
             .add({
                 'slds-m-right_x-small':
                     this.label && this.iconPosition === 'left',

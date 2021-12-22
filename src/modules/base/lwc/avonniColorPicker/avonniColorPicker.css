@@ -30,26 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-lightning-input {
-    padding-left: 0.5rem;
-    width: 7rem;
-}
-
-/*button {
-    height: auto;
-    min-height: var(--lwc-squareIconMediumBoundary, 2rem);
-}*/
-
 div:focus {
     outline: none;
 }
 
 .slds-form-element_stacked .slds-form-element {
     padding-left: 0.5rem;
-}
-
-.slds-popover__body {
-    width: 16rem;
 }
 
 .slds-swatch {
@@ -107,37 +93,28 @@ div:focus {
     margin-bottom: 1rem;
 }
 
-.avonni-flex {
-    display: flex;
-}
-
-.avonni-label-inline {
-    display: flex;
-    align-items: center;
-}
-
-.avonni-label-inline lightning-helptext {
-    padding-right: 0.25rem;
-}
-
-.slds-color-picker__selector {
-    padding: 0;
-}
-
-lightning-button {
+.avonni-color-picker__popover-button {
     display: grid;
     width: 100%;
 }
 
-button:disabled {
+.avonni-color-picker__main-button:disabled {
     background-color: #ecebea;
 }
 
-.avonni-spinner-container {
+.avonni-color-picker__spinner-container {
     width: 10rem;
     height: 4rem;
 }
 
 .avonni-color-picker__default-palette {
     max-height: 180px;
+}
+
+.avonni-color-picker__popover-body {
+    width: var(--avonni-color-picker-popover-width, 16rem);
+}
+
+.avonni-color-picker__dropdown {
+    max-width: none;
 }

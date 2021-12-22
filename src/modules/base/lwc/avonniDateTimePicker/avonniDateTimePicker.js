@@ -128,9 +128,9 @@ export default class AvonniDateTimePicker extends LightningElement {
     @api required = false;
 
     /**
-     * An array that will be used to determine which date times to be disabled in the calendar.
+     * Array of disabled dates. The dates must be Date objects or valid ISO8601 strings.
      *
-     * @type {object}
+     * @type {object[]}
      * @public
      */
     @api disabledDateTimes = [];
@@ -176,7 +176,8 @@ export default class AvonniDateTimePicker extends LightningElement {
 
     connectedCallback() {
         this._processValue();
-        this.selectedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        this.selectedTimeZone =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
         this._initTimeSlots();
         const now = new Date();
         this.today = now;
@@ -497,8 +498,7 @@ export default class AvonniDateTimePicker extends LightningElement {
             validValues: DATE_TIME_FORMATS.valid
         });
 
-        if (this._connected && this.variant === 'weekly')
-            this._generateTable();
+        if (this._connected && this.variant === 'weekly') this._generateTable();
     }
 
     /**
@@ -538,8 +538,7 @@ export default class AvonniDateTimePicker extends LightningElement {
             validValues: WEEKDAY_FORMATS.valid
         });
 
-        if (this._connected && this.variant === 'weekly')
-            this._generateTable();
+        if (this._connected && this.variant === 'weekly') this._generateTable();
     }
 
     /**
@@ -704,7 +703,7 @@ export default class AvonniDateTimePicker extends LightningElement {
     /**
      * Checks if the input is valid.
      *
-     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -713,10 +712,9 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {boolean} - The validity status of the input fields.
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -729,8 +727,7 @@ export default class AvonniDateTimePicker extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message - The string that describes the error.
-     * If message is an empty string, the error message is reset.
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -740,7 +737,7 @@ export default class AvonniDateTimePicker extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -749,7 +746,9 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.reportValidity();
 
         // Show errors on date picker
-        const datePicker = this.template.querySelector('[data-element-id="lightning-input"]');
+        const datePicker = this.template.querySelector(
+            '[data-element-id="lightning-input"]'
+        );
         if (datePicker) datePicker.reportValidity();
     }
 
@@ -757,15 +756,17 @@ export default class AvonniDateTimePicker extends LightningElement {
      * Pushes all dates included in disabled-date-times to calendar-disabled-dates to be disabled on the calendar.
      */
     _disableMonthlyCalendarDates() {
-        this.disabledDateTimes.forEach((disabledDateTime) => {
-            const type = typeof disabledDateTime;
-            const isNumber = type === 'number';
-            const isWeekDay =
-                type === 'string' && DAYS.indexOf(disabledDateTime) > -1;
-            if (isNumber || isWeekDay) {
-                this.calendarDisabledDates.push(disabledDateTime);
-            }
-        });
+        if (this.disabledDateTimes) {
+            this.disabledDateTimes.forEach((disabledDateTime) => {
+                const type = typeof disabledDateTime;
+                const isNumber = type === 'number';
+                const isWeekDay =
+                    type === 'string' && DAYS.indexOf(disabledDateTime) > -1;
+                if (isNumber || isWeekDay) {
+                    this.calendarDisabledDates.push(disabledDateTime);
+                }
+            });
+        }
     }
 
     /**
@@ -1130,7 +1131,7 @@ export default class AvonniDateTimePicker extends LightningElement {
      * @type {boolean}
      */
     get entirePeriodIsDisabled() {
-        return this.table.every((day) => day.disabled === true);
+        return this.table.every((day) => day.disabled);
     }
 
     /**
@@ -1187,9 +1188,9 @@ export default class AvonniDateTimePicker extends LightningElement {
      * Handles the onchange event of the lightning-input to change the date.
      */
     handleDateChange(event) {
-        const dateString = event.detail.value.match(
-            /^(\d{4})-(\d{2})-(\d{2})$/
-        );
+        const dateString = event.detail.value
+            .toString()
+            .match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
         if (dateString) {
             const year = dateString[1];
@@ -1242,7 +1243,8 @@ export default class AvonniDateTimePicker extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string} value The date time value.
+         * @param {string} value Picker new value.
+         * @param {string} name Name of the picker.
          * @public
          */
         this.dispatchEvent(

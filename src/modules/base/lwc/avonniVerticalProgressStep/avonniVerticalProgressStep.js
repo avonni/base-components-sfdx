@@ -33,9 +33,10 @@
 import { LightningElement, api } from 'lwc';
 
 /**
+ * The Vertical Progress Step is used in the Vertical Progress Indicator slot.
+ *
  * @class
  * @descriptor avonni-vertical-progress-step
- * @storyId example-vertical-progress-indicator--base
  * @public
  */
 export default class AvonniVerticalProgressStep extends LightningElement {
@@ -72,7 +73,7 @@ export default class AvonniVerticalProgressStep extends LightningElement {
     }
 
     /**
-     * Attributes for in line and variant shade sent from avonni-vertical-progress-indicator.
+     * Reserved for internal use. Attributes for in line and variant shade sent from avonni-vertical-progress-indicator.
      *
      * @param {boolean} contentInLine
      * @param {string} shade
@@ -90,7 +91,7 @@ export default class AvonniVerticalProgressStep extends LightningElement {
     }
 
     /**
-     * Icon name sent from avonni-vertical-progress-indicator.
+     * Reserved for internal use. Icon name sent from avonni-vertical-progress-indicator.
      *
      * @param {string} iconName
      */
@@ -163,7 +164,7 @@ export default class AvonniVerticalProgressStep extends LightningElement {
      */
     handleFocus() {
         /**
-         * The event fired when you focus the step.
+         * The event fired when the step receives focus.
          *
          * @event
          * @name stepfocus

@@ -30,12 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-separator_container {
+.avonni-separator__container {
     width: 100%;
     height: 100%;
 }
 
-.avonni-separator_line-one.slds-border_left,
-.avonni-separator_line-two.slds-border_left {
+.avonni-separator__label {
+    color: var(--avonni-separator-label-text-color, #080707);
+    font-size: var(--avonni-separator-label-font-size, 1em);
+    font-style: var(--avonni-separator-label-font-style, normal);
+    font-weight: var(--avonni-separator-label-font-weight, 400);
+}
+
+.avonni-separator__lines_styling {
+    border-color: var(--avonni-separator-color-border, #dddbda);
+    border-width: var(--avonni-separator-border-width, 1px);
+    border-style: var(--avonni-separator-border-style, solid);
+}
+
+.avonni-separator__line-one.slds-border_left,
+.avonni-separator__line-two.slds-border_left {
     height: 100%;
+}
+
+.avonni-separator__icon {
+    --sds-c-icon-color-foreground: var(
+        --avonni-separator-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-separator-icon-color-foreground-default
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-separator-icon-color-background
+    );
 }

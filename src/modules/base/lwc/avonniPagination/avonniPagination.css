@@ -30,22 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-pagination-container {
+ .avonni-pagination__container {
     display: flex;
 }
 
-.avonni-pagination-container-left {
+.avonni-pagination__container_left {
     justify-content: flex-start;
 }
 
-.avonni-pagination-container-center {
+.avonni-pagination__container_center {
     justify-content: center;
 }
 
-.avonni-pagination-container-right {
+.avonni-pagination__container_right {
     justify-content: flex-end;
 }
 
-.avonni-pagination-container-fill {
+.avonni-pagination__container_fill {
     width: 100%;
 }

@@ -34,12 +34,12 @@
 
 <template>
     <div
-        class="avonni-calendar-container"
+        class="avonni-calendar__container"
         onfocus={handleFocus}
         onblur={handleBlur}
         tabindex="0"
     >
-        <div class="slds-form-element">
+        <div class="slds-form-element avonni-calendar__background_color">
             <div class="slds-datepicker">
                 <div class="slds-datepicker__filter slds-grid">
                     <div
@@ -62,7 +62,13 @@
                                 onblur={handleBlur}
                             ></lightning-button-icon>
                         </div>
-                        <h2 class="slds-align-middle" data-element-id="h2">
+                        <h2
+                            class="
+                                slds-align-middle
+                                avonni-calendar__month_color
+                            "
+                            data-element-id="h2"
+                        >
                             {month}
                         </h2>
                         <div class="slds-align-middle">
@@ -108,7 +114,12 @@
                                 for:item="day"
                                 for:index="index"
                             >
-                                <th key={day} id={index} scope="col">
+                                <th
+                                    key={day}
+                                    id={index}
+                                    scope="col"
+                                    class="avonni-calendar__weekdays_color"
+                                >
                                     <abbr>{day}</abbr>
                                 </th>
                             </template>
@@ -143,7 +154,7 @@
                                         >
                                             <div
                                                 class="
-                                                    avonni-calendar-marker-container
+                                                    avonni-calendar__marker-container
                                                 "
                                             >
                                                 <template
@@ -153,7 +164,7 @@
                                                     <div
                                                         key={generateKey}
                                                         class="
-                                                            avonni-calendar-marked-cells
+                                                            avonni-calendar__marked-cells
                                                         "
                                                         data-element-id="div-marked-cells"
                                                         style={marker.color}

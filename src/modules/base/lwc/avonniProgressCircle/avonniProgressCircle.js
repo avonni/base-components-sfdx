@@ -137,7 +137,6 @@ export default class AvonniProgressCircle extends LightningElement {
 
     /**
      * Accepted variants include standard, value-hidden.
-     * value-hidden: Hide the value in the progress circle (ex: 75%)
      *
      * @type {string}
      * @public
@@ -261,16 +260,11 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get progressRingClass() {
-        return classSet('avonni-progress-ring')
+        return classSet('avonni-progress-circle')
             .add({
-                'avonni-progress-ring-with-title-top':
-                    this._titlePosition === 'top',
-                'avonni-progress-x-small': this._size === 'x-small',
-                'avonni-progress-small': this._size === 'small',
-                'avonni-progress-medium': this._size === 'medium',
-                'avonni-progress-large': this._size === 'large',
-                'avonni-progress-x-large': this._size === 'x-large'
+                'avonni-progress-circle__title_top': this.showPositionTop
             })
+            .add(`avonni-progress-circle_size-${this._size}`)
             .toString();
     }
 
@@ -280,48 +274,44 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get progressRingContentClass() {
-        return classSet('avonni-progress-content')
+        return classSet('avonni-progress-circle__content')
+            .add(`avonni-progress-circle__content_size-${this._size}`)
             .add({
-                'avonni-progress-content-x-small': this._size === 'x-small',
-                'avonni-progress-content-small': this._size === 'small',
-                'avonni-progress-content-medium': this._size === 'medium',
-                'avonni-progress-content-large': this._size === 'large',
-                'avonni-progress-content-x-large': this._size === 'x-large'
-            })
-            .add({
-                'avonni-progress-thickness-x-small-size-x-small':
+                'avonni-progress-circle_thickness-x-small-size-x-small':
                     this._thickness === 'x-small' && this._size === 'x-small',
-                'avonni-progress-thickness-small-size-x-small':
+                'avonni-progress-circle_thickness-small-size-x-small':
                     this._thickness === 'small' && this._size === 'x-small',
-                'avonni-progress-thickness-large-size-x-small':
+                'avonni-progress-circle_thickness-large-size-x-small':
                     this._thickness === 'large' && this._size === 'x-small',
-                'avonni-progress-thickness-x-large-size-x-small':
+                'avonni-progress-circle_thickness-x-large-size-x-small':
                     this._thickness === 'x-large' && this._size === 'x-small',
-                'avonni-progress-thickness-x-small-size-small':
+                'avonni-progress-circle_thickness-x-small-size-small':
                     this._thickness === 'x-small' && this._size === 'small',
-                'avonni-progress-thickness-small-size-small':
+                'avonni-progress-circle_thickness-small-size-small':
                     this._thickness === 'small' && this._size === 'small',
-                'avonni-progress-thickness-large-size-small':
+                'avonni-progress-circle_thickness-large-size-small':
                     this._thickness === 'large' && this._size === 'small',
-                'avonni-progress-thickness-x-large-size-small':
+                'avonni-progress-circle_thickness-x-large-size-small':
                     this._thickness === 'x-large' && this._size === 'small',
-                'avonni-progress-thickness-small-size-large':
+                'avonni-progress-circle_thickness-small-size-large':
                     this._thickness === 'small' && this._size === 'large',
-                'avonni-progress-thickness-large-size-large':
+                'avonni-progress-circle_thickness-large-size-large':
                     this._thickness === 'large' && this._size === 'large',
-                'avonni-progress-thickness-x-large-size-large':
+                'avonni-progress-circle_thickness-x-large-size-large':
                     this._thickness === 'x-large' && this._size === 'large',
-                'avonni-progress-thickness-small-size-x-large':
+                'avonni-progress-circle_thickness-small-size-x-large':
                     this._thickness === 'small' && this._size === 'x-large',
-                'avonni-progress-thickness-large-size-x-large':
+                'avonni-progress-circle_thickness-large-size-x-large':
                     this._thickness === 'large' && this._size === 'x-large',
-                'avonni-progress-thickness-x-large-size-x-large':
+                'avonni-progress-circle_thickness-x-large-size-x-large':
                     this._thickness === 'x-large' && this._size === 'x-large',
-                'avonni-progress-thickness-x-small':
+                'avonni-progress-circle_thickness-x-small':
                     this._thickness === 'x-small',
-                'avonni-progress-thickness-small': this._thickness === 'small',
-                'avonni-progress-thickness-large': this._thickness === 'large',
-                'avonni-progress-thickness-x-large':
+                'avonni-progress-circle_thickness-small':
+                    this._thickness === 'small',
+                'avonni-progress-circle_thickness-large':
+                    this._thickness === 'large',
+                'avonni-progress-circle_thickness-x-large':
                     this._thickness === 'x-large'
             })
             .toString();
@@ -334,15 +324,10 @@ export default class AvonniProgressCircle extends LightningElement {
      */
     get progressTitleClass() {
         return classSet(
-            'slds-grid slds-grid_align-center slds-text-align_center'
+            'avonni-progress-circle__title slds-text-align_center slds-truncate'
         )
-            .add({
-                'avonni-progress-title-x-small': this._size === 'x-small',
-                'avonni-progress-title-small': this._size === 'small',
-                'avonni-progress-title-medium': this._size === 'medium',
-                'avonni-progress-title-large': this._size === 'large',
-                'avonni-progress-title-x-large': this._size === 'x-large'
-            })
+            .add(`avonni-progress-circle__title_size-${this._size}`)
+
             .toString();
     }
 
@@ -353,15 +338,9 @@ export default class AvonniProgressCircle extends LightningElement {
      */
     get progressTitleClassTop() {
         return classSet(
-            'slds-grid slds-grid_align-center slds-text-align_center avonni-progress-title-position-top'
+            'avonni-progress-circle__title slds-text-align_center avonni-progress-circle__title-top_position slds-truncate'
         )
-            .add({
-                'avonni-progress-title-top-x-small': this._size === 'x-small',
-                'avonni-progress-title-top-small': this._size === 'small',
-                'avonni-progress-title-top-medium': this._size === 'medium',
-                'avonni-progress-title-top-large': this._size === 'large',
-                'avonni-progress-title-top-x-large': this._size === 'x-large'
-            })
+            .add(`avonni-progress-circle__title-top_size_size-${this._size}`)
             .toString();
     }
 
@@ -371,14 +350,10 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get progressLabelClass() {
-        return classSet('slds-text-align_center avonni-progress-label-style')
-            .add({
-                'avonni-progress-label-style-x-small': this._size === 'x-small',
-                'avonni-progress-label-style-small': this._size === 'small',
-                'avonni-progress-label-style-medium': this._size === 'medium',
-                'avonni-progress-label-style-large': this._size === 'large',
-                'avonni-progress-label-style-x-large': this._size === 'x-large'
-            })
+        return classSet(
+            'avonni-progress-circle__label slds-text-align_center avonni-progress-circle__label_size slds-truncate'
+        )
+            .add(`avonni-progress-circle__label_size-${this._size}`)
             .toString();
     }
 
@@ -426,6 +401,10 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get showPositionBottom() {
-        return this._titlePosition === 'bottom';
+        return this._titlePosition === 'bottom' && this.title;
+    }
+
+    get showPositionTop() {
+        return this._titlePosition === 'top' && this.title;
     }
 }

@@ -175,7 +175,7 @@ export default class AvonniColorGradient extends LightningElement {
     }
 
     /**
-     * Defines whether the alpha slider will be displayed.
+     * If present, the alpha slider will be displayed.
      * 
      * @public
      * @type {boolean}
@@ -197,9 +197,9 @@ export default class AvonniColorGradient extends LightningElement {
     }
 
     /**
-     * Render value of color input.
+     * Display the given color in the color gradient.
      * 
-     * @param {string} color
+     * @param {string} color Color to display.
      */
     @api
     renderValue(color) {
@@ -261,6 +261,8 @@ export default class AvonniColorGradient extends LightningElement {
      */
     handleBlur() {
         /**
+         * The event fired when the color gradient loses focus.
+         * 
          * @event
          * @name blur
          * @public
@@ -294,11 +296,11 @@ export default class AvonniColorGradient extends LightningElement {
              * @event
              * @name change
              * @public
-             * @params {string} hex Color in hexadecimal format.
-             * @params {string} hexa Color in hexadecimal format with alpha.
-             * @params {string} rgb Color in rgb format.
-             * @params {string} rgba Color in rgba format.
-             * @params {string} alpha Alpha value of the color.
+             * @param {string} hex Color in hexadecimal format.
+             * @param {string} hexa Color in hexadecimal format with alpha.
+             * @param {string} rgb Color in rgb format.
+             * @param {string} rgba Color in rgba format.
+             * @param {string} alpha Alpha value of the color.
              * @cancelable
              * @bubbles
              */

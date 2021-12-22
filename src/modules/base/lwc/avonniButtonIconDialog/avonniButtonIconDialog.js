@@ -63,35 +63,35 @@ const BUTTON_VARIANTS = {
 export default class AvonniButtonIconDialog extends LightningElement {
     /**
      * The keyboard shortcut for the button.
-     * 
+     *
      * @public
      * @type {string}
      */
     @api accessKey;
     /**
      * The assistive text for the button.
-     * 
+     *
      * @public
      * @type {string}
      */
     @api alternativeText;
     /**
      * Text to display when the user mouses over or focuses on the button. The tooltip is auto-positioned relative to the button and screen space.
-     * 
+     *
      * @public
      * @type {string}
      */
     @api tooltip;
     /**
      * The class to be applied to the contained icon element ( e.g. "slds-icon-text-success").
-     * 
+     *
      * @public
      * @type {string}
      */
     @api iconClass;
     /**
      * The name of the icon to be used in the format 'utility:down'.
-     * 
+     *
      * @public
      * @type {string}
      */
@@ -103,12 +103,14 @@ export default class AvonniButtonIconDialog extends LightningElement {
     _dialogSlot;
 
     renderedCallback() {
-        this._dialogSlot = this.template.querySelector('[data-element-id="slot"]');
+        this._dialogSlot = this.template.querySelector(
+            '[data-element-id="slot"]'
+        );
     }
 
     /**
-     * The size of the buttonIcon. For the bare variant, options include x-small, small, medium, and large. For non-bare variants, options include xx-small, x-small, small, and medium.
-     * 
+     * The size of the button icon. For the bare variant, options include x-small, small, medium, and large. For non-bare variants, options include xx-small, x-small, small, and medium.
+     *
      * @public
      * @type {string}
      * @default medium
@@ -133,8 +135,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     }
 
     /**
-     * The variant changes the appearance of buttonIcon. Accepted variants include bare, container, brand, border, border-filled, bare-inverse, and border-inverse.
-     * 
+     * The variant changes the appearance of button icon. Accepted variants include bare, container, brand, border, border-filled, bare-inverse, and border-inverse.
+     *
      * @public
      * @type {string}
      * @default border
@@ -152,8 +154,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     }
 
     /**
-     * If present, the popover can be opened by users.
-     * 
+     * If present, the modal box can't be opened by users.
+     *
      * @public
      * @type {boolean}
      */
@@ -167,8 +169,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     }
 
     /**
-     * Open modal box method.
-     * 
+     * Open the modal box.
+     *
      * @public
      */
     @api
@@ -177,8 +179,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].show();
         }
         /**
-         * Event that fires to open the modal box.
-         * 
+         * The event fired when the modal box is opened.
+         *
          * @event
          * @name show
          * @public
@@ -187,8 +189,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     }
 
     /**
-     * Close the modal box method.
-     * 
+     * Close the modal box.
+     *
      * @public
      */
     @api
@@ -197,8 +199,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].hide();
         }
         /**
-         * Event that fires to close the modal box.
-         * 
+         * The event fired when the modal box is closed.
+         *
          * @event
          * @name hide
          * @public
@@ -207,8 +209,8 @@ export default class AvonniButtonIconDialog extends LightningElement {
     }
 
     /**
-     * Clicks the button method.
-     * 
+     * Simulate a click on the button.
+     *
      * @public
      */
     @api
@@ -217,29 +219,29 @@ export default class AvonniButtonIconDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].show();
         }
         /**
-         * Event that fires when clicking the button.
-         * 
+         * The event fired when the button is clicked.
+         *
          * @event
          * @name click
-         * @public
          */
         this.dispatchEvent(new CustomEvent('click'));
     }
 
     /**
-     * Sets focus on the button method.
-     * 
+     * Set focus on the button.
+     *
      * @public
      */
     @api
     focus() {
-        this.template.querySelector('[data-element-id="lightning-button-icon"]').focus();
+        this.template
+            .querySelector('[data-element-id="lightning-button-icon"]')
+            .focus();
         /**
-         * Event that fires when focusing the button.
-         * 
+         * The event fired when the button is focused.
+         *
          * @event
          * @name focus
-         * @public
          */
         this.dispatchEvent(new CustomEvent('focus'));
     }

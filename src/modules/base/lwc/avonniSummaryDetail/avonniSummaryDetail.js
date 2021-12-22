@@ -60,7 +60,7 @@ export default class AvonniSummaryDetail extends LightningElement {
     _hideIcon;
 
     /**
-     * Icon used to close the summary detail.
+     * Name of the icon used to close the summary detail, in the format utility:down.
      *
      * @type {string}
      * @public
@@ -75,7 +75,7 @@ export default class AvonniSummaryDetail extends LightningElement {
     }
 
     /**
-     * Icon used to expand the summary detail.
+     * Name of the icon used to expand the summary detail, in the format utility:down.
      *
      * @type {string}
      * @public
@@ -120,7 +120,7 @@ export default class AvonniSummaryDetail extends LightningElement {
     }
 
     /**
-     * If present, hide details.
+     * If present, the summary detail is closed by default.
      *
      * @type {boolean}
      * @public
@@ -177,7 +177,7 @@ export default class AvonniSummaryDetail extends LightningElement {
      * @type {string}
      */
     get titleClass() {
-        return classSet('avonni-min-width_0').add({
+        return classSet('avonni-summary-detail_min-width').add({
             'slds-col': this.fullWidth
         });
     }
@@ -188,7 +188,7 @@ export default class AvonniSummaryDetail extends LightningElement {
      * @type {string}
      */
     get bodyClass() {
-        return classSet('avonni-min-width_0').add({
+        return classSet('avonni-summary-detail_min-width').add({
             'slds-col': this.fullWidth
         });
     }
@@ -200,7 +200,8 @@ export default class AvonniSummaryDetail extends LightningElement {
      */
     get contentClass() {
         return classSet('slds-summary-detail__content').add({
-            'content_no-indent': this.removeBodyIndentation && !this.hideIcon
+            'avonni-summary-detail__content_no-indent':
+                this.removeBodyIndentation && !this.hideIcon
         });
     }
 
@@ -222,7 +223,7 @@ export default class AvonniSummaryDetail extends LightningElement {
          *
          * @event
          * @name toggle
-         * @param {boolean} closed Boolean representing the new state of the summary detail: true if it is closed, false if it is open.
+         * @param {boolean} closed True if the summary is closed.
          * @public
          */
         this.dispatchEvent(

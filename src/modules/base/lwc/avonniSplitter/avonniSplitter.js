@@ -54,7 +54,9 @@ export default class AvonniSplitter extends LightningElement {
         let splitter = this.template.querySelector(
             '.' + this.computedOrientationClass
         );
-        let slot = this.template.querySelector('[data-element-id="slot-default"]');
+        let slot = this.template.querySelector(
+            '[data-element-id="slot-default"]'
+        );
         let slotElements = slot.assignedElements();
 
         if (slotElements.length > 0) {
@@ -87,9 +89,8 @@ export default class AvonniSplitter extends LightningElement {
                         element.getAttribute('collapsed') === 'true';
 
                     if (isSeparator) {
-                        let previousSeparator = this.template.querySelector(
-                            separatorName
-                        );
+                        let previousSeparator =
+                            this.template.querySelector(separatorName);
                         if (
                             previousSeparator.lastChild.className ===
                                 'separator-icon-horizontal' ||
@@ -101,9 +102,8 @@ export default class AvonniSplitter extends LightningElement {
                     }
 
                     if (collapsible && isSeparator) {
-                        let previousSeparator = this.template.querySelector(
-                            separatorName
-                        );
+                        let previousSeparator =
+                            this.template.querySelector(separatorName);
 
                         if (
                             previousSeparator.getAttribute('is-colapsed') ===
@@ -227,9 +227,8 @@ export default class AvonniSplitter extends LightningElement {
                                     nextElement.getAttribute('collapsed') !==
                                         'true'
                                 ) {
-                                    let separatorIcon = document.createElement(
-                                        'div'
-                                    );
+                                    let separatorIcon =
+                                        document.createElement('div');
                                     separatorIcon.setAttribute(
                                         'c-splitter_splitter',
                                         ''
@@ -284,13 +283,11 @@ export default class AvonniSplitter extends LightningElement {
 
                         if (element.getAttribute('collapsedSize')) {
                             if (this.orientation === 'vertical') {
-                                element.style.maxHeight = element.getAttribute(
-                                    'collapsedSize'
-                                );
+                                element.style.maxHeight =
+                                    element.getAttribute('collapsedSize');
                             } else {
-                                element.style.maxWidth = element.getAttribute(
-                                    'collapsedSize'
-                                );
+                                element.style.maxWidth =
+                                    element.getAttribute('collapsedSize');
                             }
                         }
                     }
@@ -330,7 +327,8 @@ export default class AvonniSplitter extends LightningElement {
      * @public
      * @default horizontal
      */
-    @api get orientation() {
+    @api
+    get orientation() {
         return this._orientation;
     }
 
@@ -343,7 +341,7 @@ export default class AvonniSplitter extends LightningElement {
 
     /**
      * Computed orientation class based on vertical or horizontal display.
-     * 
+     *
      * @type {string}
      */
     get computedOrientationClass() {
@@ -354,7 +352,7 @@ export default class AvonniSplitter extends LightningElement {
 
     /**
      * Computed separator class based on vertical or horizontal display.
-     * 
+     *
      * @type {string}
      */
     get computedSeparatorClass() {
@@ -550,13 +548,11 @@ export default class AvonniSplitter extends LightningElement {
 
         if (leftElement.getAttribute('collapsedSize')) {
             if (this.orientation === 'vertical') {
-                leftElement.style.maxHeight = leftElement.getAttribute(
-                    'collapsedSize'
-                );
+                leftElement.style.maxHeight =
+                    leftElement.getAttribute('collapsedSize');
             } else {
-                leftElement.style.maxWidth = leftElement.getAttribute(
-                    'collapsedSize'
-                );
+                leftElement.style.maxWidth =
+                    leftElement.getAttribute('collapsedSize');
             }
         }
 
@@ -625,13 +621,11 @@ export default class AvonniSplitter extends LightningElement {
 
         if (rightElement.getAttribute('collapsedSize')) {
             if (this.orientation === 'vertical') {
-                rightElement.style.maxHeight = rightElement.getAttribute(
-                    'collapsedSize'
-                );
+                rightElement.style.maxHeight =
+                    rightElement.getAttribute('collapsedSize');
             } else {
-                rightElement.style.maxWidth = rightElement.getAttribute(
-                    'collapsedSize'
-                );
+                rightElement.style.maxWidth =
+                    rightElement.getAttribute('collapsedSize');
             }
         }
 
@@ -968,12 +962,12 @@ export default class AvonniSplitter extends LightningElement {
     /**
      * Change horizontal container height.
      *
-     * @param {number} height
+     * @param {number} height New height of the container.
      * @public
      */
     @api
     changeHeight(height) {
-        let horizontalContainer = this.template.querySelector(
+        const horizontalContainer = this.template.querySelector(
             '.splitter-orientation-horizontal'
         );
 

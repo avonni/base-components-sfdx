@@ -33,34 +33,41 @@
 -->
 
 <template>
-    <div class="avonni-hero-banner-background-class" style={imgSrc}>
-        <div class={computedContentContainer}>
-            <div class="slds-grid avonni-hero-banner-justify_center">
-                <div class={computedWidthContainer} style={computedMaxWidth}>
+    <div class="avonni-hero-banner__background" style={imgSrc}>
+        <div
+            data-element-id="avonni-hero-banner-content-container"
+            class={computedContentContainer}
+        >
+            <div class="slds-grid avonni-hero-banner__justify-content_center">
+                <div
+                    data-element-id="avonni-hero-banner-content-width"
+                    class={computedWidthContainer}
+                    style={computedMaxWidth}
+                >
                     <div
-                        class="avonni-hero-banner-content"
+                        data-element-id="avonni-hero-banner-content"
                         style={computedContentStyling}
                     >
                         <template if:true={caption}>
                             <h1
-                                class="avonni-hero-banner-caption-class"
-                                data-element-id="h1"
+                                class="avonni-hero-banner__caption"
+                                data-element-id="avonni-hero-banner-caption"
                             >
                                 {caption}
                             </h1>
                         </template>
                         <template if:true={title}>
                             <h2
-                                class="avonni-hero-banner-title-class"
-                                data-element-id="h2"
+                                class="avonni-hero-banner__title"
+                                data-element-id="avonni-hero-banner-title"
                             >
                                 {title}
                             </h2>
                         </template>
                         <template if:true={subtitle}>
                             <p
-                                class="avonni-hero-banner-subtitle-class"
-                                data-element-id="p-subtitle"
+                                class="avonni-hero-banner__subtitle"
+                                data-element-id="avonni-hero-banner-subtitle"
                             >
                                 {subtitle}
                             </p>
@@ -70,13 +77,19 @@
                                 <div class="slds-grid">
                                     <template if:true={primaryButtonLabel}>
                                         <a
-                                            class="slds-button slds-truncate avonni-hero-banner-primary-button"
+                                            class="
+                                                slds-button slds-truncate
+                                                avonni-hero-banner__primary-button
+                                            "
                                             >{primaryButtonLabel}</a
                                         >
                                     </template>
                                     <template if:true={hasButtons}>
                                         <a
-                                            class="slds-button slds-truncate avonni-hero-banner-secondary-button"
+                                            class="
+                                                slds-button slds-truncate
+                                                avonni-hero-banner__secondary-button
+                                            "
                                             >{secondaryButtonLabel}</a
                                         >
                                     </template>

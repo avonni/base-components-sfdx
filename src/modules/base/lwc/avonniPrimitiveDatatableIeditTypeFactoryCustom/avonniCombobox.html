@@ -35,7 +35,6 @@
 <template>
     <c-avonni-combobox
         name="dt-inline-edit-combobox"
-        data-element-id="primitive-cell-combobox-input"
         data-inputable="true"
         disabled={disabled}
         dropdown-alignment="auto"
@@ -43,9 +42,10 @@
         is-multi-select={isMultiSelect}
         options={options}
         placeholder={placeholder}
-        variant="label-hidden"
         value={editedValue}
+        variant="label-hidden"
         onchange={handleOnChange}
+        required={required}
     >
     </c-avonni-combobox>
 </template>

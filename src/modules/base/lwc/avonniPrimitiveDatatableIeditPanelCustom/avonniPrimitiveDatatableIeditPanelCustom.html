@@ -40,6 +40,8 @@
         tabindex="-1"
         onblur={handleTypeElemBlur}
         onfocus={handleTypeElemFocus}
+        onmouseenter={handleTypeElemMouseEnter}
+        onmouseleave={handleTypeElemMouseLeave}
         onkeydown={handleCellKeydown}
     >
         <span
@@ -55,17 +57,39 @@
                 >
                     <c-avonni-primitive-datatable-iedit-type-factory-custom
                         required={required}
-                        class="dt-type-edit-factory slds-col"
+                        class="dt-type-edit-factory-custom slds-col"
                         column-def={columnDef}
                         edited-value={editedValue}
                         onblur={handleTypeElemBlur}
                         onfocus={handleTypeElemFocus}
                         key={inputKey}
+                        disabled={disabled}
+                        label={label}
+                        type={type}
+                        colors={colors}
+                        hide-color-input={hideColorInput}
+                        menu-alignment={menuAlignment}
+                        menu-icon-name={menuIconName}
+                        menu-icon-size={menuIconSize}
+                        menu-variant={menuVariant}
+                        name={name}
+                        opacity={opacity}
                         dropdown-length={dropdownLength}
                         is-multi-select={isMultiSelect}
                         options={options}
                         placeholder={placeholder}
-                        disabled={disabled}
+                        max={max}
+                        max-length={maxLength}
+                        min={min}
+                        min-length={minLength}
+                        step={step}
+                        start-date={startDate}
+                        end-date={endDate}
+                        date-style={dateStyle}
+                        time-style={timeStyle}
+                        timezone={timezone}
+                        label-start-date={labelStartDate}
+                        label-end-date={labelEndDate}
                     ></c-avonni-primitive-datatable-iedit-type-factory-custom>
                 </c-avonni-primitive-datatable-iedit-input-wrapper-custom>
                 <template if:true={isMassEditEnabled}>
@@ -74,8 +98,9 @@
                         type="checkbox"
                         name="dt-iedit-mass-edit"
                         label={massEditCheckboxLabel}
-                        onblur={handleTypeElemBlur}
                         onfocus={handleTypeElemFocus}
+                        onclick={handleMassEditCheckboxClick}
+                        class="slds-m-left_xx-small"
                     ></lightning-input>
                 </template>
                 <template if:false={isMassEditEnabled}>
@@ -89,7 +114,7 @@
                 </template>
             </form>
         </div>
-        <template if:true={isMassEditEnabled}>
+        <template if:true={showButtons}>
             <div class="slds-popover__footer">
                 <div class="slds-grid slds-grid_align-end">
                     <lightning-button

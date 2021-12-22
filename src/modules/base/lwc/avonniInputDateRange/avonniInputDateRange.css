@@ -30,21 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-date-range-container {
+.avonni-date-range__container {
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
 }
 
-.avonni-date-range-container .slds-form-element {
+.avonni-date-range__container .slds-form-element {
     padding-right: 0.5rem;
 }
 
-.avonni-label-container {
+.avonni-date-range__label-container {
     display: flex;
 }
 
-.avonni-label-container p {
+.avonni-date-range__label-container p {
+    color: var(--avonni-input-date-range-header-text-color, #080707);
+    font-size: var(--avonni-input-date-range-header-font-size, 0.8125rem);
+    font-style: var(--avonni-input-date-range-header-font-style, normal);
+    font-weight: var(--avonni-input-date-range-header-font-weight, 400);
     padding-top: var(--lwc-spacingXxSmall, 0.25rem);
     padding-right: var(--lwc-spacingXxSmall, 0.25rem);
 }
@@ -57,6 +61,13 @@
     opacity: 0.3;
 }
 
-.avonni-input-date-rage-input-error {
+.avonni-date-range__input_error {
     box-shadow: #c23934 0 0 0 1px inset;
+}
+
+.avonni-input-date-range__labels {
+    color: var(--avonni-input-date-range-labels-text-color, #3e3e3c);
+    font-size: var(--avonni-input-date-range-labels-font-size, 0.75rem);
+    font-style: var(--avonni-input-date-range-labels-font-style, normal);
+    font-weight: var(--avonni-input-date-range-labels-font-weight, 400);
 }

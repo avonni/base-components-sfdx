@@ -30,10 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-min-width_0 {
+.avonni-summary-detail_min-width {
     min-width: 0;
 }
 
-.content_no-indent {
+.avonni-summary-detail__content_no-indent {
     margin-left: -1.375rem;
 }

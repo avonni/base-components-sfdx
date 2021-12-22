@@ -36,6 +36,8 @@ import { normalizeBoolean, keyCodes } from 'c/utilsPrivate';
 const DEFAULT_TAB_INDEX = '0';
 
 /**
+ * The Menu Item Dialog is used inside an Avonni Button Menu. On click on the item, a modal box is opened.
+ *
  * @class
  * @descriptor avonni-menu-item-dialog
  * @storyId example-menu-item-dialog-only-with-avonni-button-menu--base
@@ -43,7 +45,7 @@ const DEFAULT_TAB_INDEX = '0';
  */
 export default class AvonniMenuItemDialog extends LightningElement {
     /**
-     * A value associated with the menu item. This value will be the same with dialog (dialog-name === value)
+     * A value associated with the menu item.
      *
      * @type {string}
      * @public
@@ -57,7 +59,7 @@ export default class AvonniMenuItemDialog extends LightningElement {
      */
     @api accessKey;
     /**
-     * Describes the reason for showing the draft indicator. This is required when is-draft is present on the lightning-menu-item tag.
+     * Describes the reason for showing the draft indicator. This is required when is-draft is present.
      *
      * @type {string}
      * @public

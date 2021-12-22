@@ -53,7 +53,7 @@ export default class AvonniVisualPickerLink extends LightningElement {
      */
     @api iconName;
     /**
-     * The title can include text, and is displayed in the header. To include additional markup or another component, use the title slot.
+     * Title of the visual picker link. To include additional markup or another component, use the title slot.
      *
      * @type {string}
      * @public
@@ -92,13 +92,14 @@ export default class AvonniVisualPickerLink extends LightningElement {
     }
 
     /**
-     * Valid values include left and right.
+     * Position of the icon. Valid values include left and right.
      *
      * @type {string}
      * @public
      * @default left
      */
-    @api get iconPosition() {
+    @api
+    get iconPosition() {
         return this._iconPosition;
     }
 
@@ -110,13 +111,14 @@ export default class AvonniVisualPickerLink extends LightningElement {
     }
 
     /**
-     * Style: https://www.lightningdesignsystem.com/components/welcome-mat/#With-Completed-Steps .
+     * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#With-Completed-Steps">completed</a>.
      *
      * @type {boolean}
      * @public
      * @default false
      */
-    @api get completed() {
+    @api
+    get completed() {
         return this._completed;
     }
 
@@ -125,13 +127,14 @@ export default class AvonniVisualPickerLink extends LightningElement {
     }
 
     /**
-     * https://www.lightningdesignsystem.com/components/welcome-mat/#Info-only .
+     * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#Info-only">info only</a>.
      *
      * @type {boolean}
      * @public
      * @default false
      */
-    @api get infoOnly() {
+    @api
+    get infoOnly() {
         return this._infoOnly;
     }
 

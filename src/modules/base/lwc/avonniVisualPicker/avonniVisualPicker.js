@@ -68,7 +68,7 @@ export default class AvonniVisualPicker extends LightningElement {
      */
     @api label;
     /**
-     * Array of items with attributes populating the visual picker.
+     * Array of item objects.
      *
      * @type {object[]}
      * @public
@@ -101,7 +101,9 @@ export default class AvonniVisualPicker extends LightningElement {
     _ratio = VISUAL_PICKER_RATIOS.default;
 
     renderedCallback() {
-        const inputs = this.template.querySelectorAll('[data-element-id="input"]');
+        const inputs = this.template.querySelectorAll(
+            '[data-element-id="input"]'
+        );
 
         if (inputs) {
             Array.from(inputs).forEach((item) => {
@@ -125,7 +127,9 @@ export default class AvonniVisualPicker extends LightningElement {
 
     set value(value) {
         this._value = value instanceof Array ? value : [value];
-        const inputs = this.template.querySelectorAll('[data-element-id="input"]');
+        const inputs = this.template.querySelectorAll(
+            '[data-element-id="input"]'
+        );
 
         if (inputs && this.value.length) {
             Array.from(inputs).forEach((item) => {
@@ -173,7 +177,7 @@ export default class AvonniVisualPicker extends LightningElement {
     }
 
     /**
-     * The size of the items. Valid values include xx-small (4rem x 4 rem), x-small (6rem x 6 rem), small (8rem x 8rem), medium and large.
+     * The size of the items. Valid values include xx-small, x-small, small, medium and large.
      *
      * @type {string}
      * @public
@@ -488,7 +492,9 @@ export default class AvonniVisualPicker extends LightningElement {
         event.stopPropagation();
 
         if (this._variant === 'coverable' && this._hideCheckMark) {
-            const labels = this.template.querySelectorAll('[data-element-id="label"]');
+            const labels = this.template.querySelectorAll(
+                '[data-element-id="label"]'
+            );
 
             labels.forEach((label) => {
                 let icon = label.querySelector('lightning-icon');
@@ -500,7 +506,9 @@ export default class AvonniVisualPicker extends LightningElement {
             });
         }
 
-        const inputs = this.template.querySelectorAll('[data-element-id="input"]');
+        const inputs = this.template.querySelectorAll(
+            '[data-element-id="input"]'
+        );
         const value = Array.from(inputs)
             .filter((input) => input.checked)
             .map((input) => input.value);

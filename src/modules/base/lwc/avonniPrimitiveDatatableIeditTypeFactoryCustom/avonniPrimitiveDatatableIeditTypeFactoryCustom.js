@@ -33,26 +33,68 @@
 import { LightningElement, api } from 'lwc';
 import { assert } from 'c/utilsPrivate';
 
+import ColorPickerTpl from './avonniColorPicker.html';
 import ComboboxTpl from './avonniCombobox.html';
+import counterTpl from './avonniCounter.html';
+import dateRangeTpl from './avonniDateRange.html';
+import richTextTpl from './avonniRichText.html';
+import textareaTpl from './avonniTextarea.html';
 import DefaultTpl from './avonniDefault.html';
 
 const CUSTOM_TYPES_TPL = {
-    combobox: ComboboxTpl
+    'color-picker': ColorPickerTpl,
+    combobox: ComboboxTpl,
+    counter: counterTpl,
+    'date-range': dateRangeTpl,
+    'rich-text': richTextTpl,
+    textarea: textareaTpl
 };
 
 const INVALID_TYPE_FOR_EDIT =
     'column custom type not supported for inline edit';
 
-export default class AvonniPrimitiveDatatableIeditTypeFactory extends LightningElement {
+export default class AvonniPrimitiveDatatableIeditTypeFactoryCustom extends LightningElement {
     @api editedValue;
     @api required;
+
+    // shared attributes
     @api disabled;
+    @api label;
+    @api name;
+    @api placeholder;
+    @api type;
+
+    // color picker attributes
+    @api colors;
+    @api hideColorInput;
+    @api menuAlignment;
+    @api menuIconName;
+    @api menuIconSize;
+    @api menuVariant;
+    @api opacity;
 
     // combobox attributes
     @api dropdownLength;
     @api isMultiSelect;
     @api options;
-    @api placeholder;
+
+    // counter attributes
+    @api max;
+    @api min;
+    @api step;
+
+    // date-range attributes
+    @api dateStyle;
+    @api timeStyle;
+    @api timezone;
+    @api labelStartDate;
+    @api labelEndDate;
+    _startDate;
+    _endDate;
+
+    // textarea attributes
+    @api maxLength;
+    @api minLength;
 
     @api
     get columnDef() {
@@ -92,6 +134,28 @@ export default class AvonniPrimitiveDatatableIeditTypeFactory extends LightningE
         }
     }
 
+    @api
+    get startDate() {
+        return typeof this.editedValue === 'object'
+            ? this.editedValue.startDate
+            : undefined;
+    }
+
+    set startDate(value) {
+        this._startDate = value;
+    }
+
+    @api
+    get endDate() {
+        return typeof this.editedValue === 'object'
+            ? this.editedValue.endDate
+            : undefined;
+    }
+
+    set endDate(value) {
+        this._endDate = value;
+    }
+
     /**
      * Gets the data inputable element.
      *
@@ -99,13 +163,6 @@ export default class AvonniPrimitiveDatatableIeditTypeFactory extends LightningE
      */
     get concreteComponent() {
         return this.template.querySelector('[data-inputable="true"]');
-    }
-
-    @api
-    focus() {
-        if (this.concreteComponent) {
-            this.concreteComponent.focus();
-        }
     }
 
     @api
@@ -119,18 +176,25 @@ export default class AvonniPrimitiveDatatableIeditTypeFactory extends LightningE
     }
 
     @api
+    focus() {
+        if (this.concreteComponent) {
+            this.concreteComponent.focus();
+        }
+    }
+
+    @api
     showHelpMessageIfInvalid() {
-        this.concreteComponent.showHelpMessageIfInvalid();
+        if (this.columnDef.type !== 'rich-text') {
+            this.concreteComponent.showHelpMessageIfInvalid();
+        }
     }
 
     handleComponentFocus() {
         this.dispatchEvent(new CustomEvent('focus'));
     }
-
     handleComponentBlur() {
         this.dispatchEvent(new CustomEvent('blur'));
     }
-
     handleComponentChange() {
         this.showHelpMessageIfInvalid();
     }

@@ -47,30 +47,30 @@
     bottom: auto;
 }
 
-:host(.avonni-flex-container) {
+:host(.avonni-input-counter__flex-container) {
     display: flex;
     flex-direction: row;
 }
 
-:host(.avonni-flex-container) .slds-form-element__control {
+:host(.avonni-input-counter__flex-container) .slds-form-element__control {
     padding-left: 0.5rem;
 }
 
-:host(.avonni-flex-container) .slds-input__button_decrement,
-:host(.avonni-flex-container) .slds-input__button_increment {
+:host(.avonni-input-counter__flex-container) .slds-input__button_decrement,
+:host(.avonni-input-counter__flex-container) .slds-input__button_increment {
     position: absolute;
     top: 15px;
 }
 
-:host(.avonni-flex-container) .slds-input__button_decrement {
+:host(.avonni-input-counter__flex-container) .slds-input__button_decrement {
     left: 1.25rem;
 }
 
-:host(.avonni-flex-container) > label {
+:host(.avonni-input-counter__flex-container) > label {
     padding-top: 9px;
 }
 
-:host(.avonni-flex-container) > lightning-helptext {
+:host(.avonni-input-counter__flex-container) > lightning-helptext {
     padding-top: 5px;
 }
 
@@ -96,10 +96,17 @@
     z-index: 1000;
 }
 
-.avonni-standart-top {
+.avonni-input-counter_standard-top {
     top: 38px;
 }
 
-.avonni-hidden-top {
+.avonni-input-counter_hidden-top {
     top: 14px;
+}
+
+.avonni-input-counter__label {
+    color: var(--avonni-input-counter-header-text-color, #3e3e3c);
+    font-size: var(--avonni-input-counter-header-font-size, 0.75rem);
+    font-style: var(--avonni-input-counter-header-font-style, normal);
+    font-weight: var(--avonni-input-counter-header-font-weight, 400);
 }

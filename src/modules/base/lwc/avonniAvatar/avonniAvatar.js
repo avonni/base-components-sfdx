@@ -87,19 +87,20 @@ const DEFAULT_STATUS_TITLE = 'Status';
  */
 export default class AvonniAvatar extends LightningElement {
     /**
-     * If the record name contains two words, like first and last name, use the first capitalized letter of each. For records that only have a single word name, use the first two letters of that word using one capital and one lower case letter. Placed inside the entity.
-     *
-     * @public
-     * @type {string}
-     */
-    @api entityInitials;
-    /**
+     * The Lightning Design System name of the icon used as a fallback for the entity icon when the image fails to load. The initials fallback relies on this for its background color.
      * Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
      *
      * @public
      * @type {string}
      */
     @api entityIconName;
+    /**
+     * Entity initials. If the record name contains two words, like first and last name, use the first capitalized letter of each. For records that only have a single word name, use the first two letters of that word using one capital and one lower case letter.
+     *
+     * @public
+     * @type {string}
+     */
+    @api entityInitials;
     /**
      * The Lightning Design System name of the icon used as a fallback when the image fails to load. The initials fallback relies on this for its background color. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
      *
@@ -162,22 +163,6 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Hide primary, secondary and tertiary text.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get hideAvatarDetails() {
-        return this._hideAvatarDetails;
-    }
-
-    set hideAvatarDetails(value) {
-        this._hideAvatarDetails = normalizeBoolean(value);
-    }
-
-    /**
      * The alternative text used to describe the avatar, which is displayed as hover text on the image.
      *
      * @public
@@ -193,188 +178,6 @@ export default class AvonniAvatar extends LightningElement {
     set alternativeText(value) {
         this._alternativeText =
             typeof value === 'string' ? value.trim() : DEFAULT_ALTERNATIVE_TEXT;
-    }
-
-    /**
-     * The size of the avatar. Valid values are x-small, small, medium, large, x-large and xx-large.
-     *
-     * @public
-     * @type {string}
-     * @default medium
-     */
-    @api
-    get size() {
-        return this._size;
-    }
-
-    set size(value) {
-        this._size = normalizeString(value, {
-            fallbackValue: AVATAR_SIZES.default,
-            validValues: AVATAR_SIZES.valid
-        });
-    }
-
-    /**
-     * The URL for the image.
-     *
-     * @public
-     * @type {string}
-     * @required
-     */
-    @api
-    get src() {
-        return this._src;
-    }
-
-    set src(value) {
-        this._src = (typeof value === 'string' && value.trim()) || '';
-    }
-
-    /**
-     * The variant changes the shape of the avatar. Valid values are empty, circle, and square.
-     *
-     * @public
-     * @type {string}
-     * @default square
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: AVATAR_VARIANTS.default,
-            validValues: AVATAR_VARIANTS.valid
-        });
-    }
-
-    /**
-     * Position of the details text, relatively to the avatar. Valid values include right, left or center.
-     *
-     * @public
-     * @type {string}
-     * @default right
-     */
-    @api
-    get textPosition() {
-        return this._textPosition;
-    }
-
-    set textPosition(position) {
-        this._textPosition = normalizeString(position, {
-            fallbackValue: TEXT_POSITIONS.default,
-            validValues: TEXT_POSITIONS.valid
-        });
-        this._updateClassList();
-    }
-
-    /**
-     * Status of the user to display. Valid values include approved, locked, declined and unknown.
-     *
-     * @public
-     * @type {string}
-     */
-    @api
-    get status() {
-        return this._status;
-    }
-
-    set status(value) {
-        this._status = normalizeString(value, {
-            fallbackValue: STATUS.default,
-            validValues: STATUS.valid
-        });
-    }
-
-    /**
-     * Status title to be shown as a tooltip on hover over the status icon.
-     *
-     * @public
-     * @type {string}
-     * @default Status
-     */
-    @api
-    get statusTitle() {
-        return this._statusTitle;
-    }
-
-    set statusTitle(value) {
-        this._statusTitle =
-            typeof value === 'string' ? value.trim() : DEFAULT_STATUS_TITLE;
-    }
-
-    /**
-     * Position of the status icon. Valid values include top-left, top-right, bottom-left and bottom-right.
-     *
-     * @public
-     * @type {string}
-     * @default top-right
-     */
-    @api
-    get statusPosition() {
-        return this._statusPosition;
-    }
-
-    set statusPosition(value) {
-        this._statusPosition = normalizeString(value, {
-            fallbackValue: POSITIONS.statusDefault,
-            validValues: POSITIONS.valid
-        });
-    }
-
-    /**
-     * Presence of the user to display. Valid values include online, busy, focus, offline, blocked and away.
-     *
-     * @public
-     * @type {string}
-     */
-    @api
-    get presence() {
-        return this._presence;
-    }
-
-    set presence(value) {
-        this._presence = normalizeString(value, {
-            fallbackValue: PRESENCE.default,
-            validValues: PRESENCE.valid
-        });
-    }
-
-    /**
-     * Presence title to be shown as a tooltip on hover over the presence icon.
-     *
-     * @public
-     * @type {string}
-     * @default bottom-right
-     */
-    @api
-    get presencePosition() {
-        return this._presencePosition;
-    }
-
-    set presencePosition(value) {
-        this._presencePosition = normalizeString(value, {
-            fallbackValue: POSITIONS.presenceDefault,
-            validValues: POSITIONS.valid
-        });
-    }
-
-    /**
-     * Position of the presence icon. Valid values include top-left, top-right, bottom-left and bottom-right.
-     *
-     * @public
-     * @type {string}
-     * @default Presence
-     */
-    @api
-    get presenceTitle() {
-        return this._presenceTitle;
-    }
-
-    set presenceTitle(value) {
-        this._presenceTitle =
-            typeof value === 'string' ? value.trim() : DEFAULT_PRESENCE_TITLE;
     }
 
     /**
@@ -448,7 +251,166 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Properties for the badge tags of the avatar.
+     * Hide primary, secondary and tertiary text.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideAvatarDetails() {
+        return this._hideAvatarDetails;
+    }
+
+    set hideAvatarDetails(value) {
+        this._hideAvatarDetails = normalizeBoolean(value);
+    }
+
+    /**
+     * Presence of the user to display. Valid values include online, busy, focus, offline, blocked and away.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get presence() {
+        return this._presence;
+    }
+
+    set presence(value) {
+        this._presence = normalizeString(value, {
+            fallbackValue: PRESENCE.default,
+            validValues: PRESENCE.valid
+        });
+    }
+
+    /**
+     * Presence title to be shown as a tooltip on hover over the presence icon.
+     *
+     * @public
+     * @type {string}
+     * @default bottom-right
+     */
+    @api
+    get presencePosition() {
+        return this._presencePosition;
+    }
+
+    set presencePosition(value) {
+        this._presencePosition = normalizeString(value, {
+            fallbackValue: POSITIONS.presenceDefault,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    /**
+     * Position of the presence icon. Valid values include top-left, top-right, bottom-left and bottom-right.
+     *
+     * @public
+     * @type {string}
+     * @default Presence
+     */
+    @api
+    get presenceTitle() {
+        return this._presenceTitle;
+    }
+
+    set presenceTitle(value) {
+        this._presenceTitle =
+            typeof value === 'string' ? value.trim() : DEFAULT_PRESENCE_TITLE;
+    }
+
+    /**
+     * The size of the avatar. Valid values are x-small, small, medium, large, x-large and xx-large.
+     *
+     * @public
+     * @type {string}
+     * @default medium
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(value) {
+        this._size = normalizeString(value, {
+            fallbackValue: AVATAR_SIZES.default,
+            validValues: AVATAR_SIZES.valid
+        });
+    }
+
+    /**
+     * The URL for the image.
+     *
+     * @public
+     * @type {string}
+     * @required
+     */
+    @api
+    get src() {
+        return this._src;
+    }
+
+    set src(value) {
+        this._src = (typeof value === 'string' && value.trim()) || '';
+    }
+
+    /**
+     * Status of the user to display. Valid values include approved, locked, declined and unknown.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get status() {
+        return this._status;
+    }
+
+    set status(value) {
+        this._status = normalizeString(value, {
+            fallbackValue: STATUS.default,
+            validValues: STATUS.valid
+        });
+    }
+
+    /**
+     * Position of the status icon. Valid values include top-left, top-right, bottom-left and bottom-right.
+     *
+     * @public
+     * @type {string}
+     * @default top-right
+     */
+    @api
+    get statusPosition() {
+        return this._statusPosition;
+    }
+
+    set statusPosition(value) {
+        this._statusPosition = normalizeString(value, {
+            fallbackValue: POSITIONS.statusDefault,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    /**
+     * Status title to be shown as a tooltip on hover over the status icon.
+     *
+     * @public
+     * @type {string}
+     * @default Status
+     */
+    @api
+    get statusTitle() {
+        return this._statusTitle;
+    }
+
+    set statusTitle(value) {
+        this._statusTitle =
+            typeof value === 'string' ? value.trim() : DEFAULT_STATUS_TITLE;
+    }
+
+    /**
+     * Array of tag objects. The tags are displayed as badges in the details.
      *
      * @public
      * @type {object[]}
@@ -459,6 +421,54 @@ export default class AvonniAvatar extends LightningElement {
     }
     set tags(tags) {
         this._tags = normalizeArray(tags);
+    }
+
+    /**
+     * Position of the details text, relatively to the avatar. Valid values include right, left or center.
+     *
+     * @public
+     * @type {string}
+     * @default right
+     */
+    @api
+    get textPosition() {
+        return this._textPosition;
+    }
+
+    set textPosition(position) {
+        this._textPosition = normalizeString(position, {
+            fallbackValue: TEXT_POSITIONS.default,
+            validValues: TEXT_POSITIONS.valid
+        });
+        this._updateClassList();
+    }
+
+    /**
+     * The variant changes the shape of the avatar. Valid values are empty, circle, and square.
+     *
+     * @public
+     * @type {string}
+     * @default square
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: AVATAR_VARIANTS.default,
+            validValues: AVATAR_VARIANTS.valid
+        });
+    }
+
+    /**
+     * Text position centered.
+     *
+     * @type {boolean}
+     */
+    get computedMediaObjectInline() {
+        return this.textPosition === 'center';
     }
 
     /**
@@ -504,15 +514,6 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Text position centered.
-     *
-     * @type {boolean}
-     */
-    get computedMediaObjectInline() {
-        return this.textPosition === 'center';
-    }
-
-    /**
      * Media object layout based on text position.
      *
      * @type {string}
@@ -537,11 +538,11 @@ export default class AvonniAvatar extends LightningElement {
             case 'lightest':
                 return 'slds-badge_lightest';
             case 'success':
-                return 'slds-theme_success';
+                return 'slds-badge slds-theme_success';
             case 'warning':
-                return 'slds-theme_warning';
+                return 'slds-badge slds-theme_warning';
             case 'error':
-                return 'slds-theme_error';
+                return 'slds-badge slds-theme_error';
             default:
                 return 'slds-badge';
         }

@@ -147,9 +147,20 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Specifies the value of the start date input.
+    * Value of the input. Object with two keys: <code>startDate</code> and <code>endDate</code>.
+    *
+    * @type {object}
+    * @public
+    */
+    @api
+    get value() {
+        return { startDate: this._startDate, endDate: this._endDate };
+    }
+
+    /**
+     * Specifies the value of the start date input, which can be a Date object, timestamp, or an ISO8601 formatted string.
      *
-     * @type {string}
+     * @type {(string|Date|number)}
      * @public
      */
     @api
@@ -164,9 +175,9 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Specifies the value of the end date input.
+     * Specifies the value of the end date input, which can be a Date object, timestamp, or an ISO8601 formatted string.
      *
-     * @type {string}
+     * @type {(string|Date|number)}
      * @public
      */
     @api
@@ -181,7 +192,7 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Specifies the time zone used when type='datetime' only.
+     * Specifies the time zone used when the type is <code>datetime</code> only.
      * This value defaults to the user's Salesforce time zone setting.
      *
      * @type {string}
@@ -199,7 +210,7 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * The display style of the date when type='date' or type='datetime'.
+     * The display style of the date.
      * Valid values are short, medium and long. The format of each style is specific to the locale.
      * On mobile devices this attribute has no effect.
      *
@@ -431,7 +442,7 @@ export default class AvonniInputDateRange extends LightningElement {
      * @type {string}
      */
     get computedLabelClass() {
-        return classSet('avonni-label-container')
+        return classSet('avonni-date-range__label-container')
             .add({
                 'slds-assistive-text': this.variant === 'label-hidden'
             })
@@ -492,13 +503,9 @@ export default class AvonniInputDateRange extends LightningElement {
         if (!this._valid && !this._readOnly) {
             this.classList.remove('slds-has-error');
             this.startDateInput.classList.add('slds-has-error');
-            this.startDateInput.classList.add(
-                'avonni-input-date-rage-input-error'
-            );
+            this.startDateInput.classList.add('avonni-date-range__input_error');
             this.endDateInput.classList.add('slds-has-error');
-            this.endDateInput.classList.add(
-                'avonni-input-date-rage-input-error'
-            );
+            this.endDateInput.classList.add('avonni-date-range__input_error');
             if (this.showTime) {
                 this.startTimeInput.classList.add('slds-has-error');
                 this.endTimeInput.classList.add('slds-has-error');
@@ -507,11 +514,11 @@ export default class AvonniInputDateRange extends LightningElement {
         if (this._valid && !this._readOnly) {
             this.startDateInput.classList.remove('slds-has-error');
             this.startDateInput.classList.remove(
-                'avonni-input-date-rage-input-error'
+                'avonni-date-range__input_error'
             );
             this.endDateInput.classList.remove('slds-has-error');
             this.endDateInput.classList.remove(
-                'avonni-input-date-rage-input-error'
+                'avonni-date-range__input_error'
             );
             if (this.showTime) {
                 this.startTimeInput.classList.remove('slds-has-error');
@@ -544,7 +551,7 @@ export default class AvonniInputDateRange extends LightningElement {
     /**
      * Checks if the input is valid.
      *
-     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -553,10 +560,9 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {boolean} - The validity status of the input fields.
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -569,8 +575,7 @@ export default class AvonniInputDateRange extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message - The string that describes the error.
-     * If message is an empty string, the error message is reset.
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -580,7 +585,7 @@ export default class AvonniInputDateRange extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -621,6 +626,7 @@ export default class AvonniInputDateRange extends LightningElement {
 
             if (this.type === 'datetime') {
                 this.startTime = this._startDate.toTimeString().substr(0, 5);
+                this.startTimeString = this.timeFormat(this._startDate);
             }
 
             this._startDate.setHours(0, 0, 0, 0);
@@ -644,6 +650,7 @@ export default class AvonniInputDateRange extends LightningElement {
 
             if (this.type === 'datetime') {
                 this.endTime = this._endDate.toTimeString().substr(0, 5);
+                this.endTimeString = this.timeFormat(this._endDate);
             }
 
             this._endDate.setHours(0, 0, 0, 0);
@@ -658,6 +665,9 @@ export default class AvonniInputDateRange extends LightningElement {
         event.preventDefault();
         this.startTime = event.target.value;
         this.dispatchChange();
+        if (this.startDate && this.startTime) {
+            this.endDateInput.focus();
+        }
     }
 
     /**
@@ -744,7 +754,9 @@ export default class AvonniInputDateRange extends LightningElement {
             }
             this.toggleStartDateVisibility();
 
-            if (
+            if (this.type === 'datetime' && this.startDate && !this.startTime) {
+                this.startTimeInput.focus();
+            } else if (
                 this.startDate &&
                 (!this.endDate ||
                     this.startDate.getTime() > this.endDate.getTime())
@@ -752,7 +764,6 @@ export default class AvonniInputDateRange extends LightningElement {
                 this._endDate = null;
                 this.endDateInput.focus();
             }
-
             this.dispatchChange();
         }
     }
@@ -881,6 +892,13 @@ export default class AvonniInputDateRange extends LightningElement {
                 this._endDate = null;
                 this.endDateInput.focus();
             }
+            if (this.type === 'datetime' && this.endDate && !this.endTime) {
+                this.endTimeInput.focus();
+            } else if (this.isOnlyEndDate) {
+                this.startDateInput.focus();
+            } else if (this.isOnlyStartDate) {
+                this.endDateInput.focus();
+            }
 
             this.dispatchChange();
         }
@@ -934,7 +952,7 @@ export default class AvonniInputDateRange extends LightningElement {
      * Change the date format depending on date style.
      *
      * @param {date}
-     * @returns {date} formated date depending on the date style.
+     * @returns {date} formatted date depending on the date style.
      */
     dateFormat(value) {
         let date = value.getDate();
@@ -952,6 +970,25 @@ export default class AvonniInputDateRange extends LightningElement {
         }
 
         return `${month}/${date}/${year}`;
+    }
+
+    /**
+     * Change the time format depending on time style.
+     *
+     * @param {date}
+     * @returns {time} formatted time depending on the time style.
+     */
+    timeFormat(value) {
+        return this.timeStyle === 'short'
+            ? value.toLocaleString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+              })
+            : value.toLocaleString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+              });
     }
 
     /**
@@ -974,16 +1011,13 @@ export default class AvonniInputDateRange extends LightningElement {
             });
         }
 
-        startDate = this.startDateString ? new Date(startDate) : startDate;
-        endDate = this.endDateString ? new Date(endDate) : endDate;
-
         /**
          * The event fired when the value changed.
          *
          * @event
          * @name change
          * @param {string} startDate Start date value.
-         * @param {string} endDate End date value
+         * @param {string} endDate End date value.
          * @public
          */
         this.dispatchEvent(

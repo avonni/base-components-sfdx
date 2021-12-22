@@ -82,6 +82,7 @@ const DEFAULT_ICON_NAME = 'utility:down';
 /**
  * @class
  * @descriptor avonni-button-menu
+ * @storyId example-button-menu--base
  * @public
  */
 export default class AvonniButtonMenu extends LightningElement {
@@ -192,7 +193,7 @@ export default class AvonniButtonMenu extends LightningElement {
             }
         });
 
-        this.dispatchEvent(privatebuttonregister);        
+        this.dispatchEvent(privatebuttonregister);
         this._connected = true;
     }
 
@@ -253,7 +254,7 @@ export default class AvonniButtonMenu extends LightningElement {
     }
 
     /**
-     * If present, the menu can be opened by users.
+     * If present, the menu can't be opened by users.
      *
      * @public
      * @type {boolean}
@@ -371,14 +372,15 @@ export default class AvonniButtonMenu extends LightningElement {
             // dom during initial rendering.
             this._tooltip = new Tooltip(value, {
                 root: this,
-                target: () => this.template.querySelector('[data-element-id="button"]')
+                target: () =>
+                    this.template.querySelector('[data-element-id="button"]')
             });
             this._tooltip.initialize();
         }
     }
 
     /**
-     * Sets focus on the button.
+     * Set focus on the button.
      *
      * @public
      */
@@ -390,7 +392,7 @@ export default class AvonniButtonMenu extends LightningElement {
     }
 
     /**
-     * Simulates a mouse click on the button.
+     * Simulate a mouse click on the button.
      *
      * @public
      */
@@ -525,13 +527,7 @@ export default class AvonniButtonMenu extends LightningElement {
             });
         }
 
-        return classes
-            .add({
-                'slds-button_first': this._order === 'first',
-                'slds-button_middle': this._order === 'middle',
-                'slds-button_last': this._order === 'last'
-            })
-            .toString();
+        return classes.add(`slds-button_${this._order}`).toString();
     }
 
     /**
@@ -611,7 +607,9 @@ export default class AvonniButtonMenu extends LightningElement {
             );
             if (dialog) {
                 dialog.show();
-                this.template.querySelector('[data-element-id="button"]').blur();
+                this.template
+                    .querySelector('[data-element-id="button"]')
+                    .blur();
             }
         }
 
@@ -720,7 +718,7 @@ export default class AvonniButtonMenu extends LightningElement {
     }
 
     /**
-     * Auto alignement handler.
+     * Auto alignment handler.
      *
      * @return {boolean}
      */

@@ -47,24 +47,26 @@
         ></lightning-helptext>
         <div class="slds-form-element__control">
             <div
-                class="avonni-dual-listbox-list"
+                class="avonni-dual-listbox__list"
                 onfocusin={handleFocus}
                 onfocusout={handleBlur}
             >
                 <div class={computedListboxColumnsClass}>
                     <span
-                        class="slds-form-element__label"
+                        class="
+                            slds-form-element__label
+                            avonni-dual-listbox__boxes-label
+                        "
                         id="source-list-label"
                         >{sourceLabel}</span
                     >
                     <div
                         if:true={allowSearch}
-                        class="avonni-dual-listbox-allow-search"
+                        class="avonni-dual-listbox__search-container"
                     >
                         <lightning-input
-                            id="search-input"
                             name="search"
-                            label=" "
+                            label="Search Engine"
                             variant="label-hidden"
                             type="search"
                             data-element-id="lightning-input"
@@ -82,7 +84,10 @@
                             aria-describedby="keyboard-interacton"
                             aria-labelledby="source-list-label"
                             aria-multiselectable="true"
-                            class="slds-listbox slds-listbox_vertical source-list"
+                            class="
+                                slds-listbox slds-listbox_vertical
+                                source-list
+                            "
                             role="listbox"
                             aria-disabled={ariaDisabled}
                             data-element-id="ul-source-list"
@@ -95,14 +100,21 @@
                                     if:true={group.label}
                                     key={generateKey}
                                     role="presentation"
-                                    class="slds-listbox__item dual-listbox__group-title"
+                                    class="
+                                        slds-listbox__item
+                                        dual-listbox__group-title
+                                    "
                                 >
                                     <div
                                         class="slds-media slds-media_small"
                                         role="presentation"
                                     >
                                         <h3
-                                            class="slds-listbox__option-header slds-p-around_x-small slds-text-color_default"
+                                            class="
+                                                slds-listbox__option-header
+                                                slds-p-around_x-small
+                                                slds-text-color_default
+                                            "
                                             role="presentation"
                                         >
                                             {group.label}
@@ -136,11 +148,12 @@
                                         >
                                             <div class="slds-media__figure">
                                                 <c-avonni-avatar
-                                                    fallback-icon-name={option.iconName}
-                                                    src={option.src}
-                                                    initials={option.initials}
-                                                    size={option.iconSize}
-                                                    variant={option.variant}
+                                                    if:true={option.avatar}
+                                                    fallback-icon-name={option.avatar.fallbackIconName}
+                                                    src={option.avatar.src}
+                                                    initials={option.avatar.initials}
+                                                    size={option.size}
+                                                    variant={option.avatar.variant}
                                                     primary-text={option.primaryText}
                                                     secondary-text={option.secondaryText}
                                                 ></c-avonni-avatar>
@@ -172,7 +185,10 @@
                     </div>
                 </div>
                 <div
-                    class="avonni-dual-listbox-list__column avonni-dual-listbox-buttons-centered"
+                    class="
+                        avonni-dual-listbox__list-column
+                        avonni-dual-listbox__buttons_centered
+                    "
                 >
                     <lightning-button-icon
                         class="button"
@@ -201,7 +217,10 @@
                 </div>
                 <div class={computedListboxColumnsClass}>
                     <span
-                        class="slds-form-element__label"
+                        class="
+                            slds-form-element__label
+                            avonni-dual-listbox__boxes-label
+                        "
                         id="selected-list-label"
                         >{selectedLabel}</span
                     >
@@ -230,14 +249,21 @@
                                     if:true={group.label}
                                     key={generateKey}
                                     role="presentation"
-                                    class="slds-listbox__item dual-listbox__group-title"
+                                    class="
+                                        slds-listbox__item
+                                        dual-listbox__group-title
+                                    "
                                 >
                                     <div
                                         class="slds-media slds-media_small"
                                         role="presentation"
                                     >
                                         <h3
-                                            class="slds-listbox__option-header slds-p-around_x-small slds-text-color_default"
+                                            class="
+                                                slds-listbox__option-header
+                                                slds-p-around_x-small
+                                                slds-text-color_default
+                                            "
                                             role="presentation"
                                         >
                                             {group.label}
@@ -273,11 +299,12 @@
                                         >
                                             <div class="slds-media__figure">
                                                 <c-avonni-avatar
-                                                    fallback-icon-name={option.iconName}
-                                                    src={option.src}
-                                                    initials={option.initials}
-                                                    size={option.iconSize}
-                                                    variant={option.variant}
+                                                    if:true={option.avatar}
+                                                    fallback-icon-name={option.avatar.fallbackIconName}
+                                                    src={option.avatar.src}
+                                                    initials={option.avatar.initials}
+                                                    size={option.size}
+                                                    variant={option.avatar.variant}
                                                     primary-text={option.primaryText}
                                                     secondary-text={option.secondaryText}
                                                 ></c-avonni-avatar>
@@ -295,7 +322,10 @@
                                             </template>
                                             <template if:true={option.isLocked}>
                                                 <span
-                                                    class="slds-media__figure slds-media__figure_reverse"
+                                                    class="
+                                                        slds-media__figure
+                                                        slds-media__figure_reverse
+                                                    "
                                                 >
                                                     <lightning-icon
                                                         icon-name="utility:lock"
@@ -318,7 +348,10 @@
                 </div>
                 <template if:false={disableReordering}>
                     <div
-                        class="avonni-dual-listbox-list__column avonni-dual-listbox-buttons-centered"
+                        class="
+                            avonni-dual-listbox__list-column
+                            avonni-dual-listbox__buttons_centered
+                        "
                     >
                         <lightning-button-icon
                             class="button"

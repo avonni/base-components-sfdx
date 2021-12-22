@@ -34,7 +34,6 @@ import { LightningElement, api } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
-const IMAGE_ROUNDED = ['top', 'right', 'bottom', 'left', 'circle', '0'];
 const CROP_FIT = {
     valid: ['cover', 'contain', 'fill', 'none'],
     default: 'cover'
@@ -43,7 +42,16 @@ const CROP_SIZE = {
     valid: ['1x1', '4x3', '16x9', 'none'],
     default: 'none'
 };
-const BLANK_COLOR_DEFAULT = 'transparent';
+const POSITIONS = {
+    valid: ['left', 'right', 'center'],
+    default: undefined
+};
+
+const LAZY_LOADING_VARIANTS = {
+    valid: ['auto', 'lazy'],
+    default: 'auto'
+};
+
 const CROP_POSITION_X_DEFAULT = '50';
 const CROP_POSITION_Y_DEFAULT = '50';
 
@@ -60,43 +68,38 @@ export default class AvonniImage extends LightningElement {
      * @public
      * @type  {string}
      */
-    @api alt;
+    @api alternativeText;
     /**
-     * X-axis of the image position ( in percent ).
+     * Position of the image on the X axis (in percent).
      *
      * @public
-     * @type {string}
+     * @type {number}
      */
     @api cropPositionX = CROP_POSITION_X_DEFAULT;
     /**
-     * Y-axis of the image position ( in percent ).
+     * Position of the image on the Y axix (in percent).
      *
      * @public
-     * @type {string}
+     * @type {number}
      */
     @api cropPositionY = CROP_POSITION_Y_DEFAULT;
 
-    _src;
-    _width;
-    _height;
-    _blankColor = BLANK_COLOR_DEFAULT;
-    _srcset;
-    _sizes;
-    _block = false;
+    _cropFit = CROP_FIT.default;
+    _cropSize;
     _fluid = false;
     _fluidGrow = false;
-    _rounded = false;
+    _height;
+    _lazyLoading = LAZY_LOADING_VARIANTS.default;
+    _position = POSITIONS.default;
+    _sizes;
+    _src;
+    _srcset;
+    _staticImages = false;
     _thumbnail = false;
-    _left = false;
-    _right = false;
-    _center = false;
-    _blank = false;
-    _cropSize;
-    _cropFit = CROP_FIT.default;
+    _width;
+
     _imgWidth;
     _imgHeight;
-    _staticImages = false;
-    _lazyLoading = false;
     _widthPercent;
     _heightPercent;
     _aspectRatio;
@@ -106,49 +109,34 @@ export default class AvonniImage extends LightningElement {
     }
 
     /**
-     * Sets the image as static. Images retain their current dimensions and will no longer be responsive.
-     *
-     * @public
-     * @type {boolean}
-     */
-    @api
-    get staticImages() {
-        return this._staticImages;
-    }
-
-    set staticImages(value) {
-        this._staticImages = normalizeBoolean(value);
-    }
-
-    /**
-     * Enables lazy loading for images that are offscreen. If set to true, the property ensures that offscreen images are loaded early enough so that they have finished loading once the user scrolls near them.
-     * Note: Keep in mind that the property uses the loading attribute of HTML <img> element which is not supported for Internet Explorer.
-     *
-     * @public
-     * @type {boolean}
-     */
-    @api
-    get lazyLoading() {
-        return this._lazyLoading ? 'lazy' : 'auto';
-    }
-
-    set lazyLoading(value) {
-        this._lazyLoading = normalizeBoolean(value);
-    }
-
-    /**
-     * Crops the image to desired aspect ratio ( valid options : “1x1”, “4x3”, “16x9”, “none” ).
+     * Image fit behaviour inside its container. Valid values include cover, contain, fill and none.
      *
      * @public
      * @type {string}
+     * @default cover
+     */
+    @api get cropFit() {
+        return this._cropFit;
+    }
+
+    set cropFit(value) {
+        this._cropFit = normalizeString(value, {
+            fallbackValue: CROP_FIT.default,
+            validValues: CROP_FIT.valid
+        });
+    }
+
+    /**
+     * Cropping ratio of the image. Valid values are “1x1”, “4x3”, “16x9” or “none”.
+     *
+     * @public
+     * @type {string}
+     * @default none
      */
     @api get cropSize() {
         return this._cropSize;
     }
 
-    /**
-     * Assign cropSize numerical value and aspectRatio fraction based on user input.
-     */
     set cropSize(value) {
         const cropSize = normalizeString(value, {
             fallbackValue: CROP_SIZE.default,
@@ -174,68 +162,42 @@ export default class AvonniImage extends LightningElement {
     }
 
     /**
-     * Image fit behaviour inside its container ( valid options : “cover”, “contain”, “fill”, “none” ). Default is cover.
+     * If present, the image is responsive and will take up 100% of its container width, to a maximum of its original width.
      *
      * @public
-     * @type {string}
-     * @default cover
-     */
-    @api get cropFit() {
-        return this._cropFit;
-    }
-
-    set cropFit(value) {
-        this._cropFit = normalizeString(value, {
-            fallbackValue: CROP_FIT.default,
-            validValues: CROP_FIT.valid
-        });
-    }
-
-    /**
-     * URL to set for the 'src' attribute.
-     *
-     * @public
-     * @type {string}
+     * @type {boolean}
+     * @default false
      */
     @api
-    get src() {
-        return this._src;
+    get fluid() {
+        return this._fluid;
     }
 
-    set src(value) {
-        if (!this.blank) {
-            this._src = value;
-        }
+    set fluid(value) {
+        this._fluid = normalizeBoolean(value);
     }
 
     /**
-     * The value to set on the image's 'width' attribute.
+     * If present, the image is reponsive and will take up 100% of its container width.
      *
      * @public
-     * @type {number | string} 
+     * @type {boolean}
+     * @default false
      */
     @api
-    get width() {
-        return this._width;
+    get fluidGrow() {
+        return this._fluidGrow;
     }
 
-    set width(value) {
-        this._width = value;
-        if (
-            value !== undefined &&
-            typeof value === 'string' &&
-            value.includes('%')
-        ) {
-            this._widthPercent = value;
-        }
-        this.initBlank();
+    set fluidGrow(value) {
+        this._fluidGrow = normalizeBoolean(value);
     }
 
     /**
-     * The value to set on the image's 'height' attribute.
+     * Height of the image.
      *
      * @public
-     * @type {number | string} 
+     * @type {number | string}
      */
     @api
     get height() {
@@ -251,43 +213,44 @@ export default class AvonniImage extends LightningElement {
         ) {
             this._heightPercent = value;
         }
-        this.initBlank();
     }
 
     /**
-     * Sets the color of the blank image to the CSS color value specified. Default is transparent.
+     * Enables lazy loading for images that are offscreen. If set to lazy, the property ensures that offscreen images are loaded early enough so that they have finished loading once the user scrolls near them. Valid values are 'auto' and 'lazy'.
+     * Note: Keep in mind that the property uses the loading attribute of HTML <img> element which is not supported for Internet Explorer.
      *
      * @public
      * @type {string}
-     * @default transparent
+     * @default auto
      */
     @api
-    get blankColor() {
-        return this._blankColor;
+    get lazyLoading() {
+        return this._lazyLoading;
     }
 
-    set blankColor(value) {
-        this._blankColor = value;
-        this.initBlank();
+    set lazyLoading(value) {
+        this._lazyLoading = normalizeString(value, {
+            fallbackValue: LAZY_LOADING_VARIANTS.default,
+            validValues: LAZY_LOADING_VARIANTS.valid
+        });
     }
 
     /**
-     * One or more strings separated by commas (or an array of strings), indicating possible image sources for the user agent to use.
+     * Specifies the position of the image. Valid values include left, center and right.
      *
      * @public
-     * @type {string | object[]}
+     * @type {string}
      */
     @api
-    get srcset() {
-        return this._srcset;
+    get position() {
+        return this._position;
     }
 
-    set srcset(value) {
-        if (Array.isArray(value)) {
-            this._srcset = value.join(',');
-        } else {
-            this._srcset = value;
-        }
+    set position(value) {
+        this._position = normalizeString(value, {
+            fallbackValue: POSITIONS.default,
+            validValues: POSITIONS.valid
+        });
     }
 
     /**
@@ -310,75 +273,52 @@ export default class AvonniImage extends LightningElement {
     }
 
     /**
-     * Forces the image to display as a block element rather than the browser default of inline-block element.
+     * URL to set for the 'src' attribute.
      *
      * @public
-     * @type {boolean}
-     * @default false
+     * @type {string}
      */
     @api
-    get block() {
-        return this._block;
+    get src() {
+        return this._src;
     }
 
-    set block(value) {
-        this._block = normalizeBoolean(value);
+    set src(value) {
+        this._src = value;
     }
 
     /**
-     * Makes the image responsive. The image will shrink as needed or grow up the the image's native width.
+     * One or more strings separated by commas (or an array of strings), indicating possible image sources for the user agent to use.
      *
      * @public
-     * @type {boolean}
-     * @default false
+     * @type {string | object[]}
      */
     @api
-    get fluid() {
-        return this._fluid;
+    get srcset() {
+        return this._srcset;
     }
 
-    set fluid(value) {
-        this._fluid = normalizeBoolean(value);
-    }
-
-    /**
-     * Similar to the 'fluid' prop, but allows the image to scale up past its native width.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get fluidGrow() {
-        return this._fluidGrow;
-    }
-
-    set fluidGrow(value) {
-        this._fluidGrow = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, makes the image corners slightly rounded. Can also be used to disable rounded corners or make the image a circle/oval. See docs for details.
-     *
-     * @public
-     * @type {boolean|string}
-     */
-    @api
-    get rounded() {
-        return this._rounded;
-    }
-
-    set rounded(value) {
-        let roundedValue = normalizeString(value, {
-            fallbackValue: null,
-            validValues: IMAGE_ROUNDED
-        });
-
-        if (roundedValue !== null) {
-            this._rounded = value;
+    set srcset(value) {
+        if (Array.isArray(value)) {
+            this._srcset = value.join(',');
         } else {
-            this._rounded = normalizeBoolean(value);
+            this._srcset = value;
         }
+    }
+
+    /**
+     * Sets the image as static. Images retain their current dimensions and will no longer be responsive.
+     *
+     * @public
+     * @type {boolean}
+     */
+    @api
+    get staticImages() {
+        return this._staticImages;
+    }
+
+    set staticImages(value) {
+        this._staticImages = normalizeBoolean(value);
     }
 
     /**
@@ -398,68 +338,33 @@ export default class AvonniImage extends LightningElement {
     }
 
     /**
-     * Floats the image to the left when set.
+     * The value to set on the image's 'width' attribute.
      *
      * @public
-     * @type {boolean}
-     * @default false
+     * @type {number | string}
      */
     @api
-    get left() {
-        return this._left;
+    get width() {
+        return this._width;
     }
 
-    set left(value) {
-        this._left = normalizeBoolean(value);
+    set width(value) {
+        this._width = value;
+        if (
+            value !== undefined &&
+            typeof value === 'string' &&
+            value.includes('%')
+        ) {
+            this._widthPercent = value;
+        }
     }
 
-    /**
-     * Floats the image to the right when set.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get right() {
-        return this._right;
+    get computedHeight() {
+        return !isNaN(Number(this.height)) ? `${this.height}px` : 'auto';
     }
 
-    set right(value) {
-        this._right = normalizeBoolean(value);
-    }
-
-    /**
-     * Centers the image horizontally.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get center() {
-        return this._center;
-    }
-
-    set center(value) {
-        this._center = normalizeBoolean(value);
-    }
-
-    /**
-     * Creates a blank/transparent image via an SVG data URI.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get blank() {
-        return this._blank;
-    }
-
-    set blank(value) {
-        this._blank = normalizeBoolean(value);
-        this.initBlank();
+    get computedWidth() {
+        return !isNaN(Number(this.width)) ? `${this.width}px` : 'auto';
     }
 
     /**
@@ -468,49 +373,24 @@ export default class AvonniImage extends LightningElement {
      * @type {string}
      */
     get computedImageClass() {
-        return classSet({
-            'avonni-img-fluid': this.fluid || this.fluidGrow,
-            'avonni-img-fluid-grow': this.fluidGrow,
-            'avonni-img-thumbnail': this.thumbnail,
-            'avonni-rounded': this.rounded === true,
-            'avonni-rounded-top': this.rounded === 'top',
-            'avonni-rounded-right': this.rounded === 'right',
-            'avonni-rounded-bottom': this.rounded === 'bottom',
-            'avonni-rounded-left': this.rounded === 'left',
-            'avonni-rounded-circle': this.rounded === 'circle',
-            'avonni-not-rounded': this.rounded === '0',
-            'avonni-float-left': this.left,
-            'avonni-float-right': this.right,
-            'avonni-margin-auto': this.center,
-            'avonni-display-block': this.center || this.block
-        }).toString();
-    }
-
-    /**
-     * Canvas render for blank image.
-     *
-     * @returns {HTMLCanvasElement} src
-     */
-    initBlank() {
-        if (this.blank) {
-            let canvas = document.createElement('canvas');
-            let ctx = canvas.getContext('2d');
-            canvas.width = this.width;
-            canvas.height = this.height;
-
-            ctx.beginPath();
-            ctx.rect(0, 0, this.width, this.height);
-            ctx.fillStyle = this.blankColor;
-            ctx.fill();
-
-            this._src = canvas.toDataURL('image/png', '');
-        }
+        return classSet('avonni-image')
+            .add({
+                'avonni-image_fluid': this.fluid || this.fluidGrow,
+                'avonni-image_fluid-grow': this.fluidGrow,
+                'avonni-image_thumbnail': this.thumbnail,
+                'avonni-image_float-left':
+                    this._position === 'left' && this._lazyLoading === 'auto',
+                'avonni-image_float-right': this._position === 'right',
+                'avonni-image_margin-auto': this._position === 'center',
+                'avonni-image_display-block': this._position === 'center'
+            })
+            .toString();
     }
 
     /**
      * Final Computed Image Style.
      *
-     * @type {boolean} 
+     * @type {boolean}
      */
     get computedImgStyle() {
         if (!this._cropSize) {
@@ -519,8 +399,8 @@ export default class AvonniImage extends LightningElement {
             return this.imgHandlerCropped();
         }
         return `
-        width: ${this.width}px;
-        height: ${this.height}px;        
+        width: ${this.computedWidth};
+        height: ${this.computedHeight};        
         `;
     }
 
@@ -546,18 +426,18 @@ export default class AvonniImage extends LightningElement {
             ) {
                 return `
                 min-width: ${this.width}px;
-                min-height: ${this.height}px;
+                min-height: ${this.computedHeight};
                 max-width: ${this.width}px;
-                max-height: ${this.height}px;
+                max-height: ${this.computedHeight};
                 ${imageFitPosition}      
                 `;
             }
             // No width - Height px
             else if (!this.width && this.height && !this._heightPercent) {
                 return `
-                min-height: ${this.height}px;
-                height: ${this.height}px;
-                max-height: ${this.height}px;
+                min-height: ${this.computedHeight};
+                height: ${this.computedHeight};
+                max-height: ${this.computedHeight};
                 max-width: ${this._imgWidth}px;
                 width: ${this._imgWidth}px;
                 min-width: ${this._imgWidth}px;
@@ -567,7 +447,7 @@ export default class AvonniImage extends LightningElement {
             // Width px - No height
             else if (this.width && !this._widthPercent && !this.height) {
                 return `
-                max-width: ${this.width}px;
+                max-width: ${this.computedWidth};
                 ${imageFitPosition}
                 `;
             }
@@ -595,18 +475,18 @@ export default class AvonniImage extends LightningElement {
             ) {
                 return `
                 max-width: ${this._imgWidth}px;
-                max-height: ${this.height}px;
+                max-height: ${this.computedHeight};
                 min-width: ${this._imgWidth}px;
-                min-height: ${this.height}px;
+                min-height: ${this.computedHeight};
                 ${imageFitPosition}
                 `;
             }
             // Width px - Height %
             else if (this.width && !this._widthPercent && this._heightPercent) {
                 return `
-                max-width: ${this.width}px;
+                max-width: ${this.computedWidth};
                 max-height: ${this._imgHeight}px;
-                min-width: ${this.width}px;
+                min-width: ${this.computedWidth};
                 min-height: ${this._imgHeight}px;
                 ${imageFitPosition}    
                 `;
@@ -630,17 +510,10 @@ export default class AvonniImage extends LightningElement {
         }
         // No Crop - No Static Images
         else if (!this.staticImages) {
-            // Width px - Height px - blank
-            if (this._blank && this.width && this.height) {
-                return `
-                width: ${this.width}px;
-                ${imageFitPosition}
-                `;
-            }
             // Width px - Height %
-            else if (this.width && !this._widthPercent && this._heightPercent) {
+            if (this.width && !this._widthPercent && this._heightPercent) {
                 return `
-                width: ${this.width}px;
+                width: ${this.computedWidth};
                 height: ${this._heightPercent};
                 ${imageFitPosition}        
                 `;
@@ -657,7 +530,7 @@ export default class AvonniImage extends LightningElement {
             else if (this._widthPercent && this.height) {
                 return `
                 width: ${this._widthPercent};
-                height: ${this.height}px;
+                height: ${this.computedHeight};
                 ${imageFitPosition}        
                 `;
             }
@@ -677,8 +550,8 @@ export default class AvonniImage extends LightningElement {
             }
         }
         return `
-        width: ${this.width}px;
-        height: ${this.height}px;
+        width: ${this.computedWidth};
+        height: ${this.computedHeight};
         ${imageFitPosition}            
         `;
     }
@@ -718,14 +591,14 @@ export default class AvonniImage extends LightningElement {
                 (this.width && !this._widthPercent && this._heightPercent)
             ) {
                 return `
-                width: ${this.width}px;
+                width: ${this.computedWidth};
                 ${imageFitPositionAspectRatio}
                 `;
             }
             // No Width - Height px
             else if (!this.width && this.height && !this._heightPercent) {
                 return `
-                height: ${this.height}px;
+                height: ${this.computedHeight};
                 ${imageFitPositionAspectRatio}
                 `;
             }
@@ -768,9 +641,9 @@ export default class AvonniImage extends LightningElement {
             // Width px
             else if (this.width && !this._widthPercent) {
                 return `
-                max-width: ${this.width}px;
+                max-width: ${this.computedWidth};
                 max-height: ${this.width * (this._cropSize / 100)}px;
-                min-width: ${this.width}px;
+                min-width: ${this.computedWidth};
                 min-height: ${this.width * (this._cropSize / 100)}px;
                 ${imageFitPositionAspectRatio} 
                 `;
@@ -782,9 +655,9 @@ export default class AvonniImage extends LightningElement {
                 (this._widthPercent && this.height)
             ) {
                 return `
-                max-height: ${this.height}px;
+                max-height: ${this.computedHeight};
                 max-width: ${this.height / (this._cropSize / 100)}px;
-                min-height: ${this.height}px;
+                min-height: ${this.computedHeight};
                 min-width: ${this.height / (this._cropSize / 100)}px;
                 ${imageFitPositionAspectRatio} 
                 `;
@@ -816,8 +689,8 @@ export default class AvonniImage extends LightningElement {
             }
         }
         return `
-        width: ${this.width}px;
-        height: ${this.height}px;
+        width: ${this.computedWidth};
+        height: ${this.computedHeight};
         ${imageFitPositionAspectRatio}        
         `;
     }

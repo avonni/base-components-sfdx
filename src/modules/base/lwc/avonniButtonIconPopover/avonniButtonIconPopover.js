@@ -93,7 +93,7 @@ const DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT = 'Loading';
  * @class
  * @name ButtonIconPopover
  * @public
- * @storyId example-button-icon-popover--border-with-popover-base
+ * @storyId example-button-icon-popover--base-with-popover-base
  * @descriptor avonni-button-icon-popover
  */
 export default class AvonniButtonIconPopover extends LightningElement {
@@ -123,9 +123,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
     @api title;
 
     /**
-     * The Lightning Design System name of the icon.
-     * Names are written in the format 'utility:down' where 'utility' is the category,
-     * and 'down' is the specific icon to be displayed.
+     * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
      * Only utility icons can be used in this component.
      *
      * @type {string}
@@ -211,7 +209,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
     }
 
     /**
-     * The size of the buttonIcon. For the bare variant,
+     * The size of the button icon. For the bare variant,
      * options include x-small, small, medium, and large.
      * For non-bare variants, options include xx-small, x-small, small, and medium.
      *
@@ -260,7 +258,7 @@ export default class AvonniButtonIconPopover extends LightningElement {
     }
 
     /**
-     * The variant changes the appearance of buttonIcon.
+     * The variant changes the appearance of button icon.
      * Accepted variants include bare, container, brand, border,
      * border-filled, bare-inverse, and border-inverse.
      *
@@ -430,8 +428,8 @@ export default class AvonniButtonIconPopover extends LightningElement {
     get computedPopoverHeaderClass() {
         return classSet('slds-popover__header')
             .add({
-                'avonni-button-icon-popover-space-between': !this
-                    .hideCloseButton
+                'avonni-button-icon-popover_space-between':
+                    !this.hideCloseButton
             })
             .toString();
     }
@@ -459,17 +457,17 @@ export default class AvonniButtonIconPopover extends LightningElement {
                 'slds-nubbin_bottom-left': this._placement === 'bottom-left',
                 'slds-nubbin_bottom-right': this._placement === 'bottom-right',
                 'slds-nubbin_bottom': this._placement === 'bottom-center',
-                'slds-p-vertical_large': this._isLoading,
+                'slds-p-vertical_large': this._isLoading
+            })
+            .add({
                 'slds-popover_warning': this._popoverVariant === 'warning',
                 'slds-popover_error': this._popoverVariant === 'error',
                 'slds-popover_walkthrough':
                     this._popoverVariant === 'walkthrough',
-                'slds-popover_small': this._popoverSize === 'small',
-                'slds-popover_medium': this._popoverSize === 'medium',
-                'slds-popover_large': this._popoverSize === 'large',
                 'slds-show': this.popoverVisible,
                 'slds-hide': !this.popoverVisible
             })
+            .add(`slds-popover_${this._popoverSize}`)
             .toString();
     }
 
@@ -558,7 +556,9 @@ export default class AvonniButtonIconPopover extends LightningElement {
      */
     focusOnButton() {
         this.allowBlur();
-        this.template.querySelector('[data-element-id="lightning-button-icon-main"]').focus();
+        this.template
+            .querySelector('[data-element-id="lightning-button-icon-main"]')
+            .focus();
         if (
             this._triggers === 'focus' &&
             !this.popoverVisible &&

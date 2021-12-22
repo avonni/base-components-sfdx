@@ -33,22 +33,29 @@
 -->
 
 <template>
-    <template if:true={isInline}>
-        <label class="slds-form-element__label slds-no-flex">
-            <abbr
-                if:true={required}
-                title="required"
-                class="slds-required"
-                data-element-id="abbr"
-            >*</abbr>
-            {label}
-        </label>
-        <lightning-helptext
-            if:true={fieldLevelHelp}
-            content={fieldLevelHelp}
-            data-element-id="lightning-helptext"
-        ></lightning-helptext>
-    </template>
+    <abbr
+        if:true={required}
+        title="required"
+        class="slds-required"
+        data-element-id="abbr"
+        >*</abbr
+    >
+    <label
+        class="
+            slds-form-element__label
+            slds-no-flex
+            avonni-input-counter__label
+        "
+        if:true={hasLabel}
+        data-element-id="input-counter-label"
+    >
+        {label}
+    </label>
+    <lightning-helptext
+        if:true={fieldLevelHelp}
+        content={fieldLevelHelp}
+        data-element-id="lightning-helptext"
+    ></lightning-helptext>
     <div class={formElementClass}>
         <div class="slds-form-element__control">
             <lightning-button-icon
@@ -58,14 +65,14 @@
                 title="Decrement counter"
                 variant="bare"
                 alternative-text="Decrement counter"
-                class={buttonDecrementClass}
+                class="slds-input__button_decrement"
                 disabled={disabled}
                 data-element-id="lightning-button-icon-decrement"
                 onclick={decrementValue}
             ></lightning-button-icon>
             <lightning-input
                 name={name}
-                label={label}
+                label="Counter Input"
                 placeholder="0"
                 aria-label={ariaLabel}
                 aria-controls={computedAriaControls}
@@ -73,9 +80,8 @@
                 aria-describedby={computedAriaDescribedBy}
                 value={value}
                 step={inputStep}
-                field-level-help={labelFieldLevelHelp}
                 accesskey={accessKey}
-                variant={labelVariant}
+                variant="label-hidden"
                 disabled={disabled}
                 readonly={readOnly}
                 required={required}
@@ -96,7 +102,7 @@
                 title="Increment counter"
                 variant="bare"
                 alternative-text="Increment counter"
-                class={buttonIncrementClass}
+                class="slds-input__button_increment"
                 disabled={disabled}
                 data-element-id="lightning-button-icon-increment"
                 onclick={incrementValue}

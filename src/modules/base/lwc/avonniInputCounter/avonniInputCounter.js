@@ -71,7 +71,7 @@ export default class AvonniInputCounter extends LightningElement {
      */
     @api messageWhenBadInput;
     /**
-     * 'Error message to be displayed when a pattern mismatch is detected.'
+     * Error message to be displayed when a pattern mismatch is detected.
      * @type {string}
      * @public
      */
@@ -165,10 +165,7 @@ export default class AvonniInputCounter extends LightningElement {
     _constraintApiProxyInputUpdater;
     _value = null;
     _previousValue;
-    _inputStep;
     helpMessage;
-    labelVariant;
-    labelFieldLevelHelp;
     init = false;
 
     renderedCallback() {
@@ -194,70 +191,76 @@ export default class AvonniInputCounter extends LightningElement {
      * @default null
      * @public
      */
-    @api get value() {
+    @api
+    get value() {
         return this._value;
     }
 
-    set value(value) {
-        this._value = typeof value === 'number' ? value : null;
+    set value(val) {
+        const value = Number(val);
+        this._value = !isNaN(value) ? value : null;
     }
 
     /**
-     * The minimum acceptable value for the input. Constrains the decrementer to stop at the specified min. If an entered value is below the min, incrementing or decrementing will then set the value to the specified min.
+     * The minimum acceptable value for the input. Constrains the decrementer to stop at the specified minimum. If an entered value is below the minimum, incrementing or decrementing will then set the value to the specified minimum.
      *
      * @type {number}
      * @default null
      * @public
      */
-    @api get min() {
+    @api
+    get min() {
         return this._min;
     }
 
-    set min(min) {
-        this._min = typeof min === 'number' ? min : null;
+    set min(value) {
+        const min = Number(value);
+        this._min = !isNaN(min) ? min : null;
     }
 
     /**
-     * The maximum acceptable value for the input. Constrains the incrementer to stop at the specified max. If the entered value is above the max, incrementing or decrementing will then set the value to the specified max.
+     * The maximum acceptable value for the input. Constrains the incrementer to stop at the specified maximum. If the entered value is above the maximum, incrementing or decrementing will then set the value to the specified maximum.
      *
      * @type {number}
      * @default null
      * @public
      */
-    @api get max() {
+    @api
+    get max() {
         return this._max;
     }
 
-    set max(max) {
-        this._max = typeof max === 'number' ? max : null;
+    set max(value) {
+        const max = Number(value);
+        this._max = !isNaN(max) ? max : null;
     }
 
     /**
-     * Granularity of the value - precision of significant decimal digits ( specified as a positive integer. ex: 2 formats the value to 2 digits after the decimal ).
+     * Granularity of the value - number of significant decimal digits specified as a positive integer. For example, 2 formats the value to 2 digits after the decimal.
      *
      * @type {number}
      * @default null
      * @public
      */
-    @api get fractionDigits() {
+    @api
+    get fractionDigits() {
         return this._fractionDigits;
     }
 
-    set fractionDigits(digits) {
-        if (typeof digits === 'number') {
-            this._fractionDigits = Math.round(Math.abs(digits));
-            this._inputStep = 1 / Math.pow(10, this._fractionDigits);
-        } else {
-            this._fractionDigits = null;
-            this._inputStep = 1;
-        }
+    set fractionDigits(value) {
+        const digits = Number(value);
+        this._fractionDigits = !isNaN(digits)
+            ? Math.round(Math.abs(digits))
+            : null;
     }
 
     /**
      * Value sent to lightning-input step as a floating point number ( ex. 0.01 would result in 2 decimal places on the value ). Calculated from the fractionDigits.
      */
     get inputStep() {
-        return this._inputStep;
+        return this._fractionDigits
+            ? 1 / Math.pow(10, this._fractionDigits)
+            : 1;
     }
 
     /**
@@ -267,7 +270,8 @@ export default class AvonniInputCounter extends LightningElement {
      * @default standard
      * @public
      */
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -278,23 +282,19 @@ export default class AvonniInputCounter extends LightningElement {
         });
 
         if (this._variant === 'label-inline') {
-            this.labelVariant = 'label-hidden';
-            this.classList.add('avonni-flex-container');
-        } else {
-            this.labelVariant = this._variant;
-            this.labelFieldLevelHelp =
-                this._variant !== 'label-hidden' ? this.fieldLevelHelp : null;
+            this.classList.add('avonni-input-counter__flex-container');
         }
     }
 
     /**
-     * Input counter type. Valid values include number (default), currency, percent.
+     * Input counter type. Valid values include number, currency and percent.
      *
      * @type {string}
      * @default number
      * @public
      */
-    @api get type() {
+    @api
+    get type() {
         return this._type;
     }
 
@@ -350,7 +350,7 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     set step(value) {
-        this._step = typeof value === 'number' ? value : DEFAULT_STEP;
+        this._step = Number(value) || DEFAULT_STEP;
     }
 
     /**
@@ -383,38 +383,6 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     /**
-     * Button Increment class styling.
-     *
-     * @type {string}
-     */
-    get buttonIncrementClass() {
-        return classSet('slds-input__button_increment')
-            .add({
-                'avonni-standart-top':
-                    this._variant !== 'label-inline' &&
-                    this._variant !== 'label-hidden',
-                'avonni-hidden-top': this._variant === 'label-hidden'
-            })
-            .toString();
-    }
-
-    /**
-     * Button Decrement class styling.
-     *
-     * @type {string}
-     */
-    get buttonDecrementClass() {
-        return classSet('slds-input__button_decrement')
-            .add({
-                'avonni-standart-top':
-                    this._variant !== 'label-inline' &&
-                    this._variant !== 'label-hidden',
-                'avonni-hidden-top': this._variant === 'label-hidden'
-            })
-            .toString();
-    }
-
-    /**
      * Input class if readOnly.
      *
      * @type {string}
@@ -428,8 +396,8 @@ export default class AvonniInputCounter extends LightningElement {
      *
      * @type {boolean}
      */
-    get isInline() {
-        return this.variant === 'label-inline';
+    get hasLabel() {
+        return this.label && this._variant !== 'label-hidden';
     }
 
     /**
@@ -550,7 +518,7 @@ export default class AvonniInputCounter extends LightningElement {
      */
     handlePrecision(input) {
         if (!isNaN(input)) {
-            input = +input.toFixed(this._fractionDigits);
+            input = (+input).toFixed(this._fractionDigits);
         }
         return +input;
     }
@@ -559,11 +527,13 @@ export default class AvonniInputCounter extends LightningElement {
      * Updates the value in lightning-input, updates proxy for validation and dispatches change event.
      */
     updateValue() {
-        [...this.template.querySelectorAll('[data-element-id="lightning-input"]')].forEach(
-            (element) => {
-                element.value = this._value;
-            }
-        );
+        [
+            ...this.template.querySelectorAll(
+                '[data-element-id="lightning-input"]'
+            )
+        ].forEach((element) => {
+            element.value = this._value;
+        });
 
         this._updateProxyInputAttributes('value');
 
@@ -601,7 +571,9 @@ export default class AvonniInputCounter extends LightningElement {
      */
     @api
     focus() {
-        this.template.querySelector('[data-element-id="lightning-input"]').focus();
+        this.template
+            .querySelector('[data-element-id="lightning-input"]')
+            .focus();
     }
 
     /**
@@ -611,7 +583,9 @@ export default class AvonniInputCounter extends LightningElement {
      */
     @api
     blur() {
-        this.template.querySelector('[data-element-id="lightning-input"]').blur();
+        this.template
+            .querySelector('[data-element-id="lightning-input"]')
+            .blur();
     }
 
     /**
@@ -637,11 +611,11 @@ export default class AvonniInputCounter extends LightningElement {
         let key = event.key;
         switch (key) {
             case 'ArrowUp':
-                this._value = this.value - this._inputStep;
+                this._value = this.value - this.inputStep;
                 this.incrementValue();
                 break;
             case 'ArrowDown':
-                this._value = this.value + this._inputStep;
+                this._value = this.value + this.inputStep;
                 this.decrementValue();
                 break;
             default:
@@ -651,17 +625,20 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     /**
-     * Get validation for custom proxy input.
+     * Represents the validity states that an element can be in, with respect to constraint validation.
      *
+     * @type {string}
      * @public
      */
-    @api get validity() {
+    @api
+    get validity() {
         return this._constraint.validity;
     }
 
     /**
-     * Check validation against constraints.
+     * Checks if the input is valid.
      *
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -670,9 +647,9 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid. If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {string} helpMessage
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -685,7 +662,7 @@ export default class AvonniInputCounter extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -694,7 +671,8 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     /**
-     * Displays error messages on invalid fields. An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -723,8 +701,8 @@ export default class AvonniInputCounter extends LightningElement {
                 () => this
             );
 
-            this._constraintApiProxyInputUpdater = this._constraintApi.setInputAttributes(
-                {
+            this._constraintApiProxyInputUpdater =
+                this._constraintApi.setInputAttributes({
                     type: () => 'number',
                     value: () => this.value,
                     max: () => this.max,
@@ -732,8 +710,7 @@ export default class AvonniInputCounter extends LightningElement {
                     step: () => this.inputStep,
                     formatter: () => this.type,
                     disabled: () => this.disabled
-                }
-            );
+                });
         }
         return this._constraintApi;
     }

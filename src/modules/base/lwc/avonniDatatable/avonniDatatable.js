@@ -47,20 +47,19 @@ import badge from './avonniBadge.html';
 import checkboxButton from './avonniCheckboxButton.html';
 import colorPicker from './avonniColorPicker.html';
 import combobox from './avonniCombobox.html';
+import counter from './avonniCounter.html';
+import dateRange from './avonniDateRange.html';
 import dynamicIcon from './avonniDynamicIcon.html';
-import formattedRichText from './avonniFormattedRichText.html';
 import image from './avonniImage.html';
-import inputCounter from './avonniInputCounter.html';
-import inputDateRange from './avonniInputDateRange.html';
-import inputRichText from './avonniInputRichText.html';
-import inputToggle from './avonniInputToggle.html';
 import progressBar from './avonniProgressBar.html';
 import progressCircle from './avonniProgressCircle.html';
 import progressRing from './avonniProgressRing.html';
 import qrcode from './avonniQrcode.html';
 import rating from './avonniRating.html';
-import textarea from './avonniTextarea.html';
+import richText from './avonniRichText.html';
 import slider from './avonniSlider.html';
+import textarea from './avonniTextarea.html';
+import toggle from './avonniToggle.html';
 import urls from './avonniUrls.html';
 
 const CUSTOM_TYPES_ALWAYS_WRAPPED = [
@@ -70,18 +69,19 @@ const CUSTOM_TYPES_ALWAYS_WRAPPED = [
     'checkbox-button',
     'color-picker',
     'combobox',
+    'counter',
+    'date-range',
     'dynamic-icon',
     'image',
-    'input-counter',
-    'input-date-range',
-    'input-rich-text',
-    'input-toggle',
+    'toggle',
     'progress-bar',
     'progress-circle',
     'progress-ring',
     'qrcode',
     'rating',
+    'rich-text',
     'slider',
+    'textarea',
     'urls'
 ];
 
@@ -89,12 +89,13 @@ const CUSTOM_TYPES_EDITABLE = [
     'checkbox-button',
     'color-picker',
     'combobox',
-    'input-counter',
-    'input-date-range',
-    'input-rich-text',
-    'input-toggle',
+    'counter',
+    'date-range',
     'rating',
-    'slider'
+    'rich-text',
+    'slider',
+    'textarea',
+    'toggle'
 ];
 
 const COLUMN_WIDTHS_MODES = { valid: ['fixed', 'auto'], default: 'fixed' };
@@ -173,34 +174,12 @@ export default class AvonniDatatable extends LightningDatatable {
                 'options'
             ]
         },
-        'dynamic-icon': {
-            template: dynamicIcon,
-            typeAttributes: ['alternativeText', 'option']
-        },
-        'formatted-rich-text': {
-            template: formattedRichText,
-            typeAttributes: ['disableLinkify']
-        },
-        image: {
-            template: image,
-            typeAttributes: [
-                'alt',
-                'blank',
-                'blankColor',
-                'height',
-                'rounded',
-                'sizes',
-                'srcset',
-                'thumbnail',
-                'width'
-            ]
-        },
-        'input-counter': {
-            template: inputCounter,
+        counter: {
+            template: counter,
             typeAttributes: ['disabled', 'label', 'max', 'min', 'name', 'step']
         },
-        'input-date-range': {
-            template: inputDateRange,
+        'date-range': {
+            template: dateRange,
             typeAttributes: [
                 'dateStyle',
                 'disabled',
@@ -212,20 +191,19 @@ export default class AvonniDatatable extends LightningDatatable {
                 'type'
             ]
         },
-        'input-rich-text': {
-            template: inputRichText,
-            typeAttributes: ['disabled', 'placeholder', 'variant']
+        'dynamic-icon': {
+            template: dynamicIcon,
+            typeAttributes: ['alternativeText', 'option']
         },
-        'input-toggle': {
-            template: inputToggle,
+        image: {
+            template: image,
             typeAttributes: [
-                'disabled',
-                'hideMark',
-                'label',
-                'messageToggleActive',
-                'messageToggleInactive',
-                'name',
-                'size'
+                'alternativeText',
+                'height',
+                'sizes',
+                'srcset',
+                'thumbnail',
+                'width'
             ]
         },
         'progress-bar': {
@@ -283,6 +261,10 @@ export default class AvonniDatatable extends LightningDatatable {
                 'valueHidden'
             ]
         },
+        'rich-text': {
+            template: richText,
+            typeAttributes: ['disabled', 'placeholder', 'variant']
+        },
         slider: {
             template: slider,
             typeAttributes: ['disabled', 'label', 'max', 'min', 'size', 'step']
@@ -295,6 +277,18 @@ export default class AvonniDatatable extends LightningDatatable {
                 'maxlength',
                 'name',
                 'placeholder'
+            ]
+        },
+        toggle: {
+            template: toggle,
+            typeAttributes: [
+                'disabled',
+                'hideMark',
+                'label',
+                'messageToggleActive',
+                'messageToggleInactive',
+                'name',
+                'size'
             ]
         },
         urls: {
@@ -326,13 +320,20 @@ export default class AvonniDatatable extends LightningDatatable {
             this.handleEditButtonClickCustom
         );
 
-        this.template.addEventListener('ieditfinishedcustom', (event) => {
-            this.handleInlineEditFinishCustom(event);
-        });
+        this.template.addEventListener(
+            'ieditfinishedcustom',
+            this.handleInlineEditFinishCustom
+        );
 
-        this.template.addEventListener('getdatatablestateandcolumns', (e) => {
-            e.detail.callbacks.getStateAndColumns(this.state, this.columns);
-        });
+        this.template.addEventListener(
+            'getdatatablestateandcolumns',
+            (event) => {
+                event.detail.callbacks.getStateAndColumns(
+                    this.state,
+                    this.columns
+                );
+            }
+        );
     }
 
     renderedCallback() {
@@ -412,8 +413,7 @@ export default class AvonniDatatable extends LightningDatatable {
 
     /**
      * Specifies the default sorting direction on an unsorted column.
-     * Valid options include 'asc' and 'desc'.
-     * The default is 'asc' for sorting in ascending order.
+     * Valid options include 'asc' and 'desc'. The default is 'asc' for sorting in ascending order.
      * @public
      * @type {string}
      * @default asc
@@ -431,8 +431,7 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
-     * Determines when to trigger infinite loading based on
-     * how many pixels the table's scroll position is from the bottom of the table.
+     * Determines when to trigger infinite loading based on how many pixels the table's scroll position is from the bottom of the table.
      * @public
      * @type {number}
      * @default 20
@@ -465,8 +464,7 @@ export default class AvonniDatatable extends LightningDatatable {
 
     /**
      * The maximum number of rows that can be selected.
-     * Checkboxes are used for selection by default,
-     * and radio buttons are used when maxRowSelection is 1.
+     * Checkboxes are used for selection by default, and radio buttons are used when maxRowSelection is 1.
      * @public
      * @type {number}
      */
@@ -558,9 +556,7 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
-     * Specifies the sorting direction.
-     * Sort the data using the onsort event handler.
-     * Valid options include 'asc' and 'desc'.
+     * Specifies the sorting direction. Sort the data using the onsort event handler. Valid options include 'asc' and 'desc'.
      * @public
      * @type {string}
      */
@@ -577,8 +573,7 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
-     * This value specifies the number of lines after which the
-     * content will be cut off and hidden. It must be at least 1 or more.
+     * This value specifies the number of lines after which the content will be cut off and hidden. It must be at least 1 or more.
      * The text in the last line is truncated and shown with an ellipsis.
      * @public
      * @type {integer}

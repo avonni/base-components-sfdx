@@ -33,12 +33,18 @@
 -->
 
 <template>
-    <label class="slds-form-element__label" for="input" data-element-id="label">
+    <label
+        class="slds-form-element__label avonni-range__label"
+        for="input"
+        data-element-id="label"
+    >
         <span class="slds-slider-label">
-            <span class={computedLabelClass} data-element-id="span-label">{label}</span>
+            <span class={computedLabelClass} data-element-id="span-label"
+                >{label}</span
+            >
         </span>
     </label>
-    <div if:true={isVertical} class="avonni-unit-container">
+    <div if:true={isVertical} class="avonni-range__unit-container">
         <lightning-formatted-number
             value={max}
             format-style={unit}
@@ -53,7 +59,7 @@
         ></lightning-formatted-number>
     </div>
     <div class={computedContainerClass} data-element-id="div-wrapper">
-        <div class="avonni-container">
+        <div class="avonni-range__container">
             <div class="inverse-left">
                 <div class="slds-form-element">
                     <div class="slds-form-element__control">
@@ -64,7 +70,10 @@
                                 max={calculateMax}
                                 step={step}
                                 value={valueLower}
-                                class="slds-slider__range slider-left"
+                                class="
+                                    slds-slider__range
+                                    avonni-range__slider-left
+                                "
                                 disabled={disabled}
                                 data-element-id="input-left"
                                 oninput={handleChangeLeft}
@@ -101,7 +110,10 @@
                                 max={max}
                                 step={step}
                                 value={valueUpper}
-                                class="slds-slider__range slider-right"
+                                class="
+                                    slds-slider__range
+                                    avonni-range__slider-right
+                                "
                                 disabled={disabled}
                                 data-element-id="input-right"
                                 oninput={handleChangeRight}
@@ -129,7 +141,7 @@
                 </div>
             </div>
         </div>
-        <div if:false={isVertical} class="avonni-unit-container">
+        <div if:false={isVertical} class="avonni-range__unit-container">
             <lightning-formatted-number
                 value={min}
                 format-style={unit}
@@ -156,7 +168,7 @@
             ></lightning-formatted-number>
         </div>
     </div>
-    <div if:true={isVertical} class="avonni-unit-container">
+    <div if:true={isVertical} class="avonni-range__unit-container">
         <lightning-formatted-number
             value={min}
             format-style={unit}

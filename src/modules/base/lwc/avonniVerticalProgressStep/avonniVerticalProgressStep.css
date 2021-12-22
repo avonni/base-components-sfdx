@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .slds-progress__item {
+.slds-progress__item {
     width: 100%;
 }
 
@@ -73,4 +73,15 @@
 
 :host(.avonni-content-in-line) .slds-progress__item_content {
     margin-top: var(--lwc-spacingSmall, 0.75rem);
+}
+
+.avonni-vertical-progress-step__content-in-line_border-bottom {
+    border-bottom-color: var(
+        --avonni-vertical-progress-step-item-content-color-border,
+        #dddbda
+    ) !important;
+    border-bottom-width: var(
+        --avonni-vertical-progress-step-item-content-sizing-border,
+        1px
+    ) !important;
 }

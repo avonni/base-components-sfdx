@@ -99,33 +99,12 @@ export default class AvonniAlert extends LightningElement {
     }
 
     /**
-     * Inverse variant, depending on the variant value.
-     * @type {string}
-     */
-    get variantInverse() {
-        return this.variant === 'warning' ? 'bare' : 'inverse';
-    }
-
-    /**
-     * Icon class, depending on the variant value.
-     * @type {string}
-     */
-    get iconClass() {
-        return this.variant === 'warning' ? '' : 'slds-button_icon-inverse';
-    }
-
-    /**
      * Wrapper div class, depending on the variant value.
      * @type {string}
      */
     get variantClass() {
-        return classSet('slds-notify slds-notify_alert')
-            .add({
-                'slds-theme_info': this.variant === 'base',
-                'slds-theme_error': this.variant === 'error',
-                'slds-theme_offline': this.variant === 'offline',
-                'slds-theme_warning': this.variant === 'warning'
-            })
+        return classSet('avonni-notify_alert')
+            .add(`avonni-alert_${this._variant}`)
             .toString();
     }
 

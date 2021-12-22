@@ -59,7 +59,7 @@
         >
             <c-avonni-combobox
                 disabled={disabled}
-                dropdown-alignment={dropdownAlignement}
+                dropdown-alignment={dropdownalignment}
                 dropdown-length={dropdownLength}
                 is-multi-select={isMultiSelect}
                 options={options}
@@ -69,7 +69,7 @@
                 value={value}
                 onchange={handleChange}
             ></c-avonni-combobox>
-            <template if:true={editable}>
+            <template if:true={showEditButton}>
                 <c-avonni-primitive-cell-editable-button
                     onclick={handleEditButtonClick}
                     column-label="Combobox"

@@ -95,3 +95,10 @@ label.slds-grid .faux_small {
 .label input:checked + .slds-checkbox_faux_container .faux_hide-mark::after {
     display: none;
 }
+
+.avonni-input-toggle__label {
+    color: var(--avonni-input-toggle-header-text-color, #3e3e3c);
+    font-size: var(--avonni-input-toggle-header-font-size, 0.75rem);
+    font-style: var(--avonni-input-toggle-header-font-style, normal);
+    font-weight: var(--avonni-input-toggle-header-font-weight, 400);
+}

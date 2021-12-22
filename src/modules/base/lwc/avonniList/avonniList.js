@@ -50,7 +50,8 @@ const DIVIDER = {
 const DEFAULT_ITEM_HEIGHT = 44;
 
 const IMAGE_WIDTH = {
-    valid: ['small', 'medium', 'large']
+    valid: ['small', 'medium', 'large'],
+    default: 'large'
 };
 
 /**
@@ -99,6 +100,7 @@ export default class AvonniList extends LightningElement {
     _hasActions = false;
     _divider;
     _imageSrc = [];
+    _imageWidth = IMAGE_WIDTH.default;
     computedActions = [];
     computedItems = [];
     _hasImages;
@@ -106,7 +108,7 @@ export default class AvonniList extends LightningElement {
     itemRole;
 
     /**
-     * Position of the sortable icon. Valid values include left and right.
+     * Position of the item divider. Valid valus include top, bottom and around.
      *
      * @type {string}
      * @public
@@ -122,7 +124,7 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-     * Fixed width of image (3 sizes: (small 48px, medium 72px and large 128px).
+     * Width of the item images. Valid values include small, medium and large.
      *
      * @type {string}
      * @public
@@ -135,7 +137,8 @@ export default class AvonniList extends LightningElement {
 
     set imageWidth(width) {
         this._imageWidth = normalizeString(width, {
-            validValues: IMAGE_WIDTH.valid
+            validValues: IMAGE_WIDTH.valid,
+            defaultValue: IMAGE_WIDTH.default
         });
 
         switch (this._imageWidth) {
@@ -144,9 +147,6 @@ export default class AvonniList extends LightningElement {
                 break;
             case 'medium':
                 this._imageWidth = '72';
-                break;
-            case 'large':
-                this._imageWidth = '128';
                 break;
             default:
                 this._imageWidth = '128';
@@ -212,7 +212,7 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-     * Array of actions.
+     * Array of action objects.
      *
      * @type {object}
      * @public
@@ -335,8 +335,11 @@ export default class AvonniList extends LightningElement {
             .add({
                 'avonni-list__item-sortable': this.sortable,
                 'avonni-list__item-expanded': this._hasActions,
-                'slds-p-vertical_x-small': !this.divider,
-                'slds-p-horizontal_none': this.divider === 'top' || 'bottom'
+                'slds-p-vertical_x-small': !this._divider,
+                'slds-p-horizontal_none': this._divider === 'top' || 'bottom',
+                'avonni-list__item-divider_top': this._divider === 'top',
+                'avonni-list__item-divider_bottom': this._divider === 'bottom',
+                'avonni-list__item-divider_around': this._divider === 'around'
             })
             .toString();
     }
@@ -458,7 +461,11 @@ export default class AvonniList extends LightningElement {
         ).textContent = '';
 
         // Clean the tracked variables
-        this._draggedElement = this._draggedIndex = this._initialY = this._savedComputedItems = undefined;
+        this._draggedElement =
+            this._draggedIndex =
+            this._initialY =
+            this._savedComputedItems =
+                undefined;
     }
 
     /**
@@ -585,7 +592,7 @@ export default class AvonniList extends LightningElement {
              *
              * @event
              * @name reorder
-             * @param {object} items
+             * @param {object} items The items in their new order.
              * @public
              */
             this.dispatchEvent(
@@ -683,7 +690,7 @@ export default class AvonniList extends LightningElement {
          * @event
          * @name actionclick
          * @param {string} name  Name of the action clicked.
-         * @param {object} items Item clicked.
+         * @param {object} item Item clicked.
          * @public
          */
         this.dispatchEvent(

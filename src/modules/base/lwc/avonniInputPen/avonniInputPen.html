@@ -33,7 +33,7 @@
 -->
 
 <template>
-    <div class="avonni-label">
+    <div class="avonni-input-pen__label-container">
         <label if:true={label} class="slds-form-element__label slds-no-flex">
             <abbr if:true={required} title="required" class="slds-required"
                 >*</abbr
@@ -48,7 +48,10 @@
     <div class="slds-form-element">
         <div class="slds-form-element__control">
             <div
-                class="slds-rich-text-editor slds-grid slds-grid_vertical slds-nowrap"
+                class="
+                    slds-rich-text-editor slds-grid slds-grid_vertical
+                    slds-nowrap
+                "
             >
                 <div
                     if:false={hideControls}
@@ -90,7 +93,7 @@
                     <ul class="slds-button-group-list">
                         <li if:true={showSize}>
                             <lightning-combobox
-                                class="avonni-combobox"
+                                class="avonni-input-pen__combobox"
                                 name="size"
                                 label="Size"
                                 variant="label-hidden"
@@ -108,8 +111,9 @@
                             <c-avonni-color-picker
                                 value={color}
                                 hide-color-input
-                                onchange={handleColorChange}
                                 disabled={disabled}
+                                variant="label-hidden"
+                                onchange={handleColorChange}
                             ></c-avonni-color-picker>
                         </li>
                     </ul>
@@ -121,7 +125,10 @@
                     onmouseleave={handleMouseLeave}
                 >
                     <canvas data-element-id="canvas"></canvas>
-                    <div class="avonni-cursor"></div>
+                    <div
+                        class="avonni-input-pen__cursor"
+                        data-element-id="input-pen-cursor"
+                    ></div>
                 </div>
             </div>
         </div>

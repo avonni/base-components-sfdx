@@ -33,7 +33,7 @@
 -->
 
 <template>
-    <p if:true={label} class="slds-text-heading_small slds-m-bottom_x-small">
+    <p if:true={label} class="slds-m-bottom_x-small avonni-list__header_font">
         {label}
     </p>
     <span
@@ -47,7 +47,7 @@
         if:true={alternativeText}
         class="slds-assistive-text"
         data-element-id="span-alternative-text"
-    >{alternativeText}</span
+        >{alternativeText}</span
     >
 
     <ul class={computedListClass} role={menuRole}>
@@ -75,7 +75,11 @@
                     <!-- Sort icon -->
                     <lightning-icon
                         if:true={showIconLeft}
-                        class="slds-p-horizontal_xx-small icon-left avonni-list__item-sortable-icon-cursor"
+                        class="
+                            slds-p-horizontal_xx-small
+                            icon-left
+                            avonni-list__item-sortable-icon-cursor
+                        "
                         icon-name={sortableIconName}
                         size="x-small"
                         data-element-id="lightning-icon-sort-left"
@@ -100,12 +104,17 @@
                     </div>
 
                     <div
-                        class="slds-grid slds-col slds-grid_vertical-align-center slds-p-around_x-small slds-has-flexi-truncate"
+                        class="
+                            slds-grid slds-col
+                            slds-grid_vertical-align-center
+                            slds-p-around_x-small
+                            slds-has-flexi-truncate
+                        "
                     >
                         <!-- Avatar -->
                         <c-avonni-avatar
                             if:true={item.avatarSrc}
-                            class="slds-m-horizontal_x-small"
+                            class="slds-m-right_x-small"
                             fallback-icon-name={item.avatarFallbackIconName}
                             src={item.avatarSrc}
                             size="small"
@@ -115,9 +124,17 @@
                         <div class="slds-col slds-has-flexi-truncate">
                             <!-- Item label and icons -->
                             <div
-                                class="slds-grid slds-grid_vertical-align-center slds-margin-bottom_xx-small"
+                                class="
+                                    slds-grid slds-grid_vertical-align-center
+                                    slds-margin-bottom_xx-small
+                                "
                             >
-                                <div class="slds-truncate">
+                                <div
+                                    class="
+                                        slds-truncate
+                                        avonni-list__item-header_font
+                                    "
+                                >
                                     <template if:true={item.href}>
                                         <a href={item.href}>{item.label}</a>
                                     </template>
@@ -145,7 +162,11 @@
                             <!-- Description -->
                             <p
                                 if:true={item.description}
-                                class="slds-text-body_regular slds-line-clamp_x-small"
+                                class="
+                                    slds-text-body_regular
+                                    slds-line-clamp_x-small
+                                    avonni-list__item-description_font
+                                "
                             >
                                 {item.description}
                             </p>
@@ -154,7 +175,11 @@
                             <template if:true={item.infos}>
                                 <ul
                                     if:true={item.infos.length}
-                                    class="slds-list_horizontal slds-has-dividers_left slds-has-block-links"
+                                    class="
+                                        slds-list_horizontal
+                                        slds-has-dividers_left
+                                        slds-has-block-links
+                                    "
                                 >
                                     <template
                                         for:each={item.infos}
@@ -172,7 +197,11 @@
                     <!-- Sort icon -->
                     <lightning-icon
                         if:true={showIconRight}
-                        class="slds-m-right_x-small icon-right avonni-list__item-sortable-icon-cursor"
+                        class="
+                            slds-m-right_x-small
+                            icon-right
+                            avonni-list__item-sortable-icon-cursor
+                        "
                         icon-name={sortableIconName}
                         size="x-small"
                         data-element-id="lightning-icon-sort-right"

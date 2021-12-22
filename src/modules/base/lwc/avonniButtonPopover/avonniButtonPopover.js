@@ -100,8 +100,7 @@ export default class AvonniButtonPopover extends LightningElement {
     @api accessKey;
 
     /**
-     * The tile can include text, and is displayed in the header.
-     * To include additional markup or another component, use the title slot.
+     * Optional text to be shown on the button.
      *
      * @type {string}
      * @public
@@ -109,7 +108,8 @@ export default class AvonniButtonPopover extends LightningElement {
     @api label;
 
     /**
-     * Optional text to be shown on the button.
+     * The title is displayed in the popover header.
+     * To include additional markup or another component, use the title slot instead.
      *
      * @type {string}
      * @public
@@ -117,9 +117,7 @@ export default class AvonniButtonPopover extends LightningElement {
     @api title;
 
     /**
-     * The Lightning Design System name of the icon.
-     * Names are written in the format 'utility:down' where 'utility' is the category,
-     * and 'down' is the specific icon to be displayed.
+     * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
      * Only utility icons can be used in this component.
      *
      * @type {string}
@@ -227,8 +225,7 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * Determines the alignment of the popover relative to the button.
-     * Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right.
+     * Determines the alignment of the popover relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right.
      * The auto option aligns the popover based on available space.
      *
      * @type {string}
@@ -248,9 +245,7 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * The variant changes the appearance of the button.
-     * Accepted variants include base, neutral, brand, brand-outline,
-     * destructive, destructive-text, inverse, and success.
+     * The variant changes the appearance of the button. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
      *
      * @type {string}
      * @default neutral
@@ -269,7 +264,7 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * Specify which triggers will show the popover. Supported values are 'click', 'hover', 'focus'.
+     * Specify which trigger will show the popover. Supported values are 'click', 'hover' and 'focus'.
      *
      * @type {string}
      * @default click
@@ -398,7 +393,7 @@ export default class AvonniButtonPopover extends LightningElement {
     get computedPopoverHeaderClass() {
         return classSet('slds-popover__header')
             .add({
-                'avonni-button-popover-space-between': !this.hideCloseButton
+                'avonni-button-popover_space-between': !this.hideCloseButton
             })
             .toString();
     }
@@ -431,17 +426,15 @@ export default class AvonniButtonPopover extends LightningElement {
                 'slds-popover_error': this._popoverVariant === 'error',
                 'slds-popover_walkthrough':
                     this._popoverVariant === 'walkthrough',
-                'slds-popover_small': this._popoverSize === 'small',
-                'slds-popover_medium': this._popoverSize === 'medium',
-                'slds-popover_large': this._popoverSize === 'large',
                 'slds-show': this.popoverVisible,
                 'slds-hide': !this.popoverVisible
             })
+            .add(`slds-popover_${this._popoverSize}`)
             .toString();
     }
 
     /**
-     * Simulates a mouse click on the button.
+     * Simulate a mouse click on the button.
      *
      * @public
      */
@@ -452,7 +445,7 @@ export default class AvonniButtonPopover extends LightningElement {
         }
         /**
          * The event fired when the popover is clicked.
-         * 
+         *
          * @event
          * @name click
          * @public
@@ -461,7 +454,7 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * Sets focus on the button.
+     * Set focus on the button.
      *
      * @public
      */
@@ -473,7 +466,7 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * Opens the popover.
+     * Open the popover.
      *
      * @public
      */
@@ -485,7 +478,7 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * Closes the popover.
+     * Close the popover.
      */
     @api
     close() {
@@ -494,7 +487,7 @@ export default class AvonniButtonPopover extends LightningElement {
         }
         /**
          * The event fired when the popover is closed.
-         * 
+         *
          * @event
          * @name close
          * @public
@@ -523,7 +516,9 @@ export default class AvonniButtonPopover extends LightningElement {
      */
     focusOnButton() {
         this.allowBlur();
-        this.template.querySelector('[data-element-id="lightning-button"]').focus();
+        this.template
+            .querySelector('[data-element-id="lightning-button"]')
+            .focus();
         if (
             this._triggers === 'focus' &&
             !this.popoverVisible &&

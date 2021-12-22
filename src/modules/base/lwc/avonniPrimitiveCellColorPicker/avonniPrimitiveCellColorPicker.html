@@ -33,22 +33,57 @@
 -->
 
 <template>
-    <c-avonni-color-picker
-        value={value}
-        colors={colors}
-        disabled={disabled}
-        hide-color-input={hideColorInput}
-        label={label}
-        menu-alignment={menuAlignment}
-        menu-icon-name={menuIconName}
-        menu-icon-size={menuIconSize}
-        menu-nubbin={menuNubbin}
-        menu-variant={menuVariant}
-        message-when-bad-input={messageWhenBadInput}
-        opacity={opacity}
-        read-only={readOnly}
-        type={type}
-        variant="label-hidden"
-        onchange={handleChange}
-    ></c-avonni-color-picker>
+    <template if:true={visible}>
+        <c-avonni-primitive-datatable-iedit-panel-custom
+            data-iedit-panel-custom="true"
+            visible={state.inlineEdit.panelVisible}
+            row-key-value={state.inlineEdit.rowKeyValue}
+            col-key-value={state.inlineEdit.colKeyValue}
+            edited-value={state.inlineEdit.editedValue}
+            column-def={state.inlineEdit.columnDef}
+            is-mass-edit-enabled={state.inlineEdit.massEditEnabled}
+            number-of-selected-rows={state.inlineEdit.massEditSelectedRows}
+            colors={colors}
+            disabled={disabled}
+            hide-color-input={hideColorInput}
+            label={label}
+            menu-alignment={menuAlignment}
+            menu-icon-name={menuIconName}
+            menu-icon-size={menuIconSize}
+            menu-variant={menuVariant}
+            opacity={opacity}
+            type={type}
+        ></c-avonni-primitive-datatable-iedit-panel-custom>
+    </template>
+    <template if:false={visible}>
+        <span
+            class="
+                slds-grid slds-cell-edit
+                slds-grid_align-spread slds-grid_vertical-align-center
+            "
+        >
+            <c-avonni-color-picker
+                value={value}
+                disabled={disabled}
+                colors={colors}
+                hide-color-input={hideColorInput}
+                label={label}
+                menu-alignment={menuAlignment}
+                menu-icon-name={menuIconName}
+                menu-icon-size={menuIconSize}
+                menu-variant={menuVariant}
+                opacity={opacity}
+                type={type}
+                read-only={readOnly}
+                variant="label-hidden"
+                onchange={handleChange}
+            ></c-avonni-color-picker>
+            <template if:true={showEditButton}>
+                <c-avonni-primitive-cell-editable-button
+                    onclick={handleEditButtonClick}
+                    column-label="Color Picker"
+                ></c-avonni-primitive-cell-editable-button>
+            </template>
+        </span>
+    </template>
 </template>

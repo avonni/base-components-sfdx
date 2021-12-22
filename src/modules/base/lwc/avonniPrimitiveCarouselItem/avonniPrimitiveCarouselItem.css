@@ -1,0 +1,46 @@
+.avonni-carousel-item__content-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-line;
+    color: var(--avonni-carousel-item-title-text-color, #080707);
+    font-size: var(--avonni-carousel-item-title-font-size, 1rem);
+    font-style: var(--avonni-carousel-item-title-font-style, normal);
+    font-weight: var(--avonni-carousel-item-title-font-weight, 600);
+}
+
+.avonni-carousel__actions {
+    display: flex;
+    width: 100%;
+}
+
+.avonni-carousel__actions-bottom-center {
+    justify-content: center;
+}
+
+.avonni-carousel__actions-right {
+    justify-content: flex-end;
+}
+
+.avonni-carousel__actions-left {
+    justify-content: flex-start;
+}
+
+.avonni-carousel__content-bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.avonni-primitive-carousel-item__content_background {
+    background-color: var(--avonni-carousel-item-color-background, #ffffff);
+}
+
+.avonni-carousel-item__content-description {
+    color: var(--avonni-carousel-item-description-text-color, #080707);
+    font-size: var(--avonni-carousel-item-description-font-size, 0.8125rem);
+    font-style: var(--avonni-carousel-item-description-font-style, normal);
+    font-weight: var(--avonni-carousel-item-description-font-weight, 400);
+}

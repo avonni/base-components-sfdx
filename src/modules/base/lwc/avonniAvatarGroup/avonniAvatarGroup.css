@@ -207,11 +207,17 @@
     height: 1.25rem;
 }
 
-.circleBorder {
-    border: 3px white solid;
+.avonni-avatar-group__avatar_color-border {
+    border-color: var(--avonni-avatar-group-avatar-stack-color-border, #ffffff);
 }
 
-.squareBorder {
-    border: 3px white solid;
+.avonni-avatar-group__avatar_color-border-circle {
+    border: 1px solid
+        var(--avonni-avatar-group-avatar-stack-color-border, #ffffff);
+}
+
+.avonni-avatar-group__avatar_color-border-square {
+    border: 1px solid
+        var(--avonni-avatar-group-avatar-stack-color-border, #ffffff);
     border-radius: 5px;
 }

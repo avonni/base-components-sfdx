@@ -36,7 +36,6 @@ import { normalizeBoolean } from 'c/utilsPrivate';
 /**
  * @class
  * @descriptor avonni-splitter-pane
- * @storyId example-splitter--base
  * @public
  */
 export default class AvonniSplitterPane extends LightningElement {
@@ -94,7 +93,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies whether a pane is initially collapsed (true) or expanded (false).
+     * If present, the pane is collapsed by default.
      *
      * @type {boolean}
      * @public
@@ -111,7 +110,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies the size of a collapsible pane when collapsed, defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     * Size of a collapsible pane when collapsed, in pixels (e.g. "200px") or percentage (e.g. "50%").
      *
      * @type {string}
      * @public
@@ -127,7 +126,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies whether a pane is scrollable (true) or not scrollable (false).
+     * If present, the pane is scrollable.
      *
      * @type {boolean}
      * @public
@@ -144,7 +143,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies whether a pane is collapsible (true) or not collapsible (false).
+     * If present, the pane is collapsible.
      *
      * @type {boolean}
      * @public
@@ -161,7 +160,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies if the user is allowed to resize the pane and provide space for other panes.
+     * If present, the user is allowed to resize the pane.
      *
      * @type {boolean}
      * @public
@@ -178,7 +177,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies the maximum size of a pane defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     * Specifies the maximum size of a pane in pixels (e.g. "200px") or percentage (e.g. "50%").
      *
      * @type {string}
      * @public
@@ -194,7 +193,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies the minimum size of a pane defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     * Specifies the minimum size of a pane in pixels (e.g. "200px") or percentage (e.g "50%").
      *
      * @type {string}
      * @public
@@ -210,7 +209,7 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * Specifies the size of a pane defined as pixels (i.e. "200px") or as a percentage (i.e. "50%").
+     * Specifies the size of a pane defined in pixels (e.g. "200px") or percentage (e.g. "50%").
      *
      * @type {string}
      * @public

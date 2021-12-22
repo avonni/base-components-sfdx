@@ -118,7 +118,7 @@ export default class AvonniCombobox extends LightningElement {
 
     /**
      * Custom search function to execute instead of the default search. It has to:
-     * * Take an object with two keys as an argument: options and searchTerm.
+     * * Take an object with two keys as an argument: <code>options</code> and <code>searchTerm</code>.
      * * Return the new options.
      *
      * @type {function}
@@ -132,6 +132,7 @@ export default class AvonniCombobox extends LightningElement {
     _dropdownAlignment = DROPDOWN_ALIGNMENTS.default;
     _dropdownLength = DROPDOWN_LENGTHS.default;
     _groups = [];
+    _hideClearIcon = false;
     _hideSelectedOptions = false;
     _isLoading = false;
     _isMultiSelect = false;
@@ -251,6 +252,21 @@ export default class AvonniCombobox extends LightningElement {
     }
 
     /**
+     * If present, it is not possible to clear a selected option using the input clear icon.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get hideClearIcon() {
+        return this._hideClearIcon;
+    }
+    set hideClearIcon(value) {
+        this._hideClearIcon = normalizeBoolean(value);
+    }
+
+    /**
      * If present, the selected options pills will be hidden.
      *
      * @type {boolean}
@@ -315,7 +331,6 @@ export default class AvonniCombobox extends LightningElement {
 
     /**
      * If present, groups can contain other groups. Each group added to an option will create a level of depth.
-     *
      * If false, there will be only one level of groups.
      * If an option belongs to several groups, the option will be repeated in each group.
      *
@@ -347,7 +362,6 @@ export default class AvonniCombobox extends LightningElement {
 
     /**
      * Text that is displayed before an option is selected, to prompt the user to select an option.
-     *
      * The default value varies depending on the value of allow-search.
      *
      * @type {string}
@@ -383,7 +397,6 @@ export default class AvonniCombobox extends LightningElement {
 
     /**
      * If present, the selected options will be removed from the options.
-     *
      * If false, a checkmark will be displayed next to the selected options.
      *
      * @type {boolean}
@@ -552,7 +565,7 @@ export default class AvonniCombobox extends LightningElement {
      * @type {string}
      */
     get computedLabelClass() {
-        return classSet('slds-form-element__label')
+        return classSet('slds-form-element__label avonni-combobox__label')
             .add({ 'slds-assistive-text': this.variant === 'label-hidden' })
             .toString();
     }
@@ -591,9 +604,9 @@ export default class AvonniCombobox extends LightningElement {
     }
 
     /**
-     * Indicates whether the element meets all constraint validations.
+     * Checks if the input is valid.
      *
-     * @returns {boolean} the valid attribute value on the ValidityState object.
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -632,10 +645,9 @@ export default class AvonniCombobox extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {boolean} - The validity status of the input fields.
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -646,7 +658,7 @@ export default class AvonniCombobox extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message - The string that describes the error. If message is an empty string, the error message is reset.
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -656,7 +668,7 @@ export default class AvonniCombobox extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -696,6 +708,7 @@ export default class AvonniCombobox extends LightningElement {
     handleSearch(event) {
         /**
          * The event fired when a user types into the combobox input.
+         *
          * @event
          * @name search
          * @param {string} value The value of the search input.
@@ -788,7 +801,7 @@ export default class AvonniCombobox extends LightningElement {
     handleOpen() {
         /**
          * The event fired when the drop-down is opened.
-         * It is not fired when the drop-down is opened programmatically with the open() method.
+         * It is not fired when the drop-down is opened programmatically with the <code>open()</code> method.
          *
          * @event
          * @name open

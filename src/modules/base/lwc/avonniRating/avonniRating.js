@@ -186,7 +186,7 @@ export default class AvonniRating extends LightningElement {
     }
 
     /**
-     * Specifies the value of the Rating.
+     * Specifies the value of the rating.
      *
      * @type {string}
      * @public
@@ -356,7 +356,7 @@ export default class AvonniRating extends LightningElement {
         return classSet()
             .add({
                 'slds-form-element_stacked': this.variant === 'label-stacked',
-                'avonni-label-inline': this.variant === 'label-inline'
+                'avonni-rating__label_inline': this.variant === 'label-inline'
             })
             .toString();
     }
@@ -367,7 +367,7 @@ export default class AvonniRating extends LightningElement {
      * @type {string}
      */
     get computedLegendClass() {
-        return classSet('slds-form-element__label slds-no-flex')
+        return classSet('slds-form-element__label slds-no-flex avonni-rating__label')
             .add({
                 'slds-assistive-text': this.variant === 'label-hidden'
             })
@@ -388,7 +388,7 @@ export default class AvonniRating extends LightningElement {
              *
              * @event
              * @name change
-             * @param {string} The value of the selected rating.
+             * @param {string} value Value of the selected rating.
              * @public
              */
             const selectedEvent = new CustomEvent('change', {

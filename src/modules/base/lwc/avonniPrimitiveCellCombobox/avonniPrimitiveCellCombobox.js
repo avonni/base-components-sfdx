@@ -70,26 +70,13 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
         );
     }
 
-    renderedCallback() {
-        // focus on the combobox when the inline edit panel is opened.
-        if (this.inputableElement) {
-            this.inputableElement.focus();
-        }
-    }
-
     @api
     get value() {
         return this._value;
     }
 
     set value(value) {
-        // When data is first set, the value is an object containing the editable state
-        // When the cell is edited, only the value is sent back
-        if (typeof value === 'object' && value.editable !== undefined) {
-            this._value = value.value;
-        } else {
-            this._value = value;
-        }
+        this._value = value;
     }
 
     handleChange(event) {
@@ -110,14 +97,12 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
     /*----------- Inline Editing Functions -------------*/
 
     /**
-     * Gets the inputable element inside the inline edit popover.
+     * Return true if cell is editable and not disabled.
      *
-     * @type {Element}
+     * @type {Boolean}
      */
-    get inputableElement() {
-        return this.template.querySelector(
-            '[data-element-id^="primitive-cell-combobox-input"]'
-        );
+    get showEditButton() {
+        return this.editable && !this.disabled;
     }
 
     // Toggles the visibility of the inline edit panel and the readOnly property of combobox.

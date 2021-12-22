@@ -34,8 +34,10 @@
 
 <template>
     <div class={progressRingClass}>
-        <template if:false={showPositionBottom}>
-            <div class={progressTitleClassTop}>{title}</div>
+        <template if:true={showPositionTop}>
+            <div class={progressTitleClassTop} data-element-id="title">
+                {title}
+            </div>
         </template>
         <div
             class="slds-progress-ring__progress"
@@ -45,7 +47,11 @@
             aria-valuenow={value}
         >
             <svg viewBox="-1 -1 2 2">
-                <path fill={color} d={completeness} data-element-id="path"></path>
+                <path
+                    fill={color}
+                    d={completeness}
+                    data-element-id="path"
+                ></path>
             </svg>
         </div>
         <div class={progressRingContentClass}>
@@ -53,11 +59,19 @@
                 if:true={showValue}
                 style={progressValueStyles}
                 data-element-id="span"
-            >{value}%</span>
-            <span if:true={label} class={progressLabelClass}> {label}</span>
+                >{value}%</span
+            >
+            <span
+                if:true={label}
+                class={progressLabelClass}
+                data-element-id="label"
+                >{label}</span
+            >
         </div>
         <template if:true={showPositionBottom}>
-            <div class={progressTitleClass}>{title}</div>
+            <div class={progressTitleClass} data-element-id="title">
+                {title}
+            </div>
         </template>
     </div>
 </template>

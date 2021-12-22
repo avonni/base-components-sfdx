@@ -50,7 +50,7 @@ export default class AvonniSubmenu extends LightningElement {
      */
     @api accessKey;
     /**
-     * Describes the reason for showing the draft indicator. This is required when is-draft is present on the lightning-menu-item tag.
+     * Describes the reason for showing the draft indicator. This is required when is-draft is present.
      *
      * @type {string}
      * @public
@@ -96,7 +96,8 @@ export default class AvonniSubmenu extends LightningElement {
      * @public
      * @default false
      */
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -112,7 +113,8 @@ export default class AvonniSubmenu extends LightningElement {
      * @public
      * @default false
      */
-    @api get isDraft() {
+    @api
+    get isDraft() {
         return this._isDraft;
     }
 
@@ -128,7 +130,8 @@ export default class AvonniSubmenu extends LightningElement {
      * @public
      * @default 0
      */
-    @api get tabIndex() {
+    @api
+    get tabIndex() {
         return this._tabIndex;
     }
 
@@ -155,7 +158,7 @@ export default class AvonniSubmenu extends LightningElement {
     }
 
     /**
-     * Close the sub menu.
+     * Close the submenu.
      *
      * @public
      */

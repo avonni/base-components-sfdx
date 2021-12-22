@@ -41,7 +41,13 @@
                 class={computedIconClass}
                 data-element-id="lightning-icon"
             ></lightning-icon>
-            <h1 if:true={label} data-element-id="h1">{label}</h1>
+            <h1
+                class="avonni-separator__label"
+                if:true={label}
+                data-element-id="h1"
+            >
+                {label}
+            </h1>
         </div>
         <div class={computedLineTwoClass}></div>
     </div>

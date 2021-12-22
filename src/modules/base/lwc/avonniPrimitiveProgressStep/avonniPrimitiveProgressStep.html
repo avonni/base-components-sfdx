@@ -33,19 +33,26 @@
 -->
 
 <template>
-    <div class="avonni-progress-step-outer-class">
+    <div class="avonni-progress-step__outer-class">
         <li>
-            <div class="avonni-progress-step-inner-class">
-                <div class="avonni-progress-step-position-top slds-truncate">
-                        <p
-                            if:true={showLabelTop}
-                            class="slds-text-title_bold"
-                            data-element-id="p-top-label"
-                        >{label}</p>
-                        <p
-                            if:true={showDescriptionTop}
-                            data-element-id="p-top-description"
-                        >{description}</p>
+            <div class="avonni-progress-step__inner-class">
+                <div
+                    if:true={hasTop}
+                    class="avonni-progress-step_position-top slds-truncate"
+                >
+                    <p
+                        if:true={showLabelTop}
+                        class="slds-text-title_bold"
+                        data-element-id="p-top-label"
+                    >
+                        {label}
+                    </p>
+                    <p
+                        if:true={showDescriptionTop}
+                        data-element-id="p-top-description"
+                    >
+                        {description}
+                    </p>
                 </div>
                 <button
                     class={computedButtonClass}
@@ -59,7 +66,7 @@
                     onblur={handleStepBlur}
                 >
                     <c-avonni-primitive-icon
-                        class="avonni-progress-step-icon-margin-bottom"
+                        class="avonni-progress-step__icon_margin-bottom"
                         if:true={stepIconName}
                         svg-class="slds-button__icon"
                         icon-name={stepIconName}
@@ -67,7 +74,10 @@
                         variant={primitiveButtonIconVariant}
                         data-element-id="avonni-primitive-icon-step"
                     ></c-avonni-primitive-icon>
-                    <div if:false={stepIconName} class="avonni-marker"></div>
+                    <div
+                        if:false={stepIconName}
+                        class="avonni-progress-step__marker"
+                    ></div>
                 </button>
                 <template if:true={displayPopover}>
                     <template if:false={popoverButton}>
@@ -75,7 +85,7 @@
                             class={computedPopoverClass}
                             onclick={handleStepPopoverClick}
                         >
-                            <div class="avonni-progress-step-overflow-hidden">
+                            <div class="avonni-progress-step_overflow-hidden">
                                 <div class="slds-popover__body">
                                     <p
                                         if:true={popoverLabel}
@@ -87,7 +97,9 @@
                                     <p
                                         if:true={popoverDescription}
                                         data-element-id="p-popover-description"
-                                    >{popoverDescription}</p>
+                                    >
+                                        {popoverDescription}
+                                    </p>
                                     <template if:true={showPopoverIcon}>
                                         <c-avonni-primitive-icon
                                             icon-name={popoverIconName}
@@ -107,7 +119,7 @@
                             data-element-id="button-propover"
                             onclick={handleStepPopoverClick}
                         >
-                            <div class="avonni-progress-step-overflow-hidden">
+                            <div class="avonni-progress-step_overflow-hidden">
                                 <div class={computedPopoverBody}>
                                     <p
                                         if:true={popoverLabel}
@@ -119,7 +131,9 @@
                                     <p
                                         if:true={popoverDescription}
                                         data-element-id="p-popover-description"
-                                    >{popoverDescription}</p>
+                                    >
+                                        {popoverDescription}
+                                    </p>
                                     <template if:true={showPopoverIcon}>
                                         <c-avonni-primitive-icon
                                             icon-name={popoverIconName}
@@ -134,7 +148,10 @@
                             </div>
                             <template if:true={showPopoverIconWhenHover}>
                                 <div
-                                    class="avonni-progress-step-popover-icon-hover avonni-progress-step-icon-color_brand"
+                                    class="
+                                        avonni-progress-step__popover-icon-hover
+                                        avonni-progress-step__icon_color-brand
+                                    "
                                 >
                                     <c-avonni-primitive-icon
                                         icon-name={popoverIconNameWhenHover}
@@ -149,17 +166,26 @@
                     </template>
                 </template>
                 <span if:true={assistiveText} class="slds-assistive-text"
-                    >{assistiveText}</span>
-                <div class="avonni-progress-step-position-bottom slds-truncate">
+                    >{assistiveText}</span
+                >
+                <div
+                    if:true={hasBottom}
+                    class="avonni-progress-step_position-bottom slds-truncate"
+                >
                     <p
                         if:true={showLabelBottom}
-                        class="slds-text-title_bold"
+                        class="avonni-progress-step__label"
                         data-element-id="p-bottom-label"
-                    >{label}</p>
+                    >
+                        {label}
+                    </p>
                     <p
                         if:true={showDescriptionBottom}
+                        class="avonni-progress-step__description"
                         data-element-id="p-bottom-description"
-                    >{description}</p>
+                    >
+                        {description}
+                    </p>
                     <lightning-button
                         if:true={buttonLabel}
                         onclick={handleStepButtonClick}

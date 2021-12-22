@@ -34,7 +34,7 @@ import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { InteractingState } from 'c/inputUtils';
 
-export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement {
+export default class AvonniPrimitiveDatatableIeditPanelCustom extends LightningElement {
     @api visible;
     @api rowKeyValue;
     @api colKeyValue;
@@ -43,12 +43,44 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
     @api isMassEditEnabled = false;
     @api numberOfSelectedRows;
 
-    // Primitive cell combobox
+    //shared
     @api disabled;
+    @api label;
+    @api name;
+    @api placeholder;
+    @api type;
+
+    // Primitive cell color-picker
+    @api colors;
+    @api hideColorInput;
+    @api menuAlignment;
+    @api menuIconName;
+    @api menuIconSize;
+    @api menuVariant;
+    @api opacity;
+
+    // Primitive cell combobox
     @api dropdownLength;
     @api isMultiSelect;
     @api options;
-    @api placeholder;
+
+    // Primitive cell counter
+    @api max;
+    @api min;
+    @api step;
+
+    // Primitive cell date-range
+    @api startDate;
+    @api endDate;
+    @api dateStyle;
+    @api timeStyle;
+    @api timezone;
+    @api labelStartDate;
+    @api labelEndDate;
+
+    // primitive cell textarea
+    @api maxLength;
+    @api minLength;
 
     connectedCallback() {
         this.interactingState = new InteractingState({
@@ -77,18 +109,87 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
             .toString();
     }
 
-    get inputKey() {
-        return this.rowKeyValue + this.colKeyValue;
-    }
-
+    /**
+     * Returns the checkbox label when mass edit.
+     *
+     * @type {string}
+     */
     get massEditCheckboxLabel() {
         return `Update ${this.numberOfSelectedRows} selected items`;
     }
 
+    /**
+     * Returns true if column is required.
+     *
+     * @type {boolean}
+     */
     get required() {
         return (
             this.columnDef.typeAttributes &&
             this.columnDef.typeAttributes.required
+        );
+    }
+
+    /**
+     * Returns true if column type is rich-text.
+     *
+     * @type {boolean}
+     */
+    get isTypeRichText() {
+        return this.columnDef.type === 'rich-text';
+    }
+
+    /**
+     * Returns true if column type is date-range.
+     *
+     * @type {boolean}
+     */
+    get isTypeDateRange() {
+        return this.columnDef.type === 'date-range';
+    }
+
+    /**
+     * Returns true if column type is color-picker.
+     *
+     * @type {boolean}
+     */
+    get isTypeColorPicker() {
+        return this.columnDef.type === 'color-picker';
+    }
+
+    /**
+     * Returns true if column type is combobox.
+     *
+     * @type {boolean}
+     */
+    get isTypeCombobox() {
+        return this.columnDef.type === 'combobox';
+    }
+
+    /**
+     * Returns true if column type is type with menu.
+     *
+     * @type {boolean}
+     */
+    get isTypeWithMenu() {
+        return (
+            this.isTypeRichText ||
+            this.isTypeDateRange ||
+            this.isTypeColorPicker
+        );
+    }
+
+    /**
+     * Returns true if column type is a type that needs apply or cancel button for inline editing.
+     *
+     * @type {boolean}
+     */
+    get showButtons() {
+        return (
+            this.isMassEditEnabled ||
+            this.isTypeWithMenu ||
+            this.columnDef.type === 'counter' ||
+            this.columnDef.type === 'textarea'
         );
     }
 
@@ -118,14 +219,26 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
         }
     }
 
+    editedFormattedValue(value) {
+        return this.isTypeDateRange
+            ? {
+                  startDate: value.startDate,
+                  endDate: value.endDate
+              }
+            : value;
+    }
+
     triggerEditFinished(detail) {
-        // for combobox we need to make sure that the value is only set if the there is a change or a submit.
-        if (this.value.length !== 0 && typeof this.value !== 'string') {
+        // for combobox we need to make sure that the value is only set if the there is a change, a submit or a valid value.
+        if (
+            !this.isTypeCombobox ||
+            (this.isTypeCombobox && this.value.length !== 0)
+        ) {
             detail.rowKeyValue = detail.rowKeyValue || this.rowKeyValue;
             detail.colKeyValue = detail.colKeyValue || this.colKeyValue;
-            detail.value = this.value;
-            detail.valid = this.validity.valid;
+            detail.valid = this.isTypeRichText ? true : this.validity.valid;
             detail.isMassEditChecked = this.isMassEditChecked;
+            detail.value = this.editedFormattedValue(this.value);
         }
         this.dispatchEvent(
             new CustomEvent('ieditfinishedcustom', {
@@ -138,28 +251,47 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
 
     @api
     focus() {
-        const elem = this.inputableElement;
         this.interactingState.enter();
 
-        if (elem) {
-            elem.focus();
+        if (this.inputableElement) {
+            this.inputableElement.focus();
         }
     }
 
+    /**
+     * Returns element inputable element inside inline edit panel.
+     *
+     * @type {element}
+     */
     get inputableElement() {
-        return this.template.querySelector('.dt-type-edit-factory');
+        return this.template.querySelector('.dt-type-edit-factory-custom');
     }
 
+    /**
+     * Returns value of inputable element inside inline edit panel.
+     *
+     * @type {(string|object)}
+     */
     @api
     get value() {
-        return this.inputableElement ? this.inputableElement.value : null;
+        return this.inputableElement.value;
     }
 
+    /**
+     * Returns validity object of inputable element inside inline edit panel.
+     *
+     * @type {object}
+     */
     @api
     get validity() {
         return this.inputableElement.validity;
     }
 
+    /**
+     * Returns true if massEdit is enabled and checkbox is checked.
+     *
+     * @type {boolean}
+     */
     @api
     get isMassEditChecked() {
         return (
@@ -174,7 +306,14 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
     }
 
     handleTypeElemBlur() {
-        if (this.visible && !this.template.activeElement) {
+        if (
+            this.visible &&
+            !this.template.activeElement &&
+            !this.isTypeWithMenu
+        ) {
+            this.interactingState.leave();
+        }
+        if (this.isTypeWithMenu && this._allowBlur) {
             this.interactingState.leave();
         }
     }
@@ -183,11 +322,19 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
         this.interactingState.enter();
     }
 
+    handleTypeElemMouseLeave() {
+        this._allowBlur = true;
+    }
+
+    handleTypeElemMouseEnter() {
+        this._allowBlur = false;
+    }
+
     handleEditFormSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
 
-        if (!this.isMassEditEnabled) {
+        if (!this.isMassEditEnabled && !this.isTypeColorPicker) {
             this.processSubmission();
         }
 
@@ -217,8 +364,32 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
     }
 
     processSubmission() {
-        if (this.validity.valid) {
-            this.triggerEditFinished({ reason: 'submit-action' });
+        this.triggerEditFinished({ reason: 'submit-action' });
+        // if type input rich text, there is no validity check.
+        if (this.isTypeRichText) {
+            this.dispatchEvent(
+                new CustomEvent('privateeditcustomcell', {
+                    detail: {
+                        rowKeyValue: this.rowKeyValue,
+                        colKeyValue: this.colKeyValue,
+                        value: this.value
+                    },
+                    bubbles: true,
+                    composed: true
+                })
+            );
+        } else if (this.validity.valid) {
+            this.dispatchEvent(
+                new CustomEvent('privateeditcustomcell', {
+                    detail: {
+                        rowKeyValue: this.rowKeyValue,
+                        colKeyValue: this.colKeyValue,
+                        value: this.editedFormattedValue(this.value)
+                    },
+                    bubbles: true,
+                    composed: true
+                })
+            );
         } else {
             this.inputableElement.showHelpMessageIfInvalid();
         }
@@ -236,5 +407,11 @@ export default class AvonniPrimitiveDatatableIeditPanel extends LightningElement
         this.triggerEditFinished({
             reason: 'edit-canceled'
         });
+    }
+
+    handleMassEditCheckboxClick() {
+        if (this.inputableElement && !this.isTypeDateRange) {
+            this.inputableElement.focus();
+        }
     }
 }

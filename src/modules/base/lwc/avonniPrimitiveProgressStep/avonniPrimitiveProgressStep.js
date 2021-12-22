@@ -223,24 +223,23 @@ export default class AvonniProgressStep extends LightningElement {
     }
 
     get computedPopoverClass() {
-        return classSet(
-            'slds-popover slds-nubbin_bottom avonni-progress-step-popover-body'
-        )
+        return classSet('slds-popover slds-nubbin_bottom')
             .add({
-                'avonni-progress-step-popover-completed': this.completedSteps.includes(
-                    this.value
-                )
+                'avonni-progress-step__popover-completed':
+                    this.completedSteps.includes(this.value) &&
+                    this._popoverVariant !== 'button',
+                'avonni-progress-step__popover-button-completed':
+                    this.completedSteps.includes(this.value) &&
+                    this._popoverVariant === 'button',
+                'avonni-progress-step__popover-button_background-color':
+                    !this.completedSteps.includes(this.value) &&
+                    this._popoverVariant === 'button'
             })
+            .add(`avonni-progress-step__popover_size-${this._popoverSize}`)
             .add({
-                'avonni-progress-step-popover_small':
-                    this._popoverSize === 'small',
-                'avonni-progress-step-popover_medium':
-                    this._popoverSize === 'medium',
-                'avonni-progress-step-popover_large':
-                    this._popoverSize === 'large'
-            })
-            .add({
-                'avonni-progress-step-popover-button':
+                'avonni-progress-step__popover-body':
+                    this._popoverVariant !== 'button',
+                'avonni-progress-step__popover-button':
                     this._popoverVariant === 'button'
             })
             .add(`ratio-${this._popoverRatio}`)
@@ -272,6 +271,18 @@ export default class AvonniProgressStep extends LightningElement {
         return this._descriptionPosition === 'bottom' && this.description;
     }
 
+    get hasTop() {
+        return this.showLabelTop || this.showDescriptionTop;
+    }
+
+    get hasBottom() {
+        return (
+            this.showLabelBottom ||
+            this.showDescriptionBottom ||
+            this.buttonLabel
+        );
+    }
+
     get showPopoverIcon() {
         return this.popoverIconSrc || this.popoverIconName;
     }
@@ -300,12 +311,14 @@ export default class AvonniProgressStep extends LightningElement {
 
     get computedPopoverBody() {
         return this.popoverIconNameWhenHover
-            ? 'slds-popover__body avonni-progress-step-popover-body-icon-hover'
-            : 'slds-popover__body avonni-progress-step-popover-body-no-icon-hover';
+            ? 'slds-popover__body avonni-progress-step__popover-body-icon-hover'
+            : 'slds-popover__body avonni-progress-step__popover-body-no-icon-hover';
     }
 
     isDisabled() {
-        const buttons = this.template.querySelectorAll('[data-element-id^="button"]');
+        const buttons = this.template.querySelectorAll(
+            '[data-element-id^="button"]'
+        );
         buttons.forEach((button) => {
             if (this.disabledSteps.includes(this.value)) {
                 button.setAttribute('disabled', 'true');

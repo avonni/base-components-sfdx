@@ -138,7 +138,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     _required = false;
     _search = this.computeSearch;
     _selectedOptionsAriaLabel = DEFAULT_SELECTED_OPTIONS_ARIA_LABEL;
-    _showClearInput = false;
+    _hideClearIcon = false;
     _value = [];
     _variant = VARIANTS.default;
 
@@ -508,18 +508,18 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * If present, a value must be selected before the form can be submitted.
+     * If present, it is not possible to clear a selected option using the input clear icon.
      *
      * @type {boolean}
      * @default false
      * @public
      */
     @api
-    get showClearInput() {
-        return this._showClearInput;
+    get hideClearIcon() {
+        return this._hideClearIcon;
     }
-    set showClearInput(value) {
-        this._showClearInput = normalizeBoolean(value);
+    set hideClearIcon(value) {
+        this._hideClearIcon = normalizeBoolean(value);
     }
 
     /**
@@ -608,6 +608,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             }
             values.push(option.value);
         });
+        if (this.isMultiSelect) {
+            return this.hasBadValues;
+        }
         return this._value.length === 0 || this._value[0] === ''
             ? true
             : values.some((e) => this._value.includes(e));
@@ -795,12 +798,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * True if show-clear-input is true, this.input and hide-selected-options is false.
+     * True if hide-clear-input is false and the input has a value.
      *
      * @type {boolean}
      */
     get showClearInputIcon() {
-        return this.showClearInput && this.inputValue !== '';
+        return !this.hideClearIcon && this.inputValue !== '';
     }
 
     /**
@@ -896,7 +899,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @type {string}
      */
     get readOnlyValue() {
-        return this.validity.valid ? this.inputValue : this.value[0];
+        return this.validity.valid ? this.inputValue : '';
+    }
+
+    get readOnlyLabel() {
+        return this.label ? this.label : 'Read Only Combobox';
     }
 
     /**
@@ -910,9 +917,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * Indicates whether the element meets all constraint validations.
+     * Checks if the input is valid.
      *
-     * @returns {boolean} the valid attribute value on the ValidityState object.
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -974,10 +981,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {boolean} - The validity status of the input fields.
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -990,8 +996,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message - The string that describes the error.
-     * If message is an empty string, the error message is reset.
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -1001,7 +1006,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -1284,6 +1289,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     computeSelection() {
         this.selectedOptions = this.getSelectedOptions();
+        this.hasBadValues =
+            this._value.length === 0
+                ? true
+                : this.selectedOptions.some((option) => option.value);
         this._value = this.selectedOptions.map((option) => option.value);
 
         this.dispatchEvent(
@@ -1407,9 +1416,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (!this._optionElements[index]) return;
 
         if (this._highlightedOption)
-            this._highlightedOption.classList.remove('slds-has-focus');
+            this._highlightedOption.classList.remove(
+                'avonni-primitive-combobox__option_background_focused'
+            );
         this._highlightedOptionIndex = index;
-        this._highlightedOption.classList.add('slds-has-focus');
+        this._highlightedOption.classList.add(
+            'avonni-primitive-combobox__option_background_focused'
+        );
         const listboxElement = this.template.querySelector(
             '.slds-listbox [role="listbox"]'
         );
@@ -1604,6 +1617,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     handleClearInput(event) {
         event.stopPropagation();
+        if (this.disabled) return;
+
         this.inputValue = '';
 
         // Clear the value

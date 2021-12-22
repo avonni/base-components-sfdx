@@ -427,9 +427,9 @@ export default class AvonniAvatarGroup extends LightningElement {
         return classSet('avonni-avatar-group__avatar')
             .add({
                 'avonni-avatar-group_in-line': this.layout === 'stack',
-                circleBorder:
+                'avonni-avatar-group__avatar_color-border-circle':
                     this.layout === 'stack' && this.variant === 'circle',
-                squareBorder:
+                'avonni-avatar-group__avatar_color-border-square':
                     this.layout === 'stack' && this.variant === 'square'
             })
             .add(`avonni-avatar-${this.size}`)
@@ -443,7 +443,11 @@ export default class AvonniAvatarGroup extends LightningElement {
     get avatarInlinePlusClass() {
         return classSet('avonni-avatar-group__avatar avonni-avatar-group__plus')
             .add({
-                'avonni-avatar-group_in-line': this.layout === 'stack'
+                'avonni-avatar-group_in-line ': this.layout === 'stack',
+                'avonni-avatar-group__avatar_color-border-circle':
+                    this.layout === 'stack' && this.variant === 'circle',
+                'avonni-avatar-group__avatar_color-border-square':
+                    this.layout === 'stack' && this.variant === 'square'
             })
             .add(`avonni-avatar-${this.size}`)
             .toString();
@@ -472,9 +476,9 @@ export default class AvonniAvatarGroup extends LightningElement {
                     this.layout === 'stack'
             })
             .add({
-                'avonni-avatar-group__action-button_circle':
+                'avonni-avatar-group__action-button_circle avonni-avatar-group__avatar_color-border-circle':
                     this.variant === 'circle',
-                'avonni-avatar-group__action-button_square':
+                'avonni-avatar-group__action-button_square avonni-avatar-group__avatar_color-border-square':
                     this.variant === 'square',
                 'avonni-avatar-group__action-button_x-large':
                     this.size === 'x-large',

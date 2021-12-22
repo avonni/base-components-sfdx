@@ -33,18 +33,49 @@
 -->
 
 <template>
-    <div class="slds-m-bottom_small">
-        <lightning-textarea
-            value={value}
+    <template if:true={visible}>
+        <c-avonni-primitive-datatable-iedit-panel-custom
+            data-iedit-panel-custom="true"
+            visible={state.inlineEdit.panelVisible}
+            row-key-value={state.inlineEdit.rowKeyValue}
+            col-key-value={state.inlineEdit.colKeyValue}
+            edited-value={state.inlineEdit.editedValue}
+            column-def={state.inlineEdit.columnDef}
+            is-mass-edit-enabled={state.inlineEdit.massEditEnabled}
+            number-of-selected-rows={state.inlineEdit.massEditSelectedRows}
             disabled={disabled}
             label={label}
             max-length={maxLength}
             min-length={minLength}
             name={name}
             placeholder={placeholder}
-            readonly
-            variant="label-hidden"
+        ></c-avonni-primitive-datatable-iedit-panel-custom>
+    </template>
+    <template if:false={visible}>
+        <span
+            class="
+                slds-grid slds-cell-edit
+                slds-grid_align-spread slds-grid_vertical-align-center
+            "
         >
-        </lightning-textarea>
-    </div>
+            <lightning-textarea
+                value={value}
+                disabled={disabled}
+                label={label}
+                max-length={maxLength}
+                min-length={minLength}
+                name={name}
+                placeholder={placeholder}
+                readonly={readOnly}
+                variant="label-hidden"
+            >
+            </lightning-textarea>
+            <template if:true={showEditButton}>
+                <c-avonni-primitive-cell-editable-button
+                    onclick={handleEditButtonClick}
+                    column-label="Textarea"
+                ></c-avonni-primitive-cell-editable-button>
+            </template>
+        </span>
+    </template>
 </template>

@@ -37,7 +37,7 @@
         <lightning-layout-item size="12" class="slds-text-align_center">
             <span
                 if:true={showPositionTopLeft}
-                class="avonni-progress-bar_value"
+                class="avonni-progress-bar__value_font"
                 aria-hidden="true"
             >
                 {value}% {valueLabel}
@@ -49,7 +49,7 @@
             >
             <span
                 if:true={showPositionTopRight}
-                class="avonni-progress-bar_value"
+                class="avonni-progress-bar__value_font"
                 aria-hidden="true"
             >
                 {value}% {valueLabel}
@@ -83,7 +83,7 @@
     </div>
     <lightning-layout if:true={showPositionBottom}>
         <lightning-layout-item size="12" class="slds-text-align_center">
-            <span class="avonni-progress-bar_value" aria-hidden="true">
+            <span class="avonni-progress-bar__value_font" aria-hidden="true">
                 {value}% {valueLabel}
             </span>
         </lightning-layout-item>

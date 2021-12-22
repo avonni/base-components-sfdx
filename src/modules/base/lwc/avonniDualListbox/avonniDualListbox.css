@@ -30,14 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-dual-listbox-list {
+.avonni-dual-listbox__list {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
     clear: left;
 }
 
-.avonni-dual-listbox-list__column {
+.avonni-dual-listbox__list-column {
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
     display: inline-flex;
@@ -47,16 +47,32 @@
     flex-direction: column;
 }
 
-.avonni-dual-listbox-buttons-centered .button {
+.avonni-dual-listbox__option {
+    background-color: var(
+        --avonni-dual-listbox-option-color-background,
+        #ffffff
+    );
+    color: var(--avonni-dual-listbox-option-text-color, #706e6b);
+}
+
+.avonni-dual-listbox__option:hover {
+    background-color: var(
+        --avonni-dual-listbox-option-color-background-hover,
+        #f3f2f2
+    );
+    color: var(--avonni-dual-listbox-option-text-color-hover, #706e6b);
+}
+
+.avonni-dual-listbox__buttons_centered .button {
     margin: var(--lwc-spacingSmall, 0.75rem) 0;
 }
 
-.avonni-dual-listbox-buttons-centered {
+.avonni-dual-listbox__buttons_centered {
     justify-content: center;
     margin: var(--lwc-spacingMedium, 1rem);
 }
 
-.avonni-dual-listbox-list__column_responsive_small {
+.avonni-dual-listbox__list-column_responsive_small {
     -webkit-box-flex: 0;
     -ms-flex: 0 1 15rem;
     flex: 0 1 15rem;
@@ -66,7 +82,7 @@
     min-width: 6rem;
 }
 
-.avonni-dual-listbox-list__column_responsive_medium {
+.avonni-dual-listbox__list-column_responsive_medium {
     -webkit-box-flex: 0;
     -ms-flex: 0 1 20rem;
     flex: 0 1 20rem;
@@ -76,7 +92,7 @@
     min-width: 6rem;
 }
 
-.avonni-dual-listbox-list__column_responsive_large {
+.avonni-dual-listbox__list-column_responsive_large {
     -webkit-box-flex: 0;
     -ms-flex: 0 1 25rem;
     flex: 0 1 25rem;
@@ -86,13 +102,12 @@
     min-width: 6rem;
 }
 
-.avonni-dual-listbox-list__column_responsive
-    .avonni-dual-listbox-list__options {
+.avonni-dual-listbox__list-column_responsive {
     width: auto;
     max-width: 100%;
 }
 
-.avonni-dual-listbox-allow-search {
+.avonni-dual-listbox__search-container {
     position: relative;
     top: 3px;
     background: #ffffff;
@@ -101,49 +116,68 @@
     padding: var(--lwc-spacingXSmall, 0.5rem) !important;
 }
 
-.avonni-dual-listbox-selected-list-with-search {
+.avonni-dual-listbox__selected-list-with-search {
     margin-top: 3px;
 }
 
-.avonni-dual-listbox-option-is-selected {
+.avonni-dual-listbox__boxes {
     padding: 0;
-    color: var(--lwc-colorTextIconDefault, rgb(112, 110, 107));
+    border: var(--avonni-dual-listbox-boxes-sizing-border, 1px)
+        var(--avonni-dual-listbox-boxes-styling-border, solid)
+        var(--avonni-dual-listbox-boxes-color-border, #dddbda);
 }
 
-.avonni-dual-listbox-option-is-selected.slds-dueling-list__options
-    [aria-selected='true'] {
-    background: #edeceb;
-    color: var(--lwc-colorTextIconDefault, rgb(112, 110, 107));
+.avonni-dual-listbox__boxes.slds-dueling-list__options [aria-selected='true'] {
+    background: var(
+        --avonni-dual-listbox-option-color-background-selected,
+        #edeceb
+    );
+    color: var(--avonni-dual-listbox-option-text-color-selected, #706e6b);
 }
 
-.avonni-dual-listbox-option-border_bottom {
-    border-bottom: var(--lwc-borderWidthThin, 1px) solid
-        var(--lwc-colorBorder, rgb(221, 219, 218));
+.avonni-dual-listbox__option_border-bottom {
+    border-bottom: var(--avonni-dual-listbox-option-sizing-border, 1px)
+        var(--avonni-dual-listbox-option-styling-border, solid)
+        var(--avonni-dual-listbox-option-color-border, #dddbda);
 }
 
-.avonni-dual-listbox-empty-column {
+.avonni-dual-listbox__empty-column {
     color: black;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.avonni-dual-listbox-list-item-min_height {
+.avonni-dual-listbox__list-item_min-height {
     min-height: 41px;
 }
 
-.avonni-dual-listbox-size_small {
+.avonni-dual-listbox__box_size-small {
     width: var(--lwc-sizeSmall, 15rem);
 }
 
-.avonni-dual-listbox-size_medium {
+.avonni-dual-listbox__box_size-medium {
     width: var(--lwc-sizeMedium, 20rem);
 }
 
-.avonni-dual-listbox-size_large {
+.avonni-dual-listbox__box_size-large {
     width: var(--lwc-sizeLarge, 25rem);
 }
 
-.avonni-dual-listbox-dragging {
+.avonni-dual-listbox__option_dragging {
     opacity: 0.2;
+}
+
+.avonni-dual-listbox__header {
+    color: var(--avonni-dual-listbox-header-text-color, #3e3e3c);
+    font-size: var(--avonni-dual-listbox-header-font-size, 0.75rem);
+    font-style: var(--avonni-dual-listbox-header-font-style, normal);
+    font-weight: var(--avonni-dual-listbox-header-font-weight, 700);
+}
+
+.avonni-dual-listbox__boxes-label {
+    color: var(--avonni-dual-listbox-boxes-label-text-color, #3e3e3c);
+    font-size: var(--avonni-dual-listbox-boxes-label-font-size, 0.75rem);
+    font-style: var(--avonni-dual-listbox-boxes-label-font-style, normal);
+    font-weight: var(--avonni-dual-listbox-boxes-label-font-weight, 400);
 }

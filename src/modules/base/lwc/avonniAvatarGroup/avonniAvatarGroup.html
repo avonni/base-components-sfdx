@@ -56,7 +56,10 @@
                 data-element-id="avonni-primitive-avatar-classic-1"
                 data-item-id="0"
                 data-type="show"
-                class="slds-avatar-grouped slds-avatar-grouped__primary"
+                class="
+                    slds-avatar-grouped slds-avatar-grouped__primary
+                    avonni-avatar-group__avatar_color-border
+                "
                 onclick={handleAvatarClick}
                 role="button"
                 onkeyup={handleAvatarClick}
@@ -83,7 +86,10 @@
                 data-element-id="avonni-primitive-avatar-classic-2"
                 data-item-id="1"
                 data-type="show"
-                class="slds-avatar-grouped slds-avatar-grouped__secondary"
+                class="
+                    slds-avatar-grouped slds-avatar-grouped__secondary
+                    avonni-avatar-group__avatar_color-border
+                "
                 onclick={handleAvatarClick}
                 role="button"
                 onkeyup={handleAvatarClick}
@@ -147,7 +153,9 @@
                         >
                             <div
                                 key={item.key}
-                                class="avonni-avatar-group__hidden-avatar-container"
+                                class="
+                                    avonni-avatar-group__hidden-avatar-container
+                                "
                                 onclick={handleAvatarClick}
                                 data-item-id={index}
                                 data-type="hidden"
@@ -191,7 +199,10 @@
                     </div>
                 </template>
                 <div
-                    class="slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
+                    class="
+                        slds-dropdown-trigger slds-dropdown-trigger_click
+                        slds-is-open
+                    "
                     key={item.key}
                     onblur={handleBlur}
                     tabindex="-1"
@@ -225,7 +236,13 @@
                             data-type="show"
                             onclick={toggleShowHiddenList}
                             tabindex="0"
-                            class="slds-m-top_small slds-m-bottom_small slds-m-left_small slds-show avonni-avatar-group__list-button"
+                            class="
+                                slds-m-top_small
+                                slds-m-bottom_small
+                                slds-m-left_small
+                                slds-show
+                                avonni-avatar-group__list-button
+                            "
                         ></lightning-button>
                     </template>
                 </div>
@@ -242,7 +259,11 @@
                     <lightning-icon
                         icon-name={actionIconName}
                         size={actionButtonIconSize}
-                        class="slds-button slds-button_icon slds-current-color avonni-avatar-group__action-button"
+                        class="
+                            slds-button slds-button_icon
+                            slds-current-color
+                            avonni-avatar-group__action-button
+                        "
                         data-element-id="lightning-icon"
                     ></lightning-icon>
                 </button>

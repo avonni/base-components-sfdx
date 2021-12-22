@@ -30,33 +30,107 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-progress-bar-value_bottom-right {
+.avonni-progress-bar__label_font {
+    color: var(--avonni-progress-bar-label-text-color, #080707);
+    font-size: var(--avonni-progress-bar-label-font-size, 0.8125rem);
+    font-style: var(--avonni-progress-bar-label-font-style, normal);
+    font-weight: var(--avonni-progress-bar-label-font-weight, 400);
+}
+
+.avonni-progress-bar__value_font {
+    color: var(--avonni-progress-bar-value-text-color, #080707);
+    font-size: var(--avonni-progress-bar-value-font-size, 0.8125rem);
+    font-style: var(--avonni-progress-bar-value-font-style, normal);
+    font-weight: var(--avonni-progress-bar-value-font-weight, 700);
+}
+
+.avonni-progress-bar__value_bottom-right {
     position: absolute;
     z-index: 1;
 }
 
-.avonni-progress-bar-value_bottom-left {
+.avonni-progress-bar__value_bottom-left {
     position: absolute;
     right: 0;
     z-index: 1;
 }
 
-.avonni-progress-bar-horizontal-size_x-small {
+.avonni-progress-bar__bar-horizontal_size-x-small {
     width: var(--lwc-sizeXSmall, 12rem);
 }
 
-.avonni-progress-bar-horizontal-size_small {
+.avonni-progress-bar__bar-horizontal_size-small {
     width: var(--lwc-sizeXSmall, 15rem);
 }
 
-.avonni-progress-bar-horizontal-size_medium {
+.avonni-progress-bar__bar-horizontal_size-medium {
     width: var(--lwc-sizeMedium, 20rem);
 }
 
-.avonni-progress-bar-horizontal-size_large {
+.avonni-progress-bar__bar-horizontal_size-large {
     width: var(--lwc-sizeLarge, 25rem);
 }
 
-.avonni-progress-bar_value {
-    font-weight: var(--lwc-fontWeightBold, 700);
+.avonni-progress-bar__bar_theme-alt-inverse {
+    background-color: var(--avonni-progress-bar-bar-value-alt-inverse-color-background, #032d60);
+}
+
+.avonni-progress-bar__bar-background_theme-alt-inverse {
+    background-color: var(--avonni-progress-bar-alt-inverse-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-base {
+    background-color: var(--avonni-progress-bar-bar-value-base-color-background, #1ab9ff);
+}
+
+.avonni-progress-bar__bar-background_theme-base {
+    background-color: var(--avonni-progress-bar-base-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-error {
+    background-color: var(--avonni-progress-bar-bar-value-error-color-background, #ea001e);
+}
+
+.avonni-progress-bar__bar-background_theme-error {
+    background-color: var(--avonni-progress-bar-error-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-info {
+    background-color: var(--avonni-progress-bar-bar-value-info-color-background, #706e6b);
+}
+
+.avonni-progress-bar__bar-background_theme-info {
+    background-color: var(--avonni-progress-bar-info-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-inverse {
+    background-color: var(--avonni-progress-bar-bar-value-inverse-color-background, #001639);
+}
+
+.avonni-progress-bar__bar-background_theme-inverse {
+    background-color: var(--avonni-progress-bar-inverse-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-offline {
+    background-color: var(--avonni-progress-bar-bar-value-offline-color-background, #444);
+}
+
+.avonni-progress-bar__bar-background_theme-offline {
+    background-color: var(--avonni-progress-bar-offline-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-success {
+    background-color: var(--avonni-progress-bar-bar-value-success-color-background, #2e844a);
+}
+
+.avonni-progress-bar__bar-background_theme-success {
+    background-color: var(--avonni-progress-bar-success-color-background, #dddbda);
+}
+
+.avonni-progress-bar__bar_theme-warning {
+    background-color: var(--avonni-progress-bar-bar-value-warning-color-background, #fe9339);
+}
+
+.avonni-progress-bar__bar-background_theme-warning {
+    background-color: var(--avonni-progress-bar-warning-color-background, #dddbda);
 }

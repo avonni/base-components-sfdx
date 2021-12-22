@@ -77,6 +77,7 @@ const VARIANTS = {
 export default class AvonniInputData extends LightningElement {
     /**
      * Label of the input. If present, it will be displayed on top of the data.
+     * 
      * @type {string}
      * @public
      */
@@ -84,6 +85,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Specifies the name of an input element.
+     * 
      * @type {string}
      * @public
      */
@@ -91,6 +93,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Message to be displayed when input field is empty, to prompt the user for a valid entry.
+     * 
      * @type {string}
      * @public
      */
@@ -115,9 +118,10 @@ export default class AvonniInputData extends LightningElement {
     }
 
     /**
-     * Whether the input is checked.
-     * Only has an effect with type boolean.
+     * If present, the input is checked. Only has an effect with type boolean.
+     * 
      * @type {boolean}
+     * @default false
      * @public
      */
     @api
@@ -131,6 +135,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * If present, the input field is disabled and users cannot interact with it.
+     * 
      * @type {boolean}
      * @default false
      * @public
@@ -146,6 +151,7 @@ export default class AvonniInputData extends LightningElement {
     /**
      * Latitude of a location.
      * Only has an effect with type location.
+     * 
      * @type {number}
      * @public
      */
@@ -160,6 +166,7 @@ export default class AvonniInputData extends LightningElement {
     /**
      * Longitude of a location.
      * Only has an effect with type location.
+     * 
      * @type {number}
      * @public
      */
@@ -173,6 +180,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * If present, the input field is read-only and cannot be edited by users.
+     * 
      * @type {boolean}
      * @default false
      * @public
@@ -187,6 +195,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * If present, the input field must be filled out before the form is submitted.
+     * 
      * @type {boolean}
      * @default false
      * @public
@@ -202,7 +211,7 @@ export default class AvonniInputData extends LightningElement {
     /**
      * Type of the input.
      * Accepted types include boolean, currency, date, email, location, number, percent, phone, url and text.
-     * This value defaults to text.
+     * 
      * @type {string}
      * @default text
      * @public
@@ -221,6 +230,7 @@ export default class AvonniInputData extends LightningElement {
     /**
      * Value of the input.
      * Has an effect with all types, except for boolean and location.
+     * 
      * @type {string}
      * @public
      */
@@ -240,6 +250,7 @@ export default class AvonniInputData extends LightningElement {
      * Use label-hidden to hide the label but make it available to assistive technology.
      * Use label-inline to horizontally align the label and input field.
      * Use label-stacked to place the label above the input field.
+     * 
      * @type {string}
      * @default standard
      * @public
@@ -259,6 +270,7 @@ export default class AvonniInputData extends LightningElement {
     /**
      * Whether the data input type is a number.
      * Number, percent and currency types are considered as numbers.
+     * 
      * @type {boolean}
      */
     get isNumber() {
@@ -271,6 +283,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Whether the data input type is a boolean.
+     * 
      * @type {boolean}
      */
     get isBoolean() {
@@ -355,6 +368,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Sets focus on the input element.
+     * 
      * @public
      */
     @api
@@ -364,6 +378,7 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Removes keyboard focus from the input element.
+     * 
      * @public
      */
     @api
@@ -372,9 +387,9 @@ export default class AvonniInputData extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
-     * @return {boolean}
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
+     *
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -384,7 +399,8 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Sets a custom error message to be displayed when a form is submitted.
-     * @param {string} message - Describes the error. If message is an empty, the error message is reset.
+     *
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -396,8 +412,9 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Sets a custom error message to be displayed for the latitude or longitude field when the value is submitted.
-     * @param {string} message      - Describes the error. If message is an empty, the error message is reset.
-     * @param {string} fieldName    - Name of the field, which must be latitude or longitude.
+     * 
+     * @param {string} message Describes the error. If message is an empty, the error message is reset.
+     * @param {string} fieldName Name of the field, which must be a latitude or longitude.
      * @public
      */
     @api
@@ -409,7 +426,8 @@ export default class AvonniInputData extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
+     *
      * @public
      */
     @api
@@ -488,6 +506,19 @@ export default class AvonniInputData extends LightningElement {
             };
         }
 
+        /**
+        * The event fired when the input value changes.
+        *
+        * @event
+        * @name change
+        * @param {number} latitude Latitude, if the input is a location.
+        * @param {number} longitude Longitude, if the input is a location.
+        * @param {boolean} checked True if the input is a boolean and it is checked.
+        * @param {any} value Value of the input, if it is not a location.
+        * @public
+        * @bubbles
+        * @composed
+        */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: detail,
@@ -501,6 +532,13 @@ export default class AvonniInputData extends LightningElement {
      * Transfers the lightning-input commit event to the data input component.
      */
     handleInputCommit() {
+        /**
+        * The event fired when the input looses focus, or Enter is pressed.
+        *
+        * @event
+        * @name commit
+        * @public
+        */
         this.dispatchEvent(new CustomEvent('commit'));
     }
 

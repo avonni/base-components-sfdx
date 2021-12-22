@@ -36,15 +36,15 @@ import { classSet } from 'c/utils';
 
 const CHIP_VARIANTS = {
     valid: [
+        'alt-inverse',
         'base',
         'brand',
-        'inverse',
-        'alt-inverse',
-        'success',
-        'info',
-        'warning',
         'error',
-        'offline'
+        'info',
+        'inverse',
+        'offline',
+        'success',
+        'warning'
     ],
     default: 'base'
 };
@@ -57,30 +57,31 @@ const CHIP_VARIANTS = {
  */
 export default class AvonniChip extends LightningElement {
     /**
-     * Label display in the chip.
-     * 
+     * Label displayed in the chip.
+     *
      * @public
      * @type {string}
      */
     @api label;
 
-    _variant = CHIP_VARIANTS.default;
     _outline = false;
-    renderLeft = true;
-    renderRight = true;
+    _variant = CHIP_VARIANTS.default;
+
+    showLeft = true;
+    showRight = true;
 
     renderedCallback() {
         if (this.leftSlot) {
-            this.renderLeft = this.leftSlot.assignedElements().length !== 0;
+            this.showLeft = this.leftSlot.assignedElements().length !== 0;
         }
         if (this.rightSlot) {
-            this.renderRight = this.rightSlot.assignedElements().length !== 0;
+            this.showRight = this.rightSlot.assignedElements().length !== 0;
         }
     }
 
     /**
      * The variant changes the appearance of the chip. Accepted variants include base, brand, inverse, alt-inverse, success, info, warning, error, offline.
-     * 
+     *
      * @public
      * @type {string}
      * @default base
@@ -99,7 +100,7 @@ export default class AvonniChip extends LightningElement {
 
     /**
      * If true, display an outline style button.
-     * 
+     *
      * @public
      * @type {boolean}
      * @default false
@@ -115,7 +116,7 @@ export default class AvonniChip extends LightningElement {
 
     /**
      * Get left slot dom element.
-     * 
+     *
      * @type {Element}
      */
     get leftSlot() {
@@ -124,7 +125,7 @@ export default class AvonniChip extends LightningElement {
 
     /**
      * Get right slot dom element.
-     * 
+     *
      * @type {Element}
      */
     get rightSlot() {
@@ -133,18 +134,15 @@ export default class AvonniChip extends LightningElement {
 
     /**
      * Compute chip class style.
-     * 
+     *
      * @type {string}
      */
     get chipClass() {
-        const classes = classSet('slds-badge');
-
-        if (this._outline) {
-            classes.add('avonni-outline');
-        }
-
-        classes.add(`slds-theme_${this._variant}`);
-
-        return classes.toString();
+        return classSet('avonni-chip')
+            .add({
+                'avonni-chip_outline': this._outline,
+                [`avonni-chip_theme-${this._variant}`]: this._variant
+            })
+            .toString();
     }
 }

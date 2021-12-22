@@ -49,7 +49,7 @@ const PANEL_SIZES = {
  */
 export default class AvonniPagination extends LightningElement {
     /**
-     * The title can include text, and is displayed in the panel header. To include additional markup or another component, use the title slot.
+     * The title is displayed in the panel header. To include additional markup or another component, use the title slot.
      *
      * @type {string}
      * @public
@@ -113,7 +113,7 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-     * It defines the width of the panel. Valid values include small, medium, large, x-large and full.
+     * Width of the panel. Valid values include small, medium, large, x-large and full.
      *
      * @type {string}
      * @public
@@ -132,7 +132,7 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-     * Attribute that toggles displaying the Panel.
+     * If present, the panel is visible by default.
      *
      * @type {boolean}
      * @public
@@ -154,17 +154,8 @@ export default class AvonniPagination extends LightningElement {
      */
     get computedOuterClass() {
         return classSet('slds-panel slds-panel_docked')
-            .add({
-                'slds-size_small': this._size === 'small',
-                'slds-size_medium': this._size === 'medium',
-                'slds-size_large': this._size === 'large',
-                'slds-size_x-large': this._size === 'x-large',
-                'slds-size_full': this._size === 'full'
-            })
-            .add({
-                'slds-panel_docked-right': this._position === 'right',
-                'slds-panel_docked-left': this._position === 'left'
-            })
+            .add(`slds-size_${this._size}`)
+            .add(`slds-panel_docked-${this._position}`)
             .add({
                 'slds-is-open': this._showPanel,
                 'slds-is-hidden': !this._showPanel

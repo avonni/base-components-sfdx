@@ -44,13 +44,13 @@ import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
 import { classSet } from 'c/utils';
 import { generateUUID } from 'c/utils';
 
-const validVariants = {
+const VARIANTS = {
     valid: ['standard', 'label-inline', 'label-hidden', 'label-stacked'],
     default: 'standard'
 };
 
-const LABEL_TYPES = {
-    valid: ['base', 'custom', 'predefined'],
+const TYPES = {
+    valid: ['base', 'custom', 'predefined', 'tokens'],
     default: 'base'
 };
 
@@ -114,10 +114,14 @@ const DEFAULT_COLORS = [
     '#b85d0d'
 ];
 
+const DEFAULT_COLUMNS = 7;
+const DEFAULT_TAB = 'default';
+const MINIMUM_TILE_SIZE = 5;
+
 /**
  * @class
  * @descriptor avonni-color-picker
- * @storyId example-color-picker--standard
+ * @storyId example-color-picker--base
  * @public
  */
 export default class AvonniColorPicker extends LightningElement {
@@ -129,7 +133,7 @@ export default class AvonniColorPicker extends LightningElement {
      */
     @api accessKey;
     /**
-     * Help text detailing the purpose and function of the input. This attribute isn't supported for file, radio, toggle, and checkbox-button types.
+     * Help text detailing the purpose and function of the input.
      *
      * @public
      * @type {string}
@@ -144,7 +148,7 @@ export default class AvonniColorPicker extends LightningElement {
      */
     @api label;
     /**
-     * If no icon-name specified, display default dropdown icon and color box.
+     * The Lightning Design System name of the icon to use as a button icon, instead of the color dropdown. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed.
      *
      * @public
      * @type {string}
@@ -172,10 +176,12 @@ export default class AvonniColorPicker extends LightningElement {
      */
     @api messageWhenValueMissing;
 
+    _columns = DEFAULT_COLUMNS;
+    _groups = [];
     _value;
     _name;
-    _variant = validVariants.default;
-    _type = LABEL_TYPES.default;
+    _variant = VARIANTS.default;
+    _type = TYPES.default;
     _menuVariant = MENU_VARIANTS.default;
     _menuIconSize = MENU_ICON_SIZES.default;
     _menuAlignment = MENU_ALIGNMENTS.default;
@@ -189,17 +195,15 @@ export default class AvonniColorPicker extends LightningElement {
     _opacity = false;
     _tokens = [];
 
-    _currentTab = 'default';
-    _draftToken;
+    _currentTab = DEFAULT_TAB;
+    _draftToken = {};
 
+    currentToken = {};
     dropdownOpened = false;
     dropdownVisible = false;
-    init = false;
-    showError = false;
-    newValue;
     helpMessage;
-    currentLabel;
-    currentToken;
+    newValue;
+    showError = false;
 
     _inputValue;
     _rendered = false;
@@ -207,6 +211,7 @@ export default class AvonniColorPicker extends LightningElement {
     connectedCallback() {
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
+        this.computeToken();
     }
 
     renderedCallback() {
@@ -214,6 +219,53 @@ export default class AvonniColorPicker extends LightningElement {
             this.initSwatchColor();
             this._rendered = true;
         }
+
+        const palette = this.template.querySelector(
+            '[data-element-id^="avonni-color-palette"]'
+        );
+        if (this.dropdownVisible && palette) {
+            const paletteWidth = palette.clientWidth;
+            const tileWidth = Math.floor(paletteWidth / this.columns - 8);
+            const tileSize =
+                tileWidth > MINIMUM_TILE_SIZE ? tileWidth : MINIMUM_TILE_SIZE;
+            palette.tileWidth = tileSize;
+            palette.tileHeight = tileSize;
+        }
+    }
+
+    /**
+     * Number of columns in the palette.
+     *
+     * @public
+     * @type {number}
+     * @default 7
+     */
+    @api
+    get columns() {
+        return this._columns;
+    }
+
+    set columns(value) {
+        const normalizedValue = parseInt(value, 10);
+        this._columns =
+            !isNaN(normalizedValue) && normalizedValue
+                ? parseInt(value, 10)
+                : DEFAULT_COLUMNS;
+    }
+
+    /**
+     * Array of group objects. Groups can be used by the tokens and the predefined palette.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get groups() {
+        return this._groups;
+    }
+
+    set groups(value) {
+        this._groups = normalizeArray(value);
     }
 
     /**
@@ -243,14 +295,14 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     set value(value) {
-        if (!value) {
-            this._value = null;
-            this._inputValue = null;
-            this.currentLabel = null;
-            this.currentToken = null;
-        } else {
+        if (value && typeof value === 'string') {
             this._value = value;
             this.inputValue = value;
+            if (this.isConnected) this.computeToken();
+        } else {
+            this._value = null;
+            this._inputValue = null;
+            this.currentToken = {};
         }
         this.initSwatchColor();
     }
@@ -269,13 +321,14 @@ export default class AvonniColorPicker extends LightningElement {
 
     set variant(variant) {
         this._variant = normalizeString(variant, {
-            fallbackValue: validVariants.default,
-            validValues: validVariants.valid
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid
         });
     }
 
     /**
-     * Values include base, custom, predefined.
+     * Type of the color picker. The base type uses tabs for all the other types.
+     * Valid values include base, custom, predefined and tokens.
      *
      * @public
      * @type {string}
@@ -288,8 +341,8 @@ export default class AvonniColorPicker extends LightningElement {
 
     set type(type) {
         this._type = normalizeString(type, {
-            fallbackValue: LABEL_TYPES.default,
-            validValues: LABEL_TYPES.valid
+            fallbackValue: TYPES.default,
+            validValues: TYPES.valid
         });
     }
 
@@ -313,7 +366,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * The size of the icon. Options include xx-small, x-small, small, medium, or large.
+     * Size of the icon. Options include xx-small, x-small, small, medium, or large.
      *
      * @public
      * @type {string}
@@ -415,7 +468,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Color values displayed in the default palette.
+     * Array of colors displayed in the default palette. Each color can either be a string, or a color object. The color objects are used in conjunction with the groups attribute, to split the colors into different groups.
      *
      * @public
      * @type {string[]}
@@ -464,7 +517,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Defines whether the alpha slider will be displayed.
+     * If present, the alpha slider will be displayed.
      *
      * @public
      * @type {boolean}
@@ -480,7 +533,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Array of token objects. If present, a token tab will be added in the menu.
+     * Array of token objects.
      *
      * @public
      * @type {object[]}
@@ -492,6 +545,19 @@ export default class AvonniColorPicker extends LightningElement {
 
     set tokens(value) {
         this._tokens = normalizeArray(value);
+        if (this.isConnected) this.computeToken();
+    }
+
+    /**
+     * Variant of the color palette.
+     *
+     * @type {string}
+     * @default grid
+     */
+    get colorPaletteVariant() {
+        return this._currentTab === 'tokens' || this.type === 'tokens'
+            ? 'list'
+            : 'grid';
     }
 
     /**
@@ -500,64 +566,49 @@ export default class AvonniColorPicker extends LightningElement {
      * @type {(object[]|string[])}
      */
     get computedColors() {
-        return this.tokens.length && this._currentTab === 'tokens'
+        return this._currentTab === 'tokens' || this.type === 'tokens'
             ? this.tokens
             : this.colors;
     }
 
     /**
-     * True if the selected tab is "Custom".
+     * Computed value for the gradient component. If the value is empty, the gradient is initialized with a white color.
      *
-     * @type {boolean}
-     * @default false
+     * @type {string}
+     * @default #fff
      */
-    get customTabIsSelected() {
-        return this._currentTab === 'custom';
+    get computedGradientValue() {
+        if (!this.value) return '#fff';
+        if (this.currentToken.color) return this.currentToken.color;
+        return this.value;
     }
 
     /**
-     * Verify if type is Base.
+     * True if the type is 'base'.
      *
-     * @returns {boolean}
+     * @type {boolean}
+     * @default true
      */
     get isBase() {
         return this.type === 'base';
     }
 
     /**
-     * Verify if type is Custom.
+     * Computed icon class.
      *
-     * @returns {boolean}
+     * @type {string}
      */
-    get isCustom() {
-        return this.type === 'custom';
-    }
-
-    /**
-     * Verify if type is Predefined.
-     *
-     * @returns {boolean}
-     */
-    get isPredefined() {
-        return this.type === 'predefined';
-    }
-
-    /**
-     * Get the icon class.
-     *
-     * @returns menuLabel
-     */
-    get iconClass() {
+    get computedIconClass() {
         return this.menuLabel ? 'slds-m-left_xx-small' : '';
     }
 
     /**
-     * Retrieve the input value.
+     * Value of the color input.
      *
      * @type {string}
      */
     get inputValue() {
-        return this.currentLabel ? this.currentLabel : this._inputValue;
+        return this.currentToken.label || this._inputValue;
     }
 
     set inputValue(val) {
@@ -565,7 +616,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Whether the color input field contains a value.
+     * True if the input field contains a value.
      *
      * @type {string}
      */
@@ -578,7 +629,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Returns true if the input value is color type.
+     * True if the input value is color type.
      *
      * @type {boolean}
      */
@@ -593,18 +644,18 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Returns swatch element.
+     * HTML element for the swatch.
      *
-     * @type {element}
+     * @type {HTMLElement}
      */
     get elementSwatch() {
         return this.template.querySelector('[data-element-id="swatch"]');
     }
 
     /**
-     * Returns colorGradient element.
+     * HTML element for the color gradient.
      *
-     * @type {element}
+     * @type {HTMLElement}
      */
     get colorGradient() {
         return this.template.querySelector(
@@ -631,7 +682,8 @@ export default class AvonniColorPicker extends LightningElement {
         return classSet()
             .add({
                 'slds-form-element_stacked': this.variant === 'label-stacked',
-                'avonni-label-inline': this.variant === 'label-inline'
+                'slds-grid slds-grid_vertical-align-center':
+                    this.variant === 'label-inline'
             })
             .toString();
     }
@@ -659,7 +711,9 @@ export default class AvonniColorPicker extends LightningElement {
         const isBare =
             this.menuVariant === 'bare' || this.menuVariant === 'bare-inverse';
 
-        const classes = classSet('slds-button');
+        const classes = classSet(
+            'slds-button avonni-color-picker__main-button'
+        );
 
         const useMoreContainer =
             this.menuVariant === 'container' ||
@@ -727,7 +781,9 @@ export default class AvonniColorPicker extends LightningElement {
      * @type {string}
      */
     get computedDropdownClass() {
-        return classSet('slds-color-picker__selector slds-dropdown')
+        return classSet(
+            'slds-color-picker__selector slds-p-around_none slds-dropdown avonni-color-picker__dropdown'
+        )
             .add({
                 'slds-dropdown_left':
                     this.menuAlignment === 'left' || this.isAutoAlignment(),
@@ -753,6 +809,18 @@ export default class AvonniColorPicker extends LightningElement {
                 'slds-p-vertical_large': this.isLoading
             })
             .toString();
+    }
+
+    get computedTabBodyClass() {
+        return classSet()
+            .add({
+                'slds-tabs_default__content': this.isBase
+            })
+            .toString();
+    }
+
+    get showColorGradient() {
+        return this.type === 'custom' || this._currentTab === 'custom';
     }
 
     /**
@@ -785,9 +853,9 @@ export default class AvonniColorPicker extends LightningElement {
     /*-------- Public methods --------*/
 
     /**
-     * Indicates whether the element meets all constraint validations.
+     * Checks if the input is valid.
      *
-     * @returns {boolean} the valid attribute value on the ValidityState object.
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
      */
     @api
@@ -796,10 +864,9 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid.
-     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
-     * @returns {boolean} - The validity status of the input fields.
+     * @returns {boolean} False if invalid, true if valid.
      * @public
      */
     @api
@@ -812,8 +879,7 @@ export default class AvonniColorPicker extends LightningElement {
     /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message - The string that describes the error.
-     * If message is an empty string, the error message is reset.
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -823,7 +889,7 @@ export default class AvonniColorPicker extends LightningElement {
 
     /**
      * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
      *
      * @public
      */
@@ -861,8 +927,24 @@ export default class AvonniColorPicker extends LightningElement {
      */
     initSwatchColor() {
         if (this.elementSwatch) {
-            this.elementSwatch.style.background = this.value;
+            const color = this.currentToken.color || this.value;
+            this.elementSwatch.style.background = color;
         }
+    }
+
+    /**
+     * Set the current token value and initialize the swatch colors.
+     */
+    computeToken() {
+        const isToken =
+            typeof this.value === 'string' && this.value.match(/^--.+/);
+        if (isToken) {
+            this.currentToken =
+                this.tokens.find((tok) => tok.value === this.value) || {};
+        } else {
+            this.currentToken = {};
+        }
+        this.initSwatchColor();
     }
 
     /**
@@ -879,20 +961,21 @@ export default class AvonniColorPicker extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.value = undefined;
         this.inputValue = null;
-        this.currentLabel = undefined;
-        this.currentToken = undefined;
-        this._draftToken = undefined;
+        this.currentToken = {};
+        this._draftToken = {};
         this.focus();
 
         this.dispatchClear();
     }
 
     /**
-     * Change Handler.
+     * Handle a change in the value. Temporarily save the value, in case the user cancels the change.
      *
      * @param {Event} event
      */
-    handlerChange(event) {
+    handleChange(event) {
+        event.stopPropagation();
+
         if (event.detail) {
             this.newValue =
                 this.opacity && Number(event.detail.alpha) < 1
@@ -906,14 +989,23 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
+     * Handle a change in the color palette. Save and close the popover right away.
+     *
+     * @param {Event} event
+     */
+    handleDefaultAndTokenChange(event) {
+        this.handleChange(event);
+        this.handleDone();
+    }
+
+    /**
      * Handle new value change and update ui.
      */
-    handlerDone() {
+    handleDone() {
         if (!this.readOnly && this.newValue) {
             // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.value = this.newValue;
-            this.currentLabel = this._draftToken.label;
-            this.currentToken = this._draftToken.value;
+            this.currentToken = { ...this._draftToken };
             this.newValue = null;
 
             if (!this.menuIconName) {
@@ -933,7 +1025,7 @@ export default class AvonniColorPicker extends LightningElement {
     /**
      * Handle new value canceled.
      */
-    handlerCancel() {
+    handleCancel() {
         this.newValue = null;
 
         if (this.colorGradient) {
@@ -1075,7 +1167,7 @@ export default class AvonniColorPicker extends LightningElement {
      *
      * @param {Event} event
      */
-    handlerTabClick(event) {
+    handleTabClick(event) {
         event.preventDefault();
 
         this.template
@@ -1157,7 +1249,7 @@ export default class AvonniColorPicker extends LightningElement {
     handleInputFocus() {
         this.interactingState.enter();
         /**
-         * The event fired when you focus the color picker input.
+         * The event fired when the focus is set on the color picker input.
          *
          * @event
          * @name focus
@@ -1200,6 +1292,9 @@ export default class AvonniColorPicker extends LightningElement {
              * @param {string} rgb Color in rgb format.
              * @param {string} rgba Color in rgba format.
              * @param {string} alpha Alpha value of the color.
+             * @param {string} token Token value.
+             * @bubbles
+             * @cancelable
              */
             this.dispatchEvent(
                 new CustomEvent('change', {
@@ -1209,11 +1304,10 @@ export default class AvonniColorPicker extends LightningElement {
                         rgb: colors.rgb,
                         rgba: colors.rgba,
                         alpha: colors.alpha,
-                        token: this.currentToken
+                        token: this.currentToken.value
                     },
                     bubbles: true,
-                    cancelable: true,
-                    composed: false
+                    cancelable: true
                 })
             );
         }

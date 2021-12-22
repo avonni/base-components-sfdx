@@ -70,12 +70,12 @@ button {
     margin-left: 1px !important;
 }
 
-.avonni-rating-container {
+.avonni-rating__container {
     display: flex;
     align-items: center;
 }
 
-.avonni-rating-container .rating {
+.avonni-rating__container .avonni-rating__value {
     padding-left: 1rem;
 }
 
@@ -83,11 +83,25 @@ button {
     padding-left: 0.5rem;
 }
 
-.avonni-label-inline {
+.avonni-rating__label_inline {
     display: flex;
     align-items: center;
 }
 
-.avonni-label-inline lightning-helptext {
+.avonni-rating__label_inline lightning-helptext {
     padding-right: 0.25rem;
+}
+
+.avonni-rating__label {
+    color: var(--avonni-rating-header-text-color, #3e3e3c);
+    font-size: var(--avonni-rating-header-font-size, 0.75rem);
+    font-style: var(--avonni-rating-header-font-style, normal);
+    font-weight: var(--avonni-rating-header-font-weight, 400);
+}
+
+.avonni-rating__value {
+    color: var(--avonni-rating-value-text-color, #080707);
+    font-size: var(--avonni-rating-value-font-size, 0.8125rem);
+    font-style: var(--avonni-rating-value-font-style, normal);
+    font-weight: var(--avonni-rating-value-font-weight, 400);
 }

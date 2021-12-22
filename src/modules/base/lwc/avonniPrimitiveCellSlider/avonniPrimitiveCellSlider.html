@@ -33,17 +33,15 @@
 -->
 
 <template>
-    <div class="slds-m-bottom_small">
-        <lightning-slider
-            disabled={computedDisabled}
-            label={label}
-            max={max}
-            min={min}
-            size={size}
-            step={step}
-            value={value}
-            variant="label-hidden"
-            onchange={handleChange}
-        ></lightning-slider>
-    </div>
+    <lightning-slider
+        disabled={computedDisabled}
+        label={label}
+        max={max}
+        min={min}
+        size={size}
+        step={step}
+        value={value}
+        variant="label-hidden"
+        onchange={handleChange}
+    ></lightning-slider>
 </template>

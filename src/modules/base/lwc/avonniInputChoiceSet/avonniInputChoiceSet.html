@@ -35,7 +35,9 @@
 <template>
     <fieldset aria-required={required}>
         <div class={computedLegendClass}>
-            <legend class="slds-form-element__label">
+            <legend
+                class="slds-form-element__label avonni-input-choice-set__label"
+            >
                 <template if:true={required}>
                     <abbr
                         class="slds-required"
@@ -94,7 +96,9 @@
                                             <div>
                                                 <div
                                                     if:true={option.isIconBottomRight}
-                                                    class="slds-form-element__label"
+                                                    class="
+                                                        slds-form-element__label
+                                                    "
                                                 >
                                                     {option.label}
                                                 </div>
@@ -107,7 +111,9 @@
                                                 ></lightning-icon>
                                                 <div
                                                     if:true={option.isIconTopLeft}
-                                                    class="slds-form-element__label"
+                                                    class="
+                                                        slds-form-element__label
+                                                    "
                                                 >
                                                     {option.label}
                                                 </div>

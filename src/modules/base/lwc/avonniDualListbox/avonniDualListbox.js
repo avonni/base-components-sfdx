@@ -72,7 +72,10 @@ const BUTTON_SIZES = {
     default: 'medium'
 };
 
-const BOXES_SIZES = { valid: ['small', 'medium', 'large'], default: 'medium' };
+const BOXES_SIZES = {
+    valid: ['small', 'medium', 'large', 'responsive'],
+    default: 'medium'
+};
 
 const i18n = {
     optionLockAssistiveText: 'Option Lock AssistiveText',
@@ -89,16 +92,7 @@ const i18n = {
  */
 export default class AvonniDualListbox extends LightningElement {
     /**
-     * The name of the icon to be used in the format 'utility:right'.
-     *
-     * @type {string}
-     * @public
-     * @default utility:right
-     */
-    @api addButtonIconName = DEFAULT_ADD_BUTTON_ICON_NAME;
-
-    /**
-     * Label for add button.
+     * Label of the add button.
      *
      * @type {string}
      * @public
@@ -106,16 +100,7 @@ export default class AvonniDualListbox extends LightningElement {
     @api addButtonLabel;
 
     /**
-     * The name of the icon to be used in the format ‘utility:down’.
-     *
-     * @type {string}
-     * @public
-     * @default utility:down
-     */
-    @api downButtonIconName = DEFAULT_DOWN_BUTTON_ICON_NAME;
-
-    /**
-     * Label for down button
+     * Label of the down button
      *
      * @type {string}
      * @public
@@ -131,7 +116,7 @@ export default class AvonniDualListbox extends LightningElement {
     @api fieldLevelHelp;
 
     /**
-     * Label for the dual listbox.
+     * Label of the dual listbox.
      *
      * @type {string}
      * @public
@@ -156,16 +141,7 @@ export default class AvonniDualListbox extends LightningElement {
     @api name;
 
     /**
-     * The name of the icon to be used in the format ‘utility:left’.
-     *
-     * @type {string}
-     * @public
-     * @default utility:left
-     */
-    @api removeButtonIconName = DEFAULT_REMOVE_BUTTON_ICON_NAME;
-
-    /**
-     * Label for remove button.
+     * Label of the remove button.
      *
      * @type {string}
      * @public
@@ -173,7 +149,7 @@ export default class AvonniDualListbox extends LightningElement {
     @api removeButtonLabel;
 
     /**
-     * Label for the selected options listbox.
+     * Label of the Selected options list.
      *
      * @type {string}
      * @public
@@ -189,7 +165,7 @@ export default class AvonniDualListbox extends LightningElement {
     @api selectedPlaceholder;
 
     /**
-     * Label for the source options listbox.
+     * Label of the Source options list.
      *
      * @type {string}
      * @public
@@ -197,16 +173,7 @@ export default class AvonniDualListbox extends LightningElement {
     @api sourceLabel;
 
     /**
-     * The name of the icon to be used in the format ‘utility:up’.
-     *
-     * @type {string}
-     * @public
-     * @default utility:up
-     */
-    @api upButtonIconName = DEFAULT_UP_BUTTON_ICON_NAME;
-
-    /**
-     * Label for up button.
+     * Label of the up button.
      *
      * @type {string}
      * @public
@@ -215,19 +182,23 @@ export default class AvonniDualListbox extends LightningElement {
 
     _requiredOptions = [];
     _options = [];
+    _addButtonIconName = DEFAULT_ADD_BUTTON_ICON_NAME;
     _allowSearch = false;
     _buttonSize = BUTTON_SIZES.default;
     _buttonVariant = BUTTON_VARIANTS.default;
     _disabled;
     _disableReordering = false;
+    _downButtonIconName = DEFAULT_DOWN_BUTTON_ICON_NAME;
     _draggable = false;
     _hideBottomDivider = false;
     _isLoading = false;
     _max;
     _maxVisibleOptions = DEFAULT_MAX_VISIBLE_OPTIONS;
     _min = DEFAULT_MIN;
+    _removeButtonIconName = DEFAULT_REMOVE_BUTTON_ICON_NAME;
     _required = false;
     _size = BOXES_SIZES.default;
+    _upButtonIconName = DEFAULT_UP_BUTTON_ICON_NAME;
     _variant = LABEL_VARIANTS.default;
 
     _selectedValues = [];
@@ -298,6 +269,22 @@ export default class AvonniDualListbox extends LightningElement {
             this.getGroupValues();
         }
         this.rendered = true;
+    }
+
+    /**
+     * Name of the add button icon, in the format 'utility:right'.
+     *
+     * @type {string}
+     * @public
+     * @default utility:right
+     */
+    @api
+    get addButtonIconName() {
+        return this._addButtonIconName;
+    }
+
+    set addButtonIconName(value) {
+        this._addButtonIconName = value ? value : DEFAULT_ADD_BUTTON_ICON_NAME;
     }
 
     /**
@@ -386,6 +373,24 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
+     *Name of the down button icon to be used in the format ‘utility:down’.
+     *
+     * @type {string}
+     * @public
+     * @default utility:down
+     */
+    @api
+    get downButtonIconName() {
+        return this._downButtonIconName;
+    }
+
+    set downButtonIconName(value) {
+        this._downButtonIconName = value
+            ? value
+            : DEFAULT_DOWN_BUTTON_ICON_NAME;
+    }
+
+    /**
      * If present, the options are draggable.
      *
      * @type {boolean}
@@ -437,7 +442,7 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Number of options that display in the listboxes before vertical scrollbars are displayed. Determines the vertical size of the listbox.
+     * Number of options displayed in the listboxes before vertical scrollbars are displayed. Determines the height of the listbox.
      *
      * @type {number}
      * @public
@@ -521,7 +526,7 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * A list of options that are available for selection. Each option has the following attributes: label, description, value, iconName, iconSrc, initials and variant.
+     * Array of option objects that are available for selection.
      *
      * @type {object[]}
      * @public
@@ -539,6 +544,24 @@ export default class AvonniDualListbox extends LightningElement {
         if (this._connected) {
             this.updateBoxesHeight();
         }
+    }
+
+    /**
+     * Name of the remove button icon in the format ‘utility:left’.
+     *
+     * @type {string}
+     * @public
+     * @default utility:left
+     */
+    @api
+    get removeButtonIconName() {
+        return this._removeButtonIconName;
+    }
+
+    set removeButtonIconName(value) {
+        this._removeButtonIconName = value
+            ? value
+            : DEFAULT_REMOVE_BUTTON_ICON_NAME;
     }
 
     /**
@@ -578,7 +601,7 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * It defines the width of the source options listbox and the selected options listbox. Valid values include small, medium and large.
+     * Width of the source options listbox and the selected options listbox. Valid values include small, medium and large.
      *
      * @type {string}
      * @public
@@ -594,6 +617,22 @@ export default class AvonniDualListbox extends LightningElement {
             fallbackValue: BOXES_SIZES.default,
             validValues: BOXES_SIZES.valid
         });
+    }
+
+    /**
+     * Name of the up button icon to be used in the format ‘utility:up’.
+     *
+     * @type {string}
+     * @public
+     * @default utility:up
+     */
+    @api
+    get upButtonIconName() {
+        return this._upButtonIconName;
+    }
+
+    set upButtonIconName(value) {
+        this._upButtonIconName = value ? value : DEFAULT_UP_BUTTON_ICON_NAME;
     }
 
     /**
@@ -658,10 +697,10 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Returns the valid attribute value (Boolean) on the ValidityState object.
+     * Checks if the input is valid.
      *
+     * @returns {boolean} True if the element meets all constraint validations.
      * @public
-     * @returns {boolean}
      */
     @api
     checkValidity() {
@@ -669,10 +708,10 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Displays the error messages and returns false if the input is invalid. If the input is valid, reportValidity() clears displayed error messages and returns true.
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
+     * @returns {boolean} False if invalid, true if valid.
      * @public
-     * @returns {string} errorMessage
      */
     @api
     reportValidity() {
@@ -682,9 +721,9 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Sets a custom error message to be displayed when the dual listbox value is submitted.
+     * Sets a custom error message to be displayed when a form is submitted.
      *
-     * @param {string} message
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
      * @public
      */
     @api
@@ -731,6 +770,9 @@ export default class AvonniDualListbox extends LightningElement {
         return String(this.disabled);
     }
 
+    /**
+     * Generated unique ID key.
+     */
     get generateKey() {
         return generateUUID();
     }
@@ -857,7 +899,7 @@ export default class AvonniDualListbox extends LightningElement {
         const isSelected = this.highlightedOptions.indexOf(option.value) > -1;
         const hasDescription = option.description;
         const classList = classSet(
-            'slds-listbox__option slds-listbox__option_plain slds-media slds-media_center slds-media_inline avonni-dual-listbox-list-item-min_height '
+            'slds-listbox__option slds-listbox__option_plain slds-media slds-media_center slds-media_inline avonni-dual-listbox__list-item_min-height avonni-dual-listbox__option'
         )
             .add({ 'slds-media_small': !hasDescription })
             .add({ 'slds-is-selected': isSelected })
@@ -869,8 +911,12 @@ export default class AvonniDualListbox extends LightningElement {
             selected: isSelected ? true : false,
             primaryText: option.description ? option.label : '',
             secondaryText: option.description ? option.description : '',
-            iconSize: option.iconSize
-                ? option.iconSize
+            size: option.avatar
+                ? option.avatar.size
+                    ? option.avatar.size
+                    : hasDescription
+                    ? 'medium'
+                    : 'small'
                 : hasDescription
                 ? 'medium'
                 : 'small',
@@ -924,14 +970,7 @@ export default class AvonniDualListbox extends LightningElement {
 
         if (this.allowSearch) {
             if (this.computedSourceList.length > 0) {
-                this._sourceBoxHeight =
-                    sourceOptionsHeight +
-                    getListHeight(
-                        this.template.querySelector(
-                            '.avonni-dual-listbox-allow-search'
-                        )
-                    ) +
-                    overSourceHeight;
+                this._sourceBoxHeight = sourceOptionsHeight + overSourceHeight;
             } else if (this.computedSourceList.length === 0) {
                 this._sourceBoxHeight = this._maxVisibleOptions * 41;
             }
@@ -1041,7 +1080,9 @@ export default class AvonniDualListbox extends LightningElement {
      * @type {string}
      */
     get computedGroupLabelClass() {
-        return classSet('slds-form-element__label slds-form-element__legend')
+        return classSet(
+            'slds-form-element__label slds-form-element__legend avonni-dual-listbox__header'
+        )
             .add({ 'slds-assistive-text': this.isLabelHidden })
             .toString();
     }
@@ -1052,14 +1093,16 @@ export default class AvonniDualListbox extends LightningElement {
      * @type {string}
      */
     get computedListboxColumnsClass() {
-        return classSet('avonni-dual-listbox-list__column')
+        return classSet('avonni-dual-listbox__list-column')
             .add({
-                'avonni-dual-listbox-list__column_responsive_small ':
+                'avonni-dual-listbox__list-column_responsive_small ':
                     this._size === 'small',
-                'avonni-dual-listbox-list__column_responsive_medium ':
+                'avonni-dual-listbox__list-column_responsive_medium ':
                     this._size === 'medium',
-                'avonni-dual-listbox-list__column_responsive_large ':
-                    this._size === 'large'
+                'avonni-dual-listbox__list-column_responsive_large ':
+                    this._size === 'large',
+                'slds-dueling-list__column_responsive':
+                    this._size === 'responsive'
             })
             .toString();
     }
@@ -1070,16 +1113,10 @@ export default class AvonniDualListbox extends LightningElement {
      * @type {string}
      */
     get computedListboxSourceContainerClass() {
-        return classSet(
-            'slds-dueling-list__options avonni-dual-listbox-option-is-selected'
-        )
+        return classSet('slds-dueling-list__options avonni-dual-listbox__boxes')
             .add({ 'slds-is-disabled': this._disabled })
             .add({ 'slds-is-relative': this._isLoading })
-            .add({
-                'avonni-dual-listbox-size_small': this._size === 'small',
-                'avonni-dual-listbox-size_medium': this._size === 'medium',
-                'avonni-dual-listbox-size_large': this._size === 'large'
-            })
+            .add(`avonni-dual-listbox__box_size-${this._size}`)
             .toString();
     }
 
@@ -1089,22 +1126,16 @@ export default class AvonniDualListbox extends LightningElement {
      * @type {string}
      */
     get computedListboxSelectedContainerClass() {
-        return classSet(
-            'slds-dueling-list__options avonni-dual-listbox-option-is-selected'
-        )
+        return classSet('slds-dueling-list__options avonni-dual-listbox__boxes')
             .add({ 'slds-is-disabled': this._disabled })
             .add({
-                'avonni-dual-listbox-selected-list-with-search': this
-                    ._allowSearch
+                'avonni-dual-listbox__selected-list-with-search':
+                    this._allowSearch
             })
             .add({
-                'avonni-dual-listbox-empty-column': this.isSelectedBoxEmpty
+                'avonni-dual-listbox__empty-column': this.isSelectedBoxEmpty
             })
-            .add({
-                'avonni-dual-listbox-size_small': this._size === 'small',
-                'avonni-dual-listbox-size_medium': this._size === 'medium',
-                'avonni-dual-listbox-size_large': this._size === 'large'
-            })
+            .add(`avonni-dual-listbox__box_size-${this._size}`)
             .toString();
     }
 
@@ -1116,8 +1147,8 @@ export default class AvonniDualListbox extends LightningElement {
     get computedListItemClass() {
         return classSet('slds-listbox__item')
             .add({
-                'avonni-dual-listbox-option-border_bottom': !this
-                    .hideBottomDivider
+                'avonni-dual-listbox__option_border-bottom':
+                    !this.hideBottomDivider
             })
             .toString();
     }
@@ -1553,7 +1584,7 @@ export default class AvonniDualListbox extends LightningElement {
      */
     dispatchChangeEvent(values) {
         /**
-         * The event fired when an item is selected in the combobox.
+         * The event fired when an item is selected in the dual listbox.
          *
          * @event
          * @name change
@@ -1718,22 +1749,26 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Drag Start add "avonni-dual-listbox-dragging" class to current SourceList element.
+     * Drag Start add "avonni-dual-listbox__option_dragging" class to current SourceList element.
      *
      * @param {Event} event
      */
     handleDragStartSource(event) {
-        event.currentTarget.classList.add('avonni-dual-listbox-dragging');
+        event.currentTarget.classList.add(
+            'avonni-dual-listbox__option_dragging'
+        );
     }
 
     /**
-     * Drag end event SourceList element handler ( remove "avonni-dual-listbox-dragging" ).
+     * Drag end event SourceList element handler ( remove "avonni-dual-listbox__option_dragging" ).
      *
      * @param {Event} event
      */
     handleDragEndSource(event) {
         event.preventDefault();
-        event.currentTarget.classList.remove('avonni-dual-listbox-dragging');
+        event.currentTarget.classList.remove(
+            'avonni-dual-listbox__option_dragging'
+        );
         if (this._dropItSelected) {
             if (
                 this.highlightedOptions.includes(
@@ -1746,22 +1781,26 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Drag Start add "avonni-dual-listbox-dragging" class to current SelectedList element.
+     * Drag Start add "avonni-dual-listbox__option_dragging" class to current SelectedList element.
      *
      * @param {Event} event
      */
     handleDragStartSelected(event) {
-        event.currentTarget.classList.add('avonni-dual-listbox-dragging');
+        event.currentTarget.classList.add(
+            'avonni-dual-listbox__option_dragging'
+        );
     }
 
     /**
-     * Drag end event SourceList element handler ( remove "avonni-dual-listbox-dragging" ) - reorder list and index.
+     * Drag end event SourceList element handler ( remove "avonni-dual-listbox__option_dragging" ) - reorder list and index.
      *
      * @param {Event} event
      */
     handleDragEndSelected(event) {
         event.preventDefault();
-        event.currentTarget.classList.remove('avonni-dual-listbox-dragging');
+        event.currentTarget.classList.remove(
+            'avonni-dual-listbox__option_dragging'
+        );
         if (this._dropItSource) {
             if (
                 this.highlightedOptions.includes(

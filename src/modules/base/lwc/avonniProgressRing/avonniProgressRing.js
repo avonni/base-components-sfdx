@@ -57,7 +57,7 @@ export default class AvonniProgressRing extends LightningElement {
     _hideIcon = false;
 
     /**
-     * Controls which way the color flows from the top of the ring, either clockwise or counterclockwise Valid values include fill and drain.
+     * Controls which way the color flows from the top of the ring, either clockwise or counterclockwise. Valid values include fill and drain.
      * The fill value corresponds to a color flow in the clockwise direction. The drain value indicates a color flow in the counterclockwise direction.
      *
      * @type {string}

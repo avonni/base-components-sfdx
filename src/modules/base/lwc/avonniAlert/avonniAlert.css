@@ -1,0 +1,175 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+.avonni-notify_alert {
+    position: relative;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 100%;
+    padding-top: var(--avonni-alert-spacing-block-start, 0.5rem);
+    padding-right: var(--avonni-alert-spacing-inline-end, 2rem);
+    padding-bottom: var(--avonni-alert-spacing-block-end, 0.5rem);
+    padding-left: var(--avonni-alert-spacing-inline-start, 0.5rem);
+    font-weight: var(--avonni-alert-font-weight, 400);
+    font-size: var(--avonni-alert-font-size, 1em);
+    font-style: var(--avonni-alert-font-style, normal);
+    text-align: center;
+    background-image: var(
+        --avonni-alert-image-background,
+        linear-gradient(
+            45deg,
+            rgba(0, 0, 0, 0.025) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(0, 0, 0, 0.025) 50%,
+            rgba(0, 0, 0, 0.025) 75%,
+            transparent 75%,
+            transparent
+        )
+    );
+    background-size: var(--avonni-alert-size-background, 64px 64px);
+}
+
+.avonni-notify_alert .avonni-alert__primitive-icon_color {
+    border-radius: var(--avonni-alert-icon-radius-border, 0.25rem);
+}
+
+.avonni-alert_base {
+    background-color: var(--avonni-alert-base-color-background, #706e6b);
+    color: var(--avonni-alert-base-text-color, #ffffff);
+}
+
+.avonni-alert_base .avonni-alert__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-alert-base-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-base-icon-color-foreground-default,
+        #ffffff
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-alert-base-icon-color-background
+    );
+    background: var(--avonni-alert-base-icon-color-background, transparent);
+}
+
+.avonni-alert_base .avonni-alert__button-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-base-close-icon-color-foreground-default,
+        #ffffff
+    );
+}
+
+.avonni-alert_warning {
+    background-color: var(--avonni-alert-warning-color-background, #fe9339);
+    color: var(--avonni-alert-warning-text-color, #080707);
+}
+
+.avonni-alert_warning .avonni-alert__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-alert-warning-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-warning-icon-color-foreground-default,
+        #514f4d
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-alert-warning-icon-color-background
+    );
+    background: var(--avonni-alert-warning-icon-color-background, transparent);
+}
+
+.avonni-alert_warning .avonni-alert__button-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-warning-close-icon-color-foreground-default,
+        #514f4d
+    );
+}
+
+.avonni-alert_error {
+    background-color: var(--avonni-alert-error-color-background, #ea001e);
+    color: var(--avonni-alert-error-text-color, #ffffff);
+}
+
+.avonni-alert_error .avonni-alert__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-alert-error-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-error-icon-color-foreground-default,
+        #ffffff
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-alert-error-icon-color-background
+    );
+    background: var(--avonni-alert-error-icon-color-background, transparent);
+}
+
+.avonni-alert_error .avonni-alert__button-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-error-close-icon-color-foreground-default,
+        #ffffff
+    );
+}
+
+.avonni-alert_offline {
+    background-color: var(--avonni-alert-offline-color-background, #444);
+    color: var(--avonni-alert-offline-text-color, #ffffff);
+}
+
+.avonni-alert_offline .avonni-alert__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-alert-offline-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-offline-icon-color-foreground-default,
+        #ffffff
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-alert-offline-icon-color-background
+    );
+    background: var(--avonni-alert-offline-icon-color-background, transparent);
+}
+
+.avonni-alert_offline .avonni-alert__button-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-alert-offline-close-icon-color-foreground-default,
+        #ffffff
+    );
+}

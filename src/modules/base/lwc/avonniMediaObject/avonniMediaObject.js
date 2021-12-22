@@ -75,7 +75,7 @@ export default class AvonniMediaObject extends LightningElement {
     }
 
     /**
-     * figure and body stack on smaller screens.
+     * If present, figure and body stack on smaller screens.
      *
      * @type {boolean}
      * @public
@@ -91,7 +91,7 @@ export default class AvonniMediaObject extends LightningElement {
     }
 
     /**
-     * Aligns the figure and body to be inline-block of each other.
+     * If present, the figures and body are stacked on each other.
      *
      * @type {boolean}
      * @public
@@ -113,7 +113,8 @@ export default class AvonniMediaObject extends LightningElement {
      * @public
      * @default medium
      */
-    @api get size() {
+    @api
+    get size() {
         return this._size;
     }
 
@@ -135,10 +136,10 @@ export default class AvonniMediaObject extends LightningElement {
                 'slds-media_small': this._size === 'small',
                 'slds-media_large': this._size === 'large',
                 'slds-media_center': this._verticalAlign === 'center',
-                'avonni-media-object-alignement-end':
+                'avonni-media-object_alignment-end':
                     this._verticalAlign === 'end',
-                'slds-media_responsive': this._responsive === true,
-                'avonni-media-object-display-inline': this._inline === true
+                'slds-media_responsive': this._responsive,
+                'avonni-media-object_display-inline': this._inline
             })
             .toString();
     }

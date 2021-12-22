@@ -30,49 +30,141 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.blockquote-default.doc {
-    border-left-color: #080707;
+.avonni-blockquote__theme-default.avonni-blockquote__container {
+    background-color: var(
+        --avonni-blockquote-default-color-background,
+        #fafaf9
+    );
+    border-left-color: var(
+        --avonni-blockquote-default-color-border-left,
+        #080707
+    );
+    color: var(--avonni-blockquote-default-text-color, #3e3e3c);
 }
-.blockquote-brand.doc {
-    border-left-color: #0070d2;
+.avonni-blockquote__theme-brand.avonni-blockquote__container {
+    background-color: var(--avonni-blockquote-brand-color-background, #fafaf9);
+    border-left-color: var(
+        --avonni-blockquote-brand-color-border-left,
+        #0070d2
+    );
+    color: var(--avonni-blockquote-brand-text-color, #3e3e3c);
 }
-.blockquote-warning.doc {
-    border-left-color: #d47500;
+.avonni-blockquote__theme-warning.avonni-blockquote__container {
+    background-color: var(
+        --avonni-blockquote-warning-color-background,
+        #fafaf9
+    );
+    border-left-color: var(
+        --avonni-blockquote-warning-color-border-left,
+        #d47500
+    );
+    color: var(--avonni-blockquote-warning-text-color, #3e3e3c);
 }
-.blockquote-error.doc {
-    border-left-color: #c23934;
+.avonni-blockquote__theme-error.avonni-blockquote__container {
+    background-color: var(--avonni-blockquote-error-color-background, #fafaf9);
+    border-left-color: var(
+        --avonni-blockquote-error-color-border-left,
+        #c23934
+    );
+    color: var(--avonni-blockquote-error-text-color, #3e3e3c);
 }
-.blockquote-success.doc {
-    border-left-color: #027e46;
+.avonni-blockquote__theme-success.avonni-blockquote__container {
+    background-color: var(
+        --avonni-blockquote-success-color-background,
+        #fafaf9
+    );
+    border-left-color: var(
+        --avonni-blockquote-success-color-border-left,
+        #027e46
+    );
+    color: var(--avonni-blockquote-success-text-color, #3e3e3c);
 }
-blockquote.doc {
-    background-color: #fafaf9;
+blockquote.avonni-blockquote__container {
     font-size: 1rem;
     font-weight: 300;
     padding: 1rem;
     margin: 0 0 1.5rem 0;
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--avonni-blockquote-color-border, #f2f2f2);
     border-left-width: 0.125rem;
 }
-.doc {
-    color: #3e3e3c;
-}
-blockquote.doc .lead {
+blockquote.avonni-blockquote__container .avonni-blockquote__title {
     margin-bottom: 0;
-    font-weight: 600;
+    font-weight: var(--avonni-blockquote-title-font-weight, 600);
+    font-size: var(--avonni-blockquote-title-font-size, 1rem);
+    font-style: var(--avonni-blockquote-title-font-style, normal);
 }
-.blockquote-default.doc .lead {
-    color: #080707;
+.avonni-blockquote__theme-default.avonni-blockquote__container
+    .avonni-blockquote__title {
+    color: var(--avonni-blockquote-default-title-text-color, #080707);
 }
-.blockquote-brand.doc .lead {
-    color: #0070d2;
+.avonni-blockquote__theme-default .avonni-blockquote__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-blockquote-default-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-blockquote-default-icon-color-foreground-default
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-blockquote-default-icon-color-background
+    );
 }
-.blockquote-warning.doc .lead {
-    color: #d47500;
+.avonni-blockquote__theme-brand.avonni-blockquote__container
+    .avonni-blockquote__title {
+    color: var(--avonni-blockquote-brand-title-text-color, #0070d2);
 }
-.blockquote-error.doc .lead {
-    color: #c23934;
+.avonni-blockquote__theme-brand .avonni-blockquote__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-blockquote-brand-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-blockquote-brand-icon-color-foreground-default
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-blockquote-brand-icon-color-background
+    );
 }
-.blockquote-success.doc .lead {
-    color: #027e46;
+.avonni-blockquote__theme-warning.avonni-blockquote__container
+    .avonni-blockquote__title {
+    color: var(--avonni-blockquote-warning-title-text-color, #d47500);
+}
+.avonni-blockquote__theme-warning .avonni-blockquote__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-blockquote-warning-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-blockquote-warning-icon-color-foreground-default
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-blockquote-warning-icon-color-background
+    );
+}
+.avonni-blockquote__theme-error.avonni-blockquote__container
+    .avonni-blockquote__title {
+    color: var(--avonni-blockquote-error-title-text-color, #c23934);
+}
+.avonni-blockquote__theme-error .avonni-blockquote__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-blockquote-error-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-blockquote-error-icon-color-foreground-default
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-blockquote-error-icon-color-background
+    );
+}
+.avonni-blockquote__theme-success.avonni-blockquote__container
+    .avonni-blockquote__title {
+    color: var(--avonni-blockquote-success-title-text-color, #027e46);
+}
+.avonni-blockquote__theme-success .avonni-blockquote__primitive-icon_color {
+    --sds-c-icon-color-foreground: var(
+        --avonni-blockquote-success-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-blockquote-success-icon-color-foreground-default
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-blockquote-success-icon-color-background
+    );
 }

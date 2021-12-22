@@ -61,19 +61,26 @@
                         onerror={setFallbackIcon}
                     />
                     <template if:true={showAvatarActions}>
-                        <div class="avonni-avatar-actions">
+                        <div class="avonni-profile-card__avatar-actions">
                             <slot name="avataractions"></slot>
                         </div>
                     </template>
                 </div>
 
-                <div class="avonni-flex-container avonni-title-container">
+                <div
+                    class="
+                        avonni-profile-card__flex-container
+                        avonni-profile-card__title-container
+                    "
+                >
                     <template if:true={showHeaderSlot}>
                         <slot name="header"></slot>
                     </template>
                     <template if:false={showHeaderSlot}>
-                        <span class="avonni-title">{title}</span>
-                        <span class="avonni-subtitle">{subtitle}</span>
+                        <span class="avonni-profile-card__title">{title}</span>
+                        <span class="avonni-profile-card__subtitle"
+                            >{subtitle}</span
+                        >
                     </template>
                 </div>
                 <template if:true={showActions}>

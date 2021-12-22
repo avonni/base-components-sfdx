@@ -59,6 +59,7 @@
                 dropdown-alignment={dropdownAlignment}
                 dropdown-length={dropdownLength}
                 groups={scopesGroups}
+                hide-clear-icon
                 hide-selected-options
                 multi-level-groups={multiLevelGroups}
                 options={scopes}
@@ -93,7 +94,7 @@
                 required={required}
                 search={search}
                 selected-options-aria-label={selectedOptionsAriaLabel}
-                show-clear-input
+                hide-clear-icon={hideClearIcon}
                 value={value}
                 variant="label-hidden"
                 data-element-id="avonni-primitive-combobox-main"
@@ -125,6 +126,7 @@
                     role="presentation"
                 >
                     <lightning-pill
+                        if:false={readOnly}
                         label={option.label}
                         variant="plain"
                         name={option.value}
@@ -141,6 +143,9 @@
                             size="x-small"
                         ></c-avonni-avatar>
                     </lightning-pill>
+                    <div if:true={readOnly} class="slds-pill">
+                        <span class="slds-pill__label">{option.label}</span>
+                    </div>
                 </li>
             </template>
         </ul>

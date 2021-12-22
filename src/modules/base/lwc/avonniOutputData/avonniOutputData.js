@@ -49,13 +49,33 @@ const DATA_TYPES = {
     default: 'text'
 };
 
+/**
+ * The output data displays data depending on its type. 
+ * 
+ * @class
+ * @descriptor avonni-output-data
+ * @storyId example-output-data--base
+ * @public
+ */
 export default class AvonniOutputData extends LightningElement {
+    /**
+     * Label of the output. If present, it will be displayed on top of the data.
+     *
+     * @type {string}
+     * @public
+     */
     @api label;
 
     _typeAttributes = {};
     _type = DATA_TYPES.default;
     _value;
 
+    /**
+     * Attributes specific to the type (see <strong>Types and Type Attributes</strong>).
+     *
+     * @type {object}
+     * @public
+     */
     @api
     get typeAttributes() {
         return this._typeAttributes;
@@ -64,6 +84,12 @@ export default class AvonniOutputData extends LightningElement {
         this._typeAttributes = typeof value === 'object' ? value : {};
     }
 
+    /**
+     * Type of the output. Valid types include boolean, currency, date, email, location, number, percent, phone, url and text.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get type() {
         return this._type;
@@ -75,6 +101,12 @@ export default class AvonniOutputData extends LightningElement {
         });
     }
 
+    /**
+     * Value of the output.
+     *
+     * @type {string}
+     * @public
+     */
     @api
     get value() {
         if (this.isBoolean) {
@@ -87,22 +119,47 @@ export default class AvonniOutputData extends LightningElement {
         this._value = value;
     }
 
+    /**
+     * True if the type is boolean.
+     *
+     * @type {boolean}
+     */
     get isBoolean() {
         return this.type === 'boolean';
     }
 
+    /**
+     * True if the type is date.
+     *
+     * @type {boolean}
+     */
     get isDate() {
         return this.type === 'date';
     }
 
+    /**
+     * True if the type is email.
+     *
+     * @type {boolean}
+     */
     get isEmail() {
         return this.type === 'email';
     }
 
+    /**
+     * True if the type is location.
+     *
+     * @type {boolean}
+     */
     get isLocation() {
         return this.type === 'location';
     }
 
+    /**
+     * True if the type is number, percent or currency.
+     *
+     * @type {boolean}
+     */
     get isNumber() {
         return (
             this.type === 'number' ||
@@ -111,18 +168,38 @@ export default class AvonniOutputData extends LightningElement {
         );
     }
 
+    /**
+     * True if the type is phone.
+     *
+     * @type {boolean}
+     */
     get isPhone() {
         return this.type === 'phone';
     }
 
+    /**
+     * True if the type is text.
+     *
+     * @type {boolean}
+     */
     get isText() {
         return this.type === 'text';
     }
 
+    /**
+     * True if the type is url.
+     *
+     * @type {boolean}
+     */
     get isUrl() {
         return this.type === 'url';
     }
 
+    /**
+     * Format of the number type.
+     *
+     * @type {boolean}
+     */
     get numberFormatStyle() {
         if (this.type === 'currency' || this.type === 'percent') {
             return this.type;
@@ -130,6 +207,11 @@ export default class AvonniOutputData extends LightningElement {
         return 'decimal';
     }
 
+    /**
+     * True if the type is boolean and the value is truthy.
+     *
+     * @type {boolean}
+     */
     get showBoolean() {
         return this.isBoolean && this.value;
     }

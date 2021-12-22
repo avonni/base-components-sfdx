@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- :host(.avonni-reverse) .slds-rich-text-editor {
+:host(.avonni-reverse) .slds-rich-text-editor {
     flex-direction: column-reverse;
 }
 
@@ -56,7 +56,7 @@
     border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
 }
 
-.avonni-cursor {
+.avonni-input-pen__cursor {
     height: calc(var(--size) * 1px);
     width: calc(var(--size) * 1px);
     border-radius: calc(var(--size) * 1px);
@@ -67,10 +67,17 @@
     opacity: 0;
 }
 
-.avonni-combobox {
+.avonni-input-pen__combobox {
     width: 80px;
 }
 
-.avonni-label {
+.avonni-input-pen__label-container {
     padding: 0 0.25rem 0.25rem 0.25rem;
+}
+
+.avonni-input-pen__label-container label {
+    color: var(--avonni-input-pen-header-text-color, #3e3e3c);
+    font-size: var(--avonni-input-pen-header-font-size, 0.75rem);
+    font-weight: var(--avonni-input-pen-header-font-weight, 400);
+    font-style: var(--avonni-input-pen-header-font-style, normal);
 }

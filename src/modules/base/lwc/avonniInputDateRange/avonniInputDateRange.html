@@ -45,11 +45,14 @@
                 data-element-id="lightning-helptext"
             ></lightning-helptext>
         </div>
-        <div class="avonni-date-range-container">
+        <div class="avonni-date-range__container">
             <div class="slds-form-element">
                 <label
                     if:true={labelStartDate}
-                    class="slds-form-element__label"
+                    class="
+                        slds-form-element__label
+                        avonni-input-date-range__labels
+                    "
                     for="start-date"
                     >{labelStartDate}</label
                 >
@@ -126,7 +129,10 @@
                 <div class="slds-form-element">
                     <label
                         if:true={labelStartTime}
-                        class="slds-form-element__label"
+                        class="
+                            slds-form-element__label
+                            avonni-input-date-range__labels
+                        "
                         for="start-time"
                         >{labelStartTime}</label
                     >
@@ -144,7 +150,7 @@
                         onchange={handleChangeStartTime}
                     ></lightning-input>
                     <p data-element-id="start-time" if:true={readOnly}>
-                        {startTime}
+                        {startTimeString}
                     </p>
                 </div>
             </template>
@@ -152,7 +158,10 @@
             <div class="slds-form-element">
                 <label
                     if:true={labelEndDate}
-                    class="slds-form-element__label"
+                    class="
+                        slds-form-element__label
+                        avonni-input-date-range__labels
+                    "
                     for="end-date"
                     >{labelEndDate}</label
                 >
@@ -228,7 +237,10 @@
                 <div class="slds-form-element">
                     <label
                         if:true={labelEndTime}
-                        class="slds-form-element__label"
+                        class="
+                            slds-form-element__label
+                            avonni-input-date-range__labels
+                        "
                         for="end-time"
                         >{labelEndTime}</label
                     >
@@ -246,7 +258,7 @@
                         onchange={handleChangeEndTime}
                     ></lightning-input>
                     <p data-element-id="end-time" if:true={readOnly}>
-                        {endTime}
+                        {endTimeString}
                     </p>
                 </div>
             </template>

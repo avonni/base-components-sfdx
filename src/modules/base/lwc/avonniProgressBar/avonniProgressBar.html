@@ -54,7 +54,7 @@
                 <lightning-layout horizontal-align="spread">
                     <lightning-layout-item>
                         <div
-                            class="slds-p-bottom_x-small progress-bar-label"
+                            class="slds-p-bottom_x-small avonni-progress-bar__label_font"
                             if:true={label}
                         >
                             {label}
@@ -63,7 +63,7 @@
                             if:true={showPositionTopLeft}
                             data-position-top-left
                             aria-hidden="true"
-                            class="slds-p-left_xx-small avonni-progress-bar_value"
+                            class="slds-p-left_xx-small avonni-progress-bar__value_font"
                         >
                             {value}% {valueLabel}
                         </span>
@@ -73,7 +73,7 @@
                         data-position-top-right
                     >
                         <span
-                            class="avonni-progress-bar_value"
+                            class="avonni-progress-bar__value_font"
                             aria-hidden="true"
                         >
                             {value}% {valueLabel}
@@ -100,7 +100,7 @@
                         >
                             <span
                                 aria-hidden="true"
-                                class="avonni-progress-bar-value_bottom-right avonni-progress-bar_value"
+                                class="avonni-progress-bar__value_bottom-right avonni-progress-bar__value_font"
                             >
                                 {value}% {valueLabel}
                             </span>
@@ -111,7 +111,7 @@
                         >
                             <span
                                 aria-hidden="true"
-                                class="avonni-progress-bar-value_bottom-left avonni-progress-bar_value"
+                                class="avonni-progress-bar__value_bottom-left avonni-progress-bar__value_font"
                             >
                                 {value}% {valueLabel}
                             </span>
@@ -139,7 +139,7 @@
                 class="slds-p-bottom_x-small"
                 data-position-right
             >
-                <span class="avonni-progress-bar_value" aria-hidden="true">
+                <span class="avonni-progress-bar__value_font" aria-hidden="true">
                     {value}% {valueLabel}
                 </span>
             </lightning-layout-item>

@@ -78,7 +78,11 @@
                 <!-- Main input -->
                 <input
                     id="combobox-input"
-                    class="slds-input slds-combobox__input"
+                    class="
+                        slds-input
+                        slds-combobox__input
+                        avonni-primitive-combobox__input
+                    "
                     type="text"
                     role="combobox"
                     aria-expanded={computedAriaExpanded}
@@ -300,6 +304,7 @@
                 role="presentation"
             >
                 <lightning-pill
+                    if:false={readOnly}
                     label={option.label}
                     variant="plain"
                     name={option.value}
@@ -316,13 +321,16 @@
                         size="x-small"
                     ></c-avonni-avatar>
                 </lightning-pill>
+                <div if:true={readOnly} class="slds-pill">
+                    <span class="slds-pill__label">{option.label}</span>
+                </div>
             </li>
         </template>
     </ul>
     <template if:true={readOnlyNotMultiSelect}>
         <lightning-input
             data-element-id="lightning-input-read-only"
-            label={label}
+            label={readOnlyLabel}
             value={readOnlyValue}
             variant={variant}
             read-only

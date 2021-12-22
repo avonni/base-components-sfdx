@@ -477,7 +477,10 @@ export default class AvonniqrcodeGeneration {
         bg,
         obstruction,
         border,
-        svgSize
+        svgSize,
+        renderAsSvg,
+        isColorNull,
+        isBackgroundNull
     }) {
         drawCell =
             drawCell ||
@@ -499,9 +502,18 @@ export default class AvonniqrcodeGeneration {
                 cellColor(c, r) +
                 '" ' +
                 'shape-rendering="crispEdges" ' +
+                addSvgColorClass +
                 ' />');
         cellColor = cellColor || (() => 'black');
         cellSize = cellSize || 2;
+        let addSvgColorClass =
+            renderAsSvg && isColorNull
+                ? 'class="avonni-qrcode__svg_color" '
+                : '';
+        let addSvgBackgroundClass =
+            renderAsSvg && isBackgroundNull
+                ? 'class="avonni-qrcode__svg_background" '
+                : '';
         margin = typeof margin == 'undefined' ? cellSize * 4 : margin;
         let size = this.getModuleCount() * cellSize + margin * 2;
         let qrSvg = '';
@@ -525,6 +537,7 @@ export default class AvonniqrcodeGeneration {
                 '<rect width="100%" height="100%" fill="' +
                 bg.fill +
                 '" x="0" y="0"' +
+                addSvgBackgroundClass +
                 '/>';
         }
 

@@ -50,7 +50,7 @@ const DEFAULT_SIZE = 2;
  */
 export default class AvonniInputPen extends LightningElement {
     /**
-     * Help text detailing the purpose and function of the input. This attribute isn't supported for file, radio, toggle, and checkbox-button types.
+     * Help text detailing the purpose and function of the input.
      *
      * @type {string}
      * @public
@@ -64,7 +64,7 @@ export default class AvonniInputPen extends LightningElement {
      */
     @api label;
     /**
-     * A comma-separated list of buttons to remove from the toolbar. Values include pen, eraser, clear, size, color
+     * Array of buttons to remove from the toolbar. Values include pen, eraser, clear, size, color
      *
      * @type {string[]}
      * @public
@@ -115,14 +115,17 @@ export default class AvonniInputPen extends LightningElement {
 
     renderedCallback() {
         if (!this.init) {
-            this.canvasElement = this.template.querySelector('[data-element-id="canvas"]');
+            this.canvasElement = this.template.querySelector(
+                '[data-element-id="canvas"]'
+            );
             this.ctx = this.canvasElement.getContext('2d');
 
             if (this.value) {
                 this.initSrc();
             }
 
-            this.canvasElement.width = this.canvasElement.parentElement.offsetWidth;
+            this.canvasElement.width =
+                this.canvasElement.parentElement.offsetWidth;
             this.canvasElement.height =
                 this.canvasElement.parentElement.offsetWidth / 2;
 
@@ -130,11 +133,11 @@ export default class AvonniInputPen extends LightningElement {
 
             if (!this.hideControls && this.showSize) {
                 let srcElement = this.template.querySelector(
-                    '.avonni-combobox'
+                    '.avonni-input-pen__combobox'
                 );
                 const style = document.createElement('style');
                 style.innerText =
-                    '.avonni-combobox .slds-dropdown_fluid {min-width: 100px;}';
+                    '.avonni-input-pen__combobox .slds-dropdown_fluid {min-width: 100px;}';
                 srcElement.appendChild(style);
             }
 
@@ -168,7 +171,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     /**
-     * Defines the color of the pen.
+     * Color of the pen.
      *
      * @type {string}
      * @public
@@ -185,7 +188,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     /**
-     * Defines the size of the pen.
+     * Size of the pen.
      *
      * @type {string}
      * @public
@@ -208,7 +211,8 @@ export default class AvonniInputPen extends LightningElement {
      * @public
      * @default bottom-toolbar
      */
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -323,7 +327,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     /**
-     * Specifies whether the editor content is valid. If invalid, the slds-has-error class is added. This value defaults to false.
+     * If true, the editor is considered invalid.
      *
      * @type {boolean}
      * @public
@@ -394,7 +398,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     /**
-     * Clear method to reset canvas.
+     * Clear the canvas.
      *
      * @public
      */
@@ -413,7 +417,7 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     /**
-     * Drawing mode method - Mode: draw, erase
+     * Set the drawing mode. Valid modes include draw and erase.
      *
      * @param {string} modeName
      * @public
@@ -422,7 +426,7 @@ export default class AvonniInputPen extends LightningElement {
     setMode(modeName) {
         this._mode = normalizeString(modeName, {
             fallbackValue: this._mode,
-            validValues: PEN_MODES
+            validValues: PEN_MODES.valid
         });
     }
 
@@ -460,7 +464,9 @@ export default class AvonniInputPen extends LightningElement {
      * Initialize Cursor styling.
      */
     initCursorStyles() {
-        this.cursor = this.template.querySelector('.avonni-cursor');
+        this.cursor = this.template.querySelector(
+            '[data-element-id="input-pen-cursor"]'
+        );
 
         if (this.cursor) {
             this.cursor.style.setProperty('--size', this.size);

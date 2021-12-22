@@ -34,9 +34,10 @@ import { LightningElement, api } from 'lwc';
 import { normalizeBoolean } from 'c/utilsPrivate';
 
 /**
+ * The Wizard Step is used in the Wizard slot.
+ *
  * @class
  * @descriptor avonni-wizard-step
- * @storyId example-wizard--base
  * @public
  */
 export default class AvonniWizardStep extends LightningElement {
@@ -48,14 +49,14 @@ export default class AvonniWizardStep extends LightningElement {
      */
     @api label;
     /**
-     * Text string to reference the step of the wizard.
+     * Unique name of the wizard step.
      *
      * @type {string}
      * @public
      */
     @api name;
     /**
-     * Custom function to execute to perform post-processing action before advancing to the next step. It should return a promise with a true/false.
+     * Custom function to execute before advancing to the next step or going back to the previous step. If the value returned is falsy, the step change will be prevented.
      *
      * @type {function}
      * @public

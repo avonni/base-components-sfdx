@@ -35,7 +35,7 @@ import { normalizeAriaAttribute, normalizeBoolean } from 'c/utilsPrivate';
 
 /**
  * Action
- * 
+ *
  * @class
  * @param {string} key Unique identifier for the header
  * @property {string} label Required. The action label.
@@ -57,12 +57,12 @@ export default class AvonniAction {
 
     /**
      * Class of the action.
-     * 
+     *
      * @type {string}
      */
     get computedClass() {
         return classSet(
-            'slds-listbox__item slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term'
+            'slds-listbox__item slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term avonni-primitive-combobox__action_background'
         )
             .add({
                 'slds-border_bottom': this.isBackLink,
@@ -75,7 +75,7 @@ export default class AvonniAction {
 
     /**
      * String of true or false.
-     * 
+     *
      * @type {string}
      */
     get computedAriaDisabled() {

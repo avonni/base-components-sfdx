@@ -92,7 +92,9 @@ export default class AvonniButtonDialog extends LightningElement {
     _dialogSlot;
 
     renderedCallback() {
-        this._dialogSlot = this.template.querySelector('[data-element-id="slot"]');
+        this._dialogSlot = this.template.querySelector(
+            '[data-element-id="slot"]'
+        );
     }
 
     /**
@@ -134,7 +136,7 @@ export default class AvonniButtonDialog extends LightningElement {
     }
 
     /**
-     * If present, the popover can be opened by users.
+     * If present, the modal box can't be opened by users.
      *
      * @public
      * @type {boolean}
@@ -150,7 +152,7 @@ export default class AvonniButtonDialog extends LightningElement {
     }
 
     /**
-     * Open the modal box method.
+     * Open the modal box.
      *
      * @public
      */
@@ -160,6 +162,8 @@ export default class AvonniButtonDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].show();
         }
         /**
+         * The event fired when the modal box is opened.
+         *
          * @event
          * @name show
          * @public
@@ -168,7 +172,7 @@ export default class AvonniButtonDialog extends LightningElement {
     }
 
     /**
-     * Close the modal box method.
+     * Close the modal box.
      *
      * @public
      */
@@ -178,6 +182,8 @@ export default class AvonniButtonDialog extends LightningElement {
             this._dialogSlot.assignedElements()[0].hide();
         }
         /**
+         * The event fired when the modal box is closed.
+         *
          * @event
          * @name hide
          * @public
@@ -186,7 +192,7 @@ export default class AvonniButtonDialog extends LightningElement {
     }
 
     /**
-     * Clicks the button method.
+     * Simulate a click on the button.
      *
      * @public
      */
@@ -199,23 +205,23 @@ export default class AvonniButtonDialog extends LightningElement {
         /**
          * @event
          * @name click
-         * @public
          */
         this.dispatchEvent(new CustomEvent('click'));
     }
 
     /**
-     * Sets focus on the button method.
+     * Set focus on the button.
      *
      * @public
      */
     @api
     focus() {
-        this.template.querySelector('[data-element-id="lightning-button"]').focus();
+        this.template
+            .querySelector('[data-element-id="lightning-button"]')
+            .focus();
         /**
          * @event
          * @name focus
-         * @public
          */
         this.dispatchEvent(new CustomEvent('focus'));
     }

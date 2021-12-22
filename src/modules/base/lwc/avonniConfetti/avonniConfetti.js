@@ -94,7 +94,7 @@ export default class AvonniConfetti extends LightningElement {
      */
     @api originY = DEFAULT_ORIGIN_Y;
     /**
-     * The confetti should be on top, after all. But if you have a crazy high page, you can set it even higher.
+     * z-index value of the confetti.
      *
      * @public
      * @type {number}
@@ -141,7 +141,7 @@ export default class AvonniConfetti extends LightningElement {
     }
 
     /**
-     * Confetti Fire method.
+     * Fire the confetti.
      *
      * @public
      */

@@ -30,76 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-img-fluid {
+.avonni-image {
+    border-radius: var(--avonni-image-radius-border, 0);
+}
+
+.avonni-image_fluid {
     max-width: 100% !important;
     height: auto;
 }
 
-.avonni-img-fluid-grow {
+.avonni-image_fluid-grow {
     width: 100% !important;
     height: auto !important;
 }
 
-.avonni-img-thumbnail {
+.avonni-image_thumbnail {
     padding: 0.25rem;
     background-color: #fff;
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
 }
 
-.avonni-rounded {
-    border-radius: 0.25rem;
-}
-
-.avonni-rounded-right,
-.avonni-rounded-top {
-    border-top-right-radius: 0.25rem;
-}
-
-.avonni-rounded-top {
-    border-top-left-radius: 0.25rem;
-}
-
-.avonni-rounded-bottom,
-.avonni-rounded-right {
-    border-bottom-right-radius: 0.25rem;
-}
-
-.avonni-rounded-bottom,
-.avonni-rounded-left {
-    border-bottom-left-radius: 0.25rem;
-}
-
-.avonni-rounded-left {
-    border-top-left-radius: 0.25rem;
-}
-
-.avonni-rounded-circle {
-    border-radius: 50%;
-}
-
-.avonni-not-rounded {
-    border-radius: 0;
-}
-
-.avonni-float-left {
+.avonni-image_float-left {
     float: left;
 }
 
-.avonni-float-right {
+.avonni-image_float-right {
     float: right;
 }
 
-.avonni-margin-left-auto,
-.avonni-margin-auto {
+.avonni-image_margin-auto {
+    margin-right: auto;
     margin-left: auto;
 }
 
-.avonni-margin-right-auto,
-.avonni-margin-auto {
-    margin-right: auto;
-}
-
-.avonni-display-block {
+.avonni-image_display-block {
     display: block;
 }
