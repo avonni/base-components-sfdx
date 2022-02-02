@@ -35,7 +35,8 @@ import { classSet } from 'c/utils';
 import {
     normalizeBoolean,
     normalizeString,
-    observePosition
+    observePosition,
+    normalizeArray
 } from 'c/utilsPrivate';
 
 const MENU_ALIGNMENTS = {
@@ -63,7 +64,8 @@ const BUTTON_VARIANTS = {
         'brand',
         'bare',
         'bare-inverse',
-        'container'
+        'container',
+        'reset'
     ],
     default: 'border'
 };
@@ -71,6 +73,11 @@ const BUTTON_VARIANTS = {
 const ICON_SIZES = {
     valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
     default: 'medium'
+};
+
+const ICON_POSITIONS = {
+    valid: ['left', 'right'],
+    default: 'left'
 };
 
 const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search…';
@@ -83,19 +90,12 @@ const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search…';
  */
 export default class AvonniDynamicMenu extends LightningElement {
     /**
-     * The name of the icon to be used in the format 'utility:down'.
+     * The keyboard shortcut for the button menu.
      *
      * @type {string}
      * @public
      */
-    @api iconName;
-    /**
-     * The value for the button element. This value is optional and can be used when submitting a form.
-     *
-     * @type {string}
-     * @public
-     */
-    @api value;
+    @api accessKey;
     /**
      * The assistive text for the button.
      *
@@ -104,12 +104,12 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     @api alternativeText;
     /**
-     * Message displayed while the menu is in the loading state.
+     * The name of the icon to be used in the format 'utility:down'.
      *
      * @type {string}
      * @public
      */
-    @api loadingStateAlternativeText;
+    @api iconName;
     /**
      * Optional text to be shown on the button.
      *
@@ -118,27 +118,12 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     @api label;
     /**
-     * If present, display search box.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api withSearch;
-    /**
-     * The keyboard shortcut for the button menu.
+     * Message displayed while the menu is in the loading state.
      *
      * @type {string}
      * @public
      */
-    @api accessKey;
-    /**
-     * Displays tooltip text when the mouse moves over the button menu.
-     *
-     * @type {string}
-     * @public
-     */
-    @api title;
+    @api loadingStateAlternativeText;
     /**
      * Text that is displayed when the field is empty, to prompt the user for a valid entry.
      *
@@ -147,6 +132,13 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     @api searchInputPlaceholder = DEFAULT_SEARCH_INPUT_PLACEHOLDER;
     /**
+     * Displays tooltip text when the mouse moves over the button menu.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
+    /**
      * Text to display when the user mouses over or focuses on the button. The tooltip is auto-positioned relative to the button and screen space.
      *
      * @type {string}
@@ -154,20 +146,26 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     @api tooltip;
 
+    _allowSearch = false;
     _buttonSize = BUTTON_SIZES.default;
-    _items = [];
+    _disabled = false;
+    _hideCheckMark = false;
+    _iconPosition = ICON_POSITIONS.default;
+    _iconSize = ICON_SIZES.default;
     _isLoading;
-    _variant = BUTTON_VARIANTS.default;
+    _items = [];
     _menuAlignment = MENU_ALIGNMENTS.default;
-    _disabled;
+    _value;
+    _variant = BUTTON_VARIANTS.default;
+
     queryTerm;
-    _dropdownVisible = false;
-    _dropdownOpened = false;
-    _order;
     showFooter = true;
     filteredItems = [];
+
+    _dropdownOpened = false;
+    _dropdownVisible = false;
+    _order;
     _boundingRect = {};
-    _iconSize = ICON_SIZES.default;
 
     connectedCallback() {
         this.classList.add(
@@ -204,8 +202,29 @@ export default class AvonniDynamicMenu extends LightningElement {
         }
     }
 
+    /**
+     * Footer Slot DOM element
+     *
+     * @type {HTMLElement}
+     */
     get footerSlot() {
         return this.template.querySelector('slot[name=footer]');
+    }
+
+    /**
+     * If present, display search box.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get allowSearch() {
+        return this._allowSearch;
+    }
+
+    set allowSearch(value) {
+        this._allowSearch = normalizeBoolean(value);
     }
 
     /**
@@ -234,6 +253,92 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
+     * If present, the menu cannot be opened by users.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the menu cannot be opened by users.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideCheckMark() {
+        return this._hideCheckMark;
+    }
+
+    set hideCheckMark(value) {
+        this._hideCheckMark = normalizeBoolean(value);
+    }
+
+    /**
+     * The size of the button-icon. Valid values include xx-small, x-small, medium, or large.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
+    @api
+    get iconPosition() {
+        return this._iconPosition;
+    }
+
+    set iconPosition(iconPosition) {
+        this._iconPosition = normalizeString(iconPosition, {
+            fallbackValue: ICON_POSITIONS.default,
+            validValues: ICON_POSITIONS.valid
+        });
+    }
+
+    /**
+     * The size of the icon. Options include xx-small, x-small, medium, or large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get iconSize() {
+        return this._iconSize;
+    }
+
+    set iconSize(iconSize) {
+        this._iconSize = normalizeString(iconSize, {
+            fallbackValue: ICON_SIZES.default,
+            validValues: ICON_SIZES.valid
+        });
+    }
+
+    /**
+     * If present, the menu is in a loading state and shows a spinner.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get isLoading() {
+        return this._isLoading;
+    }
+
+    set isLoading(value) {
+        this._isLoading = normalizeBoolean(value);
+    }
+
+    /**
      * Array of item objects.
      *
      * @type {object[]}
@@ -245,56 +350,8 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     set items(value) {
-        let result = [];
-
-        value.forEach((item, key) => {
-            let cloneItem = Object.assign({}, item);
-            cloneItem.metaJoin = cloneItem.meta
-                ? cloneItem.meta.join(' • ')
-                : null;
-            cloneItem.key = `item-key-${key}`;
-            result.push(cloneItem);
-        });
-
-        this._items = result;
-        this.filteredItems = result;
-    }
-
-    /**
-     * The variant changes the look of the button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
-     *
-     * @type {string}
-     * @public
-     * @default border
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: BUTTON_VARIANTS.default,
-            validValues: BUTTON_VARIANTS.valid
-        });
-    }
-
-    /**
-     * The size of the icon. Options include xx-small, x-small, medium, or large.
-     *
-     * @type {string}
-     * @public
-     * @default medium
-     */
-    @api get iconSize() {
-        return this._iconSize;
-    }
-
-    set iconSize(iconSize) {
-        this._iconSize = normalizeString(iconSize, {
-            fallbackValue: ICON_SIZES.default,
-            validValues: ICON_SIZES.valid
-        });
+        this._items = normalizeArray(value);
+        this.filteredItems = this._items;
     }
 
     /**
@@ -317,35 +374,180 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
-     * If present, the menu cannot be opened by users.
+     * If present, a nubbin is present on the menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment.
      *
-     * @type {boolean}
      * @public
+     * @type {boolean}
      * @default false
      */
     @api
-    get disabled() {
-        return this._disabled;
+    get nubbin() {
+        return this._nubbin;
     }
 
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
+    set nubbin(value) {
+        this._nubbin = normalizeBoolean(value);
     }
 
     /**
-     * If present, the menu is in a loading state and shows a spinner.
+     * Value of the selected item.
      *
-     * @type {boolean}
      * @public
-     * @default false
+     * @type {string}
      */
     @api
-    get isLoading() {
-        return this._isLoading;
+    get value() {
+        return this._value;
     }
 
-    set isLoading(value) {
-        this._isLoading = normalizeBoolean(value);
+    set value(value) {
+        this._value = value;
+    }
+
+    /**
+     * The variant changes the look of the button. Accepted variants when no label include bare, container, border, border-filled, bare-inverse, and border-inverse. Accepted variants when label include bare, border, brand and reset.
+     *
+     * @type {string}
+     * @public
+     * @default border
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
+        });
+    }
+
+    /**
+     * Computed list items.
+     * @type {object[]}
+     */
+    get computedListItems() {
+        return this.filteredItems.map((item, index) => {
+            let { avatar, label, meta, value } = item;
+            const key = `item-key-${index}`;
+            const metaJoin = meta ? meta.join(' • ') : null;
+            const selected = this.value === value;
+            const computedItemClass = classSet(
+                'slds-listbox__option slds-media slds-media_center slds-listbox__option_plain avonni-dynamic-menu__item_color-background'
+            ).add({
+                'slds-is-selected': selected
+            });
+            return {
+                avatar,
+                key,
+                label,
+                metaJoin,
+                selected,
+                value,
+                computedItemClass
+            };
+        });
+    }
+
+    /**
+     * Computed button class, when the dynamic menu has a label.
+     *
+     * @type {string}
+     */
+    get computedButtonClass() {
+        const { variant, order, buttonSize } = this;
+        return classSet('')
+            .add({
+                'slds-button': variant !== 'reset',
+                'slds-button_reset avonni-dynamic-menu__button_reset':
+                    variant === 'reset',
+                'slds-button_stretch': buttonSize === 'stretch',
+                'slds-button_first': order === 'first',
+                'slds-button_middle': order === 'middle',
+                'slds-button_last': order === 'last',
+                'slds-button_neutral':
+                    variant !== 'brand' &&
+                    variant !== 'reset' &&
+                    variant !== 'bare',
+                'avonni-dynamic-menu__button_border': variant === 'border',
+                'avonni-dynamic-menu__button_bare': variant === 'bare',
+                'slds-button_brand avonni-dynamic-menu__button_brand':
+                    variant === 'brand'
+            })
+            .toString();
+    }
+
+    /**
+     * Computed Dropdown class styling.
+     *
+     * @type {string}
+     */
+    get computedDropdownClass() {
+        return classSet(
+            'slds-dropdown slds-popover slds-dynamic-menu avonni-dynamic-menu__dropdown_color-background'
+        )
+            .add({
+                'slds-dropdown_left':
+                    this.menuAlignment === 'left' || this.isAutoAlignment(),
+                'slds-dropdown_center': this.menuAlignment === 'center',
+                'slds-dropdown_right': this.menuAlignment === 'right',
+                'slds-dropdown_bottom': this.menuAlignment === 'bottom-center',
+                'slds-dropdown_bottom slds-dropdown_right slds-dropdown_bottom-right':
+                    this.menuAlignment === 'bottom-right',
+                'slds-dropdown_bottom slds-dropdown_left slds-dropdown_bottom-left':
+                    this.menuAlignment === 'bottom-left',
+                'slds-nubbin_top-left':
+                    this.menuAlignment === 'left' && this.nubbin,
+                'slds-nubbin_top-right':
+                    this.menuAlignment === 'right' && this.nubbin,
+                'slds-nubbin_top':
+                    this.menuAlignment === 'center' && this.nubbin,
+                'slds-nubbin_bottom-left':
+                    this.menuAlignment === 'bottom-left' && this.nubbin,
+                'slds-nubbin_bottom-right':
+                    this.menuAlignment === 'bottom-right' && this.nubbin,
+                'slds-nubbin_bottom':
+                    this.menuAlignment === 'bottom-center' && this.nubbin,
+                'slds-p-vertical_large': this.isLoading
+            })
+            .toString();
+    }
+
+    /**
+     * Verify if there's Items to display.
+     *
+     * @type {boolean}
+     */
+    get showItems() {
+        return this.computedListItems.length;
+    }
+
+    /**
+     * Verify if the icon position is left.
+     *
+     * @type {boolean}
+     */
+    get iconIsLeft() {
+        return this._iconPosition === 'left' && this.iconName;
+    }
+
+    /**
+     * Verify if the icon position is right.
+     *
+     * @type {boolean}
+     */
+    get iconIsRight() {
+        return this._iconPosition === 'right' && this.iconName;
+    }
+
+    /**
+     * Computed Aria Expanded from dropdown menu.
+     *
+     * @type {string}
+     */
+    get computedAriaExpanded() {
+        return String(this._dropdownVisible);
     }
 
     /**
@@ -363,13 +565,12 @@ export default class AvonniDynamicMenu extends LightningElement {
          *
          * @event
          * @name focus
-         * @public
          */
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
     /**
-     * Simulate a click on the button.
+     * Simulates a mouse click on the button.
      *
      * @public
      */
@@ -386,73 +587,6 @@ export default class AvonniDynamicMenu extends LightningElement {
                     .click();
             }
         }
-    }
-
-    /**
-     * Computed Aria Expanded from dropdown menu.
-     *
-     * @type {string}
-     */
-    get computedAriaExpanded() {
-        return String(this._dropdownVisible);
-    }
-
-    /**
-     * Computed button class, when the dynamic menu has a label.
-     *
-     * @type {string}
-     * @default slds-button
-     */
-    get computedButtonClass() {
-        const { variant, _order, buttonSize } = this;
-        return classSet('slds-button')
-            .add({
-                'slds-button_neutral': variant !== 'brand',
-                'slds-button_brand': variant === 'brand',
-                'slds-button_first': _order === 'first',
-                'slds-button_middle': _order === 'middle',
-                'slds-button_last': _order === 'last',
-                'slds-button_stretch': buttonSize === 'stretch'
-            })
-            .toString();
-    }
-
-    /**
-     * Computed Dropdown class styling.
-     *
-     * @type {string}
-     */
-    get computedDropdownClass() {
-        return classSet('slds-dropdown slds-popover slds-dynamic-menu')
-            .add({
-                'slds-dropdown_left':
-                    this.menuAlignment === 'left' || this.isAutoAlignment(),
-                'slds-dropdown_center': this.menuAlignment === 'center',
-                'slds-dropdown_right': this.menuAlignment === 'right',
-                'slds-dropdown_bottom': this.menuAlignment === 'bottom-center',
-                'slds-dropdown_bottom slds-dropdown_right slds-dropdown_bottom-right':
-                    this.menuAlignment === 'bottom-right',
-                'slds-dropdown_bottom slds-dropdown_left slds-dropdown_bottom-left':
-                    this.menuAlignment === 'bottom-left',
-                'slds-nubbin_top-left': this.menuAlignment === 'left',
-                'slds-nubbin_top-right': this.menuAlignment === 'right',
-                'slds-nubbin_top': this.menuAlignment === 'center',
-                'slds-nubbin_bottom-left': this.menuAlignment === 'bottom-left',
-                'slds-nubbin_bottom-right':
-                    this.menuAlignment === 'bottom-right',
-                'slds-nubbin_bottom': this.menuAlignment === 'bottom-center',
-                'slds-p-vertical_large': this.isLoading
-            })
-            .toString();
-    }
-
-    /**
-     * Check if there's Items to display.
-     *
-     * @type {boolean}
-     */
-    get showItems() {
-        return this.filteredItems.length > 0;
     }
 
     /**
@@ -544,7 +678,7 @@ export default class AvonniDynamicMenu extends LightningElement {
 
             if (this._dropdownVisible) {
                 /**
-                 * Event fires when opening dropdown menu.
+                 * The event fired when you open the dropdown menu.
                  *
                  * @event
                  * @name open
@@ -554,6 +688,14 @@ export default class AvonniDynamicMenu extends LightningElement {
                 this._boundingRect = this.getBoundingClientRect();
                 this.pollBoundingRect();
             } else {
+                /**
+                 * The event fired when you close the dropdown menu.
+                 *
+                 * @event
+                 * @name close
+                 * @public
+                 */
+                this.dispatchEvent(new CustomEvent('close'));
                 this.filteredItems = this.items;
             }
 
@@ -572,14 +714,6 @@ export default class AvonniDynamicMenu extends LightningElement {
         if (this._dropdownVisible) {
             this.toggleMenuVisibility();
         }
-        /**
-         * Blur event
-         *
-         * @event
-         * @name blur
-         * @public
-         */
-        this.dispatchEvent(new CustomEvent('blur'));
     }
 
     /**
@@ -631,7 +765,10 @@ export default class AvonniDynamicMenu extends LightningElement {
     handleKeyUp(event) {
         let filter = event.target.value.toLowerCase();
         this.filteredItems = this.items.filter((item) => {
-            return item.label.toLowerCase().indexOf(filter) > -1;
+            return (
+                item.label.toLowerCase().indexOf(filter) > -1 ||
+                item.value.toLowerCase().indexOf(filter) > -1
+            );
         });
     }
 
@@ -641,23 +778,25 @@ export default class AvonniDynamicMenu extends LightningElement {
      * @param {Event} event
      */
     handleClick(event) {
-        let index = event.currentTarget.id.split('-')[0];
-        let item = this.items[index];
-
+        let value = event.currentTarget.getAttribute('data-value');
+        this._value = value;
         /**
          * Select event.
          *
          * @event
          * @name select
-         * @param {object[]} item
+         * @param {string} value The value of the selected item.
+         * @cancelable
          * @public
          */
-        const selectedEvent = new CustomEvent('select', {
-            detail: {
-                item
-            }
-        });
-        this.dispatchEvent(selectedEvent);
+        this.dispatchEvent(
+            new CustomEvent('select', {
+                cancelable: true,
+                detail: {
+                    value
+                }
+            })
+        );
 
         this.toggleMenuVisibility();
     }

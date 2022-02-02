@@ -108,16 +108,19 @@ export default class AvonniProgressRing extends LightningElement {
     }
 
     set value(value) {
-        if (typeof value === 'number') {
-            if (value <= 0) {
-                this._value = 0;
-            } else if (value > 100) {
-                this._value = 100;
-            } else {
-                this._value = value;
-            }
-        } else {
+        const normalizedValue = parseInt(value, 10);
+        
+        if (isNaN(normalizedValue)) {
             this._value = DEFAULT_VALUE;
+            return;
+        }
+
+        if (normalizedValue <= 0) {
+            this._value = 0;
+        } else if (normalizedValue > 100) {
+            this._value = 100;
+        } else {
+            this._value = normalizedValue;
         }
     }
 

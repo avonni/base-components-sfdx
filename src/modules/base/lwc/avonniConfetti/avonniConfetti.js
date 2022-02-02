@@ -31,7 +31,7 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeArray, normalizeString } from 'c/utilsPrivate';
 import './avonniConfettiLib';
 
 const CONFETTI_VARIANTS = {
@@ -69,14 +69,47 @@ const DEFAULT_Z_INDEX = 100;
  * @storyId example-confetti--base
  */
 export default class AvonniConfetti extends LightningElement {
+    _colors = DEFAULT_COLORS;
+    _name;
+    _originX = DEFAULT_ORIGIN_X;
+    _originY = DEFAULT_ORIGIN_Y;
+    _variant = CONFETTI_VARIANTS.default;
+    _zIndex = DEFAULT_Z_INDEX;
+
     /**
      * An array of color strings, in the HEX format.
      *
      * @public
      * @type {string[]}
-     * @default ['#529EE0','#F0E442','#FFB03B','#E16032','#4FD2D2','#006699','#E287B2']
+     * @default ['#529EE0', '#F0E442', '#FFB03B', '#E16032', '#4FD2D2', '#006699', '#E287B2']
      */
-    @api colors = DEFAULT_COLORS;
+    @api
+    get colors() {
+        return this._colors;
+    }
+
+    set colors(value) {
+        const colors = normalizeArray(value);
+        const allColorsAreString = colors.every(color => typeof color === 'string');
+        this._colors = colors.length && allColorsAreString ? colors : DEFAULT_COLORS;
+    }
+
+    /**
+     * Name of the confetti.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
+        this.setAttribute('name', value);
+    }
+
     /**
      * The x position on the page, with 0 being the left edge and 1 being the right edge.
      *
@@ -84,7 +117,16 @@ export default class AvonniConfetti extends LightningElement {
      * @type {number}
      * @default 0.5
      */
-    @api originX = DEFAULT_ORIGIN_X;
+    @api
+    get originX() {
+        return this._originX;
+    }
+
+    set originX(value) {
+        const originX = parseInt(value, 10);
+        this._originX = !isNaN(originX) ? originX : DEFAULT_ORIGIN_X;
+    }
+
     /**
      * The y position on the page, with 0 being the top edge and 1 being the bottom edge.
      *
@@ -92,18 +134,15 @@ export default class AvonniConfetti extends LightningElement {
      * @type {number}
      * @default 0.5
      */
-    @api originY = DEFAULT_ORIGIN_Y;
-    /**
-     * z-index value of the confetti.
-     *
-     * @public
-     * @type {number}
-     * @default 100
-     */
-    @api zIndex = DEFAULT_Z_INDEX;
+    @api
+    get originY() {
+        return this._originY;
+    }
 
-    _variant = CONFETTI_VARIANTS.default;
-    _name;
+    set originY(value) {
+        const originY = parseInt(value, 10);
+        this._originY = !isNaN(originY) ? originY : DEFAULT_ORIGIN_Y;
+    }
 
     /**
      * The variant changes the appearance of the confetti. Accepted variants include include base, random-direction, realistic, fireworks, snow and pride.
@@ -125,19 +164,20 @@ export default class AvonniConfetti extends LightningElement {
     }
 
     /**
-     * Name of the confetti.
+     * z-index value of the confetti.
      *
      * @public
-     * @type {string}
+     * @type {number}
+     * @default 100
      */
     @api
-    get name() {
-        return this._name;
+    get zIndex() {
+        return this._zIndex;
     }
-
-    set name(value) {
-        this._name = value;
-        this.setAttribute('name', value);
+    
+    set zIndex(value) {
+        const zIndex = parseInt(value, 10);
+        this._zIndex = !isNaN(zIndex) ? zIndex : DEFAULT_Z_INDEX;
     }
 
     /**

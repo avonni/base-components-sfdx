@@ -64,19 +64,19 @@ input.avonni-primitive-combobox__input {
         0.25rem
     );
     border-top-width: var(
-        --avonni-primitive--combobox-input-sizing-border-top,
+        --avonni-primitive-combobox-input-sizing-border-top,
         1px
     );
     border-bottom-width: var(
-        --avonni-primitive--combobox-input-sizing-border-bottom,
+        --avonni-primitive-combobox-input-sizing-border-bottom,
         1px
     );
     border-right-width: var(
-        --avonni-primitive--combobox-input-sizing-border-right,
+        --avonni-primitive-combobox-input-sizing-border-right,
         1px
     );
     border-left-width: var(
-        --avonni-primitive--combobox-input-sizing-border-left,
+        --avonni-primitive-combobox-input-sizing-border-left,
         1px
     );
 }

@@ -36,9 +36,10 @@ import { classSet } from 'c/utils';
 import BaseView from './avonniBase.html';
 import ModalView from './avonniModal.html';
 import CardView from './avonniCard.html';
+import QuickActionPanelView from './avonniQuickActionPanel.html';
 
 const VARIANTS = {
-    valid: ['base', 'modal', 'card'],
+    valid: ['base', 'modal', 'card', 'quickActionPanel'],
     default: 'base'
 };
 const INDICATOR_POSITIONS = {
@@ -175,12 +176,16 @@ export default class AvonniWizard extends LightningElement {
     }
 
     render() {
-        if (this.variant === 'modal') {
-            return ModalView;
-        } else if (this.variant === 'card') {
-            return CardView;
+        switch (this.variant) {
+            case 'modal':
+                return ModalView;
+            case 'card':
+                return CardView;
+            case 'quickActionPanel':
+                return QuickActionPanelView;
+            default:
+                return BaseView;
         }
-        return BaseView;
     }
 
     /**
@@ -243,7 +248,7 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Variant of the wizard. Valid values include base, modal and card.
+     * Variant of the wizard. Valid values include base, modal, quickActionPanel and card.
      *
      * @type {string}
      * @public
@@ -256,7 +261,8 @@ export default class AvonniWizard extends LightningElement {
     set variant(variant) {
         this._variant = normalizeString(variant, {
             fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid
+            validValues: VARIANTS.valid,
+            toLowerCase: false
         });
     }
 
@@ -583,6 +589,8 @@ export default class AvonniWizard extends LightningElement {
      */
     get wrapperClass() {
         return classSet().add({
+            'slds-p-around_medium slds-modal__content':
+                this.variant === 'quickActionPanel',
             'slds-grid slds-gutters slds-has-flexi-truncate slds-grid_vertical-stretch':
                 this.indicatorPosition === 'right' ||
                 this.indicatorPosition === 'left'

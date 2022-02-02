@@ -485,9 +485,9 @@ export default class AvonniCombobox extends LightningElement {
     }
 
     /**
-     * Array of selected options value. If is-multi-select is false and several values are passed, only the first one will be taken into account.
+     * Array of selected options value, or unique string value. If is-multi-select is false and several values are passed, only the first one will be taken into account.
      *
-     * @type {string[]}
+     * @type {(string[]|string)}
      * @public
      */
     @api
@@ -781,7 +781,7 @@ export default class AvonniCombobox extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string[]} value The new value of the combobox.
+         * @param {(string[]|string)} value The new value of the combobox. If the combobox is not multi-select, the value is a string.
          * @bubbles
          * @public
          */

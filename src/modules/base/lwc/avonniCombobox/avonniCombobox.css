@@ -8,12 +8,12 @@
         --avonni-combobox-styling-border,
         solid
     );
-    --avonni-primitive--combobox-input-sizing-border-top: var(
-        --avonni--combobox-input-sizing-border-top,
+    --avonni-primitive-combobox-input-sizing-border-top: var(
+        --avonni-combobox-input-sizing-border-top,
         1px
     );
-    --avonni-primitive--combobox-input-sizing-border-bottom: var(
-        --avonni--combobox-input-sizing-border-bottom,
+    --avonni-primitive-combobox-input-sizing-border-bottom: var(
+        --avonni-combobox-input-sizing-border-bottom,
         1px
     );
     --avonni-primitive-combobox-option-color-background: var(
@@ -45,8 +45,8 @@
     );
     --avonni-primitive-combobox-input-radius-border-top-left: 0;
     --avonni-primitive-combobox-input-radius-border-bottom-lef: 0;
-    --avonni-primitive--combobox-input-sizing-border-right: var(
-        --avonni--combobox-input-sizing-border-right,
+    --avonni-primitive-combobox-input-sizing-border-right: var(
+        --avonni-combobox-input-sizing-border-right,
         1px
     );
 }
@@ -66,8 +66,8 @@
         --avonni-combobox-input-radius-border-bottom-left,
         0.25rem
     );
-    --avonni-primitive--combobox-input-sizing-border-left: var(
-        --avonni--combobox-input-sizing-border-top,
+    --avonni-primitive-combobox-input-sizing-border-left: var(
+        --avonni-combobox-input-sizing-border-top,
         1px
     );
 }

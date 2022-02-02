@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .slds-nubbin_top {
+.slds-nubbin_top {
     margin-top: 1rem;
 }
 
@@ -60,4 +60,174 @@
 
 div:focus {
     outline: none;
+}
+
+.avonni-dynamic-menu__dropdown_color-background {
+    background-color: var(
+        --avonni-dynamic-menu-dropdown-color-background,
+        white
+    );
+}
+
+.avonni-dynamic-menu__item_color-background {
+    background-color: var(--avonni-dynamic-menu-item-color-background, #ffffff);
+}
+
+.avonni-dynamic-menu__item_color-background:hover {
+    background-color: var(
+        --avonni-dynamic-menu-item-color-background-hover,
+        #f3f2f2
+    );
+}
+
+.slds-is-selected .avonni-dynamic-menu__check-mark_color {
+    color: var(--avonni-dynamic-menu-item-check-mark-color, #0176d3);
+}
+
+.avonni-dynamic-menu__button_reset {
+    background-color: var(
+        --avonni-dynamic-menu-reset-color-background,
+        transparent
+    );
+    border-color: var(--avonni-dynamic-menu-reset-color-border, transparent);
+    color: var(--avonni-dynamic-menu-reset-label-text-color, #080707);
+    font-size: var(--avonni-dynamic-menu-reset-label-font-size, 1.125rem);
+    font-style: var(--avonni-dynamic-menu-reset-label-font-style, normal);
+    font-weight: var(--avonni-dynamic-menu-reset-label-font-weight, 700);
+    line-height: 1.25;
+}
+
+.avonni-dynamic-menu__button_reset:hover {
+    background-color: var(
+        --avonni-dynamic-menu-reset-color-background-hover,
+        transparent
+    );
+    border-color: var(
+        --avonni-dynamic-menu-reset-color-border-hover,
+        transparent
+    );
+    color: var(--avonni-dynamic-menu-reset-label-text-color-hover, #080707);
+    font-size: var(--avonni-dynamic-menu-reset-label-font-size-hover, 1.125rem);
+    font-style: var(--avonni-dynamic-menu-reset-label-font-style-hover, normal);
+    font-weight: var(--avonni-dynamic-menu-reset-label-font-weight-hover, 700);
+    line-height: 1.25;
+}
+
+.avonni-dynamic-menu__button_reset:active {
+    background-color: var(
+        --avonni-dynamic-menu-reset-color-background-active,
+        transparent
+    );
+    border-color: var(
+        --avonni-dynamic-menu-reset-color-border-active,
+        transparent
+    );
+}
+
+.avonni-dynamic-menu__button_brand {
+    background-color: var(
+        --avonni-dynamic-menu-brand-color-background,
+        #0176d3
+    );
+    border-color: var(--avonni-dynamic-menu-brand-color-border, #0176d3);
+    color: var(--avonni-dynamic-menu-brand-label-text-color, white);
+    font-size: var(--avonni-dynamic-menu-brand-label-font-size, 0.8125rem);
+    font-style: var(--avonni-dynamic-menu-brand-label-font-style, normal);
+    font-weight: var(--avonni-dynamic-menu-brand-label-font-weight, 400);
+}
+
+.avonni-dynamic-menu__button_brand:hover {
+    background-color: var(
+        --avonni-dynamic-menu-brand-color-background-hover,
+        #014486
+    );
+    border-color: var(--avonni-dynamic-menu-brand-color-border-hover, #014486);
+    color: var(--avonni-dynamic-menu-brand-label-text-color-hover, white);
+    font-size: var(
+        --avonni-dynamic-menu-brand-label-font-size-hover,
+        0.8125rem
+    );
+    font-style: var(--avonni-dynamic-menu-brand-label-font-style-hover, normal);
+    font-weight: var(--avonni-dynamic-menu-brand-label-font-weight-hover, 400);
+}
+
+.avonni-dynamic-menu__button_brand:active {
+    background-color: var(
+        --avonni-dynamic-menu-brand-color-background-active,
+        #014486
+    );
+    border-color: var(--avonni-dynamic-menu-brand-color-border-active, #014486);
+}
+
+.avonni-dynamic-menu__button_border {
+    background-color: var(--avonni-dynamic-menu-border-color-background, white);
+    border-color: var(--avonni-dynamic-menu-border-color-border, #dddbda);
+    color: var(--avonni-dynamic-menu-border-label-text-color, #0176d3);
+    font-size: var(--avonni-dynamic-menu-border-label-font-size, 0.8125rem);
+    font-style: var(--avonni-dynamic-menu-border-label-font-style, normal);
+    font-weight: var(--avonni-dynamic-menu-border-label-font-weight, 400);
+}
+
+.avonni-dynamic-menu__button_border:hover {
+    background-color: var(
+        --avonni-dynamic-menu-border-color-background,
+        #fafaf9
+    );
+    border-color: var(--avonni-dynamic-menu-border-color-border-hover, #dddbda);
+    color: var(--avonni-dynamic-menu-border-label-text-color-hover, #014486);
+    font-size: var(
+        --avonni-dynamic-menu-border-label-font-size-hover,
+        0.8125rem
+    );
+    font-style: var(
+        --avonni-dynamic-menu-border-label-font-style-hover,
+        normal
+    );
+    font-weight: var(--avonni-dynamic-menu-border-label-font-weight-hover, 400);
+}
+
+.avonni-dynamic-menu__button_border:active {
+    background-color: var(
+        --avonni-dynamic-menu-border-color-background,
+        #f3f2f2
+    );
+    border-color: var(--avonni-dynamic-menu-border-color-border-hover, #dddbda);
+}
+
+.avonni-dynamic-menu__button_bare {
+    background-color: var(
+        --avonni-dynamic-menu-bare-color-background,
+        transparent
+    );
+    border-color: var(--avonni-dynamic-menu-bare-color-border, transparent);
+    color: var(--avonni-dynamic-menu-bare-label-text-color, #0176d3);
+    font-size: var(--avonni-dynamic-menu-bare-label-font-size, 0.8125rem);
+    font-style: var(--avonni-dynamic-menu-bare-label-font-style, normal);
+    font-weight: var(--avonni-dynamic-menu-bare-label-font-weight, 400);
+}
+
+.avonni-dynamic-menu__button_bare:hover {
+    background-color: var(
+        --avonni-dynamic-menu-bare-color-background,
+        transparent
+    );
+    border-color: var(
+        --avonni-dynamic-menu-bare-color-border-hover,
+        transparent
+    );
+    color: var(--avonni-dynamic-menu-bare-label-text-color-hover, #014486);
+    font-size: var(--avonni-dynamic-menu-bare-label-font-size-hover, 0.8125rem);
+    font-style: var(--avonni-dynamic-menu-bare-label-font-style-hover, normal);
+    font-weight: var(--avonni-dynamic-menu-bare-label-font-weight-hover, 400);
+}
+
+.avonni-dynamic-menu__button_bare:active {
+    background-color: var(
+        --avonni-dynamic-menu-bare-color-background,
+        transparent
+    );
+    border-color: var(
+        --avonni-dynamic-menu-bare-color-border-hover,
+        transparent
+    );
 }

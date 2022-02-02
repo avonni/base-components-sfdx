@@ -80,7 +80,7 @@
     box-shadow: 0 0 10px rgb(0 0 0 / 40%);
     opacity: 0.8;
     cursor: grabbing;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: var(--avonni-list-item-color-background, transparent);
 }
 
 .avonni-list__item-img {

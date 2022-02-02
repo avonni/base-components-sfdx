@@ -41,6 +41,11 @@ const GROUP_BY_OPTIONS = {
     valid: ['week', 'month', 'year'],
     default: undefined
 };
+
+const SORTED_DIRECTIONS = {
+    valid: ['asc', 'desc'],
+    default: 'desc'
+};
 /**
  * @class
  * @descriptor avonni-activity-timeline
@@ -49,14 +54,6 @@ const GROUP_BY_OPTIONS = {
  */
 export default class AvonniActivityTimeline extends LightningElement {
     /**
-     * Title of the timeline, displayed in the header.
-     *
-     * @public
-     * @type {string}
-     */
-    @api title;
-
-    /**
      * The Lightning Design System name of the icon displayed in the header, before the title. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
      *
      * @public
@@ -64,18 +61,26 @@ export default class AvonniActivityTimeline extends LightningElement {
      */
     @api iconName;
 
-    _collapsible = false;
+    /**
+     * Title of the timeline, displayed in the header.
+     *
+     * @public
+     * @type {string}
+     */
+    @api title;
+
+    _actions = [];
     _closed = false;
+    _collapsible = false;
     _groupBy = GROUP_BY_OPTIONS.default;
     _items = [];
-    _actions = [];
+    _sortedDirection = SORTED_DIRECTIONS.default;
 
     _key;
-    _sortedItems = [];
-    _beforeDates = [];
+    _presentDates = [];
+    _pastDates = [];
     _upcomingDates = [];
 
-    @track ungroupedItems = [];
     @track orderedDates = [];
 
     connectedCallback() {
@@ -83,19 +88,18 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * If present, the section is collapsible and the collapse icon is visible.
+     * Array of action objects. The actions are displayed at the top right of each item.
      *
      * @public
-     * @type {boolean}
-     * @default false
+     * @type {object[]}
      */
     @api
-    get collapsible() {
-        return this._collapsible;
+    get actions() {
+        return this._actions;
     }
 
-    set collapsible(value) {
-        this._collapsible = normalizeBoolean(value);
+    set actions(value) {
+        this._actions = normalizeArray(value);
     }
 
     /**
@@ -112,6 +116,22 @@ export default class AvonniActivityTimeline extends LightningElement {
 
     set closed(value) {
         this._closed = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the section is collapsible and the collapse icon is visible.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get collapsible() {
+        return this._collapsible;
+    }
+
+    set collapsible(value) {
+        this._collapsible = normalizeBoolean(value);
     }
 
     /**
@@ -151,164 +171,21 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Array of action objects. The actions are displayed at the top right of each item.
+     * If present, the value will define how the items will be grouped. Valid values include week, month or year.
      *
      * @public
-     * @type {object[]}
+     * @type {string}
      */
     @api
-    get actions() {
-        return this._actions;
+    get sortedDirection() {
+        return this._sortedDirection;
     }
 
-    set actions(value) {
-        this._actions = normalizeArray(value);
-    }
-
-    /**
-     * Compute Number of the week in the year.
-     *
-     * @param {Date} date
-     * @type {(Date|number)}
-     * @returns number
-     */
-    getNumberOfWeek(date) {
-        const today = new Date(date);
-        const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-        const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-    }
-
-    /**
-     * Compute sortedItems list array.
-     */
-    sortItems() {
-        this._sortedItems = [...this.items];
-        this._sortedItems.sort((a, b) => b.datetimeValue - a.datetimeValue);
-    }
-
-    /**
-     * Sort the item dates by year, month, week.
-     */
-    sortDates() {
-        this._upcomingDates = [];
-        this._beforeDates = [];
-
-        this._sortedItems.forEach((item) => {
-            const date = new Date(item.datetimeValue);
-            const today = new Date();
-            if (date.getFullYear() > today.getFullYear()) {
-                this._upcomingDates.push(item);
-            } else if (date.getFullYear() <= today.getFullYear()) {
-                if (this._groupBy === 'month') {
-                    if (date.getMonth() > today.getMonth()) {
-                        this._upcomingDates.push(item);
-                    } else if (date.getMonth() <= today.getMonth()) {
-                        this._beforeDates.push(item);
-                    }
-                } else if (this._groupBy === 'year') {
-                    this._beforeDates.push(item);
-                } else if (this._groupBy === 'week' || !this._groupBy) {
-                    if (
-                        this.getNumberOfWeek(date) > this.getNumberOfWeek(today)
-                    ) {
-                        this._upcomingDates.push(item);
-                    } else if (
-                        this.getNumberOfWeek(date) <=
-                        this.getNumberOfWeek(today)
-                    ) {
-                        this._beforeDates.push(item);
-                    }
-                }
-            }
+    set sortedDirection(value) {
+        this._sortedDirection = normalizeString(value, {
+            fallbackValue: SORTED_DIRECTIONS.default,
+            validValues: SORTED_DIRECTIONS.valid
         });
-    }
-
-    /**
-     * Group upcomingDates and beforeDates by year, month, week.
-     */
-    groupDates() {
-        this.orderedDates = [];
-
-        this._upcomingDates = this._upcomingDates.reduce((prev, cur) => {
-            this._key = 'Upcoming';
-            if (!prev[this._key]) {
-                prev[this._key] = [cur];
-            } else {
-                prev[this._key].push(cur);
-            }
-            return prev;
-        }, []);
-
-        this._beforeDates = this._beforeDates.reduce((prev, cur) => {
-            const date = new Date(cur.datetimeValue);
-            if (this._groupBy === 'month') {
-                this._key = `${date.toLocaleString('en-EN', {
-                    month: 'long'
-                })} ${date.getFullYear()}`;
-            } else if (this._groupBy === 'week' || !this._groupBy) {
-                this._key = `Week: ${this.getNumberOfWeek(
-                    date
-                )}, ${date.getFullYear()}`;
-            } else if (this._groupBy === 'year') {
-                this._key = `${date.getFullYear()}`;
-            }
-
-            if (!prev[this._key]) {
-                prev[this._key] = [cur];
-            } else {
-                prev[this._key].push(cur);
-            }
-            return prev;
-        }, []);
-
-        Object.keys(this._upcomingDates).forEach((date) => {
-            this.orderedDates.push({
-                label: date,
-                items: this._upcomingDates[date]
-            });
-        });
-
-        Object.keys(this._beforeDates).forEach((date) => {
-            this.orderedDates.push({
-                label: date,
-                items: this._beforeDates[date]
-            });
-        });
-    }
-
-    /**
-     * Sort the orderedDates by hours.
-     */
-    sortHours() {
-        this.orderedDates.forEach((object) => {
-            object.items.sort((a, b) => a.datetimeValue - b.datetimeValue);
-        });
-    }
-
-    /**
-     * UngroupedItems ordered by dates and hours.
-     */
-    createUngroupedItems() {
-        this.ungroupedItems = [];
-        this.orderedDates.forEach((group) => {
-            this.ungroupedItems.push(group.items);
-        });
-        this.ungroupedItems = this.ungroupedItems.reduce(
-            (acc, val) => acc.concat(val),
-            []
-        );
-    }
-
-    /**
-     * Component initialized states.
-     */
-    initActivityTimeline() {
-        this.sortItems();
-        this.sortDates();
-        this.groupDates();
-        this.sortHours();
-        this.createUngroupedItems();
     }
 
     /**
@@ -335,7 +212,158 @@ export default class AvonniActivityTimeline extends LightningElement {
      * @type {boolean}
      */
     get noGroupBy() {
-        return !this.groupBy;
+        return !this._groupBy;
+    }
+
+    /**
+     * Compute sortedItems and ungrouped array.
+     */
+    get sortedItems() {
+        return this._sortedDirection === 'desc'
+            ? [...this.items].sort(
+                  (a, b) =>
+                      new Date(b.datetimeValue) - new Date(a.datetimeValue)
+              )
+            : [...this.items].sort(
+                  (a, b) =>
+                      new Date(a.datetimeValue) - new Date(b.datetimeValue)
+              );
+    }
+
+    /**
+     * Compute Number of the week in the year.
+     *
+     * @param {Date} date
+     * @type {(Date|number)}
+     * @returns number
+     */
+    getNumberOfWeek(date) {
+        const today = new Date(date);
+        const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+        const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
+
+    /**
+     * Sort the item dates by year, month, week.
+     */
+    sortDates() {
+        this._upcomingDates = [];
+        this._presentDates = [];
+        this._pastDates = [];
+
+        this.sortedItems.forEach((item) => {
+            const date = new Date(item.datetimeValue);
+            const dateYear = date.getFullYear();
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const isUpcomingYear = dateYear > currentYear;
+            const isPastYear = dateYear < currentYear;
+            if (this._groupBy === 'month') {
+                if (
+                    (date.getMonth() > today.getMonth() && !isPastYear) ||
+                    isUpcomingYear
+                ) {
+                    this._upcomingDates.push(item);
+                } else if (
+                    date.getMonth() === today.getMonth() &&
+                    !isPastYear
+                ) {
+                    this._presentDates.push(item);
+                } else {
+                    this._pastDates.push(item);
+                }
+            } else if (this._groupBy === 'year') {
+                if (isUpcomingYear) {
+                    this._upcomingDates.push(item);
+                } else if (isPastYear) {
+                    this._pastDates.push(item);
+                } else {
+                    this._presentDates.push(item);
+                }
+            } else {
+                if (
+                    (this.getNumberOfWeek(date) > this.getNumberOfWeek(today) &&
+                        !isPastYear) ||
+                    isUpcomingYear
+                ) {
+                    this._upcomingDates.push(item);
+                } else if (
+                    this.getNumberOfWeek(date) ===
+                        this.getNumberOfWeek(today) &&
+                    !isPastYear
+                ) {
+                    this._presentDates.push(item);
+                } else {
+                    this._pastDates.push(item);
+                }
+            }
+        });
+    }
+
+    /**
+     * Create section's label for each group.
+     */
+    displayDates(array, isUpcoming) {
+        return array.reduce((prev, cur) => {
+            if (!isUpcoming) {
+                const date = new Date(cur.datetimeValue);
+                if (this._groupBy === 'month') {
+                    this._key = `${date.toLocaleString('en-EN', {
+                        month: 'long'
+                    })} ${date.getFullYear()}`;
+                } else if (this._groupBy === 'week') {
+                    this._key = `Week: ${this.getNumberOfWeek(
+                        date
+                    )}, ${date.getFullYear()}`;
+                } else if (this._groupBy === 'year') {
+                    this._key = `${date.getFullYear()}`;
+                }
+            } else {
+                this._key = 'Upcoming';
+            }
+
+            if (!prev[this._key]) {
+                prev[this._key] = [cur];
+            } else {
+                prev[this._key].push(cur);
+            }
+            return prev;
+        }, []);
+    }
+
+    /**
+     * Regroup each groups in order.
+     */
+    regroupDates(array) {
+        Object.keys(array).forEach((date) => {
+            this.orderedDates.push({
+                label: date,
+                items: array[date]
+            });
+        });
+    }
+
+    /**
+     * Group upcomingDates presentDates and beforeDates by year, month or week.
+     */
+    groupDates() {
+        this.orderedDates = [];
+        this._upcomingDates = this.displayDates(this._upcomingDates, true);
+        this._presentDates = this.displayDates(this._presentDates, false);
+        this._pastDates = this.displayDates(this._pastDates, false);
+
+        this.regroupDates(this._upcomingDates);
+        this.regroupDates(this._presentDates);
+        this.regroupDates(this._pastDates);
+    }
+
+    /**
+     * Component initialized states.
+     */
+    initActivityTimeline() {
+        this.sortDates();
+        this.groupDates();
     }
 
     /**

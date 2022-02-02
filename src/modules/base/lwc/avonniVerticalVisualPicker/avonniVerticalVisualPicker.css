@@ -1,0 +1,193 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+.avonni-vertical-visual-picker__figure {
+    border-radius: var(
+        --avonni-vertical-visual-picker-figure-radius-border,
+        0.25rem
+    );
+    border: var(--avonni-vertical-visual-picker-figure-sizing-border, 1px)
+        var(--avonni-vertical-visual-picker-figure-styling-border, solid)
+        var(--avonni-vertical-visual-picker-figure-color-border, #dddbda);
+    box-shadow: var(
+        --avonni-vertical-visual-picker-figure-shadow-box,
+        0 2px 2px rgb(0 0 0 / 5%)
+    );
+    background-color: var(
+        --avonni-vertical-visual-picker-figure-color-background,
+        #ffffff
+    );
+    overflow: hidden;
+}
+
+.avonni-vertical-visual-picker__figure:hover {
+    background-color: var(
+        --avonni-vertical-visual-picker-figure-color-background-hover,
+        #ffffff
+    );
+}
+
+.avonni-vertical-visual-picker__figure-with-tags {
+    height: 7rem;
+}
+
+.avonni-vertical-visual-picker__content_container {
+    display: flex;
+    align-items: center;
+    height: -webkit-fill-available;
+}
+
+.avonni-vertical-visual-picker__content_container > span {
+    flex: 1;
+}
+
+.slds-visual-picker input:checked ~ label .slds-is-selected {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+}
+
+/*-- Checked --*/
+.slds-visual-picker input:checked ~ label .slds-visual-picker__text {
+    border: 1px solid
+        var(--avonni-vertical-visual-picker-color-border-selected, #1b96ff);
+    -webkit-box-shadow: 0 0 0 1px
+        var(--avonni-vertical-visual-picker-color-border-selected, #1b96ff)
+        inset;
+    box-shadow: 0 0 0 1px
+        var(--avonni-vertical-visual-picker-color-border-selected, #1b96ff)
+        inset;
+}
+
+.slds-visual-picker input:checked ~ label .slds-visual-picker__text:after {
+    content: '';
+    border-right-color: var(
+        --avonni-vertical-visual-picker-color-border-selected,
+        #1b96ff
+    );
+    border-top-color: var(
+        --avonni-vertical-visual-picker-color-border-selected,
+        #1b96ff
+    );
+}
+
+.slds-visual-picker input:checked ~ label .slds-visual-picker__icon {
+    background-color: var(
+        --avonni-vertical-visual-picker-color-background-selected,
+        #1b96ff
+    );
+    border-color: var(
+        --avonni-vertical-visual-picker-color-border-selected,
+        #1b96ff
+    );
+}
+
+.avonni-hide-check-mark:after {
+    display: none;
+}
+
+/*-- Label --*/
+.avonni-vertical-visual-picker__label {
+    color: var(--avonni-vertical-visual-picker-header-text-color, #3e3e3c);
+    font-size: var(--avonni-vertical-visual-picker-header-font-size, 0.75rem);
+    font-style: var(--avonni-vertical-visual-picker-header-font-style, normal);
+    font-weight: var(--avonni-vertical-visual-picker-header-font-weight, 700);
+}
+
+/*-- title --*/
+.avonni-vertical-visual-picker__item-title {
+    color: var(--avonni-vertical-visual-picker-title-text-color, #080707);
+    font-size: var(--avonni-vertical-visual-picker-title-font-size, 1.25rem);
+    font-style: var(--avonni-vertical-visual-picker-title-font-style, normal);
+    font-weight: var(--avonni-vertical-visual-picker-title-font-weight, 400);
+    text-align: var(--avonni-vertical-visual-picker-title-alignment, left);
+    line-height: 1.25;
+}
+
+/*-- description --*/
+.avonni-vertical-visual-picker__item-description {
+    color: var(--avonni-vertical-visual-picker-description-text-color, #3e3e3c);
+    font-size: var(
+        --avonni-vertical-visual-picker-description-font-size,
+        0.75rem
+    );
+    font-style: var(
+        --avonni-vertical-visual-picker-description-font-style,
+        normal
+    );
+    font-weight: var(
+        --avonni-vertical-visual-picker-description-font-weight,
+        400
+    );
+    line-height: var(
+        --avonni-vertical-visual-picker-description-line-height,
+        1.25
+    );
+    text-align: var(
+        --avonni-vertical-visual-picker-description-alignment,
+        left
+    );
+}
+
+/*-- tag --*/
+.avonni-vertical-visual-picker__tags-container {
+    margin-top: 0.25rem;
+    text-align: var(--avonni-vertical-visual-picker-tags-alignment, left);
+}
+
+.avonni-vertical-visual-picker__tag:not(:first-child) {
+    margin-left: 0.25rem;
+}
+
+/*-- size --*/
+.avonni-vertical-visual-picker__item_size-small {
+    width: 20rem;
+}
+
+.avonni-vertical-visual-picker__item_size-medium {
+    width: 25rem;
+}
+
+.avonni-vertical-visual-picker__item_size-large {
+    width: 30rem;
+}
+
+.avonni-vertical-visual-picker__item_size-responsive {
+    width: 100%;
+}
+
+/*-- image --*/
+.avonni-vertical-visual-picker__image {
+    height: 100%;
+    width: 10%;
+}

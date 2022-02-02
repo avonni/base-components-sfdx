@@ -138,12 +138,14 @@
                                             role="option"
                                             tabindex={option.tabIndex}
                                             group-index={index}
+                                            data-element-id="div-source"
                                             data-value={option.value}
                                             data-type={computedSourceListId}
                                             onclick={handleOptionClick}
                                             onkeydown={handleOptionKeyDown}
+                                            onmouseup={dispatchOptionClick}
                                             draggable={draggable}
-                                            ondragstart={handleDragStartSource}
+                                            ondragstart={handleDragStart}
                                             ondragend={handleDragEndSource}
                                         >
                                             <div class="slds-media__figure">
@@ -156,6 +158,8 @@
                                                     variant={option.avatar.variant}
                                                     primary-text={option.primaryText}
                                                     secondary-text={option.secondaryText}
+                                                    presence={option.avatar.presence}
+                                                    presence-position={option.avatar.presencePosition}
                                                 ></c-avonni-avatar>
                                             </div>
                                             <template
@@ -286,14 +290,16 @@
                                             aria-selected={option.selected}
                                             role="option"
                                             tabindex={option.tabIndex}
+                                            data-element-id="div-selected"
                                             data-group-index={groupIndex}
                                             data-inside-group-index={insideGroupIndex}
                                             data-value={option.value}
                                             data-type={computedSelectedListId}
                                             onclick={handleOptionClick}
                                             onkeydown={handleOptionKeyDown}
+                                            onmouseup={dispatchOptionClick}
                                             draggable={draggable}
-                                            ondragstart={handleDragStartSelected}
+                                            ondragstart={handleDragStart}
                                             ondragend={handleDragEndSelected}
                                             ondragover={handleDragOver}
                                         >

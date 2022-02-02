@@ -1,0 +1,151 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <article if:true={showWizard} data-element-id="article-quick-action-panel">
+        <!-- Header -->
+        <header class="slds-modal__header">
+            <div
+                class="
+                    slds-p-horizontal_medium
+                    slds-p-top_medium
+                    slds-grid
+                    slds-grid_vertical-align-center
+                    slds-grid_align-center
+                "
+            >
+                <lightning-icon
+                    if:true={iconName}
+                    class="slds-media__figure"
+                    size="small"
+                    icon-name={iconName}
+                ></lightning-icon>
+                <div>
+                    <h1
+                        if:true={title}
+                        class="slds-text-heading_small"
+                        data-element-id="h1"
+                    >
+                        {title}
+                    </h1>
+                    <template if:false={title}>
+                        <slot name="title"></slot>
+                    </template>
+                </div>
+            </div>
+            <template if:false={hideNavigation}>
+                <div
+                    if:true={indicatorInHeader}
+                    class="slds-m-top_small slds-p-left_medium"
+                >
+                    <c-avonni-primitive-wizard-navigation
+                        position="top"
+                        indicator-position={indicatorPosition}
+                        current-step={currentStep}
+                        current-step-has-error={currentStepHasError}
+                        indicator-type={indicatorType}
+                        hide-indicator={hideIndicator}
+                        fraction-prefix-label={fractionPrefixLabel}
+                        fraction-label={fractionLabel}
+                        data-element-id="avonni-primitive-wizard-navigation-top"
+                    >
+                    </c-avonni-primitive-wizard-navigation>
+                </div>
+            </template>
+        </header>
+        <!-- Steps -->
+        <main class={wrapperClass}>
+            <div class={mainColClass}>
+                <p class="slds-text-color_error">{errorMessage}</p>
+                <slot
+                    data-element-id="slot-default"
+                    onwizardstepregister={handleStepRegister}
+                ></slot>
+            </div>
+            <div class={sideColClass} if:true={indicatorOnSide}>
+                <c-avonni-primitive-wizard-navigation
+                    position="side"
+                    onchange={handleChange}
+                    current-step={currentStep}
+                    current-step-has-error={currentStepHasError}
+                    indicator-type={indicatorType}
+                    indicator-position={indicatorPosition}
+                    hide-indicator={hideIndicator}
+                    fraction-prefix-label={fractionPrefixLabel}
+                    fraction-label={fractionLabel}
+                    data-element-id="avonni-primitive-wizard-navigation-side"
+                ></c-avonni-primitive-wizard-navigation>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer
+            if:false={hideNavigation}
+            class="
+                slds-p-horizontal_medium
+                slds-p-bottom_medium
+                slds-modal__footer
+            "
+            data-element-id="footer"
+        >
+            <c-avonni-primitive-wizard-navigation
+                position="bottom"
+                onchange={handleChange}
+                current-step={currentStep}
+                current-step-has-error={currentStepHasError}
+                indicator-type={indicatorType}
+                indicator-position={indicatorPosition}
+                hide-indicator={hideIndicator}
+                previous-button-icon-name={previousButtonIconName}
+                previous-button-icon-position={previousButtonIconPosition}
+                previous-button-label={previousButtonLabel}
+                previous-button-variant={previousButtonVariant}
+                next-button-icon-name={nextButtonIconName}
+                next-button-icon-position={nextButtonIconPosition}
+                next-button-label={nextButtonLabel}
+                next-button-variant={nextButtonVariant}
+                finish-button-icon-name={finishButtonIconName}
+                finish-button-icon-position={finishButtonIconPosition}
+                finish-button-label={finishButtonLabel}
+                finish-button-variant={finishButtonVariant}
+                button-alignment-bump={buttonAlignmentBump}
+                action-position={actionPosition}
+                fraction-prefix-label={fractionPrefixLabel}
+                fraction-label={fractionLabel}
+                data-element-id="avonni-primitive-wizard-navigation-bottom"
+            >
+                <slot name="actions"></slot>
+            </c-avonni-primitive-wizard-navigation>
+        </footer>
+    </article>
+</template>

@@ -64,19 +64,25 @@ const DEFAULT_LOADING_TEXT = 'Loading';
  */
 export default class AvonniPrimitiveActivityTimelineItem extends LightningElement {
     /**
-     * The title can include text, and is displayed in the header.
+     * Actions object sent from Activity Timeline
      *
-     * @public
-     * @type {string}
+     * @type {object[]}
      */
-    @api title;
+    @api actions = [];
     /**
-     * The description can include text, and is displayed under the title.
+     * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
      *
      * @public
      * @type {string}
      */
-    @api description;
+    @api buttonIconName;
+    /**
+     * The name for the button element. This value is optional and can be used to identify the button in a callback.
+     *
+     * @public
+     * @type {string}
+     */
+    @api buttonLabel;
     /**
      * The value to be formatted, which can be a Date object, timestamp, or an ISO8601 formatted string. Use lightning-formatted-date-time.
      *
@@ -84,6 +90,13 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      * @type {datetime}
      */
     @api datetimeValue;
+    /**
+     * The description can include text, and is displayed under the title.
+     *
+     * @public
+     * @type {string}
+     */
+    @api description;
     /**
      * URL for the title link.
      *
@@ -106,20 +119,6 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      */
     @api icons;
     /**
-     * The name for the button element. This value is optional and can be used to identify the button in a callback.
-     *
-     * @public
-     * @type {string}
-     */
-    @api buttonLabel;
-    /**
-     * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
-     *
-     * @public
-     * @type {string}
-     */
-    @api buttonIconName;
-    /**
      * Message displayed while the detail section is in the loading state.
      *
      * @public
@@ -136,20 +135,22 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      */
     @api name;
     /**
-     * Actions object sent from Activity Timeline
+     * The title can include text, and is displayed in the header.
      *
-     * @type {object[]}
+     * @public
+     * @type {string}
      */
-    @api actions = [];
+    @api title;
 
+    _buttonDisabled = false;
+    _buttonIconPosition = BUTTON_ICON_POSITIONS.default;
+    _buttonVariant = BUTTON_VARIANTS.default;
+    _closed = false;
     _fields = [];
     _hasCheckbox = false;
     _hasError = false;
     _isLoading = false;
-    _closed = false;
-    _buttonIconPosition = BUTTON_ICON_POSITIONS.default;
-    _buttonVariant = BUTTON_VARIANTS.default;
-    _buttonDisabled = false;
+
     _color;
 
     renderedCallback() {
@@ -157,66 +158,19 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     }
 
     /**
-     * If true, a checkbox is present before the label.
+     * If true, the button is disabled.
      *
      * @public
      * @type {boolean}
      * @default false
      */
     @api
-    get hasCheckbox() {
-        return this._hasCheckbox;
+    get buttonDisabled() {
+        return this._buttonDisabled;
     }
 
-    set hasCheckbox(value) {
-        this._hasCheckbox = normalizeBoolean(value);
-    }
-
-    /**
-     * if true, display an error message in the details section.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get hasError() {
-        return this._hasError;
-    }
-
-    set hasError(value) {
-        this._hasError = normalizeBoolean(value);
-    }
-
-    /**
-     * if true, close the section.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get closed() {
-        return this._closed;
-    }
-
-    set closed(value) {
-        this._closed = normalizeBoolean(value);
-    }
-
-    /**
-     * Array of output data objects (see Output Data for valid keys). It is displayed in the details section.
-     *
-     * @public
-     * @type {object[]}
-     */
-    @api
-    get fields() {
-        return this._fields;
-    }
-
-    set fields(value) {
-        this._fields = normalizeArray(value);
+    set buttonDisabled(value) {
+        this._buttonDisabled = normalizeBoolean(value);
     }
 
     /**
@@ -258,19 +212,66 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     }
 
     /**
-     * If true, the button is disabled.
+     * if true, close the section.
      *
      * @public
      * @type {boolean}
      * @default false
      */
     @api
-    get buttonDisabled() {
-        return this._buttonDisabled;
+    get closed() {
+        return this._closed;
     }
 
-    set buttonDisabled(value) {
-        this._buttonDisabled = normalizeBoolean(value);
+    set closed(value) {
+        this._closed = normalizeBoolean(value);
+    }
+
+    /**
+     * Array of output data objects (see Output Data for valid keys). It is displayed in the details section.
+     *
+     * @public
+     * @type {object[]}
+     */
+    @api
+    get fields() {
+        return this._fields;
+    }
+
+    set fields(value) {
+        this._fields = normalizeArray(value);
+    }
+
+    /**
+     * If true, a checkbox is present before the label.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hasCheckbox() {
+        return this._hasCheckbox;
+    }
+
+    set hasCheckbox(value) {
+        this._hasCheckbox = normalizeBoolean(value);
+    }
+
+    /**
+     * if true, display an error message in the details section.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hasError() {
+        return this._hasError;
+    }
+
+    set hasError(value) {
+        this._hasError = normalizeBoolean(value);
     }
 
     /**
@@ -341,6 +342,10 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
                     !this.hasFields
             })
             .toString();
+    }
+
+    get computedDatetimeValue() {
+        return new Date(this.datetimeValue).getTime();
     }
 
     /**

@@ -1,0 +1,65 @@
+div:focus {
+    outline: none;
+}
+
+.avonni-builder-icon-picker-popover-width {
+    width: 14rem;
+}
+
+.avonni-builder-icon-picker-form-error {
+    padding-top: 0.5rem;
+    color: #c23934;
+    font-size: 0.75rem;
+}
+
+.avonni-builder-icon-picker-flex {
+    display: flex;
+}
+
+.avonni-builder-icon-picker-label-inline {
+    display: flex;
+    align-items: center;
+}
+
+.avonni-builder-icon-picker-label-inline lightning-helptext {
+    padding-right: 0.25rem;
+}
+
+lightning-button {
+    display: grid;
+    width: 100%;
+}
+
+button:disabled {
+    background-color: #ecebea;
+}
+
+.avonni-builder-icon-picker-input-container {
+    width: 17rem;
+}
+
+.avonni-builder-icon-picker-icon-container {
+    height: var(--avonni-builder-icon-picker-popover-height, 14rem);
+}
+
+.avonni-builder-icon-picker-clear-icon:hover {
+    --sds-c-icon-color-foreground-default: #005fb2;
+}
+
+.avonni-builder-icon-picker-read-only-input {
+    display: flex;
+    align-items: center;
+}
+
+.avonni-builder-icon-picker-read-only-cursor {
+    cursor: default;
+    --sds-c-button-shadow-focus: white;
+}
+
+.avonni-builder-icon-picker-x-small-icon-padding {
+    padding: 0.04rem;
+}
+
+.avonni-builder-icon-picker-small-icon-padding {
+    padding: 0.05rem;
+}

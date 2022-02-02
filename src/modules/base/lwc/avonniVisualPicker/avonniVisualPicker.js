@@ -32,25 +32,38 @@
 
 import { LightningElement, api } from 'lwc';
 import { classSet, generateUUID } from 'c/utils';
-import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
+import {
+    normalizeBoolean,
+    normalizeString,
+    normalizeArray
+} from 'c/utilsPrivate';
+import { InteractingState, FieldConstraintApi } from 'c/inputUtils';
 
 const VISUAL_PICKER_VARIANTS = {
-    valid: ['coverable', 'non-coverable', 'vertical'],
+    valid: ['coverable', 'non-coverable'],
     default: 'non-coverable'
 };
 const INPUT_TYPES = { valid: ['radio', 'checkbox'], default: 'radio' };
 const VISUAL_PICKER_SIZES = {
-    valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
+    valid: [
+        'xx-small',
+        'x-small',
+        'small',
+        'medium',
+        'large',
+        'x-large',
+        'xx-large',
+        'responsive'
+    ],
     default: 'medium'
 };
 const VISUAL_PICKER_RATIOS = {
-    valid: ['1-by-1', '4-by-3', '16-by-9'],
+    valid: ['1-by-1', '4-by-3', '16-by-9', '3-by-4', '9-by-16'],
     default: '1-by-1'
 };
 
 const DEFAULT_REQUIRED = false;
 const DEFAULT_DISABLED = false;
-const DEFAULT_HIDE_BORDER = false;
 const DEFAULT_HIDE_CHECK_MARK = false;
 
 /**
@@ -68,14 +81,7 @@ export default class AvonniVisualPicker extends LightningElement {
      */
     @api label;
     /**
-     * Array of item objects.
-     *
-     * @type {object[]}
-     * @public
-     */
-    @api items = [];
-    /**
-     * Optional message to be displayed when no checkbox is selected and the required attribute is set.
+     * Error message to be displayed when no item is selected and the required attribute is set to true.
      *
      * @type {string}
      * @public
@@ -90,23 +96,21 @@ export default class AvonniVisualPicker extends LightningElement {
      */
     @api name = generateUUID();
 
+    _disabled = DEFAULT_DISABLED;
+    _hideCheckMark = DEFAULT_HIDE_CHECK_MARK;
+    _items = [];
+    _ratio = VISUAL_PICKER_RATIOS.default;
+    _required = DEFAULT_REQUIRED;
+    _size = VISUAL_PICKER_SIZES.default;
+    _type = INPUT_TYPES.default;
     _value = [];
     _variant = VISUAL_PICKER_VARIANTS.default;
-    _type = INPUT_TYPES.default;
-    _size = VISUAL_PICKER_SIZES.default;
-    _required = DEFAULT_REQUIRED;
-    _disabled = DEFAULT_DISABLED;
-    _hideBorder = DEFAULT_HIDE_BORDER;
-    _hideCheckMark = DEFAULT_HIDE_CHECK_MARK;
-    _ratio = VISUAL_PICKER_RATIOS.default;
+
+    helpMessage;
 
     renderedCallback() {
-        const inputs = this.template.querySelectorAll(
-            '[data-element-id="input"]'
-        );
-
-        if (inputs) {
-            Array.from(inputs).forEach((item) => {
+        if (this.inputs) {
+            this.inputs.forEach((item) => {
                 if (this._value.indexOf(item.value) > -1) {
                     item.checked = true;
                 }
@@ -114,8 +118,126 @@ export default class AvonniVisualPicker extends LightningElement {
         }
     }
 
+    connectedCallback() {
+        this.interactingState = new InteractingState();
+        this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
+    }
+
     /**
-     * Value of the selected item. For the checkbox type, the value is an array (Ex: [value1, value2]
+     * If present, the visual picker is disabled and the user cannot with it.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+    }
+    /**
+     * If present, hide the check mark when selected.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideCheckMark() {
+        return this._hideCheckMark;
+    }
+
+    set hideCheckMark(value) {
+        this._hideCheckMark = normalizeBoolean(value);
+    }
+    /**
+     * Array of items with attributes populating the visual picker.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get items() {
+        return this._items;
+    }
+
+    set items(value) {
+        this._items = normalizeArray(value);
+    }
+    /**
+     * The ratio of the items. Valid values include 1-by-1, 4-by-3, 16-by-9, 3-by-4 and 9-by-16.
+     *
+     * @type {string}
+     * @public
+     * @default 1-by-1
+     */
+    @api
+    get ratio() {
+        return this._ratio;
+    }
+
+    set ratio(ratio) {
+        this._ratio = normalizeString(ratio, {
+            fallbackValue: VISUAL_PICKER_RATIOS.default,
+            validValues: VISUAL_PICKER_RATIOS.valid
+        });
+    }
+    /**
+     * If present, at least one item must be selected.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get required() {
+        return this._required;
+    }
+
+    set required(value) {
+        this._required = normalizeBoolean(value);
+    }
+    /**
+     * The size of the items. Valid values include xx-small (4rem x 4 rem), x-small (6rem x 6 rem), small (8rem x 8rem), medium (12rem x 12rem), large (15rem x 15rem), x-large (18rem x 18rem), xx-large (21rem x 21rem) and responsive. Only avatar appears when x-small and xx-small.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(size) {
+        this._size = normalizeString(size, {
+            fallbackValue: VISUAL_PICKER_SIZES.default,
+            validValues: VISUAL_PICKER_SIZES.valid
+        });
+    }
+    /**
+     * It defines the type of input. Valid values include radio and checkbox.
+     *
+     * @type {string}
+     * @public
+     * @default radio
+     */
+    @api
+    get type() {
+        return this._type;
+    }
+
+    set type(type) {
+        this._type = normalizeString(type, {
+            fallbackValue: INPUT_TYPES.default,
+            validValues: INPUT_TYPES.valid
+        });
+    }
+    /**
+     * Value of the selected item. For the checkbox type, the value can be an array. Ex: [value1, value2], 'value1' or ['value1']
      *
      * @type {(string|string[])}
      * @public
@@ -127,27 +249,16 @@ export default class AvonniVisualPicker extends LightningElement {
 
     set value(value) {
         this._value = value instanceof Array ? value : [value];
-        const inputs = this.template.querySelectorAll(
-            '[data-element-id="input"]'
-        );
-
-        if (inputs && this.value.length) {
-            Array.from(inputs).forEach((item) => {
-                if (this.value.indexOf(item.value) > -1) {
-                    item.checked = true;
-                }
-            });
-        }
     }
-
     /**
-     * Changes the appearance of the visual picker. Valid values include coverable, non-coverable and vertical.
+     * Changes the appearance of the item when selected. Valid values include coverable and non-coverable.
      *
      * @type {string}
      * @public
      * @default non-coverable
      */
-    @api get variant() {
+    @api
+    get variant() {
         return this._variant;
     }
 
@@ -159,230 +270,120 @@ export default class AvonniVisualPicker extends LightningElement {
     }
 
     /**
-     * Valid values include radio and checkbox.
-     *
-     * @type {string}
-     * @public
-     * @default radio
+     * Computed list items
+     * @type {object[]}
      */
-    @api get type() {
-        return this._type;
-    }
+    get listItems() {
+        return this._items.map((item, index) => {
+            let {
+                avatar,
+                avatarPosition,
+                description,
+                descriptionPosition,
+                disabled,
+                imgAlternativeText,
+                imgSrc,
+                itemDescription,
+                itemTitle,
+                tags,
+                title,
+                titlePosition,
+                value
+            } = item;
+            const key = `visual-picker-key-${index}`;
+            disabled = this._disabled ? true : disabled;
 
-    set type(type) {
-        this._type = normalizeString(type, {
-            fallbackValue: INPUT_TYPES.default,
-            validValues: INPUT_TYPES.valid
+            // Check management
+            const checked = this._value.includes(value);
+            const displayCheckCoverable =
+                !this.hideCheckMark && checked && this.isCoverable;
+            const displayCheckNonCoverable =
+                !this.hideCheckMark && checked && !this.isCoverable;
+            const computedSelectedClass = this.isResponsive
+                ? 'slds-is-selected avonni-visual-picker__check_absolute-center'
+                : 'slds-is-selected';
+
+            // Title management
+            titlePosition = titlePosition || 'center';
+            const displayTitle = title && this.isBiggerThanXSmall;
+            const titleIsTop = titlePosition === 'top' && displayTitle;
+            const titleIsCenter = titlePosition === 'center' && displayTitle;
+            const titleIsBottom = titlePosition === 'bottom' && displayTitle;
+
+            // Description management
+            descriptionPosition = descriptionPosition || 'center';
+            const displayDescription = description && this.isBiggerThanXSmall;
+            const descriptionIsTop =
+                descriptionPosition === 'top' && displayDescription;
+            const descriptionIsCenter =
+                descriptionPosition === 'center' && displayDescription;
+            const descriptionIsBottom =
+                descriptionPosition === 'bottom' && displayDescription;
+            const computedDescriptionClass = classSet(
+                'avonni-visual-picker__figure-description'
+            ).add({
+                'slds-truncate slds-p-horizontal_x-small': this.truncateRatio,
+                'slds-p-around_small slds-m-around_none':
+                    descriptionPosition === titlePosition && this.truncateRatio
+            });
+
+            // Avatar management
+            avatarPosition = avatarPosition || 'left';
+            const displayAvatar = avatar && this.isBiggerThanXSmall;
+            const avatarAltText = displayAvatar
+                ? avatar.alternativeText ||
+                  avatar.iconName ||
+                  avatar.initials ||
+                  'avatar'
+                : '';
+            const avatarIsTop = avatarPosition === 'top' && displayAvatar;
+            const avatarIsBottom = avatarPosition === 'bottom' && displayAvatar;
+            const avatarIsCenter =
+                avatar &&
+                (avatarPosition === 'center' ||
+                    !this.isBiggerThanXSmall ||
+                    (!avatarIsBottom && !avatarIsTop && !displayTitle));
+
+            // Image management
+            const displayImgCenter =
+                (this.isBiggerThanXSmall && titleIsTop) ||
+                (!this.isBiggerThanXSmall && !avatarIsCenter);
+            const displayImgTop =
+                this.isBiggerThanXSmall && (titleIsCenter || titleIsBottom);
+
+            return {
+                key,
+                itemTitle,
+                avatar,
+                itemDescription,
+                disabled,
+                value,
+                checked,
+                avatarPosition,
+                avatarIsTop,
+                avatarIsCenter,
+                avatarIsBottom,
+                avatarAltText,
+                displayCheckCoverable,
+                displayCheckNonCoverable,
+                title,
+                titleIsTop,
+                titleIsBottom,
+                titleIsCenter,
+                description,
+                descriptionIsTop,
+                descriptionIsBottom,
+                descriptionIsCenter,
+                displayImgCenter,
+                displayImgTop,
+                displayAvatar,
+                tags,
+                imgAlternativeText,
+                imgSrc,
+                computedSelectedClass,
+                computedDescriptionClass
+            };
         });
-    }
-
-    /**
-     * The size of the items. Valid values include xx-small, x-small, small, medium and large.
-     *
-     * @type {string}
-     * @public
-     * @default medium
-     */
-    @api get size() {
-        return this._size;
-    }
-
-    set size(size) {
-        this._size = normalizeString(size, {
-            fallbackValue: VISUAL_PICKER_SIZES.default,
-            validValues: VISUAL_PICKER_SIZES.valid
-        });
-    }
-
-    /**
-     * The ratio of the items. Valid values include 1-by-1, 4-by-3 and 16-by-9.
-     *
-     * @type {string}
-     * @public
-     * @default 1-by-1
-     */
-    @api get ratio() {
-        return this._ratio;
-    }
-
-    set ratio(ratio) {
-        this._ratio = normalizeString(ratio, {
-            fallbackValue: VISUAL_PICKER_RATIOS.default,
-            validValues: VISUAL_PICKER_RATIOS.valid
-        });
-    }
-
-    /**
-     * If present, at least one item must be selected.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get required() {
-        return this._required;
-    }
-
-    set required(value) {
-        this._required = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the visual picker is disabled.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get disabled() {
-        return this._disabled;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, hide the border and box-shadow on item picker. Still displayed border on hover.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get hideBorder() {
-        return this._hideBorder;
-    }
-
-    set hideBorder(value) {
-        this._hideBorder = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, hide the check mark.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get hideCheckMark() {
-        return this._hideCheckMark;
-    }
-
-    set hideCheckMark(value) {
-        this._hideCheckMark = normalizeBoolean(value);
-    }
-
-    /**
-     * Compute layout styling for items in visual picker.
-     *
-     * @return {object[]} result
-     */
-    get itemList() {
-        let result = [];
-
-        this.items.forEach((item, index) => {
-            let cloneItem = Object.assign({}, item);
-            let iconPosition = cloneItem.figure.iconPosition;
-
-            cloneItem.key = `visual-picker-key-${index}`;
-
-            if (this.disabled) {
-                cloneItem.disabled = true;
-            }
-
-            if (this._variant === 'vertical' && iconPosition !== 'right') {
-                iconPosition = 'left';
-            } else if (
-                this._variant !== 'vertical' &&
-                iconPosition !== 'bottom'
-            ) {
-                iconPosition = 'top';
-            }
-
-            cloneItem.isTop =
-                (iconPosition === 'left' || iconPosition === 'top') &&
-                (cloneItem.figure.iconName || cloneItem.figure.iconSrc);
-
-            cloneItem.isBottom =
-                (iconPosition === 'bottom' || iconPosition === 'right') &&
-                (cloneItem.figure.iconName || cloneItem.figure.iconSrc);
-
-            if (cloneItem.isTop && this._variant === 'vertical') {
-                cloneItem.bodyClass = 'slds-border_left slds-p-around_small';
-            }
-
-            if (cloneItem.isBottom && this._variant === 'vertical') {
-                cloneItem.bodyClass = 'slds-border_right slds-p-around_small';
-            }
-
-            cloneItem.iconClass = classSet('');
-
-            if (
-                (this._size !== 'medium' || this._size !== 'large') &&
-                this._variant !== 'vertical'
-            ) {
-                if (iconPosition === 'top') {
-                    cloneItem.iconClass
-                        .add(`slds-m-bottom_${this._size}`)
-                        .toString();
-                }
-                if (iconPosition === 'bottom') {
-                    cloneItem.iconClass
-                        .add(`slds-m-top_${this._size}`)
-                        .toString();
-                }
-                if (iconPosition === 'right') {
-                    cloneItem.iconClass
-                        .add(`slds-m-left_${this._size}`)
-                        .toString();
-                }
-                if (iconPosition === 'left') {
-                    cloneItem.iconClass
-                        .add(`slds-m-right_${this._size}`)
-                        .toString();
-                }
-            } else {
-                cloneItem.iconClass
-                    .add({
-                        'slds-m-bottom_small': iconPosition === 'top',
-                        'slds-m-top_small': iconPosition === 'bottom',
-                        'slds-m-left_small': iconPosition === 'right',
-                        'slds-m-right_small': iconPosition === 'left'
-                    })
-                    .toString();
-            }
-
-            if (
-                (this._size !== 'medium' || this._size !== 'large') &&
-                (cloneItem.figure.title || cloneItem.figure.description)
-            ) {
-                cloneItem.iconSize = this._size;
-            } else {
-                cloneItem.iconSize = cloneItem.figure.iconSize;
-            }
-
-            result.push(cloneItem);
-        });
-
-        return result;
-    }
-
-    /**
-     * Verify if variant is coverable.
-     *
-     * @type {string}
-     */
-    get isCoverable() {
-        return this._variant === 'coverable';
-    }
-
-    /**
-     * Verify if layout is vertical.
-     *
-     * @type {string}
-     */
-    get isVertical() {
-        return this._variant === 'vertical';
     }
 
     /**
@@ -392,20 +393,9 @@ export default class AvonniVisualPicker extends LightningElement {
      */
     get visualPickerClass() {
         return classSet('slds-visual-picker')
-            .add({
-                'avonni-visual-picker_xx-small':
-                    this._size === 'xx-small' && this._variant !== 'vertical',
-                'avonni-visual-picker_x-small':
-                    this._size === 'x-small' && this._variant !== 'vertical',
-                'avonni-visual-picker_small':
-                    this._size === 'small' && this._variant !== 'vertical',
-                'slds-visual-picker_medium':
-                    this._size === 'medium' && this._variant !== 'vertical',
-                'slds-visual-picker_large':
-                    this._size === 'large' && this._variant !== 'vertical',
-                'slds-visual-picker_vertical': this._variant === 'vertical'
-            })
+            .add(`avonni-visual-picker_${this._size}`)
             .add(`ratio-${this._ratio}`)
+            .add({ 'slds-m-around_none': this.isResponsive })
             .toString();
     }
 
@@ -415,72 +405,227 @@ export default class AvonniVisualPicker extends LightningElement {
      * @type {string}
      */
     get visualPickerTypeClass() {
-        return classSet('slds-visual-picker__figure')
+        return classSet(
+            'slds-visual-picker__figure avonni-visual-picker__figure'
+        )
             .add({
-                'slds-visual-picker__text':
-                    this._variant === 'non-coverable' ||
-                    this._variant === 'vertical',
-                'slds-visual-picker__icon': this._variant === 'coverable',
-                'slds-align_absolute-left': this._variant === 'vertical',
-                'slds-align_absolute-center': this._variant !== 'vertical',
-                'avonni-hide-border': this._hideBorder,
-                'avonni-hide-check-mark': this._hideCheckMark
+                'slds-visual-picker__text': !this.isCoverable,
+                'slds-visual-picker__icon': this.isCoverable,
+                'avonni-hide-check-mark': this._hideCheckMark,
+                'slds-align_absolute-center': !this.isResponsive
             })
             .toString();
     }
 
     /**
-     * Compute element control class styling.
-     *
-     * @type {string}
-     */
-    get elementControlClass() {
-        return classSet('slds-form-element__control')
-            .add({
-                'slds-grid slds-wrap': this._variant !== 'vertical'
-            })
-            .toString();
-    }
-
-    /**
-     * Compute text heading class styling.
-     *
-     * @type {string}
-     */
-    get textHeadingClass() {
-        return classSet()
-            .add({
-                'slds-text-heading_large': this._variant !== 'vertical',
-                'slds-text-heading_medium slds-m-bottom_x-small':
-                    this._variant === 'vertical'
-            })
-            .toString();
-    }
-
-    /**
-     * Compute selected class styling.
-     *
-     * @type {string}
-     */
-    get selectedClass() {
-        return this._variant === 'coverable' ? 'slds-is-selected' : '';
-    }
-
-    /**
-     * Compute NOT selected class styling.
+     * Computed NOT selected class styling.
      *
      * @type {string}
      */
     get notSelectedClass() {
-        return classSet()
+        return classSet('avonni-visual-picker__height')
             .add({
-                'slds-is-not-selected':
-                    this._variant === 'coverable' && !this._hideCheckMark,
-                'avonni-is-not-selected':
-                    this._variant === 'coverable' && this._hideCheckMark,
-                verticalContainer: this._variant === 'vertical'
+                'slds-is-not-selected': this.isCoverable && !this._hideCheckMark
             })
             .toString();
+    }
+
+    /**
+     * Computed check icon container class styling.
+     *
+     * @type {string}
+     */
+    get computedCheckIconContainerClass() {
+        return classSet('slds-icon_container slds-visual-picker__text-check')
+            .add({
+                'avonni-visual-picker__chek-icon': this.isResponsive
+            })
+            .toString();
+    }
+
+    /**
+     * Verify if size is bigger than x-small.
+     *
+     * @type {boolean}
+     */
+    get isBiggerThanXSmall() {
+        return !(this._size === 'x-small' || this._size === 'xx-small');
+    }
+
+    /**
+     * Verify if variant is coverable.
+     *
+     * @type {boolean}
+     */
+    get isCoverable() {
+        return this._variant === 'coverable';
+    }
+
+    /**
+     * Verify if size is responsive.
+     *
+     * @type {boolean}
+     */
+    get isResponsive() {
+        return this._size === 'responsive';
+    }
+
+    /**
+     * Add horizontal padding when size is responsive.
+     *
+     * @type {string}
+     */
+    get responsivePadding() {
+        return this.isResponsive ? 'horizontal-small' : '';
+    }
+
+    /**
+     * Pull boundary small if size is responsive.
+     *
+     * @type {string}
+     */
+    get responsivePullBoundary() {
+        return this.isResponsive ? 'small' : '';
+    }
+
+    /**
+     * Verify if is a truncate description ratio.
+     *
+     * @type {boolean}
+     */
+    get truncateRatio() {
+        return (
+            (this._ratio === '4-by-3' || this._ratio === '16-by-9') &&
+            !this.isResponsive
+        );
+    }
+
+    /**
+     * Get all inputs.
+     *
+     * @type {Element}
+     */
+    get inputs() {
+        return Array.from(
+            this.template.querySelectorAll('[data-element-id="input"]')
+        );
+    }
+
+    /**
+     * Get input.
+     *
+     * @type {Element}
+     */
+    get input() {
+        return this.template.querySelector('[data-element-id="input"]');
+    }
+
+    /**
+     * Removes keyboard focus from the input element.
+     *
+     * @public
+     */
+    @api
+    blur() {
+        this.input.blur();
+    }
+
+    /**
+     * Sets focus on the input element.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        this.input.focus();
+    }
+
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get validity() {
+        return this._constraint.validity;
+    }
+
+    /**
+     * Checks if the input is valid.
+     *
+     * @returns {boolean} Indicates whether the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Displays the error messages and returns false if the input is invalid.
+     * If the input is valid, reportValidity() clears displayed error messages and returns true.
+     *
+     * @returns {boolean} - The validity status of the input fields.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this.helpMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message - The string that describes the error.
+     * If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when checkValidity() is called.
+     *
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /**
+     * Validation with constraint Api.
+     *
+     * @type {object}
+     */
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled && this.required && this.value.length === 0
+            });
+        }
+        return this._constraintApi;
+    }
+
+    /**
+     * Dispatches the blur event.
+     */
+    handleBlur() {
+        this.interactingState.leave();
+    }
+
+    /**
+     * Dispatches the focus event.
+     */
+    handleFocus() {
+        this.interactingState.enter();
     }
 
     /**
@@ -490,26 +635,7 @@ export default class AvonniVisualPicker extends LightningElement {
      */
     handleChange(event) {
         event.stopPropagation();
-
-        if (this._variant === 'coverable' && this._hideCheckMark) {
-            const labels = this.template.querySelectorAll(
-                '[data-element-id="label"]'
-            );
-
-            labels.forEach((label) => {
-                let icon = label.querySelector('lightning-icon');
-                if (label.previousSibling.checked) {
-                    icon.variant = 'inverse';
-                } else {
-                    icon.variant = '';
-                }
-            });
-        }
-
-        const inputs = this.template.querySelectorAll(
-            '[data-element-id="input"]'
-        );
-        const value = Array.from(inputs)
+        const value = this.inputs
             .filter((input) => input.checked)
             .map((input) => input.value);
 

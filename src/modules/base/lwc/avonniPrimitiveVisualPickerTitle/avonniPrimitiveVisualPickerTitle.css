@@ -1,4 +1,3 @@
-<!--
 /**
  * BSD 3-Clause License
  *
@@ -30,50 +29,44 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
--->
 
-<template>
-    <div
-        if:true={showPositionTop}
-        class={progressTitleClassTop}
-        data-element-id="title"
-    >
-        {title}
-    </div>
-    <div class={progressRingClass}>
-        <div
-            class="slds-progress-ring__progress"
-            role="progressbar"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow={value}
-        >
-            <svg viewBox="-1 -1 2 2">
-                <path
-                    fill={color}
-                    d={completeness}
-                    data-element-id="path"
-                ></path>
-            </svg>
-        </div>
-        <div class={progressRingContentClass}>
-            <span
-                if:true={showValue}
-                style={progressValueStyles}
-                data-element-id="span"
-                >{value}%</span
-            >
-            <span
-                if:true={label}
-                class={progressLabelClass}
-                data-element-id="label"
-                >{label}</span
-            >
-        </div>
-        <template if:false={showPositionTop}>
-            <div class={progressTitleClass} data-element-id="title">
-                {title}
-            </div>
-        </template>
-    </div>
-</template>
+.avonni-visual-picker__figure-content_small {
+    width: 8rem;
+}
+
+.avonni-visual-picker__figure-content_medium {
+    width: 12rem;
+}
+
+.avonni-visual-picker__figure-content_large {
+    width: 15rem;
+}
+
+.avonni-visual-picker__figure-content_x-large {
+    width: 18rem;
+}
+
+.avonni-visual-picker__figure-content_xx-large {
+    width: 21rem;
+}
+
+.avonni-visual-picker__figure-content_xx-large {
+    width: 100%;
+}
+
+.avonni-visual-picker__figure-title {
+    color: var(--avonni-visual-picker-title-text-color, #080707);
+    font-style: var(--avonni-visual-picker-title-font-style, normal);
+    font-weight: var(--avonni-visual-picker-title-font-weight, 400);
+    font-size: var(--avonni-visual-picker-title-font-size, 1.5rem);
+    line-height: var(--lwc-lineHeightHeading, 1.25);
+}
+
+.avonni-primitive-visual-picker-title__icon {
+    align-self: center;
+}
+
+.avonni-visual-picker__figure-content_alignement {
+    display: flex;
+    justify-content: var(--avonni-visual-picker-title-alignment, center);
+}

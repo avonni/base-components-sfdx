@@ -66,7 +66,7 @@
                 data-index={index}
                 data-position="0"
                 role={itemRole}
-                tabindex={tabindex}
+                tabindex="0"
                 aria-label={item.label}
                 aria-describedby="instructions"
                 data-element-id="li-main"
@@ -93,11 +93,10 @@
                     >
                         <img
                             key={item.imageSrc}
-                            src={item.imageSrc}
                             class="avonni-list__item-img"
-                            width={imageWidth}
-                            min-width={imageWidth}
-                            height="100%"
+                            alt=""
+                            width={computedImageWidth}
+                            src={item.imageSrc}
                             draggable="false"
                             data-element-id="img"
                         />
@@ -112,12 +111,17 @@
                         "
                     >
                         <!-- Avatar -->
+
                         <c-avonni-avatar
-                            if:true={item.avatarSrc}
+                            if:true={item.avatar}
                             class="slds-m-right_x-small"
-                            fallback-icon-name={item.avatarFallbackIconName}
-                            src={item.avatarSrc}
-                            size="small"
+                            fallback-icon-name={item.avatar.fallbackIconName}
+                            src={item.avatar.src}
+                            size={item.avatar.size}
+                            initials={item.avatar.initials}
+                            variant={item.avatar.variant}
+                            presence={item.presence}
+                            presence-position={item.presencePosition}
                             hide-avatar-details="true"
                             data-element-id="avonni-avatar"
                         ></c-avonni-avatar>
@@ -134,6 +138,7 @@
                                         slds-truncate
                                         avonni-list__item-header_font
                                     "
+                                    data-element-id="div-item-label"
                                 >
                                     <template if:true={item.href}>
                                         <a href={item.href}>{item.label}</a>
@@ -149,10 +154,8 @@
                                     >
                                         <lightning-icon
                                             key={generateKey}
-                                            icon-name={icon.iconName}
-                                            alternative-text={icon.alternativeText}
-                                            title={icon.title}
-                                            size="x-small"
+                                            icon-name={icon}
+                                            size="xx-small"
                                             class="slds-p-left_x-small"
                                         ></lightning-icon>
                                     </template>

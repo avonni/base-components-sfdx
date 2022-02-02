@@ -1584,18 +1584,17 @@ export default class AvonniDualListbox extends LightningElement {
      */
     dispatchChangeEvent(values) {
         /**
-         * The event fired when an item is selected in the dual listbox.
+         * The event fired when one or several options are moved from one box to the other.
          *
          * @event
          * @name change
-         * @param {object} value
+         * @param {string[]} value Array of selected option values.
          * @public
          * @bubbles
          * @composed
          */
         this.dispatchEvent(
             new CustomEvent('change', {
-                // the change event needs to propagate to elements outside of the light-DOM, hence making it composed.
                 composed: true,
                 bubbles: true,
                 detail: { value: values }
@@ -1672,6 +1671,9 @@ export default class AvonniDualListbox extends LightningElement {
             },
             moveOptionsBetweenLists(addToSelect) {
                 that.moveOptionsBetweenLists(addToSelect, true);
+            },
+            dispatchOptionClick(event) {
+                that.dispatchOptionClick(event);
             }
         };
     }
@@ -1749,17 +1751,6 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
-     * Drag Start add "avonni-dual-listbox__option_dragging" class to current SourceList element.
-     *
-     * @param {Event} event
-     */
-    handleDragStartSource(event) {
-        event.currentTarget.classList.add(
-            'avonni-dual-listbox__option_dragging'
-        );
-    }
-
-    /**
      * Drag end event SourceList element handler ( remove "avonni-dual-listbox__option_dragging" ).
      *
      * @param {Event} event
@@ -1785,7 +1776,10 @@ export default class AvonniDualListbox extends LightningElement {
      *
      * @param {Event} event
      */
-    handleDragStartSelected(event) {
+    handleDragStart(event) {
+        if (this.highlightedOptions.length <= 1) {
+            this.handleOptionClick(event);
+        }
         event.currentTarget.classList.add(
             'avonni-dual-listbox__option_dragging'
         );
@@ -1948,5 +1942,37 @@ export default class AvonniDualListbox extends LightningElement {
             .forEach((option, index) => {
                 option.setAttribute('data-index', index);
             });
+    }
+
+    /**
+     * Dispatch the optionclick event.
+     *
+     * @param {Event} event
+     */
+    dispatchOptionClick(event) {
+        if (
+            this.disabled ||
+            (event.key && event.key !== ' ' && event.key !== 'Spacebar')
+        )
+            return;
+
+        const value = event.currentTarget.dataset.value;
+
+        /**
+         * The event fired when an option is clicked.
+         *
+         * @event
+         * @name optionclick
+         * @param {string} value Value of the clicked option.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('optionclick', {
+                detail: {
+                    value
+                },
+                bubbles: true
+            })
+        );
     }
 }

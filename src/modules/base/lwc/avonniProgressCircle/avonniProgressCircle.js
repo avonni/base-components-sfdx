@@ -323,12 +323,7 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get progressTitleClass() {
-        return classSet(
-            'avonni-progress-circle__title slds-text-align_center slds-truncate'
-        )
-            .add(`avonni-progress-circle__title_size-${this._size}`)
-
-            .toString();
+        return `avonni-progress-circle__title slds-text-align_center slds-truncate avonni-progress-circle__title_size-${this._size}`;
     }
 
     /**
@@ -337,11 +332,8 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get progressTitleClassTop() {
-        return classSet(
-            'avonni-progress-circle__title slds-text-align_center avonni-progress-circle__title-top_position slds-truncate'
-        )
-            .add(`avonni-progress-circle__title-top_size_size-${this._size}`)
-            .toString();
+        const titleClass = this.progressTitleClass;
+        return `${titleClass} avonni-progress-circle__title-top_size-${this._size}`;
     }
 
     /**
@@ -350,11 +342,7 @@ export default class AvonniProgressCircle extends LightningElement {
      * @type {string}
      */
     get progressLabelClass() {
-        return classSet(
-            'avonni-progress-circle__label slds-text-align_center avonni-progress-circle__label_size slds-truncate'
-        )
-            .add(`avonni-progress-circle__label_size-${this._size}`)
-            .toString();
+        return `avonni-progress-circle__label slds-text-align_center avonni-progress-circle__label_size slds-truncate avonni-progress-circle__label_size-${this._size}`;
     }
 
     /**
@@ -396,15 +384,11 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     /**
-     * Verify if showing title at bottom position.
+     * True if the title is on the top of the progress circle.
      *
-     * @type {string}
+     * @type {boolean}
      */
-    get showPositionBottom() {
-        return this._titlePosition === 'bottom' && this.title;
-    }
-
     get showPositionTop() {
-        return this._titlePosition === 'top' && this.title;
+        return this.titlePosition === 'top' && this.title;
     }
 }

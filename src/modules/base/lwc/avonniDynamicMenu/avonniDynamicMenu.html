@@ -49,13 +49,20 @@
         onmousedown={handleButtonMouseDown}
     >
         <c-avonni-primitive-icon
-            if:true={iconName}
+            if:true={iconIsLeft}
             icon-name={iconName}
             svg-class="slds-button__icon slds-button__icon_left"
             variant="bare"
             data-element-id="avonni-primitive-icon"
         ></c-avonni-primitive-icon>
-        {label}
+        <span>{label}</span>
+        <c-avonni-primitive-icon
+            if:true={iconIsRight}
+            icon-name={iconName}
+            svg-class="slds-button__icon slds-button__icon_right"
+            variant="bare"
+            data-element-id="avonni-primitive-icon"
+        ></c-avonni-primitive-icon>
     </button>
 
     <lightning-button-icon
@@ -87,6 +94,7 @@
             onscroll={handleDropdownScroll}
             onblur={handleBlur}
             tabindex="0"
+            data-element-id="dropdown"
         >
             <template if:true={isLoading}>
                 <lightning-spinner
@@ -97,7 +105,7 @@
             </template>
             <template if:false={isLoading}>
                 <div class="slds-dropdown__list" role="menu">
-                    <template if:true={withSearch}>
+                    <template if:true={allowSearch}>
                         <div onkeyup={handleKeyUp}>
                             <lightning-input
                                 name="enter-search"
@@ -112,52 +120,76 @@
                             ></lightning-input>
                         </div>
                     </template>
-                    <div class="slds-popover__body slds-p-horizontal_none">
+                    <div class="slds-popover__body slds-p-around_none">
                         <slot></slot>
                         <div
                             if:true={showItems}
-                            class="
-                                slds-p-vertical_x-small
-                                slds-listbox slds-listbox_vertical
-                                slds-dropdown_length-5
-                            "
+                            class="slds-listbox slds-listbox_vertical"
                         >
                             <template
-                                for:each={filteredItems}
+                                for:each={computedListItems}
                                 for:item="item"
-                                for:index="index"
                             >
                                 <div
-                                    class="slds-listbox__item"
+                                    class="slds-listbox__option"
                                     key={item.key}
-                                    id={index}
+                                    data-value={item.value}
                                     onclick={handleClick}
+                                    data-element-id="item"
+                                    aria-selected={item.selected}
                                 >
-                                    <div
-                                        class="
-                                            slds-media slds-media_center
-                                            slds-listbox__option
-                                            slds-listbox__option_entity
-                                        "
-                                        role="option"
-                                    >
-                                        <lightning-icon
-                                            if:true={item.avatar}
-                                            icon-name={item.avatar.fallbackIconName}
-                                            size="small"
-                                            class="slds-media__figure"
-                                            alternative-text={item.avatar.alternativeText}
-                                            variant={variantInverse}
-                                        ></lightning-icon>
-                                        <span class="slds-media__body">
-                                            <span
+                                    <div class={item.computedItemClass}>
+                                        <div
+                                            class="
+                                                slds-media__figure
+                                                slds-listbox__option-icon
+                                                avonni-dynamic-menu__check-mark_color
+                                            "
+                                        >
+                                            <template if:false={hideCheckMark}>
+                                                <lightning-icon
+                                                    if:true={item.selected}
+                                                    class="
+                                                        slds-icon-utility-check
+                                                        slds-current-color
+                                                        slds-icon_container
+                                                    "
+                                                    icon-name="utility:check"
+                                                    size="x-small"
+                                                    aria-hidden="true"
+                                                    data-element-id="check-mark"
+                                                ></lightning-icon>
+                                            </template>
+                                            <template if:true={hideCheckMark}>
+                                                <lightning-icon
+                                                    if:true={item.avatar.fallbackIconName}
+                                                    icon-name={item.avatar.fallbackIconName}
+                                                    size="small"
+                                                    alternative-text={item.avatar.alternativeText}
+                                                    variant={variantInverse}
+                                                ></lightning-icon>
+                                            </template>
+                                        </div>
+                                        <template if:true={item.avatar}>
+                                            <div
+                                                if:false={hideCheckMark}
                                                 class="
-                                                    slds-listbox__option-text
-                                                    slds-listbox__option-text_entity
+                                                    slds-media__figure
+                                                    slds-listbox__option-icon
                                                 "
                                             >
-                                                {item.label}
-                                            </span>
+                                                <lightning-icon
+                                                    icon-name={item.avatar.fallbackIconName}
+                                                    size="small"
+                                                    alternative-text={item.avatar.alternativeText}
+                                                    variant={variantInverse}
+                                                ></lightning-icon>
+                                            </div>
+                                        </template>
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate"
+                                                >{item.label}</span
+                                            >
                                             <span
                                                 if:true={item.metaJoin}
                                                 class="

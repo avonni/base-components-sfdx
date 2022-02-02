@@ -205,7 +205,7 @@ export default class AvonniColorPicker extends LightningElement {
     newValue;
     showError = false;
 
-    _inputValue;
+    _inputValue = '';
     _rendered = false;
 
     connectedCallback() {
@@ -301,7 +301,7 @@ export default class AvonniColorPicker extends LightningElement {
             if (this.isConnected) this.computeToken();
         } else {
             this._value = null;
-            this._inputValue = null;
+            this._inputValue = '';
             this.currentToken = {};
         }
         this.initSwatchColor();
@@ -612,7 +612,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     set inputValue(val) {
-        this._inputValue = val;
+        this._inputValue = val || '';
     }
 
     /**
@@ -960,7 +960,7 @@ export default class AvonniColorPicker extends LightningElement {
     clearInput() {
         // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.value = undefined;
-        this.inputValue = null;
+        this.inputValue = '';
         this.currentToken = {};
         this._draftToken = {};
         this.focus();
@@ -1222,6 +1222,7 @@ export default class AvonniColorPicker extends LightningElement {
     handleInputColor(event) {
         let color = event.target.value;
         this.inputValue = color;
+
         if (
             colorType(color) === 'hex' ||
             (colorType(color) === 'hexa' && this.opacity)
@@ -1236,6 +1237,8 @@ export default class AvonniColorPicker extends LightningElement {
                 this.colorGradient.renderValue(color);
             }
             this.dispatchChange(generateColors(color));
+        } else if (color === '') {
+            this.clearInput();
         }
         event.stopPropagation();
     }

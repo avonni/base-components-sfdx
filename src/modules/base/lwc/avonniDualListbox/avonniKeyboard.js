@@ -146,6 +146,10 @@ export function handleKeyDownOnOption(event, keyboardInterface) {
                 preventDefaultAndStopPropagation(event);
                 selectNextOption(event.target, false, keyboardInterface);
                 break;
+            case keyCodes.space:
+                preventDefaultAndStopPropagation(event);
+                keyboardInterface.dispatchOptionClick(event);
+                break;
             default:
             // do nothing
         }

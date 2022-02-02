@@ -50,7 +50,7 @@
     </template>
     <template if:true={noGroupBy}>
         <ul class="slds-timeline">
-            <template for:each={ungroupedItems} for:item="item">
+            <template for:each={sortedItems} for:item="item">
                 <li key={item.name}>
                     <c-avonni-primitive-activity-timeline-item
                         title={item.title}

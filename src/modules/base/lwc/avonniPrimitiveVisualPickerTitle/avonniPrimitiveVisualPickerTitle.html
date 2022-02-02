@@ -33,47 +33,39 @@
 -->
 
 <template>
-    <div
-        if:true={showPositionTop}
-        class={progressTitleClassTop}
-        data-element-id="title"
-    >
-        {title}
-    </div>
-    <div class={progressRingClass}>
-        <div
-            class="slds-progress-ring__progress"
-            role="progressbar"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow={value}
-        >
-            <svg viewBox="-1 -1 2 2">
-                <path
-                    fill={color}
-                    d={completeness}
-                    data-element-id="path"
-                ></path>
-            </svg>
-        </div>
-        <div class={progressRingContentClass}>
-            <span
-                if:true={showValue}
-                style={progressValueStyles}
-                data-element-id="span"
-                >{value}%</span
-            >
-            <span
-                if:true={label}
-                class={progressLabelClass}
-                data-element-id="label"
-                >{label}</span
-            >
-        </div>
-        <template if:false={showPositionTop}>
-            <div class={progressTitleClass} data-element-id="title">
-                {title}
-            </div>
-        </template>
+    <div class={computedContainerClass}>
+        <c-avonni-primitive-avatar
+            alternative-text={alternativeText}
+            fallback-icon-name={avatar.iconName}
+            initials={avatar.initials}
+            presence={avatar.presence}
+            presence-position={avatar.presencePosition}
+            size={avatar.size}
+            src={avatar.imgSrc}
+            variant={avatar.variant}
+            class="
+                slds-m-right_x-small
+                avonni-primitive-visual-picker-title__icon
+            "
+            if:true={avatarIsLeft}
+        ></c-avonni-primitive-avatar>
+        <span class="avonni-visual-picker__figure-title slds-truncate">
+            {title}
+        </span>
+        <c-avonni-primitive-avatar
+            alternative-text={alternativeText}
+            fallback-icon-name={avatar.iconName}
+            initials={avatar.initials}
+            presence={avatar.presence}
+            presence-position={avatar.presencePosition}
+            size={avatar.size}
+            src={avatar.imgSrc}
+            variant={avatar.variant}
+            class="
+                slds-m-left_x-small
+                avonni-primitive-visual-picker-title__icon
+            "
+            if:true={avatarIsRight}
+        ></c-avonni-primitive-avatar>
     </div>
 </template>

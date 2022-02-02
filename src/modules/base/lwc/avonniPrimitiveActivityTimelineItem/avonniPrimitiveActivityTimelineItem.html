@@ -64,10 +64,16 @@
             </div>
             <div class="slds-media__body">
                 <div
-                    class="slds-grid slds-grid_align-spread slds-timeline__trigger"
+                    class="
+                        slds-grid slds-grid_align-spread
+                        slds-timeline__trigger
+                    "
                 >
                     <div
-                        class="slds-grid slds-grid_vertical-align-center slds-truncate slds-no-space"
+                        class="
+                            slds-grid slds-grid_vertical-align-center
+                            slds-truncate slds-no-space
+                        "
                     >
                         <template if:true={hasCheckbox}>
                             <lightning-input
@@ -89,23 +95,22 @@
                         </template>
                         <div if:true={icons} class="slds-no-flex">
                             <template for:each={icons} for:item="icon">
-                                <lightning-button-icon
+                                <lightning-icon
                                     key={icon}
                                     icon-name={icon}
-                                    variant="bare"
-                                    size="small"
+                                    size="xx-small"
                                     class="slds-p-left_x-small"
-                                    value={icon}
-                                    onclick={handleActionClick}
-                                ></lightning-button-icon>
+                                ></lightning-icon>
                             </template>
                         </div>
                     </div>
                     <div
-                        class="slds-timeline__actions slds-timeline__actions_inline"
+                        class="
+                            slds-timeline__actions slds-timeline__actions_inline
+                        "
                     >
                         <lightning-formatted-date-time
-                            value={datetimeValue}
+                            value={computedDatetimeValue}
                             class="slds-timeline__date"
                             day="2-digit"
                             month="long"
@@ -145,7 +150,12 @@
                 <template if:false={closed}>
                     <template if:true={hasError}>
                         <div
-                            class="slds-grid slds-text-color_error slds-m-top_x-small slds-m-horizontal_xx-small"
+                            class="
+                                slds-grid
+                                slds-text-color_error
+                                slds-m-top_x-small
+                                slds-m-horizontal_xx-small
+                            "
                             id="task-item-error"
                         >
                             <lightning-icon
@@ -162,7 +172,13 @@
                         <template if:true={hasFields}>
                             <div
                                 aria-hidden="false"
-                                class="slds-box slds-theme_shade slds-m-top_x-small slds-m-horizontal_xx-small slds-p-around_medium"
+                                class="
+                                    slds-box
+                                    slds-theme_shade
+                                    slds-m-top_x-small
+                                    slds-m-horizontal_xx-small
+                                    slds-p-around_medium
+                                "
                             >
                                 <lightning-layout
                                     horizontal-align="spread"
@@ -174,7 +190,10 @@
                                         for:index="index"
                                     >
                                         <lightning-layout-item
-                                            class="slds-truncate slds-m-around_small"
+                                            class="
+                                                slds-truncate
+                                                slds-m-around_small
+                                            "
                                             key={field.value}
                                         >
                                             <c-avonni-output-data

@@ -104,8 +104,6 @@ export default class AvonniList extends LightningElement {
     computedActions = [];
     computedItems = [];
     _hasImages;
-    menuRole;
-    itemRole;
 
     /**
      * Position of the item divider. Valid valus include top, bottom and around.
@@ -140,18 +138,6 @@ export default class AvonniList extends LightningElement {
             validValues: IMAGE_WIDTH.valid,
             defaultValue: IMAGE_WIDTH.default
         });
-
-        switch (this._imageWidth) {
-            case 'small':
-                this._imageWidth = '48';
-                break;
-            case 'medium':
-                this._imageWidth = '72';
-                break;
-            default:
-                this._imageWidth = '128';
-                break;
-        }
     }
 
     /**
@@ -186,11 +172,6 @@ export default class AvonniList extends LightningElement {
     }
     set sortable(bool) {
         this._sortable = normalizeBoolean(bool);
-
-        if (this._sortable) {
-            this.menuRole = 'listbox';
-            this.itemRole = 'option';
-        }
     }
 
     /**
@@ -234,9 +215,26 @@ export default class AvonniList extends LightningElement {
      */
     get computedImageContainerStyle() {
         return `
-        width : ${this._imageWidth}px;
-        min-width : ${this._imageWidth}px;
+            width : ${this.computedImageWidth}px;
+            min-width : ${this.computedImageWidth}px;
         `;
+    }
+
+    /**
+    * Computed image width in pixels.
+    *
+    * @type {number}
+    * @default 128
+    */
+    get computedImageWidth() {
+        switch (this.imageWidth) {
+            case 'small':
+                return 48;
+            case 'medium':
+                return 72;
+            default:
+                return 128;
+        }
     }
 
     /**
@@ -259,6 +257,24 @@ export default class AvonniList extends LightningElement {
      */
     get hasMultipleActions() {
         return this._actions.length > 1;
+    }
+
+    /**
+     * ARIA role of the items, if the list is sortable.
+     *
+     * @type {string|undefined}
+     */
+    get itemRole() {
+        return this.sortable ? 'option' : undefined;
+    }
+
+    /**
+     * ARIA role of the menu, if the list is sortable.
+     *
+     * @type {string|undefined}
+     */
+    get menuRole() {
+        return this.sortable ? 'listbox' : undefined;
     }
 
     /**
@@ -342,15 +358,6 @@ export default class AvonniList extends LightningElement {
                 'avonni-list__item-divider_around': this._divider === 'around'
             })
             .toString();
-    }
-
-    /**
-     * Get current tab index based on if list is sortable.
-     *
-     * @type {boolean}
-     */
-    get tabindex() {
-        return this.sortable ? '0' : '-1';
     }
 
     /**
@@ -608,21 +615,24 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-     * Handler for keyboard access controls to sortable list.
+     * Handle a key pressed on an item.
      *
      * @param {Event} event
      */
     handleKeyDown(event) {
-        if (!this.sortable) return;
-
         // If space bar is pressed, select or drop the item
-        if (event.key === ' ' || event.key === 'Spacebar') {
+        if (event.key === 'Enter') {
+            this.handleItemClick(event);
+        } else if (
+            (this.sortable && event.key === ' ') ||
+            event.key === 'Spacebar'
+        ) {
             if (this._draggedElement) {
                 this.dragEnd();
             } else {
                 this.dragStart(event);
             }
-        } else if (this._draggedElement) {
+        } else if (this.sortable && this._draggedElement) {
             // If escape is pressed, cancel the move
             if (event.key === 'Escape' || event.key === 'Esc') {
                 this.computedItems = [...this._savedComputedItems];

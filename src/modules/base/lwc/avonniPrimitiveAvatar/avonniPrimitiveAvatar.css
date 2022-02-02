@@ -38,7 +38,7 @@
     border-style: var(--avonni-avatar-styling-border, solid);
     border-color: var(--avonni-avatar-color-border, transparent);
     border-width: var(--avonni-avatar-sizing-border, 0);
-    border-radius: var(--avonni-avatar-sizing-border-radius, 0.25rem);
+    --sds-c-avatar-radius-border: var(--avonni-avatar-sizing-border-radius);
 }
 /* If the avatar is in a group, the cursor changes for a pointer */
 :host(.avonni-avatar-group__avatar) .slds-avatar,
