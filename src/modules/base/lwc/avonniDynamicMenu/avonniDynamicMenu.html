@@ -104,7 +104,7 @@
                 ></lightning-spinner>
             </template>
             <template if:false={isLoading}>
-                <div class="slds-dropdown__list" role="menu">
+                <div class="slds-dropdown__list" role="menu" style={listHeight}>
                     <template if:true={allowSearch}>
                         <div onkeyup={handleKeyUp}>
                             <lightning-input
@@ -145,6 +145,7 @@
                                                 slds-listbox__option-icon
                                                 avonni-dynamic-menu__check-mark_color
                                             "
+                                            if:true={item.displayFigure}
                                         >
                                             <template if:false={hideCheckMark}>
                                                 <lightning-icon
@@ -161,13 +162,15 @@
                                                 ></lightning-icon>
                                             </template>
                                             <template if:true={hideCheckMark}>
-                                                <lightning-icon
-                                                    if:true={item.avatar.fallbackIconName}
-                                                    icon-name={item.avatar.fallbackIconName}
-                                                    size="small"
-                                                    alternative-text={item.avatar.alternativeText}
-                                                    variant={variantInverse}
-                                                ></lightning-icon>
+                                                <template if:true={item.avatar}>
+                                                    <lightning-icon
+                                                        if:true={item.avatar.fallbackIconName}
+                                                        icon-name={item.avatar.fallbackIconName}
+                                                        size="small"
+                                                        alternative-text={item.avatar.alternativeText}
+                                                        variant={variantInverse}
+                                                    ></lightning-icon>
+                                                </template>
                                             </template>
                                         </div>
                                         <template if:true={item.avatar}>

@@ -36,20 +36,9 @@ import {
     normalizeBoolean,
     normalizeString,
     observePosition,
-    normalizeArray
+    normalizeArray,
+    getListHeight
 } from 'c/utilsPrivate';
-
-const MENU_ALIGNMENTS = {
-    valid: [
-        'left',
-        'center',
-        'right',
-        'bottom-left',
-        'bottom-center',
-        'bottom-right'
-    ],
-    default: 'left'
-};
 
 const BUTTON_SIZES = {
     valid: ['auto', 'stretch'],
@@ -78,6 +67,23 @@ const ICON_SIZES = {
 const ICON_POSITIONS = {
     valid: ['left', 'right'],
     default: 'left'
+};
+
+const MENU_ALIGNMENTS = {
+    valid: [
+        'left',
+        'center',
+        'right',
+        'bottom-left',
+        'bottom-center',
+        'bottom-right'
+    ],
+    default: 'left'
+};
+
+const MENU_LENGTHS = {
+    valid: ['5-items', '7-items', '10-items'],
+    default: '7-items'
 };
 
 const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search…';
@@ -155,12 +161,14 @@ export default class AvonniDynamicMenu extends LightningElement {
     _isLoading;
     _items = [];
     _menuAlignment = MENU_ALIGNMENTS.default;
+    _menuLength = MENU_LENGTHS.default;
     _value;
     _variant = BUTTON_VARIANTS.default;
 
     queryTerm;
     showFooter = true;
     filteredItems = [];
+    listHeight;
 
     _dropdownOpened = false;
     _dropdownVisible = false;
@@ -194,6 +202,9 @@ export default class AvonniDynamicMenu extends LightningElement {
         if (this.footerSlot) {
             this.showFooter = this.footerSlot.assignedElements().length !== 0;
         }
+        if (this._dropdownOpened) {
+            this.calculateListHeight();
+        }
     }
 
     disconnectedCallback() {
@@ -209,6 +220,15 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     get footerSlot() {
         return this.template.querySelector('slot[name=footer]');
+    }
+
+    /**
+     * Slot DOM element
+     *
+     * @type {HTMLElement}
+     */
+    get slot() {
+        return this.template.querySelector('slot');
     }
 
     /**
@@ -374,6 +394,25 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
+     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items.
+     *
+     * @type {string}
+     * @default 7-items
+     * @public
+     */
+    @api
+    get menuLength() {
+        return this._menuLength;
+    }
+
+    set menuLength(value) {
+        this._menuLength = normalizeString(value, {
+            fallbackValue: MENU_LENGTHS.default,
+            validValues: MENU_LENGTHS.valid
+        });
+    }
+
+    /**
      * If present, a nubbin is present on the menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment.
      *
      * @public
@@ -433,6 +472,7 @@ export default class AvonniDynamicMenu extends LightningElement {
             const key = `item-key-${index}`;
             const metaJoin = meta ? meta.join(' • ') : null;
             const selected = this.value === value;
+            const displayFigure = avatar || !this.hideCheckMark;
             const computedItemClass = classSet(
                 'slds-listbox__option slds-media slds-media_center slds-listbox__option_plain avonni-dynamic-menu__item_color-background'
             ).add({
@@ -445,7 +485,8 @@ export default class AvonniDynamicMenu extends LightningElement {
                 metaJoin,
                 selected,
                 value,
-                computedItemClass
+                computedItemClass,
+                displayFigure
             };
         });
     }
@@ -489,26 +530,26 @@ export default class AvonniDynamicMenu extends LightningElement {
         )
             .add({
                 'slds-dropdown_left':
-                    this.menuAlignment === 'left' || this.isAutoAlignment(),
-                'slds-dropdown_center': this.menuAlignment === 'center',
-                'slds-dropdown_right': this.menuAlignment === 'right',
-                'slds-dropdown_bottom': this.menuAlignment === 'bottom-center',
+                    this._menuAlignment === 'left' || this.isAutoAlignment(),
+                'slds-dropdown_center': this._menuAlignment === 'center',
+                'slds-dropdown_right': this._menuAlignment === 'right',
+                'slds-dropdown_bottom': this._menuAlignment === 'bottom-center',
                 'slds-dropdown_bottom slds-dropdown_right slds-dropdown_bottom-right':
-                    this.menuAlignment === 'bottom-right',
+                    this._menuAlignment === 'bottom-right',
                 'slds-dropdown_bottom slds-dropdown_left slds-dropdown_bottom-left':
-                    this.menuAlignment === 'bottom-left',
+                    this._menuAlignment === 'bottom-left',
                 'slds-nubbin_top-left':
-                    this.menuAlignment === 'left' && this.nubbin,
+                    this._menuAlignment === 'left' && this._nubbin,
                 'slds-nubbin_top-right':
-                    this.menuAlignment === 'right' && this.nubbin,
+                    this._menuAlignment === 'right' && this._nubbin,
                 'slds-nubbin_top':
-                    this.menuAlignment === 'center' && this.nubbin,
+                    this._menuAlignment === 'center' && this._nubbin,
                 'slds-nubbin_bottom-left':
-                    this.menuAlignment === 'bottom-left' && this.nubbin,
+                    this._menuAlignment === 'bottom-left' && this._nubbin,
                 'slds-nubbin_bottom-right':
-                    this.menuAlignment === 'bottom-right' && this.nubbin,
+                    this._menuAlignment === 'bottom-right' && this._nubbin,
                 'slds-nubbin_bottom':
-                    this.menuAlignment === 'bottom-center' && this.nubbin,
+                    this._menuAlignment === 'bottom-center' && this._nubbin,
                 'slds-p-vertical_large': this.isLoading
             })
             .toString();
@@ -548,6 +589,46 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     get computedAriaExpanded() {
         return String(this._dropdownVisible);
+    }
+
+    /**
+     * Returns the dropdown length in number.
+     *
+     * @type {number}
+     */
+    get dropdownLength() {
+        if (this._menuLength === '5-items') {
+            return 5;
+        } else if (this._menuLength === '10-items') {
+            return 10;
+        }
+        return 7;
+    }
+
+    /**
+     * Return the list height.
+     *
+     * @type {string}
+     */
+    calculateListHeight() {
+        let height = 0;
+        const items = this.template.querySelectorAll(
+            '[data-element-id="item"]'
+        );
+
+        if (items) {
+            height += getListHeight(items, this.dropdownLength);
+        }
+        if (this.slot) {
+            height += getListHeight(this.slot.assignedElements());
+        }
+        if (this.footerSlot) {
+            height += getListHeight(this.footerSlot.assignedElements()) + 18;
+        }
+        if (this._allowSearch) {
+            height += 42;
+        }
+        this.listHeight = `max-height: ${height}px; overflow-y: auto;`;
     }
 
     /**
