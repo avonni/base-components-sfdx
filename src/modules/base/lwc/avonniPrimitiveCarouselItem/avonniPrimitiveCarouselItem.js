@@ -250,7 +250,7 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
      *
      * @param {event}
      */
-    handleItemClicked() {
+    handleItemClick() {
         const { title, description, src, href, actions, imageAssistiveText } =
             this;
         /**

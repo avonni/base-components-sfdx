@@ -135,6 +135,8 @@
                                     key={item.key}
                                     data-value={item.value}
                                     onclick={handleClick}
+                                    onmouseenter={handleOptionMouseEnter}
+                                    onmouseleave={handleOptionMouseLeave}
                                     data-element-id="item"
                                     aria-selected={item.selected}
                                 >
@@ -189,11 +191,11 @@
                                                 ></lightning-icon>
                                             </div>
                                         </template>
-                                        <span class="slds-media__body">
-                                            <span class="slds-truncate"
-                                                >{item.label}</span
-                                            >
-                                            <span
+                                        <div class="slds-media__body">
+                                            <div class="slds-truncate">
+                                                {item.label}
+                                            </div>
+                                            <div
                                                 if:true={item.metaJoin}
                                                 class="
                                                     slds-listbox__option-meta
@@ -201,8 +203,38 @@
                                                 "
                                             >
                                                 {item.metaJoin}
-                                            </span>
-                                        </span>
+                                            </div>
+                                        </div>
+                                        <template if:true={item.actions}>
+                                            <div
+                                                class="
+                                                    slds-media__figure
+                                                    slds-media__figure_reverse
+                                                    avonni-dynamic-menu__actions-icon
+                                                "
+                                                if:true={item.actions}
+                                            >
+                                                <template
+                                                    for:each={item.actions}
+                                                    for:item="action"
+                                                >
+                                                    <lightning-button-icon
+                                                        key={action.name}
+                                                        icon-name={action.iconName}
+                                                        variant="container"
+                                                        disabled={action.disabled}
+                                                        alternative-text={action.alternativeText}
+                                                        data-element-id="action"
+                                                        name={action.name}
+                                                        size="x-small"
+                                                        class="
+                                                            slds-m-left_xx-small
+                                                        "
+                                                        onclick={handleActionClick}
+                                                    ></lightning-button-icon>
+                                                </template>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
                             </template>

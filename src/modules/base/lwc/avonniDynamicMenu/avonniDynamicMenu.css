@@ -231,3 +231,11 @@ div:focus {
         transparent
     );
 }
+
+.avonni-dynamic-menu__display_action .avonni-dynamic-menu__actions-icon {
+    display: inline;
+}
+
+.avonni-dynamic-menu__actions-icon {
+    display: none;
+}

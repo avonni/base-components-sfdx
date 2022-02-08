@@ -496,7 +496,7 @@ export default class AvonniCarousel extends LightningElement {
      *
      * @param {event}
      */
-    handleItemClicked(event) {
+    handleItemClick(event) {
         /**
          * The event fired when an item is clicked.
          *
@@ -519,7 +519,7 @@ export default class AvonniCarousel extends LightningElement {
      *
      * @param {event}
      */
-    handleActionClicked(event) {
+    handleActionClick(event) {
         /**
          * The event fired when a user clicks on an action.
          *

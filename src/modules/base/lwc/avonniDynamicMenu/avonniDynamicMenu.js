@@ -168,7 +168,9 @@ export default class AvonniDynamicMenu extends LightningElement {
     queryTerm;
     showFooter = true;
     filteredItems = [];
+    hoverItem;
     listHeight;
+    displayActionIcons = false;
 
     _dropdownOpened = false;
     _dropdownVisible = false;
@@ -468,7 +470,7 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     get computedListItems() {
         return this.filteredItems.map((item, index) => {
-            let { avatar, label, meta, value } = item;
+            let { actions, avatar, label, meta, value } = item;
             const key = `item-key-${index}`;
             const metaJoin = meta ? meta.join(' • ') : null;
             const selected = this.value === value;
@@ -479,6 +481,7 @@ export default class AvonniDynamicMenu extends LightningElement {
                 'slds-is-selected': selected
             });
             return {
+                actions,
                 avatar,
                 key,
                 label,
@@ -891,5 +894,50 @@ export default class AvonniDynamicMenu extends LightningElement {
         if (!event.target.value) {
             this.filteredItems = this.items;
         }
+    }
+
+    /**
+     * Mouse Enter handler. Adds display action class.
+     *
+     * @param {Event} event
+     */
+    handleOptionMouseEnter(event) {
+        event.currentTarget.classList.add(
+            'avonni-dynamic-menu__display_action'
+        );
+    }
+
+    /**
+     * Mouse Enter handler. Removes display action class.
+     *
+     * @param {Event} event
+     */
+    handleOptionMouseLeave(event) {
+        event.currentTarget.classList.remove(
+            'avonni-dynamic-menu__display_action'
+        );
+    }
+
+    /**
+     * Action clicked event handler.
+     *
+     * @param {event}
+     */
+    handleActionClick(event) {
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @param {string} name Name of the action clicked.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('actionclick', {
+                detail: {
+                    name: event.currentTarget.name
+                }
+            })
+        );
     }
 }
