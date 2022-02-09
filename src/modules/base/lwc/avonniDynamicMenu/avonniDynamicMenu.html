@@ -134,7 +134,7 @@
                                     class="slds-listbox__option"
                                     key={item.key}
                                     data-value={item.value}
-                                    onclick={handleClick}
+                                    onclick={handleItemClick}
                                     onmouseenter={handleOptionMouseEnter}
                                     onmouseleave={handleOptionMouseLeave}
                                     data-element-id="item"
@@ -221,16 +221,15 @@
                                                     <lightning-button-icon
                                                         key={action.name}
                                                         icon-name={action.iconName}
-                                                        variant="container"
+                                                        variant="bare"
                                                         disabled={action.disabled}
                                                         alternative-text={action.alternativeText}
                                                         data-element-id="action"
                                                         name={action.name}
-                                                        size="x-small"
+                                                        size="small"
                                                         class="
                                                             slds-m-left_xx-small
                                                         "
-                                                        onclick={handleActionClick}
                                                     ></lightning-button-icon>
                                                 </template>
                                             </div>

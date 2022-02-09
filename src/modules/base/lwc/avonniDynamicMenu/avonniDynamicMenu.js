@@ -861,26 +861,45 @@ export default class AvonniDynamicMenu extends LightningElement {
      *
      * @param {Event} event
      */
-    handleClick(event) {
-        let value = event.currentTarget.getAttribute('data-value');
-        this._value = value;
-        /**
-         * Select event.
-         *
-         * @event
-         * @name select
-         * @param {string} value The value of the selected item.
-         * @cancelable
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('select', {
-                cancelable: true,
-                detail: {
-                    value
-                }
-            })
-        );
+    handleItemClick(event) {
+        let target = event.target.getAttribute('data-element-id');
+        if (target === 'action') {
+            /**
+             * The event fired when a user clicks on an action.
+             *
+             * @event
+             * @name actionclick
+             * @param {string} name Name of the action clicked.
+             * @public
+             */
+            this.dispatchEvent(
+                new CustomEvent('actionclick', {
+                    detail: {
+                        name: event.currentTarget.name
+                    }
+                })
+            );
+        } else {
+            let value = event.currentTarget.getAttribute('data-value');
+            this._value = value;
+            /**
+             * Select event.
+             *
+             * @event
+             * @name select
+             * @param {string} value The value of the selected item.
+             * @cancelable
+             * @public
+             */
+            this.dispatchEvent(
+                new CustomEvent('select', {
+                    cancelable: true,
+                    detail: {
+                        value
+                    }
+                })
+            );
+        }
 
         this.toggleMenuVisibility();
     }
@@ -915,29 +934,6 @@ export default class AvonniDynamicMenu extends LightningElement {
     handleOptionMouseLeave(event) {
         event.currentTarget.classList.remove(
             'avonni-dynamic-menu__display_action'
-        );
-    }
-
-    /**
-     * Action clicked event handler.
-     *
-     * @param {event}
-     */
-    handleActionClick(event) {
-        /**
-         * The event fired when a user clicks on an action.
-         *
-         * @event
-         * @name actionclick
-         * @param {string} name Name of the action clicked.
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('actionclick', {
-                detail: {
-                    name: event.currentTarget.name
-                }
-            })
         );
     }
 }
