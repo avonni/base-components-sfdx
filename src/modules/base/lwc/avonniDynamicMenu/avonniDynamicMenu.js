@@ -86,6 +86,11 @@ const MENU_LENGTHS = {
     default: '7-items'
 };
 
+const MENU_WIDTHS = {
+    valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
+    default: 'small'
+};
+
 const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search…';
 
 /**
@@ -162,6 +167,7 @@ export default class AvonniDynamicMenu extends LightningElement {
     _items = [];
     _menuAlignment = MENU_ALIGNMENTS.default;
     _menuLength = MENU_LENGTHS.default;
+    _menuWidth = MENU_WIDTHS.default;
     _value;
     _variant = BUTTON_VARIANTS.default;
 
@@ -396,7 +402,7 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
-     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items.
+     * Maximum length of the menu. Valid values include 5-items, 7-items and 10-items.
      *
      * @type {string}
      * @default 7-items
@@ -411,6 +417,25 @@ export default class AvonniDynamicMenu extends LightningElement {
         this._menuLength = normalizeString(value, {
             fallbackValue: MENU_LENGTHS.default,
             validValues: MENU_LENGTHS.valid
+        });
+    }
+
+    /**
+     * Minimum width of the menu. Valid values include xx-small, x-small, small, medium and large.
+     *
+     * @type {string}
+     * @default small
+     * @public
+     */
+    @api
+    get menuWidth() {
+        return this._menuWidth;
+    }
+
+    set menuWidth(value) {
+        this._menuWidth = normalizeString(value, {
+            fallbackValue: MENU_WIDTHS.default,
+            validValues: MENU_WIDTHS.valid
         });
     }
 
@@ -555,6 +580,7 @@ export default class AvonniDynamicMenu extends LightningElement {
                     this._menuAlignment === 'bottom-center' && this._nubbin,
                 'slds-p-vertical_large': this.isLoading
             })
+            .add(`slds-dropdown_${this._menuWidth}`)
             .toString();
     }
 
@@ -595,41 +621,25 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
-     * Returns the dropdown length in number.
-     *
-     * @type {number}
-     */
-    get dropdownLength() {
-        if (this._menuLength === '5-items') {
-            return 5;
-        } else if (this._menuLength === '10-items') {
-            return 10;
-        }
-        return 7;
-    }
-
-    /**
      * Return the list height.
      *
      * @type {string}
      */
     calculateListHeight() {
         let height = 0;
+        let length = 7;
+        if (this._menuLength === '5-items') {
+            length = 5;
+        } else if (this._menuLength === '10-items') {
+            length = 10;
+        }
+        length = 7;
         const items = this.template.querySelectorAll(
             '[data-element-id="item"]'
         );
 
         if (items) {
-            height += getListHeight(items, this.dropdownLength);
-        }
-        if (this.slot) {
-            height += getListHeight(this.slot.assignedElements());
-        }
-        if (this.footerSlot) {
-            height += getListHeight(this.footerSlot.assignedElements()) + 18;
-        }
-        if (this._allowSearch) {
-            height += 42;
+            height += getListHeight(items, length);
         }
         this.listHeight = `max-height: ${height}px; overflow-y: auto;`;
     }
@@ -863,6 +873,7 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
     handleItemClick(event) {
         let target = event.target.getAttribute('data-element-id');
+        let value = event.currentTarget.getAttribute('data-value');
         if (target === 'action') {
             /**
              * The event fired when a user clicks on an action.
@@ -870,18 +881,18 @@ export default class AvonniDynamicMenu extends LightningElement {
              * @event
              * @name actionclick
              * @param {string} name Name of the action clicked.
+             * @param {string} item The value of the item.
              * @public
              */
             this.dispatchEvent(
                 new CustomEvent('actionclick', {
                     detail: {
-                        name: event.currentTarget.name
+                        name: event.target.name,
+                        item: value
                     }
                 })
             );
         } else {
-            let value = event.currentTarget.getAttribute('data-value');
-            this._value = value;
             /**
              * Select event.
              *
@@ -899,6 +910,7 @@ export default class AvonniDynamicMenu extends LightningElement {
                     }
                 })
             );
+            this._value = value;
         }
 
         this.toggleMenuVisibility();

@@ -104,7 +104,7 @@
                 ></lightning-spinner>
             </template>
             <template if:false={isLoading}>
-                <div class="slds-dropdown__list" role="menu" style={listHeight}>
+                <div class="slds-dropdown__list" role="menu">
                     <template if:true={allowSearch}>
                         <div onkeyup={handleKeyUp}>
                             <lightning-input
@@ -125,6 +125,7 @@
                         <div
                             if:true={showItems}
                             class="slds-listbox slds-listbox_vertical"
+                            style={listHeight}
                         >
                             <template
                                 for:each={computedListItems}
@@ -228,7 +229,7 @@
                                                         name={action.name}
                                                         size="small"
                                                         class="
-                                                            slds-m-left_xx-small
+                                                            slds-m-left_x-small
                                                         "
                                                     ></lightning-button-icon>
                                                 </template>
