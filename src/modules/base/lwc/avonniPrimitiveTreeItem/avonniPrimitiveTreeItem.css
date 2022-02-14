@@ -1,0 +1,165 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+:host {
+    outline: none;
+}
+
+:host[aria-disabled='true'] .avonni-primitive-tree-item__header,
+:host[aria-disabled='true'] .avonni-primitive-tree-item__metatext {
+    cursor: default;
+}
+
+:host[aria-disabled='true'] .avonni-primitive-tree-item__header {
+    color: var(--avonni-tree-item-text-color-header-disabled, #dddbda);
+}
+
+:host[aria-disabled='true'] .avonni-primitive-tree-item__metatext {
+    color: var(--avonni-tree-item-text-color-metatext-disabled, #dddbda);
+}
+
+:host[aria-disabled='true'] .avonni-primitive-tree-item__item.slds-is-hovered,
+:host[aria-disabled='true'] .avonni-primitive-tree-item__item:hover {
+    cursor: default;
+    background-color: transparent;
+}
+
+:host[aria-selected='true']
+    > .avonni-primitive-tree-item__single-selection
+    > .avonni-primitive-tree-item__item {
+    background: var(
+        --avonni-tree-item-color-background-selected,
+        rgba(21, 137, 238, 0.1)
+    );
+    -webkit-box-shadow: var(
+        --avonni-tree-item-shadow-selected,
+        #1b96ff 4px 0 0 inset
+    );
+    box-shadow: var(--avonni-tree-item-shadow-selected, #1b96ff 4px 0 0 inset);
+}
+
+.avonni-primitive-tree-item__header .avonni-primitive-item__link {
+    color: var(--avonni-tree-item-text-color-header, #080707);
+}
+
+.avonni-primitive-tree-item__metatext,
+.avonni-primitive-tree-item__metatext .avonni-primitive-item__link {
+    color: var(--avonni-tree-item-text-color-metatext, #3e3e3c);
+}
+
+.avonni-primitive-item__link:hover {
+    text-decoration: none;
+}
+
+.avonni-primitive-item__link:focus {
+    outline: 0;
+    text-decoration: underline;
+}
+
+.avonni-primitive-tree-item__header {
+    color: var(--avonni-tree-item-text-color-header, #080707);
+    background-color: var(--avonni-tree-item-header-color-background);
+    padding-top: var(--avonni-tree-item-header-spacing-block-start);
+    padding-bottom: var(--avonni-tree-item-header-spacing-block-end);
+    padding-left: var(--avonni-tree-item-header-spacing-inline-start);
+    padding-right: var(--avonni-tree-item-header-spacing-inline-end);
+}
+
+.avonni-primitive-tree-item__item {
+    padding: 0.25rem 0 0.25rem var(--avonni-tree-item-spacing-inline-left, 1rem);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.avonni-primitive-tree-item__item_border-bottom::after,
+.avonni-primitive-tree-item__item_border-top::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background-color: #747474;
+    position: absolute;
+    left: var(
+        --avonni-tree-item-spacing-inline-start-border,
+        var(--avonni-tree-item-spacing-inline-left, 0)
+    );
+    right: 0;
+}
+.avonni-primitive-tree-item__item_border-bottom::after {
+    bottom: 0;
+}
+.avonni-primitive-tree-item__item_border-top::before {
+    top: 0;
+}
+
+.avonni-primitive-tree-item__item.slds-is-hovered,
+.avonni-primitive-tree-item__item:hover {
+    background: var(--avonni-tree-item-color-background-hover, #f3f2f2);
+    cursor: pointer;
+}
+
+.avonni-primitive-tree-item__item_border {
+    -webkit-box-shadow: #c9c9c9 0 0 0 1px inset;
+    box-shadow: inset 0 0 0 1px #c9c9c9;
+}
+
+.avonni-primitive-tree-item__branch-buttons {
+    opacity: 0;
+    transition: 0.17s;
+}
+
+.avonni-primitive-tree-item__popover {
+    left: 0;
+    width: 100%;
+}
+
+.avonni-primitive-tree-item__chevron {
+    transition: transform 300ms;
+    -ms-flex-item-align: start;
+    align-self: flex-start;
+}
+.avonni-primitive-tree-item__chevron_expanded {
+    transform: rotate(90deg);
+}
+
+.avonni-primitive-tree-item__child-item {
+    z-index: 1;
+}
+
+.avonni-primitive-tree-item__edit-label-button {
+    --sds-c-icon-color-foreground: #969492;
+}
+
+.avonni-primitive-tree-item__loading-spinner {
+    height: 3rem;
+    z-index: 0;
+}

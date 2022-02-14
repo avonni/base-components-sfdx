@@ -1,0 +1,378 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class={wrapperClass}>
+        <div
+            class="avonni-primitive-tree-item__item slds-is-relative slds-grid"
+            data-element-id="div-item"
+            onclick={handleClick}
+        >
+            <lightning-button-icon
+                class={expandButtonClass}
+                alternative-text={expandButtonLabel}
+                aria-expanded={expanded}
+                icon-name={expandButtonIconName}
+                size="small"
+                tabindex={expandButtonTabindex}
+                title={expandButtonLabel}
+                variant="bare"
+                data-element-id="lightning-button-icon-expand"
+                onfocus={handleExpandButtonFocus}
+                onmousedown={stopPropagation}
+            >
+            </lightning-button-icon>
+
+            <div class="slds-has-flexi-truncate">
+                <div
+                    class="
+                        slds-grid slds-grid_vertical-align-center
+                        avonni-primitive-tree-item__header
+                    "
+                    data-element-id="div-header"
+                    onfocusin={showBranchButtons}
+                    onfocusout={hideBranchButtons}
+                    onmouseenter={showBranchButtons}
+                    onmouseleave={hideBranchButtons}
+                >
+                    <!-- Checkbox -->
+                    <span
+                        if:true={showCheckbox}
+                        class="slds-checkbox slds-m-right_xx-small"
+                    >
+                        <input
+                            id="checkbox"
+                            checked={selected}
+                            disabled={disabled}
+                            type="checkbox"
+                            data-element-id="input-checkbox"
+                        />
+                        <label
+                            for="checkbox"
+                            class="slds-checkbox__label"
+                            onclick={handleCheckboxClick}
+                        >
+                            <span class="slds-checkbox_faux"></span>
+                            <span
+                                class="
+                                    slds-form-element__label
+                                    slds-assistive-text
+                                "
+                                >Select</span
+                            >
+                        </label>
+                    </span>
+
+                    <!-- Avatar -->
+                    <c-avonni-avatar
+                        if:true={avatar}
+                        class="slds-m-right_x-small"
+                        alternative-text={avatar.alternativeText}
+                        fallback-icon-name={avatar.fallbackIconName}
+                        hide-avatar-details
+                        initials={avatar.initials}
+                        presence={avatar.presence}
+                        presence-position={avatar.presencePosition}
+                        size={avatar.size}
+                        src={avatar.src}
+                        variant={avatar.variant}
+                        data-element-id="avonni-avatar"
+                    ></c-avonni-avatar>
+
+                    <!-- Label -->
+                    <div if:false={labelIsEdited} class={labelClass}>
+                        <a
+                            if:true={showLink}
+                            class="avonni-primitive-item__link"
+                            href={href}
+                            data-element-id="a-label-link"
+                            data-group-name="link"
+                            onmousedown={handleLinkMouseDown}
+                        >
+                            {label}
+                        </a>
+                        <span
+                            if:false={showLink}
+                            data-element-id="span-label"
+                            ondblclick={handleLabelDoubleClick}
+                            >{label}</span
+                        >
+                    </div>
+
+                    <lightning-input
+                        if:true={labelIsEdited}
+                        label="Edit Label"
+                        variant="label-hidden"
+                        value={label}
+                        data-element-id="lightning-input-inline-label"
+                        onchange={stopPropagation}
+                        onkeydown={handleLabelInlineKeyDown}
+                    ></lightning-input>
+
+                    <lightning-button-icon
+                        if:true={labelIsEdited}
+                        alternative-text="Save Label"
+                        class="slds-m-left_x-small slds-m-vertical_xx-small"
+                        icon-name="utility:check"
+                        variant="bare"
+                        data-element-id="lightning-button-icon-inline-save"
+                        onclick={handleSaveLabelInlineEdit}
+                    ></lightning-button-icon>
+
+                    <div
+                        if:true={visibleActions.length}
+                        class="
+                            avonni-primitive-tree-item__branch-buttons
+                            slds-grid slds-grid_vertical-align-center
+                        "
+                        data-element-id="div-branch-buttons"
+                        onmousedown={stopPropagation}
+                    >
+                        <!-- Action icons -->
+                        <template for:each={buttonActions} for:item="action">
+                            <lightning-button-icon
+                                key={action.name}
+                                class="
+                                    slds-m-left_x-small
+                                    slds-m-vertical_xx-small
+                                "
+                                alternative-text={action.label}
+                                icon-name={action.iconName}
+                                name={action.name}
+                                variant="bare"
+                                data-element-id="lightning-button-icon-action"
+                                onclick={handleActionClick}
+                            ></lightning-button-icon>
+                        </template>
+
+                        <!-- Action menu -->
+                        <lightning-button-menu
+                            class="slds-p-horizontal_x-small"
+                            alternative-text="Show menu"
+                            menu-alignment="right"
+                            variant="bare"
+                            data-element-id="lightning-button-menu"
+                            onblur={hideBranchButtons}
+                            onclick={stopPropagation}
+                            onclose={handleActionMenuClose}
+                            onfocusout={stopPropagation}
+                            onopen={handleActionMenuOpen}
+                            onselect={handleActionClick}
+                        >
+                            <template for:each={menuActions} for:item="action">
+                                <lightning-menu-item
+                                    key={action.name}
+                                    icon-name={action.iconName}
+                                    label={action.label}
+                                    value={action.name}
+                                    data-element-id="lightning-menu-item-action"
+                                ></lightning-menu-item>
+                            </template>
+                        </lightning-button-menu>
+                    </div>
+                </div>
+
+                <!-- Metatext -->
+                <div
+                    if:true={metatext}
+                    class="slds-truncate avonni-primitive-tree-item__metatext"
+                    title={metatext}
+                >
+                    <a
+                        if:true={showLink}
+                        class="avonni-primitive-item__link"
+                        href={href}
+                        data-group-name="link"
+                        onmousedown={handleLinkMouseDown}
+                        >{metatext}</a
+                    >
+                    <span if:false={showLink} data-element-id="span-metatext"
+                        >{metatext}</span
+                    >
+                </div>
+
+                <!-- Fields -->
+                <div if:true={showFields} class="slds-p-top_xx-small">
+                    <template for:each={fields} for:item="field">
+                        <c-avonni-output-data
+                            key={uniqueKey}
+                            class="
+                                avonni-primitive-tree-item__field
+                                slds-show
+                                slds-m-bottom_xx-small
+                            "
+                            label={field.label}
+                            type={field.type}
+                            type-attributes={field.typeAttributes}
+                            value={field.value}
+                            variant="label-inline"
+                            data-element-id="avonni-output-data-field"
+                        ></c-avonni-output-data>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popover -->
+        <div
+            if:true={popoverVisible}
+            class="
+                slds-is-absolute slds-popover
+                avonni-primitive-tree-item__popover
+            "
+            aria-label="Edit item"
+            role="dialog"
+            data-element-id="div-popover"
+            onmousedown={stopPropagation}
+        >
+            <!-- Close button -->
+            <div class="slds-text-align_right">
+                <lightning-button-icon
+                    alternative-text="Close dialog"
+                    class="slds-popover__close"
+                    icon-name="utility:close"
+                    variant="bare"
+                    size="small"
+                    data-element-id="lightning-button-icon-close"
+                    onclick={togglePopoverVisibility}
+                    onkeydown={handlePopoverCloseKeyDown}
+                ></lightning-button-icon>
+            </div>
+
+            <div
+                class="slds-popover__body slds-scrollable_y"
+                data-element-id="div-popover-body"
+            >
+                <!-- Edit inputs -->
+                <template for:each={computedEditableFields} for:item="field">
+                    <lightning-input
+                        key={field.name}
+                        class="slds-m-bottom_x-small"
+                        checked={field.checked}
+                        label={field.label}
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                        name={field.name}
+                        required={field.required}
+                        type={field.type}
+                        value={field.value}
+                        data-element-id="lightning-input-edit-field"
+                        data-name={field.name}
+                        onblur={handleEditInputBlur}
+                        onchange={handleInputChange}
+                    ></lightning-input>
+                </template>
+            </div>
+
+            <div
+                class="
+                    slds-popover__footer
+                    slds-grid
+                    slds-grid_align-spread
+                    slds-grid_vertical-align-center
+                "
+            >
+                <lightning-button
+                    class="slds-m-right_xx-small"
+                    label="Cancel"
+                    onclick={togglePopoverVisibility}
+                ></lightning-button>
+                <lightning-button
+                    disabled={hasError}
+                    label="Done"
+                    variant="brand"
+                    data-element-id="lightning-button-done"
+                    onclick={handleDone}
+                    onkeydown={handlePopoverDoneKeyDown}
+                ></lightning-button>
+            </div>
+        </div>
+
+        <!-- Expanded -->
+        <div if:true={showChildren} role="group">
+            <!-- Child items -->
+            <template for:each={childItems} for:item="item">
+                <c-avonni-primitive-tree-item
+                    class="
+                        avonni-primitive-tree-item__child-item
+                        slds-is-relative
+                    "
+                    key={item.key}
+                    actions={actions}
+                    actions-when-disabled={actionsWhenDisabled}
+                    allow-inline-edit={allowInlineEdit}
+                    aria-disabled={item.disabled}
+                    aria-expanded={item.expanded}
+                    aria-label={item.label}
+                    aria-level={item.level}
+                    avatar={item.avatar}
+                    child-items={item.children}
+                    disabled={item.disabled}
+                    editable-fields={editableFields}
+                    expanded={item.expanded}
+                    fields={item.fields}
+                    href={item.href}
+                    is-leaf={item.isLeaf}
+                    is-loading={item.isLoading}
+                    label={item.label}
+                    level={item.level}
+                    loading-state-alternative-text={loadingStateAlternativeText}
+                    metatext={item.metatext}
+                    name={item.name}
+                    node-key={item.key}
+                    role="treeitem"
+                    selected={item.selected}
+                    show-checkbox={showCheckbox}
+                    sortable={sortable}
+                    data-element-id="avonni-primitive-tree-item"
+                    data-key={item.key}
+                ></c-avonni-primitive-tree-item>
+            </template>
+
+            <div
+                if:true={isLoading}
+                class="
+                    avonni-primitive-tree-item__loading-spinner
+                    slds-is-relative
+                "
+            >
+                <lightning-spinner
+                    alternative-text={loadingStateAlternativeText}
+                    size="small"
+                    data-element-id="lightning-spinner-loading"
+                ></lightning-spinner>
+            </div>
+        </div>
+    </div>
+</template>

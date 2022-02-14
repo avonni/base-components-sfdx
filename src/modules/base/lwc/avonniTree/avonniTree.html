@@ -1,0 +1,125 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div
+        class="avonni-tree_container"
+        aria-labelledby="treeheading"
+        role="tree"
+        data-element-id="div-tree-wrapper"
+        onchange={handleChange}
+        onfocus={handleFocus}
+        onprivateactionclick={handleActionClick}
+        onprivatemousedown={handleMouseDown}
+        onprivateitemclick={handleClick}
+        onprivateitemkeydown={handleKeydown}
+        onprivateregisteritem={handleRegistration}
+    >
+        <h4
+            class="avonni-tree__group-header"
+            id="treeheading"
+            data-element-id="h4-header"
+        >
+            {header}
+        </h4>
+
+        <div
+            if:true={isLoading}
+            class="avonni-tree__loading-spinner slds-is-relative"
+        >
+            <lightning-spinner
+                alternative-text={loadingStateAlternativeText}
+                size="small"
+                data-element-id="lightning-spinner"
+            ></lightning-spinner>
+        </div>
+
+        <template if:false={isLoading}>
+            <template for:each={children} for:item="item" for:index="index">
+                <c-avonni-primitive-tree-item
+                    key={item.key}
+                    actions={actions}
+                    actions-when-disabled={actionsWhenDisabled}
+                    allow-inline-edit={allowInlineEdit}
+                    aria-disabled={item.disabled}
+                    aria-expanded={item.expanded}
+                    aria-label={item.label}
+                    aria-level={item.level}
+                    avatar={item.avatar}
+                    child-items={item.children}
+                    disabled={item.disabled}
+                    editable-fields={editableFields}
+                    expanded={item.expanded}
+                    fields={item.fields}
+                    href={item.href}
+                    is-loading={item.isLoading}
+                    is-leaf={item.isLeaf}
+                    label={item.label}
+                    level={item.level}
+                    loading-state-alternative-text={loadingStateAlternativeText}
+                    metatext={item.metatext}
+                    name={item.name}
+                    node-key={item.key}
+                    role="treeitem"
+                    selected={item.selected}
+                    show-checkbox={isMultiSelect}
+                    sortable={sortable}
+                    data-key={item.key}
+                    data-element-id="avonni-primitive-tree-item"
+                ></c-avonni-primitive-tree-item>
+            </template>
+        </template>
+    </div>
+
+    <button
+        if:true={addAction}
+        class="
+            slds-button slds-button_neutral slds-button_stretch
+            slds-m-top_xx-small
+            slds-m-left_none
+        "
+        data-element-id="button-add-action"
+        onclick={handleActionClick}
+    >
+        <lightning-icon
+            if:true={addAction.iconName}
+            class="slds-m-right_x-small slds-current-color"
+            icon-name={addAction.iconName}
+            size="xx-small"
+            variant="brand"
+            data-element-id="lightning-icon-add-action"
+        ></lightning-icon>
+        Add item
+    </button>
+</template>

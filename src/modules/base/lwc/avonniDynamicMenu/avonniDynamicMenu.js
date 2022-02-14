@@ -633,7 +633,7 @@ export default class AvonniDynamicMenu extends LightningElement {
         } else if (this._menuLength === '10-items') {
             length = 10;
         }
-        length = 7;
+
         const items = this.template.querySelectorAll(
             '[data-element-id="item"]'
         );

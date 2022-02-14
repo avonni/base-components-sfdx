@@ -32,6 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { normalizeString } from 'c/utilsPrivate';
+import { classSet } from 'c/utils';
 
 const DATA_TYPES = {
     valid: [
@@ -49,9 +50,14 @@ const DATA_TYPES = {
     default: 'text'
 };
 
+const VARIANTS = {
+    default: 'standard',
+    valid: ['standard', 'label-hidden', 'label-inline', 'label-stacked']
+};
+
 /**
- * The output data displays data depending on its type. 
- * 
+ * The output data displays data depending on its type.
+ *
  * @class
  * @descriptor avonni-output-data
  * @storyId example-output-data--base
@@ -69,6 +75,7 @@ export default class AvonniOutputData extends LightningElement {
     _typeAttributes = {};
     _type = DATA_TYPES.default;
     _value;
+    _variant = VARIANTS.default;
 
     /**
      * Attributes specific to the type (see <strong>Types and Type Attributes</strong>).
@@ -117,6 +124,48 @@ export default class AvonniOutputData extends LightningElement {
     }
     set value(value) {
         this._value = value;
+    }
+
+    /**
+     * The variant changes the appearance of an input field. Accepted variants include standard, label-inline, label-hidden, and label-stacked.
+     * This value defaults to standard, which displays the label above the field. Use label-hidden to hide the label but make it available to assistive technology. Use label-inline to horizontally align the label and input field. Use label-stacked to place the label above the input field.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid
+        });
+    }
+
+    get computedLabelClass() {
+        return classSet('slds-item_label slds-text-color_weak slds-truncate')
+            .add({
+                'slds-assistive-text': this.variant === 'label-hidden'
+            })
+            .toString();
+    }
+
+    /**
+     * Computed class of the output wrapper.
+     *
+     * @type {string}
+     */
+    get computedWrapperClass() {
+        const variant = this.variant;
+        return classSet()
+            .add({
+                'slds-list_stacked':
+                    variant === 'label-stacked' || variant === 'standard',
+                'slds-list_horizontal slds-wrap': variant === 'label-inline'
+            })
+            .toString();
     }
 
     /**

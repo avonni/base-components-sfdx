@@ -34,7 +34,8 @@ import { LightningElement, api } from 'lwc';
 import {
     normalizeArray,
     normalizeBoolean,
-    normalizeString
+    normalizeString,
+    deepCopy
 } from 'c/utilsPrivate';
 import { classSet, generateUUID } from 'c/utils';
 
@@ -221,11 +222,11 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-    * Computed image width in pixels.
-    *
-    * @type {number}
-    * @default 128
-    */
+     * Computed image width in pixels.
+     *
+     * @type {number}
+     * @default 128
+     */
     get computedImageWidth() {
         switch (this.imageWidth) {
             case 'small':
@@ -508,6 +509,29 @@ export default class AvonniList extends LightningElement {
      * @param {Event} event
      */
     dragStart(event) {
+        if (event.button === 0) {
+            const index = Number(event.currentTarget.dataset.index);
+            const item = this.items[index];
+
+            /**
+             * The event fired when the mouse is pressed on an item.
+             *
+             * @event
+             * @name itemmousedown
+             * @param {object} item Item clicked.
+             * @public
+             * @bubbles
+             */
+            this.dispatchEvent(
+                new CustomEvent('itemmousedown', {
+                    detail: {
+                        item: deepCopy(item)
+                    },
+                    bubbles: true
+                })
+            );
+        }
+
         // Stop dragging if the click was on a button menu
         if (
             !this.sortable ||
@@ -584,7 +608,30 @@ export default class AvonniList extends LightningElement {
         if (buttonMenu) buttonMenu.classList.remove('slds-is-open');
     }
 
-    dragEnd() {
+    dragEnd(event) {
+        if (event && event.button === 0) {
+            const index = Number(event.currentTarget.dataset.index);
+            const item = this.items[index];
+
+            /**
+             * The event fired when the mouse is realeased on an item.
+             *
+             * @event
+             * @name itemmouseup
+             * @param {object} item Item clicked.
+             * @public
+             * @bubbles
+             */
+            this.dispatchEvent(
+                new CustomEvent('itemmouseup', {
+                    detail: {
+                        item: deepCopy(item)
+                    },
+                    bubbles: true
+                })
+            );
+        }
+
         if (!this._draggedElement) return;
 
         const orderHasChanged = this._itemElements.some((item, index) => {

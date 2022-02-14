@@ -34,7 +34,11 @@
 
 <template>
     <template if:true={showDialog}>
-        <section role="dialog" class={computedModalClass}>
+        <section
+            role="dialog"
+            class={computedModalClass}
+            data-element-id="modal"
+        >
             <div class="slds-modal__container">
                 <header class={computedHeaderClass}>
                     <lightning-button-icon
