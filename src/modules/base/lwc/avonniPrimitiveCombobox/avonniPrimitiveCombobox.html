@@ -134,6 +134,7 @@
             <div
                 id="dropdown-element"
                 class={computedDropdownClass}
+                data-element-id="div-dropdown"
                 onmousedown={handleDropdownMouseDown}
                 onmouseup={handleDropdownMouseUp}
             >
@@ -147,8 +148,10 @@
                 </div>
                 <ul
                     if:false={isLoading}
-                    role="listbox"
+                    class="slds-scrollable_y"
                     aria-multiselectable={isMultiSelect}
+                    role="listbox"
+                    data-element-id="ul-listbox"
                 >
                     <!-- Back to parent link -->
                     <li
@@ -158,6 +161,7 @@
                         role="option"
                         onclick={handleBackLinkClick}
                         onmouseenter={handleMouseEnter}
+                        data-element-id="li-top-action"
                         data-name="backlink"
                     >
                         <div
@@ -188,6 +192,8 @@
                             role="option"
                             aria-label="Action button"
                             aria-disabled={action.computedAriaDisabled}
+                            data-element-id="li-top-action"
+                            data-fixed={action.fixed}
                             data-name={action.name}
                             onclick={handleActionClick}
                             onmouseenter={handleMouseEnter}
@@ -204,6 +210,7 @@
                                     icon-name={action.iconName}
                                     size="x-small"
                                     aria-hidden="true"
+                                    data-element-id="lightning-icon-top-action"
                                 ></lightning-icon>
                             </div>
                             <div class="slds-media__body">
@@ -212,6 +219,7 @@
                                         slds-listbox__option-text
                                         slds-listbox__option-text_entity
                                     "
+                                    data-element-id="span-top-action-label"
                                     >{action.label}</span
                                 >
                             </div>
@@ -249,6 +257,8 @@
                             class={action.computedClass}
                             id={action.name}
                             role="option"
+                            data-element-id="li-bottom-action"
+                            data-fixed={action.fixed}
                             data-name={action.name}
                             aria-disabled={action.computedAriaDisabled}
                             onclick={handleActionClick}
@@ -285,55 +295,13 @@
         </div>
     </template>
 
-    <!-- Selected options -->
-    <ul
-        if:true={showSelectedOptions}
-        class="
-            slds-grid slds-wrap
-            slds-p-vertical_xx-small
-            primitive-combobox__selected-options
-        "
-        role="listbox"
-        aria-label={selectedOptionsAriaLabel}
-        aria-orientation="horizontal"
-    >
-        <template for:each={selectedOptions} for:item="option">
-            <li
-                key={option.value}
-                class="slds-m-right_xx-small"
-                role="presentation"
-            >
-                <lightning-pill
-                    if:false={readOnly}
-                    label={option.label}
-                    variant="plain"
-                    name={option.value}
-                    role="option"
-                    tabindex="0"
-                    data-element-id="lightning-pill"
-                    onremove={handleRemoveSelectedOption}
-                >
-                    <c-avonni-avatar
-                        if:true={option.hasAvatar}
-                        src={option.avatarSrc}
-                        fallback-icon-name={option.avatarFallbackIconName}
-                        hide-avatar-details="true"
-                        size="x-small"
-                    ></c-avonni-avatar>
-                </lightning-pill>
-                <div if:true={readOnly} class="slds-pill">
-                    <span class="slds-pill__label">{option.label}</span>
-                </div>
-            </li>
-        </template>
-    </ul>
     <template if:true={readOnlyNotMultiSelect}>
         <lightning-input
-            data-element-id="lightning-input-read-only"
-            label={readOnlyLabel}
+            label={label}
             value={readOnlyValue}
-            variant={variant}
+            variant="label-hidden"
             read-only
+            data-element-id="lightning-input-read-only"
         ></lightning-input>
     </template>
     <template if:true={helpMessage}>

@@ -65,16 +65,22 @@
                             <div class="slds-page-header__name-title">
                                 <template if:true={isBaseVariant}>
                                     <span
-                                        class="slds-page-header__title slds-truncate"
+                                        class="
+                                            slds-page-header__title
+                                            slds-truncate
+                                        "
                                     >
                                         <template if:true={hasStringTitle}>
                                             {title}
                                         </template>
-                                        <template if:false={hasStringTitle}>
-                                            <slot name="title"></slot>
-                                        </template>
                                     </span>
-                                    <p class="slds-page-header__name-meta">
+                                    <span if:false={hasStringTitle}>
+                                        <slot name="title"></slot>
+                                    </span>
+                                    <p
+                                        class="slds-page-header__name-meta"
+                                        data-element-id="header-info"
+                                    >
                                         <template if:true={hasStringInfo}>
                                             {info}
                                         </template>
@@ -88,11 +94,17 @@
                                         <span>{label}</span>
                                     </template>
                                     <template if:false={hasStringLabel}>
-                                        <slot name="label"></slot>
+                                        <slot
+                                            name="label"
+                                            data-element-id="label"
+                                        ></slot>
                                     </template>
                                     <div class="slds-page-header__name-title">
                                         <span
-                                            class="slds-page-header__title slds-truncate"
+                                            class="
+                                                slds-page-header__title
+                                                slds-truncate
+                                            "
                                         >
                                             <template if:true={hasStringTitle}>
                                                 {title}

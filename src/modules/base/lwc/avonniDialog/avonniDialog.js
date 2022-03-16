@@ -68,6 +68,7 @@ export default class AvonniDialog extends LightningElement {
      */
     @api loadingStateAlternativeText;
 
+    _contentClicked = false;
     _size = DIALOG_SIZES.default;
     _isLoading;
     _showDialog = false;
@@ -75,7 +76,12 @@ export default class AvonniDialog extends LightningElement {
     showHeader = true;
 
     connectedCallback() {
+        this.template.addEventListener('click', this.handleClick);
         this.setAttribute('dialog-name', this.dialogName);
+    }
+
+    disconnectedCallback() {
+        this.template.removeEventListener('click', this.handleClick);
     }
 
     renderedCallback() {
@@ -159,6 +165,30 @@ export default class AvonniDialog extends LightningElement {
     }
 
     /**
+     * Computed Header class styling.
+     *
+     * @type {string}
+     */
+    get computedHeaderClass() {
+        return classSet('slds-modal__header')
+            .add({
+                'slds-modal__header_empty': !this.showHeader
+            })
+            .toString();
+    }
+
+    /**
+     * Computed Modal class styling
+     *
+     * @type {string}
+     */
+    get computedModalClass() {
+        return classSet('slds-modal slds-fade-in-open')
+            .add(`slds-modal_${this._size}`)
+            .toString();
+    }
+
+    /**
      * Verify if Title string present.
      *
      * @type {boolean}
@@ -206,26 +236,32 @@ export default class AvonniDialog extends LightningElement {
     }
 
     /**
-     * Computed Header class styling.
-     *
-     * @type {string}
+     * Handle a click on any part of the dialog.
      */
-    get computedHeaderClass() {
-        return classSet('slds-modal__header')
-            .add({
-                'slds-modal__header_empty': !this.showHeader
-            })
-            .toString();
-    }
+    handleClick = () => {
+        if (this.showDialog && !this._contentClicked) {
+            /**
+             * The event fired when the user clicks outside of the dialog.
+             *
+             * @event
+             * @name outsideclick
+             * @public
+             * @bubbles
+             */
+            this.dispatchEvent(
+                new CustomEvent('outsideclick', {
+                    bubbles: true
+                })
+            );
+        } else {
+            this._contentClicked = false;
+        }
+    };
 
     /**
-     * Computed Modal class styling
-     *
-     * @type {string}
+     * Handle a click on the content of the dialog. Block the dispatch of the outsideclick event.
      */
-    get computedModalClass() {
-        return classSet('slds-modal slds-fade-in-open')
-            .add(`slds-modal_${this._size}`)
-            .toString();
+    handleContentClick() {
+        this._contentClicked = true;
     }
 }

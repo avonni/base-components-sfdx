@@ -50,16 +50,16 @@ import { classSet } from 'c/utils';
  * @property {boolean} hasAvatar Present if avatarFallbackIconName or avatarSrc
  */
 export default class AvonniOption {
-    constructor(option) {
+    constructor(option, levelPath) {
         this.avatarFallbackIconName = option.avatarFallbackIconName;
         this.avatarSrc = option.avatarSrc;
         this.iconName = option.iconName;
+        this.levelPath = levelPath;
         this.groups = normalizeArray(option.groups);
         this.label = option.label;
         this.options = normalizeArray(option.options);
         this.secondaryText = option.secondaryText;
         this.value = option.value;
-        this.hasAvatar = this.avatarFallbackIconName || this.avatarSrc;
     }
 
     /**
@@ -69,7 +69,7 @@ export default class AvonniOption {
      */
     get computedClass() {
         return classSet(
-            'slds-media slds-media_small slds-media_center slds-listbox__item slds-listbox__option slds-listbox__option_plain slds-listbox__option_entity combobox__option avonni-primitive-combobox__option_background'
+            'slds-media slds-media_small slds-media_center slds-listbox__item slds-listbox__option slds-listbox__option_plain slds-listbox__option_entity avonni-primitive-combobox__option'
         )
             .add({
                 'slds-is-selected': this.selected || this.hasSelectedChildren()
@@ -95,6 +95,10 @@ export default class AvonniOption {
      */
     get computedCheckmarkIconName() {
         return this.iconName || 'utility:check';
+    }
+
+    get hasAvatar() {
+        return this.avatarFallbackIconName || this.avatarSrc;
     }
 
     /**

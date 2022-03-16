@@ -197,8 +197,8 @@ export default class AvonniHeroBanner extends LightningElement {
     }
 
     set height(value) {
-        const number = typeof value === 'number' ? value : DEFAULT_HEIGHT;
-        this._height = parseInt(number, 10);
+        const number = isNaN(parseInt(value, 10)) ? DEFAULT_HEIGHT : value;
+        this._height = number;
     }
 
     /**
@@ -214,8 +214,8 @@ export default class AvonniHeroBanner extends LightningElement {
     }
 
     set maxWidth(value) {
-        const number = typeof value === 'number' ? value : DEFAULT_MAX_WIDTH;
-        this._maxWidth = parseInt(number, 10);
+        const number = isNaN(parseInt(value, 10)) ? DEFAULT_MAX_WIDTH : value;
+        this._maxWidth = number;
     }
 
     /**
@@ -231,9 +231,10 @@ export default class AvonniHeroBanner extends LightningElement {
     }
 
     set contentWidth(value) {
-        const number =
-            typeof value === 'number' ? value : DEFAULT_CONTENT_WIDTH;
-        this._contentWidth = parseInt(number, 10);
+        const number = isNaN(parseInt(value, 10))
+            ? DEFAULT_CONTENT_WIDTH
+            : value;
+        this._contentWidth = number;
     }
 
     /**

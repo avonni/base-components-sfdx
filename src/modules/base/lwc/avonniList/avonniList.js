@@ -353,7 +353,6 @@ export default class AvonniList extends LightningElement {
                 'avonni-list__item-sortable': this.sortable,
                 'avonni-list__item-expanded': this._hasActions,
                 'slds-p-vertical_x-small': !this._divider,
-                'slds-p-horizontal_none': this._divider === 'top' || 'bottom',
                 'avonni-list__item-divider_top': this._divider === 'top',
                 'avonni-list__item-divider_bottom': this._divider === 'bottom',
                 'avonni-list__item-divider_around': this._divider === 'around'

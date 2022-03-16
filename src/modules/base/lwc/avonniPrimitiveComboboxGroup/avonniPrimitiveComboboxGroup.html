@@ -37,10 +37,15 @@
         <li
             if:true={label}
             role="presentation"
-            class="slds-listbox__item combobox__group-title"
+            class="slds-listbox__item"
+            data-element-id="li-group-title"
         >
             <div
-                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                class="
+                    slds-media
+                    slds-listbox__option slds-listbox__option_plain
+                    slds-media_small
+                "
                 role="presentation"
             >
                 <h3
@@ -59,6 +64,7 @@
                 class={option.computedClass}
                 role="option"
                 aria-selected={option.selected}
+                data-element-id="li-option"
                 data-value={option.value}
                 onclick={handleAction}
                 onmouseenter={handleAction}
@@ -94,12 +100,19 @@
                         </div>
                         <div class="slds-media__body">
                             <span
-                                class="slds-listbox__option-text slds-listbox__option-text_entity"
+                                class="
+                                    slds-listbox__option-text
+                                    slds-listbox__option-text_entity
+                                "
                                 >{option.label}</span
                             >
                             <span
                                 if:true={option.secondaryText}
-                                class="slds-listbox__option-meta slds-listbox__option-meta_entity slds-truncate"
+                                class="
+                                    slds-listbox__option-meta
+                                    slds-listbox__option-meta_entity
+                                    slds-truncate
+                                "
                                 >{option.secondaryText}</span
                             >
                         </div>
@@ -109,7 +122,11 @@
                 <!-- Chevron indicating children options -->
                 <div
                     if:true={option.options.length}
-                    class="slds-media__figure slds-media__figure slds-media__figure_reverse"
+                    class="
+                        slds-media__figure
+                        slds-media__figure
+                        slds-media__figure_reverse
+                    "
                 >
                     <lightning-icon
                         icon-name="utility:chevronright"

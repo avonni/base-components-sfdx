@@ -30,6 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.avonni-blockquote__primitive-icon_color {
+    --sds-c-icon-radius-border: var(--avonni-blockquote-icon-radius-border);
+}
 .avonni-blockquote__theme-default.avonni-blockquote__container {
     background-color: var(
         --avonni-blockquote-default-color-background,

@@ -125,16 +125,19 @@ export class TreeData {
      *
      * @param {string} name Name of the item to select.
      * @param {string[]} selectedItems Array of selected item names, the new selected items' names should be added to.
+     * @param {boolean} cascadeSelection If true, cascade the selection to the children and parents of the item.
      */
-    computeSelection(name, selectedItems) {
+    computeSelection(name, selectedItems, cascadeSelection) {
         const item = this.getItemFromName(name);
         if (!item) return;
 
         item.treeNode.selected = true;
-        this.cascadeSelectionDown(item.treeNode, selectedItems);
-        const parent = this.getItem(item.parent);
-        if (parent) {
-            this.cascadeSelectionUp(parent, selectedItems);
+        if (cascadeSelection) {
+            this.cascadeSelectionDown(item.treeNode, selectedItems);
+            const parent = this.getItem(item.parent);
+            if (parent) {
+                this.cascadeSelectionUp(parent, selectedItems);
+            }
         }
     }
 
@@ -317,6 +320,16 @@ export class TreeData {
     }
 
     /**
+     * Get the path to access the item in the tree, in the form of an array of levels.
+     *
+     * @param {string} key Key of the item.
+     * @returns {number[]} Array of levels of depth.
+     */
+    getLevelPath(key) {
+        return key.split('.').map((level) => parseInt(level, 10) - 1);
+    }
+
+    /**
      * Determine if an item is visible.
      *
      * @param {object} treeItem Item to check.
@@ -457,17 +470,18 @@ export class TreeData {
      *
      * @param {object} node The item to select.
      * @param {string[]} selectedItems Selected item names.
+     * @param {boolean} cascadeSelection If true, select all children of the item.
      */
-    selectNode(node, selectedItems) {
+    selectNode(node, selectedItems, cascadeSelection) {
         node.selected = true;
         if (!selectedItems.includes(node.name)) {
             selectedItems.push(node.name);
         }
 
-        if (node.children) {
-            node.children.forEach((child) =>
-                this.selectNode(child, selectedItems)
-            );
+        if (cascadeSelection && node.children) {
+            node.children.forEach((child) => {
+                this.selectNode(child, selectedItems, cascadeSelection);
+            });
         }
     }
 
@@ -476,18 +490,19 @@ export class TreeData {
      *
      * @param {object} node The item to unselect.
      * @param {string[]} selectedItems Selected item names, from which the item name is removed from.
+     * @param {boolean} cascadeSelection If true, unselect all children of the item.
      */
-    unselectNode(node, selectedItems) {
+    unselectNode(node, selectedItems, cascadeSelection) {
         node.selected = false;
         const selectedIndex = selectedItems.indexOf(node.name);
         if (selectedIndex > -1) {
             selectedItems.splice(selectedIndex, 1);
         }
 
-        if (node.children) {
-            node.children.forEach((child) =>
-                this.unselectNode(child, selectedItems)
-            );
+        if (cascadeSelection && node.children) {
+            node.children.forEach((child) => {
+                this.unselectNode(child, selectedItems, cascadeSelection);
+            });
         }
     }
 

@@ -46,6 +46,26 @@
     font-weight: var(--avonni-progress-circle-title-font-weight, 400);
 }
 
+.avonni-progress-circle__dots {
+    margin-bottom: 11px;
+}
+
+.avonni-progress-circle_size-x-small .avonni-progress-circle__dots {
+    margin-bottom: 3px;
+}
+
+.avonni-progress-circle_size-small .avonni-progress-circle__dots {
+    margin-bottom: 7px;
+}
+
+.avonni-progress-circle_size-large .avonni-progress-circle__dots {
+    margin-bottom: 15px;
+}
+
+.avonni-progress-circle_size-x-large .avonni-progress-circle__dots {
+    margin-bottom: 20px;
+}
+
 .avonni-progress-circle_size-x-small {
     height: 26px;
     width: 26px;
@@ -301,7 +321,7 @@
 .avonni-progress-circle__label {
     color: var(--avonni-progress-circle-label-text-color, #706e6b);
     font-style: var(--avonni-progress-circle-label-font-style, normal);
-    font-weight: var(--avonni-progress-circle-label-font-weight ,400);
+    font-weight: var(--avonni-progress-circle-label-font-weight, 400);
 }
 
 .avonni-progress-circle__label_size-x-small {

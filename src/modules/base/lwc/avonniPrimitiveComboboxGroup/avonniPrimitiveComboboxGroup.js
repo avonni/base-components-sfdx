@@ -45,7 +45,9 @@ export default class AvonniPrimitiveComboboxGroup extends LightningElement {
     renderedCallback() {
         // The group is added to the id to be able to make the difference between
         // the two versions of the same option, when an option is in several groups.
-        const options = this.template.querySelectorAll('.combobox__option');
+        const options = this.template.querySelectorAll(
+            '[data-element-id="li-option"]'
+        );
         options.forEach((option, index) => {
             option.id = `${this.name}-${index}`;
         });
@@ -77,7 +79,9 @@ export default class AvonniPrimitiveComboboxGroup extends LightningElement {
 
     @api
     get titleElement() {
-        return this.template.querySelector('.combobox__group-title');
+        return this.template.querySelector(
+            '[data-element-id="li-group-title"]'
+        );
     }
 
     @api
@@ -85,12 +89,14 @@ export default class AvonniPrimitiveComboboxGroup extends LightningElement {
         if (!this.options) return null;
 
         const options = Array.from(
-            this.template.querySelectorAll('.combobox__option')
+            this.template.querySelectorAll('[data-element-id="li-option"]')
         );
 
         if (this.groups) {
             const groups = Array.from(
-                this.template.querySelectorAll('[data-element-id^="avonni-primitive-combobox-group"]')
+                this.template.querySelectorAll(
+                    '[data-element-id="avonni-primitive-combobox-group"]'
+                )
             );
             groups.forEach((group) => {
                 options.push(group.optionElements);

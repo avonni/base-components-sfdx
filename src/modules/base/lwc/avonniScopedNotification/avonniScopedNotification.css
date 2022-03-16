@@ -36,6 +36,18 @@
         #f3f2f2
     );
     color: var(--avonni-scoped-notification-base-text-color, #080707);
+    --sds-c-icon-color-background: var(
+        --avonni-scoped-notification-base-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-scoped-notification-base-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-scoped-notification-base-icon-color-foreground-default
+    );
+    --sds-c-icon-radius-border: var(
+        --avonni-scoped-notification-icon-radius-border
+    );
 }
 
 .avonni-scoped-notification_theme-dark {
@@ -44,6 +56,18 @@
         #706e6b
     );
     color: var(--avonni-scoped-notification-dark-text-color, #ffffff);
+    --sds-c-icon-color-background: var(
+        --avonni-scoped-notification-dark-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-scoped-notification-dark-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-scoped-notification-dark-icon-color-foreground-default
+    );
+    --sds-c-icon-radius-border: var(
+        --avonni-scoped-notification-icon-radius-border
+    );
 }
 
 .avonni-scoped-notification_theme-error {
@@ -52,6 +76,18 @@
         #ea001e
     );
     color: var(--avonni-scoped-notification-error-text-color, #ffffff);
+    --sds-c-icon-color-background: var(
+        --avonni-scoped-notification-error-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-scoped-notification-error-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-scoped-notification-error-icon-color-foreground-default
+    );
+    --sds-c-icon-radius-border: var(
+        --avonni-scoped-notification-icon-radius-border
+    );
 }
 
 .avonni-scoped-notification_theme-success {
@@ -60,6 +96,18 @@
         #2e844a
     );
     color: var(--avonni-scoped-notification-success-text-color, #ffffff);
+    --sds-c-icon-color-background: var(
+        --avonni-scoped-notification-success-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-scoped-notification-success-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-scoped-notification-success-icon-color-foreground-default
+    );
+    --sds-c-icon-radius-border: var(
+        --avonni-scoped-notification-icon-radius-border
+    );
 }
 
 .avonni-scoped-notification_theme-warning {
@@ -68,4 +116,16 @@
         #fe9339
     );
     color: var(--avonni-scoped-notification-warning-text-color, #080707);
+    --sds-c-icon-color-background: var(
+        --avonni-scoped-notification-warning-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-scoped-notification-warning-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-scoped-notification-warning-icon-color-foreground-default
+    );
+    --sds-c-icon-radius-border: var(
+        --avonni-scoped-notification-icon-radius-border
+    );
 }

@@ -30,90 +30,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.combobox__input-has-icon_left-right input {
+.avonni-primitive-combobox__input-has-icon_left-right input {
     padding-left: var(--lwc-spacingXLarge, 2rem);
 }
 
-.combobox__dropdown {
-    overflow-y: auto;
+.avonni-primitive-combobox__dropdown {
     box-sizing: content-box;
 }
 
-.combobox__action_disabled,
-.combobox__action_disabled lightning-icon {
-    color: #dddbda;
-}
-
 input.avonni-primitive-combobox__input {
-    border-color: var(--avonni-primitive-combobox-input-color-border, #dddbda);
-    border-style: var(--avonni-primitive-combobox-input-styling-border, solid);
+    border-color: var(--avonni-combobox-input-color-border, #dddbda);
+    border-style: var(--avonni-combobox-input-styling-border, solid);
     border-top-right-radius: var(
-        --avonni-primitive-combobox-input-radius-border-top-right,
+        --avonni-combobox-input-radius-border-top-right,
         0.25rem
     );
     border-top-left-radius: var(
-        --avonni-primitive-combobox-input-radius-border-top-left,
+        --avonni-combobox-input-radius-border-top-left,
         0.25rem
     );
     border-bottom-right-radius: var(
-        --avonni-primitive-combobox-input-radius-border-bottom-right,
+        --avonni-combobox-input-radius-border-bottom-right,
         0.25rem
     );
     border-bottom-left-radius: var(
-        --avonni-primitive-combobox-input-radius-border-bottom-left,
+        --avonni-combobox-input-radius-border-bottom-left,
         0.25rem
     );
-    border-top-width: var(
-        --avonni-primitive-combobox-input-sizing-border-top,
-        1px
-    );
-    border-bottom-width: var(
-        --avonni-primitive-combobox-input-sizing-border-bottom,
-        1px
-    );
-    border-right-width: var(
-        --avonni-primitive-combobox-input-sizing-border-right,
-        1px
-    );
-    border-left-width: var(
-        --avonni-primitive-combobox-input-sizing-border-left,
-        1px
-    );
+    border-top-width: var(--avonni-combobox-input-sizing-border-top, 1px);
+    border-bottom-width: var(--avonni-combobox-input-sizing-border-bottom, 1px);
+    border-right-width: var(--avonni-combobox-input-sizing-border-right, 1px);
+    border-left-width: var(--avonni-combobox-input-sizing-border-left, 1px);
 }
 
-.avonni-primitive-combobox__action_background {
-    background: var(
-        --avonni-primitive-combobox-action-color-background,
-        transparent
-    );
+.avonni-primitive-combobox__action,
+.avonni-primitive-combobox__action.avonni-primitive-combobox__action_disabled {
+    background: var(--avonni-combobox-action-color-background, transparent);
 }
 
-.avonni-primitive-combobox__option_background {
-    background: var(
-        --avonni-primitive-combobox-option-color-background,
-        transparent
-    );
+.avonni-primitive-combobox__action_fixed {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background-color: var(--avonni-combobox-action-color-background, #ffffff);
 }
 
-.avonni-primitive-combobox__action_background:hover,
-.avonni-primitive-combobox__action_background:focus {
-    background: var(
-        --avonni-primitive-combobox-action-color-background-hover,
-        #f3f2f2
-    );
+.avonni-primitive-combobox__action:not(.avonni-primitive-combobox__action_disabled):hover,
+.avonni-primitive-combobox__action.avonni-primitive-combobox__option_focused {
+    background: var(--avonni-combobox-action-color-background-hover, #f3f2f2);
 }
 
-.avonni-primitive-combobox__option_background:hover,
-.avonni-primitive-combobox__option_background:focus {
-    background: var(
-        --avonni-primitive-combobox-option-color-background-hover,
-        #f3f2f2
-    );
-}
-
-.avonni-primitive-combobox__option_background_focused {
-    background: var(
-        --avonni-primitive-combobox-option-color-background-hover,
-        #f3f2f2
-    );
+.avonni-primitive-combobox__action_disabled,
+.avonni-primitive-combobox__action_disabled lightning-icon {
+    color: #dddbda;
 }

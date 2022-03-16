@@ -1,0 +1,20 @@
+<template>
+    <c-avonni-datatable
+        columns={normalizedColumns}
+        records={normalizedRecords}
+        key-field={keyField}
+        hide-checkbox-column={hideCheckboxColumn}
+        max-column-width={maxColumnWidth}
+        min-column-width={minColumnWidth}
+        resize-column-disabled={resizeColumnDisabled}
+        row-number-offset={rowNumberOffset}
+        selected-rows={selectedRows}
+        show-row-number-column={showRowNumberColumn}
+        onrowselection={handleRowSelection}
+        onheaderaction={handleHeaderAction}
+        onrowaction={handleRowAction}
+        is-loading={isLoading}
+        aria-label={ariaLabel}
+    >
+    </c-avonni-datatable>
+</template>

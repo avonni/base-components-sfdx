@@ -454,9 +454,10 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     set maxVisibleOptions(value) {
-        const number =
-            typeof value === 'number' ? value : DEFAULT_MAX_VISIBLE_OPTIONS;
-        this._maxVisibleOptions = parseInt(number, 10);
+        const number = isNaN(parseInt(value, 10))
+            ? DEFAULT_MAX_VISIBLE_OPTIONS
+            : value;
+        this._maxVisibleOptions = number;
 
         if (this._connected) {
             this.updateBoxesHeight();
@@ -467,6 +468,7 @@ export default class AvonniDualListbox extends LightningElement {
      * Maximum number of options allowed in the selected options listbox.
      *
      * @type {number}
+     * @default Infinity
      * @public
      */
     @api
@@ -475,14 +477,17 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     set max(value) {
-        const number = typeof value === 'number' ? value : '';
-        this._max = parseInt(number, 10);
+        const number = isNaN(parseInt(value, 10))
+            ? Infinity
+            : parseInt(value, 10);
+        this._max = number;
     }
 
     /**
      * Minimum number of options required in the selected options listbox.
      *
      * @type {number}
+     * @default 0
      * @public
      */
     @api
@@ -491,8 +496,10 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     set min(value) {
-        const number = typeof value === 'number' ? value : DEFAULT_MIN;
-        this._min = parseInt(number, 10);
+        const number = isNaN(parseInt(value, 10))
+            ? DEFAULT_MIN
+            : parseInt(value, 10);
+        this._min = number;
     }
 
     /**
@@ -796,7 +803,9 @@ export default class AvonniDualListbox extends LightningElement {
 
         if (this._searchTerm) {
             sourceListOptions = sourceListOptions.filter((option) => {
-                return option.label.toLowerCase().includes(this._searchTerm);
+                return option.label
+                    .toLowerCase()
+                    .includes(this._searchTerm.toLowerCase());
             });
         }
 

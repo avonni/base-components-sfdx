@@ -67,11 +67,12 @@ const ICON_SIZES = {
 
 const BUTTON_VARIANTS = {
     valid: [
+        'brand',
         'bare',
+        'bare-inverse',
         'container',
         'border',
         'border-filled',
-        'bare-inverse',
         'border-inverse'
     ],
     default: 'border'
@@ -372,7 +373,7 @@ export default class AvonniButtonMenu extends LightningElement {
     }
 
     /**
-     * The variant changes the look of the button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
+     * The variant changes the look of the button. Accepted variants include brand, bare, container, border, border-filled, bare-inverse, and border-inverse.
      *
      * @public
      * @type {string}
@@ -408,8 +409,12 @@ export default class AvonniButtonMenu extends LightningElement {
 
         if (this.label) {
             classes.add({
-                'slds-button_neutral': this.variant === 'border',
-                'slds-button_inverse': this.variant === 'border-inverse'
+                'slds-button_neutral':
+                    this.variant === 'border' ||
+                    this.variant === 'border-filled',
+                'slds-button_inverse': this.variant === 'border-inverse',
+                'slds-button_icon-inverse': this.variant === 'bare-inverse',
+                'slds-button_brand': this.variant === 'brand'
             });
         } else {
             const useMoreContainer =
@@ -423,6 +428,8 @@ export default class AvonniButtonMenu extends LightningElement {
                 'slds-button_icon-more': !useMoreContainer && !isDropdownIcon,
                 'slds-button_icon-container-more':
                     useMoreContainer && !isDropdownIcon,
+                'slds-button_icon-brand slds-button_icon':
+                    this.variant === 'brand',
                 'slds-button_icon-container':
                     this.variant === 'container' && isDropdownIcon,
                 'slds-button_icon-border':

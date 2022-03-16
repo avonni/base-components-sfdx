@@ -1,75 +1,11 @@
-.avonni-combobox__main-combobox,
-.avonni-combobox__scopes {
-    --avonni-primitive-combobox-input-color-border: var(
-        --avonni-combobox-input-color-border,
-        #dddbda
-    );
-    --avonni-primitive-combobox-input-styling-border: var(
-        --avonni-combobox-styling-border,
-        solid
-    );
-    --avonni-primitive-combobox-input-sizing-border-top: var(
-        --avonni-combobox-input-sizing-border-top,
-        1px
-    );
-    --avonni-primitive-combobox-input-sizing-border-bottom: var(
-        --avonni-combobox-input-sizing-border-bottom,
-        1px
-    );
-    --avonni-primitive-combobox-option-color-background: var(
-        --avonni-combobox-option-color-background,
-        transparent
-    );
-    --avonni-primitive-combobox-option-color-background: var(
-        --avonni-combobox-action-color-background,
-        transparent
-    );
-    --avonni-primitive-combobox-option-color-background-hover: var(
-        --avonni-combobox-option-color-background-hover,
-        #f3f2f2
-    );
-    --avonni-primitive-combobox-option-color-background-hover: var(
-        --avonni-combobox-action-color-background-hover,
-        #f3f2f2
-    );
-}
-
-.avonni-combobox__main-combobox {
-    --avonni-primitive-combobox-input-radius-border-top-right: var(
-        --avonni-combobox-input-radius-border-top-right,
-        0.25rem
-    );
-    --avonni-primitive-combobox-input-radius-border-bottom-right: var(
-        --avonni-combobox-input-radius-border-bottom-right,
-        0.25rem
-    );
-    --avonni-primitive-combobox-input-radius-border-top-left: 0;
-    --avonni-primitive-combobox-input-radius-border-bottom-lef: 0;
-    --avonni-primitive-combobox-input-sizing-border-right: var(
-        --avonni-combobox-input-sizing-border-right,
-        1px
-    );
+.avonni-combobox__main-combobox:not(.avonni-combobox__main-combobox_no-scopes) {
+    --avonni-combobox-input-radius-border-top-left: 0;
+    --avonni-combobox-input-radius-border-bottom-left: 0;
 }
 
 .avonni-combobox__scopes {
-    --avonni-primitive-combobox-input-radius-border-bottom-right: 0;
-    --avonni-primitive-combobox-input-radius-border-top-right: 0;
-}
-
-.avonni-combobox__scopes,
-.avonni-combobox__main-combobox.avonni-combobox__main-combobox_no-scopes {
-    --avonni-primitive-combobox-input-radius-border-top-left: var(
-        --avonni-combobox-input-radius-border-top-left,
-        0.25rem
-    );
-    --avonni-primitive-combobox-input-radius-border-bottom-left: var(
-        --avonni-combobox-input-radius-border-bottom-left,
-        0.25rem
-    );
-    --avonni-primitive-combobox-input-sizing-border-left: var(
-        --avonni-combobox-input-sizing-border-top,
-        1px
-    );
+    --avonni-combobox-input-radius-border-bottom-right: 0;
+    --avonni-combobox-input-radius-border-top-right: 0;
 }
 
 .avonni-combobox__label {

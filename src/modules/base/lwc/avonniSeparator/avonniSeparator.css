@@ -54,6 +54,7 @@
 }
 
 .avonni-separator__icon {
+    --sds-c-icon-radius-border: var(--avonni-separator-icon-radius-border);
     --sds-c-icon-color-foreground: var(
         --avonni-separator-icon-color-foreground
     );

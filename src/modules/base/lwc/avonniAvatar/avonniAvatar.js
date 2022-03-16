@@ -444,7 +444,7 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * The variant changes the shape of the avatar. Valid values are empty, circle, and square.
+     * The variant changes the shape of the avatar. Valid values are circle, and square.
      *
      * @public
      * @type {string}

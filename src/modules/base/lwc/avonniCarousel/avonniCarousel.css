@@ -30,6 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.avonni-carousel__stage_min-width {
+    min-width: 20%;
+}
+
 .avonni-carousel__panel {
     display: flex;
     flex: 0 0 100%;

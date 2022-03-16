@@ -37,7 +37,7 @@
         <template if:true={required}>
             <abbr class="slds-required" title="Required">*</abbr>
         </template>
-        {label}
+        {computedLabel}
     </span>
     <lightning-helptext
         if:true={fieldLevelHelp}
@@ -60,7 +60,6 @@
                 dropdown-length={dropdownLength}
                 groups={scopesGroups}
                 hide-clear-icon
-                hide-selected-options
                 multi-level-groups={multiLevelGroups}
                 options={scopes}
                 read-only={readOnly}
@@ -78,8 +77,7 @@
                 dropdown-alignment={dropdownAlignment}
                 dropdown-length={dropdownLength}
                 groups={groups}
-                hide-selected-options
-                label={label}
+                label={computedLabel}
                 is-loading={isLoading}
                 is-multi-select={isMultiSelect}
                 loading-state-alternative-text={loadingStateAlternativeText}
@@ -93,7 +91,6 @@
                 remove-selected-options={removeSelectedOptions}
                 required={required}
                 search={search}
-                selected-options-aria-label={selectedOptionsAriaLabel}
                 hide-clear-icon={hideClearIcon}
                 value={value}
                 variant="label-hidden"
@@ -107,47 +104,37 @@
                 onprivateselect={handlePrivateSelect}
             ></c-avonni-primitive-combobox>
         </div>
+
         <!-- Selected options -->
-        <ul
-            if:true={showSelectedOptions}
-            class="
-                slds-grid slds-wrap
-                slds-p-vertical_xx-small
-                combobox__selected-options
-            "
-            role="listbox"
-            aria-label={selectedOptionsAriaLabel}
-            aria-orientation="horizontal"
+        <div
+            if:true={showHorizontalSelectedOptions}
+            class="slds-p-bottom_xx-small"
         >
-            <template for:each={selectedOptions} for:item="option">
-                <li
-                    key={option.value}
-                    class="slds-m-right_xx-small"
-                    role="presentation"
-                >
-                    <lightning-pill
-                        if:false={readOnly}
-                        label={option.label}
-                        variant="plain"
-                        name={option.value}
-                        role="option"
-                        tabindex="0"
-                        data-element-id="lightning-pill"
-                        onremove={handleRemoveSelectedOption}
-                    >
-                        <c-avonni-avatar
-                            if:true={option.hasAvatar}
-                            src={option.avatarSrc}
-                            fallback-icon-name={option.avatarFallbackIconName}
-                            hide-avatar-details="true"
-                            size="x-small"
-                        ></c-avonni-avatar>
-                    </lightning-pill>
-                    <div if:true={readOnly} class="slds-pill">
-                        <span class="slds-pill__label">{option.label}</span>
-                    </div>
-                </li>
-            </template>
-        </ul>
+            <c-avonni-pill-container
+                actions={selectedOptionsActions}
+                alternative-text={selectedOptionsAriaLabel}
+                items={selectedOptions}
+                sortable={sortableSelectedOptions}
+                data-element-id="avonni-pill-container"
+                onactionclick={handleRemovePill}
+                onreorder={handleReorderSelectedOptions}
+            ></c-avonni-pill-container>
+        </div>
+
+        <div
+            if:true={showVerticalSelectedOptions}
+            class="slds-p-vertical_xx-small"
+        >
+            <c-avonni-list
+                actions={selectedOptionsActions}
+                alternative-text={selectedOptionsAriaLabel}
+                divider="around"
+                items={selectedOptions}
+                sortable={sortableSelectedOptions}
+                data-element-id="avonni-list"
+                onactionclick={handleRemoveListItem}
+                onreorder={handleReorderSelectedOptions}
+            ></c-avonni-list>
+        </div>
     </div>
 </template>

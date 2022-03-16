@@ -141,8 +141,9 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set borderWidth(value) {
-        this._borderWidth =
-            typeof value === 'number' ? value : DEFAULT_BORDER_WIDTH;
+        this._borderWidth = isNaN(parseInt(value, 10))
+            ? DEFAULT_BORDER_WIDTH
+            : value;
 
         if (this._rendered) {
             this.redraw();
@@ -246,7 +247,7 @@ export default class AvonniQrcode extends LightningElement {
     }
 
     set padding(value) {
-        this._padding = typeof value === 'number' ? value : DEFAULT_PADDING;
+        this._padding = isNaN(parseInt(value, 10)) ? DEFAULT_PADDING : value;
 
         if (this._rendered) {
             this.redraw();

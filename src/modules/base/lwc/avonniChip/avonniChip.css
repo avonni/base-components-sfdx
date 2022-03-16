@@ -32,8 +32,8 @@
 
 .avonni-chip {
     padding: 0.25rem 0.5rem;
-    border: var(--avonni-chip-sizing-border, 1px)
-        var(--avonni-chip-styling-border, solid) transparent;
+    border-width: var(--avonni-chip-sizing-border, 1px);
+    border-style: var(--avonni-chip-styling-border, solid);
     border-radius: var(--avonni-chip-radius-border, 15rem);
     font-size: var(--avonni-chip-label-font-size, 0.75rem);
     font-weight: 700;

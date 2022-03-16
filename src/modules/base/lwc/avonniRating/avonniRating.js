@@ -75,7 +75,7 @@ export default class AvonniRating extends LightningElement {
     @api fieldLevelHelp;
     /**
      * Assign a unique ID through the name of the rating component.
-     * 
+     *
      * @type {string}
      */
     @api name = generateUUID();
@@ -158,7 +158,7 @@ export default class AvonniRating extends LightningElement {
     }
 
     set min(value) {
-        this._min = typeof value === 'number' ? Number(value) : DEFAULT_MIN;
+        this._min = isNaN(parseInt(value, 10)) ? DEFAULT_MIN : value;
 
         if (this.init) {
             this.ratingRecalculation();
@@ -178,7 +178,7 @@ export default class AvonniRating extends LightningElement {
     }
 
     set max(value) {
-        this._max = typeof value === 'number' ? Number(value) : DEFAULT_MAX;
+        this._max = isNaN(parseInt(value, 10)) ? DEFAULT_MAX : value;
 
         if (this.init) {
             this.ratingRecalculation();
@@ -367,7 +367,9 @@ export default class AvonniRating extends LightningElement {
      * @type {string}
      */
     get computedLegendClass() {
-        return classSet('slds-form-element__label slds-no-flex avonni-rating__label')
+        return classSet(
+            'slds-form-element__label slds-no-flex avonni-rating__label'
+        )
             .add({
                 'slds-assistive-text': this.variant === 'label-hidden'
             })
@@ -406,7 +408,9 @@ export default class AvonniRating extends LightningElement {
      * Calculate rating button and icon button classes and styling based on rating value selection and attributes.
      */
     ratingRecalculation() {
-        let buttons = this.template.querySelectorAll('[data-element-id="button"]');
+        let buttons = this.template.querySelectorAll(
+            '[data-element-id="button"]'
+        );
 
         buttons.forEach((button) => {
             button.classList.remove('slds-button_outline-brand');

@@ -35,6 +35,13 @@
         --avonni-page-header-base-header-color-background,
         #f3f2f2
     );
+    --sds-c-icon-radius-border: var(--avonni-page-header-icon-radius-border);
+    --sds-c-icon-color-background: var(
+        --avonni-page-header-base-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-page-header-base-icon-color-foreground
+    );
 }
 
 .avonni-page-header__header_object-home {
@@ -43,11 +50,25 @@
         --avonni-page-header-object-home-header-color-background,
         #f3f2f2
     );
+    --sds-c-icon-radius-border: var(--avonni-page-header-icon-radius-border);
+    --sds-c-icon-color-background: var(
+        --avonni-page-header-object-home-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-page-header-object-home-icon-color-foreground
+    );
 }
 
 .avonni-page-header__header_record-home {
     background-color: var(
         --avonni-page-header-record-home-header-color-background,
         #f3f2f2
+    );
+    --sds-c-icon-radius-border: var(--avonni-page-header-icon-radius-border);
+    --sds-c-icon-color-background: var(
+        --avonni-page-header-record-home-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-page-header-record-home-icon-color-foreground
     );
 }

@@ -239,3 +239,7 @@ div:focus {
 .avonni-dynamic-menu__actions-icon {
     display: none;
 }
+
+.avonni-dynamic-menu__item_min-height {
+    min-height: 32px;
+}

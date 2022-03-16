@@ -38,9 +38,9 @@
 /*-- Figure and items --*/
 .avonni-visual-picker__figure {
     border-radius: var(--avonni-visual-picker-radius-border, 0.25rem);
-    border: var(--avonni-visual-picker-sizing-border, 1px)
-        var(--avonni-visual-picker-styling-border, solid)
-        var(--avonni-visual-picker-color-border, #dddbda);
+    border-width: var(--avonni-visual-picker-sizing-border, 1px);
+    border-style: var(--avonni-visual-picker-styling-border, solid);
+    border-color: var(--avonni-visual-picker-color-border, #dddbda);
     box-shadow: var(--avonni-visual-picker-shadow, 0 2px 2px rgb(0 0 0 / 5%));
     background-color: var(--avonni-visual-picker-color-background, #ffffff);
     overflow: hidden;
@@ -82,7 +82,9 @@
 
 /*-- Checked --*/
 .slds-visual-picker input:checked ~ label .slds-visual-picker__text {
-    border: 1px solid var(--avonni-visual-picker-color-border-selected, #1b96ff);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--avonni-visual-picker-color-border-selected, #1b96ff);
     -webkit-box-shadow: 0 0 0 1px
         var(--avonni-visual-picker-color-border-selected, #1b96ff) inset;
     box-shadow: 0 0 0 1px
@@ -150,7 +152,7 @@
 
 /*-- figure title --*/
 .avonni-visual-picker__figure-title_margin {
-    margin: var(--avonni-visual-picker-title-margin-around, 0.25rem);
+    margin: var(--avonni-visual-picker-title-margin-around, 0rem);
 }
 
 /*-- description --*/

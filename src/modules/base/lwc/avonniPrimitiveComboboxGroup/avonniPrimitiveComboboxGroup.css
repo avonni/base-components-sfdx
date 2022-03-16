@@ -30,40 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-primitive-combobox__action_background {
-    background: var(
-        --avonni-primitive-combobox-action-color-background,
-        transparent
-    );
+.avonni-primitive-combobox__option {
+    background: var(--avonni-combobox-option-color-background, transparent);
 }
 
-.avonni-primitive-combobox__option_background {
-    background: var(
-        --avonni-primitive-combobox-option-color-background,
-        transparent
-    );
+.avonni-primitive-combobox__option:hover,
+.avonni-primitive-combobox__option_focused {
+    background: var(--avonni-combobox-option-color-background-hover, #f3f2f2);
 }
 
-.avonni-primitive-combobox__action_background:hover,
-.avonni-primitive-combobox__action_background:focus {
-    background: var(
-        --avonni-primitive-combobox-action-color-background-hover,
-        #f3f2f2
-    );
-}
-
-.avonni-primitive-combobox__option_background:hover,
-.avonni-primitive-combobox__option_background:focus {
-    background: var(
-        --avonni-primitive-combobox-option-color-background-hover,
-        #f3f2f2
-    );
-}
-
-.avonni-primitive-combobox__option_background_focused {
-    background: var(
-        --avonni-primitive-combobox-option-color-background-hover,
-        #f3f2f2
-    );
+.avonni-primitive-combobox__option_focused {
     text-decoration: none;
 }

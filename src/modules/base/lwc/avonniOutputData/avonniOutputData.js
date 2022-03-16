@@ -31,29 +31,14 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
-
-const DATA_TYPES = {
-    valid: [
-        'boolean',
-        'currency',
-        'date',
-        'email',
-        'location',
-        'number',
-        'percent',
-        'phone',
-        'text',
-        'url'
-    ],
-    default: 'text'
-};
-
-const VARIANTS = {
-    default: 'standard',
-    valid: ['standard', 'label-hidden', 'label-inline', 'label-stacked']
-};
+import {
+    SUPPORTED_TYPE_ATTRIBUTES,
+    TYPES,
+    TYPE_ATTRIBUTES,
+    VARIANTS
+} from './avonniConstants';
 
 /**
  * The output data displays data depending on its type.
@@ -73,9 +58,15 @@ export default class AvonniOutputData extends LightningElement {
     @api label;
 
     _typeAttributes = {};
-    _type = DATA_TYPES.default;
+    _type = TYPES.default;
     _value;
     _variant = VARIANTS.default;
+
+    normalizedTypeAttributes = {};
+
+    connectedCallback() {
+        this.normalizeTypeAttributes();
+    }
 
     /**
      * Attributes specific to the type (see <strong>Types and Type Attributes</strong>).
@@ -89,6 +80,8 @@ export default class AvonniOutputData extends LightningElement {
     }
     set typeAttributes(value) {
         this._typeAttributes = typeof value === 'object' ? value : {};
+
+        if (this.isConnected) this.normalizeTypeAttributes();
     }
 
     /**
@@ -103,9 +96,11 @@ export default class AvonniOutputData extends LightningElement {
     }
     set type(value) {
         this._type = normalizeString(value, {
-            fallbackValue: DATA_TYPES.default,
-            validValues: DATA_TYPES.valid
+            fallbackValue: TYPES.default,
+            validValues: TYPES.valid
         });
+
+        if (this.isConnected) this.normalizeTypeAttributes();
     }
 
     /**
@@ -263,5 +258,58 @@ export default class AvonniOutputData extends LightningElement {
      */
     get showBoolean() {
         return this.isBoolean && this.value;
+    }
+
+    /**
+     * Normalize the type attributes, to remove the invalid and unsupported attributes.
+     */
+    normalizeTypeAttributes() {
+        const typeAttributes = Object.entries(this.typeAttributes);
+        if (!typeAttributes.length) {
+            this.normalizedTypeAttributes = {};
+            return;
+        }
+
+        const normalizedTypeAttributes = {};
+        for (let i = 0; i < typeAttributes.length; i++) {
+            // Check if the attribute is valid for the type
+            const [key, value] = typeAttributes[i];
+            const allowedAttribute =
+                SUPPORTED_TYPE_ATTRIBUTES[this.type] &&
+                SUPPORTED_TYPE_ATTRIBUTES[this.type].includes(key);
+            const hasValue = value !== undefined && value !== null;
+            if (!allowedAttribute || !hasValue) continue;
+
+            // Check if the value type is valid
+            const definition = TYPE_ATTRIBUTES.find(
+                (attr) => attr.name === key
+            );
+
+            let normalizedValue = value;
+            if (definition.type === 'string' && definition.valid) {
+                // Normalize string attributes
+                normalizedValue = normalizeString(value, {
+                    fallbackValue: definition.default,
+                    validValues: definition.valid
+                });
+                if (!normalizedValue) continue;
+            } else if (
+                definition.type === 'string' &&
+                typeof normalizedValue !== 'string'
+            ) {
+                continue;
+            } else if (definition.type === 'number') {
+                // Normalize number attributes
+                normalizedValue = Number(value);
+                if (isNaN(normalizedValue)) continue;
+            } else if (definition.type === 'boolean') {
+                // Normalize boolean attributes
+                normalizedValue = normalizeBoolean(value);
+            }
+
+            normalizedTypeAttributes[key] = normalizedValue;
+        }
+
+        this.normalizedTypeAttributes = normalizedTypeAttributes;
     }
 }

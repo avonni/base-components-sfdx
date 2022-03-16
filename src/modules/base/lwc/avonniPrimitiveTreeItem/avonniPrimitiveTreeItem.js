@@ -82,6 +82,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     _fields = [];
     _href;
     _expanded = false;
+    _independentMultiSelect = false;
     _isLeaf = false;
     _isLoading = false;
     _label;
@@ -124,6 +125,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
                 bubbles: true,
                 detail: {
                     bounds: this.getBounds,
+                    closePopover: this.closePopover,
                     focus: this.focusChild,
                     removeBorder: this.removeBorder,
                     setBorder: this.setBorder,
@@ -299,6 +301,22 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
         if (this.isConnected) this.splitActions();
+    }
+
+    /**
+     * If present, the item selection will not extend to its children.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get independentMultiSelect() {
+        return this._independentMultiSelect;
+    }
+    set independentMultiSelect(value) {
+        this._independentMultiSelect = normalizeBoolean(value);
+        if (this.isConnected) this.computeSelection();
     }
 
     /**
@@ -628,11 +646,22 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
         return result.charAt(0).toUpperCase() + result.slice(1);
     }
 
+    closePopover = () => {
+        if (this.popoverVisible) {
+            this.togglePopoverVisibility();
+        }
+    };
+
     /**
      * Compute the selection state of the item, depending on the selection state of its children.
      */
     computeSelection() {
-        if (!this.selected && this.showCheckbox && this.childItems.length) {
+        if (
+            !this.selected &&
+            this.showCheckbox &&
+            this.childItems.length &&
+            !this.independentMultiSelect
+        ) {
             const selectedChildren = this.childItems.filter(
                 (child) => child.selected
             );
@@ -922,6 +951,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
          */
         const actionClickEvent = new CustomEvent('privateactionclick', {
             detail: {
+                bounds: this.getBounds(),
                 key: this.nodeKey,
                 name
             },
@@ -956,7 +986,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
      * @param {Event} event
      */
     handleCheckboxClick(event) {
-        if (this.allowInlineEdit) event.stopPropagation();
+        event.stopPropagation();
     }
 
     /**
@@ -1214,6 +1244,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
+                    bounds: this.getBounds(),
                     values: {
                         disabled: this.disabled,
                         expanded: this.expanded,
@@ -1255,13 +1286,14 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
             composed: true,
             cancelable: true,
             detail: {
+                bounds: this.getBounds(),
                 name: this.name,
                 key: this.nodeKey,
                 target
             }
         });
         this.dispatchEvent(customEvent);
-        if (customEvent.defaultPrevented) {
+        if (customEvent.defaultPrevented && event.target.tagName !== 'INPUT') {
             event.preventDefault();
         }
     }

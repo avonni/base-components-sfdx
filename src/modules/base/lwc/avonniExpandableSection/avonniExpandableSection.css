@@ -98,6 +98,23 @@
     );
 }
 
+.avonni-expandable-section__header_shaded
+    .avonni-expandable-section__closed-icon,
+.avonni-expandable-section__header_shaded
+    .avonni-expandable-section__opened-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-expandable-section-shaded-header-icon-color-foreground-default
+    );
+}
+
+.avonni-expandable-section__header_base .avonni-expandable-section__closed-icon,
+.avonni-expandable-section__header_base
+    .avonni-expandable-section__opened-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-expandable-section-base-header-icon-color-foreground-default
+    );
+}
+
 .avonni-expandable-section__opened-icon {
     margin-top: -2px;
 }

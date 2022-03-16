@@ -136,32 +136,48 @@ div:focus {
 }
 
 .avonni-calendar__cell_bordered-right {
-    border-right: var(
-            --avonni-calendar-multi-selected-color-border-hover,
-            #d3d3d39a
-        )
-        1px var(--avonni-calendar-multi-selected-styling-border-hover, dashed);
+    border-right-color: var(
+        --avonni-calendar-multi-selected-color-border-hover,
+        #d3d3d39a
+    );
+    border-right-width: 1px;
+    border-right-style: var(
+        --avonni-calendar-multi-selected-styling-border-hover,
+        dashed
+    );
 }
 
 .avonni-calendar__cell_bordered-left {
-    border-left: var(
-            --avonni-calendar-multi-selected-color-border-hover,
-            #d3d3d39a
-        )
-        1px var(--avonni-calendar-multi-selected-styling-border-hover, dashed);
+    border-left-color: var(
+        --avonni-calendar-multi-selected-color-border-hover,
+        #d3d3d39a
+    );
+    border-left-width: 1px;
+    border-left-style: var(
+        --avonni-calendar-multi-selected-styling-border-hover,
+        dashed
+    );
 }
 
 .avonni-calendar__cell_bordered-top_bottom {
-    border-bottom: var(
-            --avonni-calendar-multi-selected-color-border-hover,
-            #d3d3d39a
-        )
-        1px var(--avonni-calendar-multi-selected-styling-border-hover, dashed);
-    border-top: var(
-            --avonni-calendar-multi-selected-color-border-hover,
-            #d3d3d39a
-        )
-        1px var(--avonni-calendar-multi-selected-styling-border-hover, dashed);
+    border-bottom-color: var(
+        --avonni-calendar-multi-selected-color-border-hover,
+        #d3d3d39a
+    );
+    border-bottom-width: 1px;
+    border-bottom-style: var(
+        --avonni-calendar-multi-selected-styling-border-hover,
+        dashed
+    );
+    border-top-color: var(
+        --avonni-calendar-multi-selected-color-border-hover,
+        #d3d3d39a
+    );
+    border-top-width: 1px;
+    border-top-style: var(
+        --avonni-calendar-multi-selected-styling-border-hover,
+        dashed
+    );
 }
 
 .avonni-calendar__marked-cells {

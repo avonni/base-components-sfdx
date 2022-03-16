@@ -104,8 +104,9 @@ export default class AvonniTimer extends LightningElement {
     }
 
     set value(value) {
-        this._value =
-            typeof value === 'number' ? Number(value / 1000) : DEFAULT_VALUE;
+        this._value = isNaN(parseInt(value, 10))
+            ? DEFAULT_VALUE
+            : Number(value / 1000);
     }
 
     /**
@@ -121,11 +122,11 @@ export default class AvonniTimer extends LightningElement {
     }
 
     set duration(value) {
-        if (typeof value === 'number') {
-            if (value > 86400000) {
+        if (!isNaN(parseInt(value, 10))) {
+            if (parseInt(value, 10) > 86400000) {
                 this._duration = 86400;
             } else {
-                this._duration = value / 1000;
+                this._duration = parseInt(value, 10) / 1000;
             }
         } else {
             this._duration = DEFAULT_DURATION;

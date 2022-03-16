@@ -31,7 +31,7 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import pageHeader from './avonniPageHeader.html';
 import pageHeaderVertical from './avonniPageHeaderVertical.html';
@@ -81,6 +81,7 @@ export default class AvonniPageHeader extends LightningElement {
     @api info;
 
     _variant = PAGE_HEADER_VARIANTS.default;
+    _isJoined = false;
     showTitle = true;
     showLabel = true;
     showActions = true;
@@ -196,13 +197,41 @@ export default class AvonniPageHeader extends LightningElement {
     }
 
     /**
+     * If present, the bottom border-radius is set to zero and the shadow is removed. This allows the page-header to sit flush on top of another element.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get isJoined() {
+        return this._isJoined;
+    }
+
+    set isJoined(value) {
+        this._isJoined = normalizeBoolean(value);
+    }
+
+    /**
      * Computed Outer class styling based on variant 'object-home' or 'record-home'.
      *
      * @type {string}
      */
     get computedOuterClass() {
         return classSet('slds-page-header')
+            .add({ 'slds-page-header_joined': this._isJoined })
             .add(`avonni-page-header__header_${this._variant}`)
+            .toString();
+    }
+
+    /**
+     * Computed Outer class styling based on variant 'record-home-vertical'.
+     *
+     * @type {string}
+     */
+    get computedVerticalOuterClass() {
+        return classSet('slds-page-header slds-page-header_vertical')
+            .add({ 'slds-page-header_joined': this._isJoined })
             .toString();
     }
 

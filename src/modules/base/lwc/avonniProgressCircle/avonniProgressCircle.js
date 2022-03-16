@@ -31,7 +31,7 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
 const VALUE_VARIANTS = {
@@ -88,6 +88,25 @@ export default class AvonniProgressCircle extends LightningElement {
     _size = PROGRESS_CIRCLE_SIZES.default;
     _thickness = PROGRESS_CIRCLE_THICKNESSES.default;
     _color = DEFAULT_COLOR;
+    _isLoading = false;
+    _spinningValue = 0;
+    _dots = 1;
+
+    /**
+     * If present the progress bar displays a loading animation. The value goes from 0 to 100 repeatedly and the label displays a 3 dots animation. The value and labels become hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get isLoading() {
+        return this._isLoading;
+    }
+
+    set isLoading(loading) {
+        this._isLoading = normalizeBoolean(loading);
+    }
 
     /**
      * Position of the title. Valid values include top and bottom.
@@ -122,16 +141,14 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     set value(value) {
-        if (typeof value === 'number') {
-            if (value <= 0) {
-                this._value = 0;
-            } else if (value > 100) {
-                this._value = 100;
-            } else {
-                this._value = value;
-            }
-        } else {
+        if (parseInt(value, 10) <= 0) {
             this._value = 0;
+        } else if (parseInt(value, 10) > 100) {
+            this._value = 100;
+        } else if (isNaN(parseInt(value, 10))) {
+            this._value = DEFAULT_VALUE;
+        } else {
+            this._value = parseInt(value, 10);
         }
     }
 
@@ -346,12 +363,21 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     /**
+     * There is no label when isLoading is true.
+     *
+     * @type {boolean}
+     */
+    get labelPresent() {
+        return this.label && !this.isLoading;
+    }
+
+    /**
      * Verify if showing value.
      *
      * @type {string}
      */
     get showValue() {
-        return this._variant === 'standard';
+        return this._variant === 'standard' && !this.isLoading;
     }
 
     /**
@@ -361,6 +387,53 @@ export default class AvonniProgressCircle extends LightningElement {
      */
     get progressValueStyles() {
         return `color: ${this.color}`;
+    }
+
+    /**
+     * Animate progress bar with continuous loading animation.
+     *
+     * @type {string}
+     */
+    get loading() {
+        let previousValue = this._spinningValue;
+
+        setTimeout(() => {
+            if (previousValue < 100) {
+                this._spinningValue += 2.5;
+            } else {
+                setTimeout(() => {
+                    this._spinningValue = 0;
+                }, 800);
+            }
+        }, 60);
+
+        this._dots = Math.round(this._spinningValue / 33);
+
+        let fillValue = this._spinningValue;
+        let isLong = this._spinningValue > 50 ? '1 1' : '0 1';
+
+        if (this._direction === 'fill' && fillValue !== 100) {
+            fillValue = 100 - this._spinningValue;
+            isLong = this._spinningValue > 50 ? '1 0' : '0 0';
+        }
+
+        let arcX = Math.cos(2 * Math.PI * (fillValue / 100));
+        let arcY = Math.sin(2 * Math.PI * (fillValue / 100));
+
+        return 'M 1 0 A 1 1 0 ' + isLong + ' ' + arcX + ' ' + arcY + ' L 0 0';
+    }
+
+    /**
+     * Return loading dots animations . .. ... for isLoading animation.
+     *
+     * @type {string}
+     */
+    get loadingDots() {
+        let dots = '';
+        for (let i = 0; i < this._dots; i++) {
+            dots += '.';
+        }
+        return dots;
     }
 
     /**
@@ -381,6 +454,19 @@ export default class AvonniProgressCircle extends LightningElement {
         let arcY = Math.sin(2 * Math.PI * (fillValue / 100));
 
         return 'M 1 0 A 1 1 0 ' + isLong + ' ' + arcX + ' ' + arcY + ' L 0 0';
+    }
+
+    /**
+     * Compute display fill for progress bar.
+     *
+     * @type {string}
+     */
+    get progress() {
+        if (this.isLoading) {
+            return this.loading;
+        }
+
+        return this.completeness;
     }
 
     /**

@@ -66,15 +66,15 @@ export default class AvonniPrimitiveReferenceLine extends LightningElement {
     }
 
     set value(value) {
-        if (typeof value === 'number') {
-            if (value <= 0) {
-                this._value = 0;
-            } else if (value > 100) {
-                this._value = 100;
-            } else {
-                this._value = value;
-            }
-        } else this._value = 0;
+        if (parseInt(value, 10) <= 0) {
+            this._value = 0;
+        } else if (parseInt(value, 10) > 100) {
+            this._value = 100;
+        } else if (isNaN(parseInt(value, 10))) {
+            this._value = DEFAULT_VALUE;
+        } else {
+            this._value = parseInt(value, 10);
+        }
     }
 
     @api

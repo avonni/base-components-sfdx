@@ -352,3 +352,17 @@
     height: 100%;
     object-fit: cover;
 }
+/** 
+* fallback icon
+*/
+.avonni-avatar__icon {
+    --sds-c-icon-color-background: var(
+        --avonni-avatar-fallback-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-avatar-fallback-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-avatar-fallback-icon-color-foreground-default
+    );
+}

@@ -53,6 +53,7 @@ export default class AvonniAction {
         this.position = action.position || 'top';
         this.isBackLink = false;
         this.disabled = normalizeBoolean(action.disabled);
+        this.fixed = normalizeBoolean(action.fixed);
     }
 
     /**
@@ -62,13 +63,12 @@ export default class AvonniAction {
      */
     get computedClass() {
         return classSet(
-            'slds-listbox__item slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term avonni-primitive-combobox__action_background'
+            'slds-listbox__item slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term avonni-primitive-combobox__action'
         )
             .add({
                 'slds-border_bottom': this.isBackLink,
-                combobox__action_top: this.position === 'top',
-                combobox__action_bottom: this.position === 'bottom',
-                combobox__action_disabled: this.disabled
+                'avonni-primitive-combobox__action_disabled': this.disabled,
+                'avonni-primitive-combobox__action_fixed': this.fixed
             })
             .toString();
     }

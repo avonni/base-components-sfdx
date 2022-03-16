@@ -33,6 +33,21 @@
 .avonni-list__item {
     height: fit-content;
     background-color: var(--avonni-list-item-color-background, transparent);
+    padding-top: var(--avonni-list-item-spacing-block-start);
+    padding-bottom: var(--avonni-list-item-spacing-block-end);
+    padding-left: var(--avonni-list-item-spacing-inline-start);
+    padding-right: var(--avonni-list-item-spacing-inline-end);
+}
+
+.avonni-list__item-sortable {
+    background-color: var(
+        --avonni-list-item-color-background-sortable,
+        var(--avonni-list-item-color-background, transparent)
+    );
+}
+
+.avonni-list__item:not(:last-child) {
+    margin-bottom: var(--avonni-list-item-spacing-block-between);
 }
 
 .avonni-list__header_font {
@@ -43,20 +58,25 @@
     line-height: var(--avonni-list-header-line-height, 1.25);
 }
 
-.avonni-list__item-sortable {
-    cursor: var(--avonni-list-item-cursor, grab);
-}
-
 .avonni-list__item-sortable-icon-cursor {
     cursor: grab;
 }
 
 /* Disable the hover on touch */
 @media (hover: hover) {
+    .avonni-list__item:hover {
+        cursor: var(--avonni-list-item-cursor, default);
+        background-color: var(--avonni-list-item-color-background-hover);
+    }
+
     .avonni-list__item-sortable:hover {
+        cursor: var(
+            --avonni-list-item-cursor-sortable,
+            var(--avonni-list-item-cursor, grab)
+        );
         background-color: var(
-            --avonni-list-item-color-background-hover,
-            #f3f2f2
+            --avonni-list-item-color-background-sortable-hover,
+            var(--avonni-list-item-color-background-hover, #f3f2f2)
         );
     }
 }
@@ -102,22 +122,22 @@
 }
 
 .avonni-list__item-divider_around {
-    border: var(--avonni-list-item-sizing-border, 1px)
-        var(--avonni-list-item-styling-border, solid)
-        var(--avonni-list-item-color-border, #dddbda);
+    border-width: var(--avonni-list-item-sizing-border, 1px);
+    border-style: var(--avonni-list-item-styling-border, solid);
+    border-color: var(--avonni-list-item-color-border, #dddbda);
     border-radius: var(--avonni-list-item-around-border-radius, 0.25rem);
 }
 
 .avonni-list__item-divider_top {
-    border-top: var(--avonni-list-item-sizing-border, 1px)
-        var(--avonni-list-item-styling-border, solid)
-        var(--avonni-list-item-color-border, #dddbda);
+    border-top-width: var(--avonni-list-item-sizing-border, 1px);
+    border-top-style: var(--avonni-list-item-styling-border, solid);
+    border-top-color: var(--avonni-list-item-color-border, #dddbda);
 }
 
 .avonni-list__item-divider_bottom {
-    border-bottom: var(--avonni-list-item-sizing-border, 1px)
-        var(--avonni-list-item-styling-border, solid)
-        var(--avonni-list-item-color-border, #dddbda);
+    border-bottom-width: var(--avonni-list-item-sizing-border, 1px);
+    border-bottom-style: var(--avonni-list-item-styling-border, solid);
+    border-bottom-color: var(--avonni-list-item-color-border, #dddbda);
 }
 
 .avonni-list__item-header_font {

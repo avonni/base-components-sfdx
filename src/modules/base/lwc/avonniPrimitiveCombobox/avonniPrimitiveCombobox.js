@@ -71,7 +71,6 @@ const DROPDOWN_LENGTHS = {
 const DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT = 'Loading';
 const DEFAULT_PLACEHOLDER = 'Select an Option';
 const DEFAULT_PLACEHOLDER_WHEN_SEARCH_ALLOWED = 'Search...';
-const DEFAULT_SELECTED_OPTIONS_ARIA_LABEL = 'Selected Options';
 const DEFAULT_GROUP_NAME = 'ungrouped';
 
 /**
@@ -126,7 +125,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     _dropdownAlignment = DROPDOWN_ALIGNMENTS.default;
     _dropdownLength = DROPDOWN_LENGTHS.default;
     _groups = [{ name: DEFAULT_GROUP_NAME }];
-    _hideSelectedOptions = false;
     _isLoading = false;
     _isMultiSelect = false;
     _loadingStateAlternativeText = DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
@@ -137,7 +135,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     _removeSelectedOptions = false;
     _required = false;
     _search = this.computeSearch;
-    _selectedOptionsAriaLabel = DEFAULT_SELECTED_OPTIONS_ARIA_LABEL;
     _hideClearIcon = false;
     _value = [];
     _variant = VARIANTS.default;
@@ -205,6 +202,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                 this.topActions.push(actionObject);
             }
         });
+
+        this.sortFixedActions(this.topActions, 'first');
+        this.sortFixedActions(this.bottomActions);
     }
 
     /**
@@ -297,21 +297,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         // Add a default group for options without groups
         this._groups.unshift({ name: DEFAULT_GROUP_NAME });
         if (this.visibleOptions.length) this.computeGroups();
-    }
-
-    /**
-     * If present, the selected options pills will be hidden.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get hideSelectedOptions() {
-        return this._hideSelectedOptions;
-    }
-    set hideSelectedOptions(value) {
-        this._hideSelectedOptions = normalizeBoolean(value);
     }
 
     /**
@@ -487,24 +472,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
     set search(value) {
         this._search = typeof value === 'function' ? value : this.computeSearch;
-    }
-
-    /**
-     * Describes the selected options section to assistive technologies.
-     *
-     * @type {string}
-     * @default Selected Options
-     * @public
-     */
-    @api
-    get selectedOptionsAriaLabel() {
-        return this._selectedOptionsAriaLabel;
-    }
-    set selectedOptionsAriaLabel(value) {
-        this._selectedOptionsAriaLabel =
-            typeof value === 'string'
-                ? value.trim()
-                : DEFAULT_SELECTED_OPTIONS_ARIA_LABEL;
     }
 
     /**
@@ -742,7 +709,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (this.dropdownVisible) {
             const elements = [];
             const topActions = this.template.querySelectorAll(
-                '.combobox__action_top'
+                '[data-element-id="li-top-action"]'
             );
             topActions.forEach((action) => {
                 if (action.ariaDisabled === 'false') elements.push(action);
@@ -754,14 +721,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             if (backLink) elements.push(backLink);
 
             const groups = this.template.querySelectorAll(
-                '[data-element-id^="avonni-primitive-combobox-group"]'
+                '[data-element-id="avonni-primitive-combobox-group"]'
             );
             groups.forEach((group) => {
                 elements.push(group.optionElements);
             });
 
             const bottomActions = this.template.querySelectorAll(
-                '.combobox__action_bottom'
+                '[data-element-id="li-bottom-action"]'
             );
             bottomActions.forEach((action) => {
                 if (action.ariaDisabled === 'false') elements.push(action);
@@ -773,27 +740,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * True if highlighted-option.
+     * Highlighted option HTML element.
      *
-     * @type {boolean}
+     * @type {HTMLElement}
      */
     get _highlightedOption() {
         return (
             this._optionElements.length &&
             this._optionElements[this._highlightedOptionIndex]
-        );
-    }
-
-    /**
-     * True if selected-options, multi-select is true and hide-selected-options is false.
-     *
-     * @type {boolean}
-     */
-    get showSelectedOptions() {
-        return (
-            !this.hideSelectedOptions &&
-            this.isMultiSelect &&
-            this.selectedOptions.length > 0
         );
     }
 
@@ -850,7 +804,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     get computedDropdownClass() {
         return classSet(
-            'slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid combobox__dropdown'
+            'slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid avonni-primitive-combobox__dropdown slds-is-relative'
         )
             .add({
                 'slds-dropdown_left':
@@ -876,7 +830,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     get computedInputContainerClass() {
         return classSet('slds-combobox__form-element slds-input-has-icon')
             .add({
-                'slds-input-has-icon_left-right combobox__input-has-icon_left-right':
+                'slds-input-has-icon_left-right avonni-primitive-combobox__input-has-icon_left-right':
                     this.showInputValueAvatar || this.showInputValueIcon,
                 'slds-input-has-icon_right':
                     !this.showInputValueAvatar && !this.showInputValueIcon
@@ -900,10 +854,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     get readOnlyValue() {
         return this.validity.valid ? this.inputValue : '';
-    }
-
-    get readOnlyLabel() {
-        return this.label ? this.label : 'Read Only Combobox';
     }
 
     /**
@@ -981,6 +931,23 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
+     * Handles the removal of a selected option.
+     * Dispatches change event.
+     *
+     * @param {string} value Value of the option to remove.
+     * @public
+     */
+    @api
+    removeSelectedOption(value) {
+        const selectedOption = this.getOption(value);
+        selectedOption.selected = false;
+
+        this.computeSelection();
+        this.visibleOptions = this.options;
+        this.dispatchChange('unselect', selectedOption.levelPath);
+    }
+
+    /**
      * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
      *
      * @returns {boolean} False if invalid, true if valid.
@@ -1049,20 +1016,43 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     /**
      * Option's object initialization.
      */
-    initOptionObjects(options) {
+    initOptionObjects(options, levelPath = []) {
         const optionObjects = [];
-        options.forEach((option) => {
-            const optionObject = new Option(option);
+        options.forEach((option, index) => {
+            const optionLevelPath = levelPath.concat(index);
+            const optionObject = new Option(option, optionLevelPath);
 
             // If the option has children, generate objects for them too
             const childrenOptions = normalizeArray(option.options);
             if (childrenOptions.length) {
-                optionObject.options = this.initOptionObjects(childrenOptions);
+                optionObject.options = this.initOptionObjects(
+                    childrenOptions,
+                    optionLevelPath
+                );
             }
 
             optionObjects.push(optionObject);
         });
         return optionObjects;
+    }
+
+    /**
+     * Place the fixed actions first or last in an array of action objects. Used to make sure items actual order matches the visual order.
+     *
+     * @param {object[]} actions Array of actions to sort.
+     * @param {string} position Position of the fixecd actions in the array. Valid values are first and last. Defaults to last.
+     */
+    sortFixedActions(actions, position) {
+        const fixedFirst = position === 'first';
+
+        actions.sort((a, b) => {
+            if (a.fixed && !b.fixed) {
+                return fixedFirst ? -1 : 1;
+            } else if (!a.fixed && b.fixed) {
+                return fixedFirst ? 1 : -1;
+            }
+            return 0;
+        });
     }
 
     /**
@@ -1080,7 +1070,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         this._autoPosition.start({
             target: () =>
                 this.template.querySelector('[data-element-id="input"]'),
-            element: () => this.template.querySelector('div.slds-dropdown'),
+            element: () =>
+                this.template.querySelector('[data-element-id="div-dropdown"]'),
             align: {
                 horizontal: Direction.Left,
                 vertical: Direction.Top
@@ -1141,7 +1132,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
         // Height of the top actions
         const topActions = this.template.querySelectorAll(
-            '.combobox__action_top'
+            '[data-element-id="li-top-action"]'
         );
         const topActionsHeight = getListHeight(topActions);
 
@@ -1149,13 +1140,13 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         let bottomActionsHeight = 0;
         if (this.visibleOptions.length <= this._maxVisibleOptions) {
             const bottomActions = this.template.querySelectorAll(
-                '.combobox__action_bottom'
+                '[data-element-id="li-bottom-action"]'
             );
             bottomActionsHeight = getListHeight(bottomActions);
         }
 
         const dropdown = this.template.querySelector(
-            '.combobox__dropdown-trigger .slds-dropdown'
+            '[data-element-id="div-dropdown"]'
         );
         const height =
             optionsHeight +
@@ -1166,8 +1157,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         // Do not set the height when there is no actions or options
         // (for example 0 search results or is loading)
         if (height) {
-            dropdown.style.maxHeight = `${height}px`;
+            dropdown.style.height = `${height}px`;
         }
+
+        this.updateFixedActionsHeight();
     }
 
     /**
@@ -1289,6 +1282,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     computeSelection() {
         this.selectedOptions = this.getSelectedOptions();
+        this.selectedOptions.sort((a, b) => {
+            // Sort the selected options by their position in the value
+            const indexA = this.value.indexOf(a.value);
+            const indexB = this.value.indexOf(b.value);
+            return indexA - indexB;
+        });
         this.hasBadValues =
             this._value.length === 0
                 ? true
@@ -1323,13 +1322,15 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @param {array} options Array of all the options
      * @returns {array} Array of all unselected options
      */
-    removeSelectedOptionsFrom(options) {
+    removeSelectedOptionsFrom(options, levelPath = []) {
         const unselectedOptions = [];
-        options.forEach((option) => {
+        options.forEach((option, index) => {
             if (option.options.length) {
-                const computedOption = new Option(option);
+                const optionLevelPath = levelPath.concat(index);
+                const computedOption = new Option(option, optionLevelPath);
                 computedOption.options = this.removeSelectedOptionsFrom(
-                    computedOption.options
+                    computedOption.options,
+                    optionLevelPath
                 );
 
                 // We want to show the option only if some children options are unselected
@@ -1375,9 +1376,21 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     getSelectedOptions(options = this.options) {
         const selectedOptions = [];
         options.forEach((option) => {
-            if (option.selected) selectedOptions.push(option);
-            if (option.options.length) {
-                selectedOptions.push(this.getSelectedOptions(option.options));
+            if (option.selected) {
+                const selectedOption = { ...option };
+                const optionHasAvatar =
+                    option.avatarFallbackIconName || option.avatarSrc;
+                if (optionHasAvatar) {
+                    selectedOption.avatar = {
+                        src: option.avatarSrc,
+                        fallbackIconName: option.avatarFallbackIconName
+                    };
+                }
+                selectedOptions.push(selectedOption);
+            }
+            const childrenOptions = normalizeArray(option.options);
+            if (childrenOptions.length) {
+                selectedOptions.push(this.getSelectedOptions(childrenOptions));
             }
         });
 
@@ -1417,14 +1430,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
         if (this._highlightedOption)
             this._highlightedOption.classList.remove(
-                'avonni-primitive-combobox__option_background_focused'
+                'avonni-primitive-combobox__option_focused'
             );
         this._highlightedOptionIndex = index;
         this._highlightedOption.classList.add(
-            'avonni-primitive-combobox__option_background_focused'
+            'avonni-primitive-combobox__option_focused'
         );
         const listboxElement = this.template.querySelector(
-            '.slds-listbox [role="listbox"]'
+            '[data-element-id="ul-listbox"]'
         );
         listboxElement.setAttribute(
             'aria-activedescendant',
@@ -1445,6 +1458,42 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             position: 'top',
             isBackLink: true
         });
+    }
+
+    /**
+     * Position the fixed actions and add their height to the listbox padding, to leave room for them in their original position.
+     */
+    updateFixedActionsHeight() {
+        const listbox = this.template.querySelector(
+            '[data-element-id="ul-listbox"]'
+        );
+        if (!listbox) return;
+
+        let offset = 0;
+        const fixedTopActions = Array.from(
+            this.template.querySelectorAll(
+                '[data-element-id="li-top-action"][data-fixed="true"]'
+            )
+        );
+        fixedTopActions.forEach((action) => {
+            action.style.top = `${offset}px`;
+            offset += action.offsetHeight;
+        });
+
+        listbox.style.paddingTop = `${offset}px`;
+
+        offset = 0;
+        const fixedBottomActions = Array.from(
+            this.template.querySelectorAll(
+                '[data-element-id="li-bottom-action"][data-fixed="true"]'
+            )
+        );
+        fixedBottomActions.reverse().forEach((action) => {
+            action.style.bottom = `${offset}px`;
+            offset += action.offsetHeight;
+        });
+
+        listbox.style.paddingBottom = `${offset}px`;
     }
 
     /**
@@ -1554,6 +1603,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                     } else {
                         this.highlightOption(this._optionElements.length - 1);
                     }
+                    // Prevent the browser scrollbar from scrolling up
+                    event.preventDefault();
                     break;
                 case 'ArrowDown':
                     if (index < this._optionElements.length - 1) {
@@ -1561,21 +1612,19 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                     } else {
                         this.highlightOption(0);
                     }
+                    // Prevent the browser scrollbar from scrolling down
+                    event.preventDefault();
                     break;
                 case 'ArrowLeft':
-                    this.handleBackLinkClick();
-                    break;
                 case 'GoBack':
                     this.handleBackLinkClick();
                     break;
                 case ' ':
-                    this.handleHighlightedOptionClick(event);
-                    break;
                 case 'Spacebar':
-                    this.handleHighlightedOptionClick(event);
-                    break;
                 case 'Enter':
                     this.handleHighlightedOptionClick(event);
+                    // Prevent the browser scrollbar from scrolling down
+                    event.preventDefault();
                     break;
                 case 'Escape':
                     this.close();
@@ -1623,17 +1672,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
         // Clear the value
         if (!this.isMultiSelect && this.selectedOption) {
+            const levelPath = this.selectedOption.levelPath;
             this.selectedOption.selected = false;
             this.selectedOption = undefined;
             this.computeSelection();
-
-            this.dispatchEvent(
-                new CustomEvent('change', {
-                    detail: {
-                        value: this.value
-                    }
-                })
-            );
+            this.dispatchChange('unselect', levelPath);
         }
 
         // Reset the visible options
@@ -1646,7 +1689,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
     /**
      * Handles the click on action.
-     * Dispatches actionClick event.
+     * Dispatches actionclick event.
      * Closes the dropdown.
      *
      * @param {event} event If clicked with mouse we receive the event
@@ -1718,15 +1761,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.selectedOption = undefined;
         }
 
-        this.dispatchEvent(
-            new CustomEvent('change', {
-                detail: {
-                    value: this.value
-                },
-                bubbles: true
-            })
-        );
-
+        const action = selectedOption.selected ? 'select' : 'unselect';
+        this.dispatchChange(action, selectedOption.levelPath);
         this.close();
         this.focus();
     }
@@ -1749,32 +1785,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
 
     /**
-     * Handles the remove of lightning-pill (selected-option).
-     * Dispatches change event.
-     *
-     * @param {event} event onremove event
-     * @public
-     */
-    @api
-    handleRemoveSelectedOption(event) {
-        const value = event.detail.name;
-        const selectedOption = this.getOption(value);
-        selectedOption.selected = false;
-
-        this.computeSelection();
-        this.visibleOptions = this.options;
-
-        this.dispatchEvent(
-            new CustomEvent('change', {
-                detail: {
-                    value: this.value
-                },
-                bubbles: true
-            })
-        );
-    }
-
-    /**
      * Handles the trigger click.
      * If dropdown is closed, it opens it.
      * Dispatches open event.
@@ -1784,5 +1794,33 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.open();
             this.dispatchEvent(new CustomEvent('open'));
         }
+    }
+
+    /**
+     * Dispatch the change event.
+     *
+     * @param {string} action Action that fired the event. Valid values are `select` or `unselect`.
+     * @param {number[]} levelPath Array of level indexes to get to the option.
+     */
+    dispatchChange(action, levelPath) {
+        /**
+         * The event fired when an option is selected or unselected.
+         *
+         * @event
+         * @name change
+         * @param {string} action Type of change made to the value. Options are `select` or `unselect`.
+         * @param {number[]} levelPath Array of level indexes to get to the option.
+         * @param {string[]} value New value of the primitive combobox.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('change', {
+                detail: {
+                    action,
+                    levelPath,
+                    value: this.value
+                }
+            })
+        );
     }
 }

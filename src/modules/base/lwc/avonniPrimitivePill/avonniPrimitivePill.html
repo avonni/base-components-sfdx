@@ -1,0 +1,102 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <!-- Avatar -->
+    <c-avonni-avatar
+        if:true={avatar}
+        class="slds-pill__icon_container"
+        fallback-icon-name={avatar.fallbackIconName}
+        initials={avatar.initials}
+        size="x-small"
+        src={avatar.src}
+        variant={avatar.variant}
+        data-element-id="avonni-avatar"
+        onmousedown={handleDraggableMouseDown}
+    ></c-avonni-avatar>
+
+    <!-- Label -->
+    <a
+        if:true={href}
+        href={href}
+        title={label}
+        class="slds-pill__label avonni-primitive-pill__label-link"
+        data-element-id="a-label"
+        onmousedown={handleDraggableMouseDown}
+        >{label}</a
+    >
+    <span
+        if:false={href}
+        class="slds-pill__label"
+        title={label}
+        data-element-id="span-label"
+        >{label}</span
+    >
+
+    <!-- Actions -->
+    <lightning-button-icon
+        if:true={oneAction}
+        class="slds-pill__remove"
+        alternative-text={oneAction.label}
+        disabled={oneAction.disabled}
+        icon-name={oneAction.iconName}
+        tabindex="-1"
+        value={oneAction.name}
+        variant="bare"
+        data-element-id="lightning-button-icon"
+        data-group-name="action"
+        onclick={handleActionClick}
+    ></lightning-button-icon>
+    <lightning-button-menu
+        if:true={severalActions}
+        alternative-text="Show menu"
+        icon-size="x-small"
+        tabindex="-1"
+        variant="bare"
+        data-group-name="action"
+        onclick={handleButtonMenuClick}
+        onselect={handleActionClick}
+    >
+        <template for:each={actions} for:item="action">
+            <lightning-menu-item
+                key={action.name}
+                disabled={action.disabled}
+                label={action.label}
+                prefix-icon-name={action.iconName}
+                value={action.name}
+                data-element-id="lightning-menu-item"
+            ></lightning-menu-item>
+        </template>
+    </lightning-button-menu>
+</template>

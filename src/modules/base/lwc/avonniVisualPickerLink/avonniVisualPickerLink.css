@@ -29,8 +29,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
- .avonni-welcome-mat__tile-body-right {
+
+.avonni-welcome-mat__tile-body-right {
     border-left: 0;
     border-right: var(--lwc-borderWidthThin, 1px) solid
         var(--lwc-colorBorder, rgb(221, 219, 218));
@@ -47,4 +47,23 @@
 
 .slds-welcome-mat__tile_info-only .avonni-welcome-mat__tile-body-right {
     border-right: 0;
+}
+
+.avonni-visual-picker-icon {
+    --sds-c-icon-radius-border: var(--avonni-visual-picker-icon-radius-border);
+    --sds-c-icon-color-background: var(
+        --avonni-visual-picker-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-visual-picker-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-visual-picker-icon-color-foreground-default
+    );
+}
+
+.slds-welcome-mat__tile_complete .avonni-visual-picker-icon {
+    --sds-c-icon-color-background: var(
+        --avonni-visual-picker-icon-color-background-complete
+    );
 }
