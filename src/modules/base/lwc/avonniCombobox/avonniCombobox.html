@@ -73,6 +73,7 @@
                 class={computedMainComboboxClass}
                 actions={actions}
                 allow-search={allowSearch}
+                back-action={backAction}
                 disabled={disabled}
                 dropdown-alignment={dropdownAlignment}
                 dropdown-length={dropdownLength}
@@ -100,7 +101,9 @@
                 onopen={handleOpen}
                 onsearch={handleSearch}
                 onactionclick={handleActionClick}
+                onbackactionclick={handleBackActionClick}
                 onchange={handleChange}
+                onlevelchange={handleLevelChange}
                 onprivateselect={handlePrivateSelect}
             ></c-avonni-primitive-combobox>
         </div>

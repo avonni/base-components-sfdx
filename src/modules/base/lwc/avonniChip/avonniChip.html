@@ -34,16 +34,18 @@
 
 <template>
     <span class={chipClass} data-element-id="span-wrapper">
-        <template if:true={showLeft}>
-            <span class="slds-badge__icon slds-badge__icon_left">
-                <slot name="left"></slot>
-            </span>
-        </template>
-        {label}
-        <template if:true={showRight}>
-            <span class="slds-badge__icon slds-badge__icon_right">
-                <slot name="right"></slot>
-            </span>
-        </template>
+        <span class="slds-truncate">
+            <template if:true={showLeft}>
+                <span class="slds-badge__icon slds-badge__icon_left">
+                    <slot name="left"></slot>
+                </span>
+            </template>
+            {label}
+            <template if:true={showRight}>
+                <span class="slds-badge__icon slds-badge__icon_right">
+                    <slot name="right"></slot>
+                </span>
+            </template>
+        </span>
     </span>
 </template>

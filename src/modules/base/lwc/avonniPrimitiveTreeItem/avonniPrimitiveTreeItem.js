@@ -631,6 +631,52 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
 
     /*
      * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Set the focus on the first focusable element inside the item.
+     *
+     * @public
+     */
+    @api
+    focusContent() {
+        if (!this.isLeaf && !this.disabled) {
+            // Set focus on the expand button
+            const expandButton = this.template.querySelector(
+                '[data-element-id="lightning-button-icon-expand"]'
+            );
+            if (expandButton) expandButton.focus();
+        } else if (this.showCheckbox) {
+            // Set focus on the checkbox
+            const checkbox = this.template.querySelector(
+                '[data-element-id="input-checkbox"]'
+            );
+            if (checkbox) checkbox.focus();
+        } else if (this.href) {
+            // Set focus on the link
+            const link = this.template.querySelector(
+                '[data-group-name="link"]'
+            );
+            if (link) link.focus();
+        } else if (this.buttonActions.length) {
+            // Set focus on the action icons
+            const buttonIcon = this.template.querySelector(
+                '[data-element-id="lightning-button-icon-action"]'
+            );
+            if (buttonIcon) buttonIcon.focus();
+        } else if (this.menuActions.length) {
+            // Set focus on the action menu
+            const buttonMenu = this.template.querySelector(
+                '[data-element-id="lightning-button-menu"]'
+            );
+            if (buttonMenu) buttonMenu.focus();
+        }
+    }
+
+    /*
+     * ------------------------------------------------------------
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
@@ -708,7 +754,9 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
             if (child.tabIndex !== '0') {
                 child.tabIndex = '0';
             }
-            if (shouldFocus) {
+            if (shouldFocus && this.showCheckbox) {
+                child.focusContent();
+            } else if (shouldFocus) {
                 child.focus();
             }
             if (shouldSelect) {
@@ -978,15 +1026,6 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
      */
     handleActionMenuOpen() {
         this._menuIsOpen = true;
-    }
-
-    /**
-     * Handle a click on the checkbox.
-     *
-     * @param {Event} event
-     */
-    handleCheckboxClick(event) {
-        event.stopPropagation();
     }
 
     /**

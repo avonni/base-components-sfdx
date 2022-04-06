@@ -200,6 +200,60 @@
     border-width: 2px;
     padding: 3px;
 }
+/** 
+* Actions
+*/
+.avonni-avatar__actions {
+    position: absolute;
+    --sds-c-button-radius-border: var(
+        --avonni-avatar-action-button-radius-border,
+        30px
+    );
+    --sds-c-button-spacing-block-end: var(
+        --avonni-avatar-action-button-spacing-block-end,
+        2px
+    );
+}
+.avonni-avatar-action-button {
+    background-color: var(
+        --avonni-avatar-action-button-color-background,
+        #ffffff
+    );
+    border-color: white;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.avonni-avatar-action-button-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-avatar-action-button-color-foreground,
+        #706e6b
+    );
+    width: inherit;
+    display: flex;
+}
+
+.slds-avatar_medium .avonni-avatar-action-button {
+    width: 6px;
+    height: 6px;
+    padding: 5px;
+}
+.slds-avatar_large .avonni-avatar-action-button {
+    width: 8px;
+    height: 8px;
+    padding: 7px;
+}
+.avonni-avatar_x-large .avonni-avatar-action-button {
+    width: 10px;
+    height: 10px;
+    padding: 8px;
+}
+.avonni-avatar_xx-large .avonni-avatar-action-button {
+    width: 12px;
+    height: 12px;
+    padding: 10px;
+}
+
 /**
 * Presence
 */
@@ -298,12 +352,14 @@
     display: flex;
     width: inherit;
 }
-.avonni-avatar_xx-small .avonni-avatar__entity {
+.avonni-avatar_xx-small .avonni-avatar__entity,
+.avonni-avatar_xx-small .avonni-avatar-action-button {
     width: 8px;
     height: 8px;
     font-size: 0.1rem;
 }
-.slds-avatar_x-small .avonni-avatar__entity {
+.slds-avatar_x-small .avonni-avatar__entity,
+.slds-avatar_x-small .avonni-avatar-action-button {
     width: 10px;
     height: 10px;
     font-size: 0.1rem;

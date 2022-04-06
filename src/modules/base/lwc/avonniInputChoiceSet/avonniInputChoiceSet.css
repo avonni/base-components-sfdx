@@ -34,24 +34,25 @@
     display: block;
 }
 
-.slds-checkbox.horizontal {
+.slds-checkbox.avonni-input-choice-set__horizontal {
+    /* .avonni-input-choice-set__horizontal ??? */
     display: inline-flex;
 }
 
-.slds-radio.horizontal {
+.slds-radio.avonni-input-choice-set__horizontal {
     display: inline-flex;
 }
 
-.slds-checkbox_button-group.vertical {
+.slds-checkbox_button-group.avonni-input-choice-set__vertical {
     flex-direction: column;
 }
 
-.slds-checkbox_button__label.vertical {
+.slds-checkbox_button__label.avonni-input-choice-set__vertical {
     width: 100%;
     border-radius: 0;
 }
 
-.slds-checkbox_button__label.horizontal {
+.slds-checkbox_button__label.avonni-input-choice-set__horizontal {
     height: 100%;
 }
 
@@ -64,7 +65,7 @@
     border-bottom: 1px solid #dddbda;
 }
 
-.slds-checkbox_button.horizontal {
+.slds-checkbox_button.avonni-input-choice-set__horizontal {
     border-right: 1px solid #dddbda;
     border-bottom: none;
 }
@@ -78,4 +79,21 @@
     font-size: var(--avonni-input-choice-set-header-font-size, 0.75rem);
     font-style: var(--avonni-input-choice-set-header-font-style, normal);
     font-weight: var(--avonni-input-choice-set-header-font-weight, 400);
+}
+
+.avonni-input-choice-set__stretch {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.avonni-input-choice-set__stretch.avonni-input-choice-set__vertical {
+    flex-direction: column;
+}
+
+.avonni-input-choice-set__stretch .slds-checkbox_button,
+.avonni-input-choice-set__stretch .slds-checkbox_button__label,
+.avonni-input-choice-set__stretch .slds-checkbox,
+.avonni-input-choice-set__stretch .slds-radio {
+    flex-grow: 1;
 }

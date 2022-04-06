@@ -77,11 +77,12 @@
                             disabled={disabled}
                             type="checkbox"
                             data-element-id="input-checkbox"
+                            onchange={stopPropagation}
                         />
                         <label
                             for="checkbox"
                             class="slds-checkbox__label"
-                            onclick={handleCheckboxClick}
+                            onclick={stopPropagation}
                         >
                             <span class="slds-checkbox_faux"></span>
                             <span

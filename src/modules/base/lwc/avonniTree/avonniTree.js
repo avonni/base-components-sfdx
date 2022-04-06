@@ -339,6 +339,39 @@ export default class AvonniTree extends LightningElement {
 
     /*
      * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    @api
+    blur(itemException) {
+        const currentFocused = this.treedata.getItemAtIndex(
+            this.treedata.currentFocusedItemIndex
+        );
+
+        if (
+            currentFocused &&
+            (!itemException || itemException.key !== currentFocused.key) &&
+            this.callbackMap[currentFocused.key]
+        ) {
+            this.callbackMap[currentFocused.key].unfocus();
+        }
+    }
+
+    @api
+    focus() {
+        if (this.items.length) {
+            this.setFocusToFirstItem();
+        } else {
+            const addButton = this.template.querySelector(
+                '[data-element-id="button-add-action"]'
+            );
+            if (addButton) addButton.focus();
+        }
+    }
+
+    /*
+     * ------------------------------------------------------------
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
@@ -669,21 +702,7 @@ export default class AvonniTree extends LightningElement {
      * @param {boolean} shouldSelect If true, visually select an item. Defaults to true.
      */
     setFocusToItem(item, shouldFocus = true, shouldSelect = true) {
-        const currentFocused = this.treedata.getItemAtIndex(
-            this.treedata.currentFocusedItemIndex
-        );
-
-        if (
-            currentFocused &&
-            currentFocused.key !== item.key &&
-            this.callbackMap[currentFocused.key]
-        ) {
-            this.callbackMap[currentFocused.key].unfocus();
-        }
-
-        // The focus movement and visual selection are different
-        // for multi-select trees
-        if (this.isMultiSelect) return;
+        this.blur(item);
 
         if (item) {
             this._focusedItem = this.treedata.updateCurrentFocusedItemIndex(
@@ -745,7 +764,9 @@ export default class AvonniTree extends LightningElement {
             if (child.tabIndex !== '0') {
                 child.tabIndex = '0';
             }
-            if (shouldFocus) {
+            if (shouldFocus && this.isMultiSelect) {
+                child.focusContent();
+            } else if (shouldFocus) {
                 child.focus();
             }
             if (shouldSelect) {

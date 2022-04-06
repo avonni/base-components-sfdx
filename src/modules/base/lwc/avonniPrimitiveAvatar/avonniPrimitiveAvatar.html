@@ -50,6 +50,7 @@
                 if:true={showInitials}
                 class={computedInitialsClass}
                 title={alternativeText}
+                data-element-id="avatar-initials"
                 >{initials}</abbr
             >
             <!-- Fallback icon -->
@@ -101,8 +102,58 @@
                     class="avonni-avatar__entity-icon"
                     icon-name={entityIconName}
                     title={entityTitle}
-                ></c-avonni-primitive-icon>
+                >
+                </c-avonni-primitive-icon>
                 <span class="slds-assistive-text">{entityTitle}</span>
+            </template>
+        </div>
+
+        <!-- Actions -->
+        <div
+            if:true={showActions}
+            data-element-id="action-section"
+            class={computedActionClasses}
+        >
+            <template if:true={actionMenu}>
+                <c-avonni-button-menu
+                    variant="border-filled"
+                    icon-name={actionMenuIcon}
+                    icon-size={actionMenuSize}
+                    alternative-text="Actions"
+                    data-element-id="action-menu-icon"
+                    hide-down-arrow
+                >
+                    <template for:each={actions} for:item="action">
+                        <lightning-menu-item
+                            key={action.name}
+                            icon-name={action.iconName}
+                            value={action.name}
+                            label={action.label}
+                            onclick={handleActionClick}
+                        >
+                        </lightning-menu-item>
+                    </template>
+                </c-avonni-button-menu>
+            </template>
+
+            <template if:false={actionMenu}>
+                <button
+                    class="
+                        avonni-avatar-action-button
+                        slds-button slds-button_icon
+                    "
+                    data-element-id="action-icon"
+                    title={action.label}
+                    value={action.name}
+                    alternative-text={action.label}
+                    onclick={handleActionClick}
+                >
+                    <c-avonni-primitive-icon
+                        class="avonni-avatar-action-button-icon"
+                        icon-name={action.iconName}
+                    >
+                    </c-avonni-primitive-icon>
+                </button>
             </template>
         </div>
     </div>

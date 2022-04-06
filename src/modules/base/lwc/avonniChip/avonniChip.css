@@ -31,7 +31,11 @@
  */
 
 .avonni-chip {
-    padding: 0.25rem 0.5rem;
+    max-width: 100%;
+    padding-top: var(--avonni-chip-spacing-block-start, 0.25rem);
+    padding-bottom: var(--avonni-chip-spacing-block-end, 0.25rem);
+    padding-left: var(--avonni-chip-spacing-inline-start, 0.5rem);
+    padding-right: var(--avonni-chip-spacing-inline-end, 0.5rem);
     border-width: var(--avonni-chip-sizing-border, 1px);
     border-style: var(--avonni-chip-styling-border, solid);
     border-radius: var(--avonni-chip-radius-border, 15rem);
@@ -45,6 +49,7 @@
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
+    overflow: hidden;
 }
 .avonni-chip_outline {
     background-color: #ffffff !important;

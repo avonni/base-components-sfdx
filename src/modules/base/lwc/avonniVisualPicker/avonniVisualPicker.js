@@ -113,6 +113,8 @@ export default class AvonniVisualPicker extends LightningElement {
             this.inputs.forEach((item) => {
                 if (this._value.indexOf(item.value) > -1) {
                     item.checked = true;
+                } else {
+                    item.removeAttribute('checked');
                 }
             });
         }

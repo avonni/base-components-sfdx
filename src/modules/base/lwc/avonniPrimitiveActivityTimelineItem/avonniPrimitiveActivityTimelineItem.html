@@ -33,7 +33,11 @@
 -->
 
 <template>
-    <div class={activityTimelineItemOuterClass} style={backgroundColor}>
+    <div
+        class={activityTimelineItemOuterClass}
+        data-element-id="avonni-timeline-item"
+        style={backgroundColor}
+    >
         <div class={computedSldsMedia}>
             <div class="slds-media__figure">
                 <template if:true={hasFields}>
@@ -57,16 +61,24 @@
                     </template>
                 </template>
                 <lightning-icon
+                    if:true={iconName}
                     icon-name={iconName}
                     size="small"
                     class="slds-timeline__icon"
+                    data-element-id="item-marker"
                 ></lightning-icon>
+                <div
+                    if:false={iconName}
+                    class={timelineItemBullet}
+                    data-element-id="item-marker"
+                ></div>
             </div>
             <div class="slds-media__body">
                 <div
                     class="
                         slds-grid slds-grid_align-spread
                         slds-timeline__trigger
+                        avonni-activity-timeline-item-header
                     "
                 >
                     <div
@@ -75,24 +87,27 @@
                             slds-truncate slds-no-space
                         "
                     >
-                        <template if:true={hasCheckbox}>
-                            <lightning-input
-                                type="checkbox"
-                                label="checkbox"
-                                variant="label-hidden"
-                                data-element-id="lightning-input-checkbox"
-                                onchange={handleCheck}
-                            >
-                            </lightning-input>
-                        </template>
-                        <template if:true={href}>
-                            <a href={href}>
-                                <h3>{title}</h3>
+                        <lightning-input
+                            if:true={hasCheckbox}
+                            type="checkbox"
+                            label="checkbox"
+                            variant="label-hidden"
+                            class="slds-no-flex"
+                            data-element-id="lightning-input-checkbox"
+                            onchange={handleCheck}
+                        >
+                        </lightning-input>
+
+                        <!-- this div.slds-has-flexi-truncate does the magic -->
+                        <div class="slds-has-flexi-truncate">
+                            <a if:true={href} href={href}>
+                                <h3 class="slds-truncate">{title}</h3>
                             </a>
-                        </template>
-                        <template if:false={href}>
-                            <h3>{title}</h3>
-                        </template>
+                            <h3 if:false={href} class="slds-truncate">
+                                {title}
+                            </h3>
+                        </div>
+
                         <div if:true={icons} class="slds-no-flex">
                             <template for:each={icons} for:item="icon">
                                 <lightning-icon
@@ -104,9 +119,11 @@
                             </template>
                         </div>
                     </div>
+
                     <div
                         class="
                             slds-timeline__actions slds-timeline__actions_inline
+                            avonni-activity-timeline-item-header-date
                         "
                     >
                         <lightning-formatted-date-time

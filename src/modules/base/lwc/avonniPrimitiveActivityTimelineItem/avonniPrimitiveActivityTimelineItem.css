@@ -30,6 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.slds-timeline__icon.avonni-timeline-item__bullet {
+    display: inline-block;
+    position: relative;
+    margin-top: 7px;
+    margin-left: 8px;
+    margin-right: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 100px;
+    background-color: #c9c7c5;
+    box-shadow: 0 0 0 2px white;
+}
+
+.slds-timeline__icon.avonni-timeline-item__bullet.avonni-timeline-item__active-bullet::after {
+    position: absolute;
+    content: '';
+    top: -4px;
+    left: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 100px;
+    background-color: white;
+    border: #1b96ff solid 4.5px;
+    box-shadow: 0 0 0 4px white;
+}
+
+.avonni-activity-timeline-item-header {
+    flex-wrap: wrap;
+}
+
+.avonni-activity-timeline-item-header-date {
+    margin-left: auto;
+}
+
 .slds-timeline__item_expandable:before {
     content: '';
     background: var(--line-color);
@@ -37,7 +71,7 @@
     width: 2px;
     position: absolute;
     left: 2.25rem;
-    top: 0;
+    top: 5px;
     bottom: 0;
     margin-left: 1px;
 }

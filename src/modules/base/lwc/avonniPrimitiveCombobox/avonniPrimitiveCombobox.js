@@ -68,6 +68,9 @@ const DROPDOWN_LENGTHS = {
     default: '7-items'
 };
 
+const DEFAULT_BACK_ACTION = {
+    iconName: 'utility:chevronleft'
+};
 const DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT = 'Loading';
 const DEFAULT_PLACEHOLDER = 'Select an Option';
 const DEFAULT_PLACEHOLDER_WHEN_SEARCH_ALLOWED = 'Search...';
@@ -121,6 +124,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
     _actions = [];
     _allowSearch = false;
+    _backAction = DEFAULT_BACK_ACTION;
     _disabled = false;
     _dropdownAlignment = DROPDOWN_ALIGNMENTS.default;
     _dropdownLength = DROPDOWN_LENGTHS.default;
@@ -152,6 +156,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     parentOptionsValues = [];
     selectedOption;
     selectedOptions = [];
+    showLoader = false;
     topActions = [];
     bottomActions = [];
 
@@ -220,6 +225,22 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
     set allowSearch(value) {
         this._allowSearch = normalizeBoolean(value);
+    }
+
+    /**
+     * Action object. The back action is used to go back to the previous level, after clicking on an option that has nested options.
+     *
+     * @type {object}
+     * @default { iconName: 'utility:chevronright', label: Label of the parent option }
+     * @public
+     */
+    @api
+    get backAction() {
+        return this._backAction;
+    }
+    set backAction(value) {
+        this._backAction =
+            value instanceof Object ? value : DEFAULT_BACK_ACTION;
     }
 
     /**
@@ -312,6 +333,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     }
     set isLoading(value) {
         this._isLoading = normalizeBoolean(value);
+        this.showLoader = this._isLoading;
     }
 
     /**
@@ -566,21 +588,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @type {boolean}
      */
     get hasBadInput() {
-        let values = [];
-        this.options.forEach((option) => {
-            if (option.options) {
-                option.options.forEach((innerOption) => {
-                    values.push(innerOption.value);
-                });
-            }
-            values.push(option.value);
-        });
-        if (this.isMultiSelect) {
-            return this.hasBadValues;
-        }
-        return this._value.length === 0 || this._value[0] === ''
-            ? true
-            : values.some((e) => this._value.includes(e));
+        return this.value.some((value) => value && !this.getOption(value));
     }
 
     /**
@@ -593,7 +601,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this._constraintApi = new FieldConstraintApi(() => this, {
                 valueMissing: () =>
                     !this.disabled && this.required && this.value.length === 0,
-                badInput: () => !this.hasBadInput
+                badInput: () => this.hasBadInput
             });
         }
         return this._constraintApi;
@@ -709,16 +717,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         if (this.dropdownVisible) {
             const elements = [];
             const topActions = this.template.querySelectorAll(
-                '[data-element-id="li-top-action"]'
+                '[data-group-name="actions"][data-position="top"]'
             );
             topActions.forEach((action) => {
                 if (action.ariaDisabled === 'false') elements.push(action);
             });
-
-            const backLink = this.template.querySelector(
-                '[data-name="backlink"]'
-            );
-            if (backLink) elements.push(backLink);
 
             const groups = this.template.querySelectorAll(
                 '[data-element-id="avonni-primitive-combobox-group"]'
@@ -728,7 +731,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             });
 
             const bottomActions = this.template.querySelectorAll(
-                '[data-element-id="li-bottom-action"]'
+                '[data-group-name="actions"][data-position="bottom"]'
             );
             bottomActions.forEach((action) => {
                 if (action.ariaDisabled === 'false') elements.push(action);
@@ -804,7 +807,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     get computedDropdownClass() {
         return classSet(
-            'slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid avonni-primitive-combobox__dropdown slds-is-relative'
+            'slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid avonni-primitive-combobox__dropdown'
         )
             .add({
                 'slds-dropdown_left':
@@ -893,6 +896,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                 this.visibleOptions = [...this.options];
                 this.parentOptionsValues = [];
                 this.backLink = undefined;
+                this.showLoader = this.isLoading;
             } else {
                 // Reset to current visible level and erase the search
                 this.visibleOptions =
@@ -919,7 +923,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      */
     @api
     open() {
-        const hasItems = this.options.length || this.actions.length;
+        const hasItems =
+            this.options.length || this.actions.length || this.backLink;
         if (
             !this.inputIsDisabled &&
             !this.dropdownVisible &&
@@ -1130,9 +1135,17 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         // Height of the title groups
         const titlesHeight = getListHeight(visibleGroupTitles);
 
+        // Height of the loading spinner
+        const loadingSpinner = this.template.querySelector(
+            '[data-element-id="li-loading-spinner"]'
+        );
+        const loadingSpinnerHeight = loadingSpinner
+            ? loadingSpinner.offsetHeight
+            : 0;
+
         // Height of the top actions
         const topActions = this.template.querySelectorAll(
-            '[data-element-id="li-top-action"]'
+            '[data-group-name="actions"][data-position="top"]'
         );
         const topActionsHeight = getListHeight(topActions);
 
@@ -1140,7 +1153,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         let bottomActionsHeight = 0;
         if (this.visibleOptions.length <= this._maxVisibleOptions) {
             const bottomActions = this.template.querySelectorAll(
-                '[data-element-id="li-bottom-action"]'
+                '[data-group-name="actions"][data-position="bottom"]'
             );
             bottomActionsHeight = getListHeight(bottomActions);
         }
@@ -1151,6 +1164,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         const height =
             optionsHeight +
             titlesHeight +
+            loadingSpinnerHeight +
             topActionsHeight +
             bottomActionsHeight;
 
@@ -1288,10 +1302,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             const indexB = this.value.indexOf(b.value);
             return indexA - indexB;
         });
-        this.hasBadValues =
-            this._value.length === 0
-                ? true
-                : this.selectedOptions.some((option) => option.value);
         this._value = this.selectedOptions.map((option) => option.value);
 
         this.dispatchEvent(
@@ -1376,18 +1386,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     getSelectedOptions(options = this.options) {
         const selectedOptions = [];
         options.forEach((option) => {
-            if (option.selected) {
-                const selectedOption = { ...option };
-                const optionHasAvatar =
-                    option.avatarFallbackIconName || option.avatarSrc;
-                if (optionHasAvatar) {
-                    selectedOption.avatar = {
-                        src: option.avatarSrc,
-                        fallbackIconName: option.avatarFallbackIconName
-                    };
-                }
-                selectedOptions.push(selectedOption);
-            }
+            if (option.selected) selectedOptions.push(option);
+
             const childrenOptions = normalizeArray(option.options);
             if (childrenOptions.length) {
                 selectedOptions.push(this.getSelectedOptions(childrenOptions));
@@ -1448,15 +1448,18 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     /**
      * Updates the back link.
      *
-     * @param {string} label
+     * @param {string} parentLabel
      */
-    updateBackLink(label) {
+    updateBackLink(parentLabel) {
+        const { label, iconName, fixed, position, disabled } = this.backAction;
+
         this.backLink = new Action({
-            label: label,
+            disabled,
+            fixed,
+            iconName,
+            label: typeof label === 'string' ? label : parentLabel,
             name: 'backlink',
-            iconName: 'utility:chevronleft',
-            position: 'top',
-            isBackLink: true
+            position
         });
     }
 
@@ -1472,7 +1475,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         let offset = 0;
         const fixedTopActions = Array.from(
             this.template.querySelectorAll(
-                '[data-element-id="li-top-action"][data-fixed="true"]'
+                '[data-group-name="actions"][data-position="top"][data-fixed="true"]'
             )
         );
         fixedTopActions.forEach((action) => {
@@ -1485,7 +1488,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         offset = 0;
         const fixedBottomActions = Array.from(
             this.template.querySelectorAll(
-                '[data-element-id="li-bottom-action"][data-fixed="true"]'
+                '[data-group-name="actions"][data-position="bottom"][data-fixed="true"]'
             )
         );
         fixedBottomActions.reverse().forEach((action) => {
@@ -1553,6 +1556,11 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         );
     }
 
+    /**
+     * Handles a mouse press down on the dropdown.
+     *
+     * @param {Event} event
+     */
     handleDropdownMouseDown(event) {
         const mainButton = 0;
         if (event.button === mainButton) {
@@ -1652,12 +1660,15 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             const parent = this.getOption(parents[parents.length - 1]);
             this.updateBackLink(parent.label);
             this.visibleOptions = parent.options;
+            this.showLoader = parent.isLoading;
         } else {
             this.visibleOptions = this.options;
             this.backLink = undefined;
+            this.showLoader = this.isLoading;
         }
 
         this.focus();
+        this.dispatchEvent(new CustomEvent('backactionclick'));
     }
 
     /**
@@ -1709,6 +1720,15 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             name = eventOrName.currentTarget.dataset.name;
         }
 
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @param {string} name Name of the action clicked.
+         * @public
+         * @bubbles
+         */
         this.dispatchEvent(
             new CustomEvent('actionclick', {
                 detail: {
@@ -1737,11 +1757,30 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         });
 
         // If the option has children options, change the visible options
-        if (selectedOption.options && selectedOption.options.length) {
+        if (selectedOption.hasChildren) {
             this.visibleOptions = selectedOption.options;
             this.parentOptionsValues.push(selectedOption.value);
             this.updateBackLink(this.currentParent.label);
+            if (selectedOption.isLoading) {
+                this.showLoader = true;
+            }
             this.focus();
+
+            /**
+             * The event fired when an option with nested options has been selected.
+             *
+             * @event
+             * @name levelchange
+             * @param {string} optionValue The value of the option clicked.
+             * @public
+             */
+            this.dispatchEvent(
+                new CustomEvent('levelchange', {
+                    detail: {
+                        optionValue: selectedOption.value
+                    }
+                })
+            );
             return;
         }
 

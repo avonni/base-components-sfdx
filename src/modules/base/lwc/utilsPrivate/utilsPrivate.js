@@ -41,7 +41,8 @@ export {
     normalizeBoolean,
     normalizeString,
     normalizeArray,
-    normalizeAriaAttribute
+    normalizeAriaAttribute,
+    normalizeObject
 } from './normalize';
 export {
     generateColors,

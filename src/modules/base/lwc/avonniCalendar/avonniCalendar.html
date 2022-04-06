@@ -104,7 +104,7 @@
                 <table
                     aria-labelledby="month"
                     aria-multiselectable="true"
-                    class="slds-datepicker__month"
+                    class={tableClasses}
                     role="grid"
                 >
                     <thead>
@@ -127,7 +127,10 @@
                     </thead>
                     <tbody>
                         <template for:each={calendarData} for:item="week">
-                            <tr key={generateKey}>
+                            <tr
+                                class="avonni-calendar__table-row"
+                                key={generateKey}
+                            >
                                 <template for:each={week} for:item="day">
                                     <td
                                         class={day.class}
@@ -172,6 +175,38 @@
                                                 </template>
                                             </div>
                                         </div>
+                                        <c-avonni-chip
+                                            if:true={day.labeled}
+                                            class={day.chip.classes}
+                                            label={day.chip.label}
+                                            variant={day.chip.variant}
+                                            outline={day.chip.outline}
+                                            data-day={day.fullDate}
+                                            data-element-id="chip-date-label"
+                                        >
+                                            <c-avonni-primitive-icon
+                                                if:true={day.chip.showLeft}
+                                                class="
+                                                    avonni-calendar-chip-icon-left
+                                                "
+                                                slot="left"
+                                                size="xx-small"
+                                                variant={day.chip.iconVariant}
+                                                icon-name={day.chip.iconName}
+                                                data-day={day.fullDate}
+                                            ></c-avonni-primitive-icon>
+                                            <c-avonni-primitive-icon
+                                                if:true={day.chip.showRight}
+                                                class="
+                                                    avonni-calendar-chip-icon-right
+                                                "
+                                                slot="right"
+                                                size="xx-small"
+                                                variant={day.chip.iconVariant}
+                                                icon-name={day.chip.iconName}
+                                                data-day={day.fullDate}
+                                            ></c-avonni-primitive-icon>
+                                        </c-avonni-chip>
                                     </td>
                                 </template>
                             </tr>

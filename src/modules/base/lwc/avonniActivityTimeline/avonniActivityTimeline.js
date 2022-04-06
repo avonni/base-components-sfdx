@@ -46,6 +46,7 @@ const SORTED_DIRECTIONS = {
     valid: ['asc', 'desc'],
     default: 'desc'
 };
+
 /**
  * @class
  * @descriptor avonni-activity-timeline
@@ -55,6 +56,7 @@ const SORTED_DIRECTIONS = {
 export default class AvonniActivityTimeline extends LightningElement {
     /**
      * The Lightning Design System name of the icon displayed in the header, before the title. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     * When omitted, a simplified timeline bullet replaces it.
      *
      * @public
      * @type {string}

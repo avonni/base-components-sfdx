@@ -144,7 +144,7 @@ export default class AvonniList extends LightningElement {
     /**
      * Array of item objects.
      *
-     * @type {object}
+     * @type {object[]}
      * @public
      */
     @api
@@ -152,7 +152,7 @@ export default class AvonniList extends LightningElement {
         return this._items;
     }
     set items(proxy) {
-        this._items = normalizeArray(proxy);
+        this._items = normalizeArray(proxy, 'object');
         this.computedItems = JSON.parse(JSON.stringify(this._items));
         this.computedItems.forEach((item) => {
             item.infos = normalizeArray(item.infos);
@@ -721,15 +721,6 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-     * Stop the dragging process when touching the button menu.
-     *
-     * @param {Event} event
-     */
-    handleButtonMenuTouchStart(event) {
-        event.stopPropagation();
-    }
-
-    /**
      * Handles a click on an item action.
      *
      * @param {Event} event
@@ -789,5 +780,14 @@ export default class AvonniList extends LightningElement {
                 }
             })
         );
+    }
+
+    /**
+     * Stop the propagation of an event.
+     *
+     * @param {Event} event
+     */
+    stopPropagation(event) {
+        event.stopPropagation();
     }
 }

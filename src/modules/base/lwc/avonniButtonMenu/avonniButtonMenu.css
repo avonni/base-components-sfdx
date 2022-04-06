@@ -30,28 +30,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { normalizeArray } from 'c/utilsPrivate';
-import { classSet } from 'c/utils';
+button {
+    padding-bottom: var(--avonni-button-menu-spacing-block-end);
+}
 
-export default class AvonniPrimitiveComboboxOption {
-    constructor(option) {
-        this.avatarFallbackIconName = option.avatarFallbackIconName;
-        this.avatarSrc = option.avatarSrc;
-        this.groups = option.groups;
-        this.label = option.label;
-        this.options = normalizeArray(option.options);
-        this.secondaryText = option.secondaryText;
-        this.value = option.value;
-        this.hasAvatar = this.avatarFallbackIconName || this.avatarSrc;
-    }
-
-    get computedClass() {
-        return classSet(
-            'slds-media slds-media_small slds-media_center slds-listbox__item slds-listbox__option slds-listbox__option_plain slds-listbox__option_entity'
-        )
-            .add({
-                'slds-is-selected': this.selected
-            })
-            .toString();
-    }
+.avonni-button-menu_button-border-filled {
+    background-color: var(
+        --avonni-button-menu-button-border-filled-color-background,
+        white
+    );
+    color: var(
+        --avonni-button-menu-button-border-filled-color-foreground,
+        #706e6b
+    );
 }

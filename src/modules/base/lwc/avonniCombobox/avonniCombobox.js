@@ -35,7 +35,8 @@ import {
     normalizeArray,
     normalizeBoolean,
     normalizeString,
-    classListMutation
+    classListMutation,
+    deepCopy
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
@@ -62,6 +63,9 @@ const DROPDOWN_LENGTHS = {
     default: '7-items'
 };
 
+const DEFAULT_BACK_ACTION = {
+    iconName: 'utility:chevronleft'
+};
 const DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT = 'Loading';
 const DEFAULT_PLACEHOLDER = 'Select an Option';
 const DEFAULT_PLACEHOLDER_WHEN_SEARCH_ALLOWED = 'Search...';
@@ -140,6 +144,7 @@ export default class AvonniCombobox extends LightningElement {
 
     _actions = [];
     _allowSearch = false;
+    _backAction = DEFAULT_BACK_ACTION;
     _disabled = false;
     _dropdownAlignment = DROPDOWN_ALIGNMENTS.default;
     _dropdownLength = DROPDOWN_LENGTHS.default;
@@ -201,6 +206,22 @@ export default class AvonniCombobox extends LightningElement {
     }
     set allowSearch(value) {
         this._allowSearch = normalizeBoolean(value);
+    }
+
+    /**
+     * Action object. The back action is used to go back to the previous level, after clicking on an option that has nested options.
+     *
+     * @type {object}
+     * @default { iconName: 'utility:chevronright', label: Label of the parent option }
+     * @public
+     */
+    @api
+    get backAction() {
+        return this._backAction;
+    }
+    set backAction(value) {
+        this._backAction =
+            value instanceof Object ? value : DEFAULT_BACK_ACTION;
     }
 
     /**
@@ -794,9 +815,55 @@ export default class AvonniCombobox extends LightningElement {
 
     /*
      * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Get an option by its value.
+     *
+     * @param {string} value Unique value of the option.
+     * @param {object[]} options Array of options.
+     * @returns {object} Option object.
+     */
+    getOption(value, options = this.options) {
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.value === value) {
+                return option;
+            }
+
+            const children = normalizeArray(option.options);
+            if (children.length) {
+                const childOption = this.getOption(value, children);
+                if (childOption) return childOption;
+            }
+        }
+        return null;
+    }
+
+    /*
+     * ------------------------------------------------------------
      *  EVENT HANDLERS AND DISPATCHERS
      * -------------------------------------------------------------
      */
+
+    /**
+     * Handle the click on a back action.
+     */
+    handleBackActionClick() {
+        /**
+         * The event fired when a user clicks on a back action.
+         *
+         * @event
+         * @name backactionclick
+         * @public
+         * @bubbles
+         */
+        this.dispatchEvent(
+            new CustomEvent('backactionclick', { bubbles: true })
+        );
+    }
 
     /**
      * Dispatches blur event.
@@ -886,6 +953,33 @@ export default class AvonniCombobox extends LightningElement {
         const { action, levelPath, value } = event.detail;
         this._value = this.isMultiSelect ? value : value.toString();
         this.dispatchChange(action, levelPath);
+    }
+
+    /**
+     * Handle the click on an option with nested options.
+     *
+     * @param {Event} event
+     */
+    handleLevelChange(event) {
+        const option = this.getOption(event.detail.optionValue);
+
+        /**
+         * The event fired when an option with nested options has been selected.
+         *
+         * @event
+         * @name levelchange
+         * @param {object} option Option clicked.
+         * @public
+         * @bubbles
+         */
+        this.dispatchEvent(
+            new CustomEvent('levelchange', {
+                detail: {
+                    option: deepCopy(option)
+                },
+                bubbles: true
+            })
+        );
     }
 
     /**

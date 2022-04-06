@@ -143,6 +143,10 @@ export default class AvonniAvatarGroup extends LightningElement {
         if (!this.maxCount) {
             this._maxCount = this.layout === 'stack' ? 5 : 11;
         }
+        this.template.addEventListener(
+            'actionclick',
+            this.handleAvatarActionClick
+        );
     }
 
     renderedCallback() {
@@ -613,7 +617,7 @@ export default class AvonniAvatarGroup extends LightningElement {
              *
              * @event
              * @name avatarclick
-             * @param {object} item The avatar detail
+             * @param {object} item The avatar detail.
              * @bubbles
              * @cancelable
              * @public
@@ -655,6 +659,40 @@ export default class AvonniAvatarGroup extends LightningElement {
             })
         );
     }
+
+    /**
+     * Dispatch the actionclick event
+     */
+    handleAvatarActionClick = (event) => {
+        const name = event.detail.name;
+        const itemId = event.target.dataset.itemId;
+        const type = event.target.dataset.type;
+        let item;
+
+        if (type === 'show') {
+            item = this.listItems[itemId];
+        } else {
+            item = this.listHiddenItems[itemId];
+        }
+
+        /**
+         * The event fired when the user clicks on an avatar action.
+         *
+         * @event
+         * @name avataractionclick
+         * @param {object} item The avatar detail.
+         * @param {string} name The action name.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('avataractionclick', {
+                detail: {
+                    item,
+                    name
+                }
+            })
+        );
+    };
 
     /**
      * Toggle the hidden extra avatars popover

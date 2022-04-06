@@ -219,7 +219,8 @@
                             icon-size="x-small"
                             data-element-id="lightning-button-menu"
                             data-item-index={index}
-                            ontouchstart={handleButtonMenuTouchStart}
+                            onmousedown={stopPropagation}
+                            ontouchstart={stopPropagation}
                             onselect={handleActionClick}
                         >
                             <template
@@ -240,7 +241,6 @@
                             <lightning-button
                                 if:true={firstAction.label}
                                 class="slds-m-right_none"
-                                ontouchstart={handleButtonMenuTouchStart}
                                 key={firstAction.name}
                                 value={firstAction.name}
                                 label={firstAction.label}
@@ -249,11 +249,11 @@
                                 data-item-index={index}
                                 data-element-id="lightning-button"
                                 onclick={handleActionClick}
+                                ontouchstart={stopPropagation}
                             ></lightning-button>
                             <lightning-button-icon
                                 if:false={firstAction.label}
                                 class="slds-m-right_none"
-                                ontouchstart={handleButtonMenuTouchStart}
                                 key={firstAction.name}
                                 value={firstAction.name}
                                 disabled={firstAction.disabled}
@@ -262,6 +262,7 @@
                                 data-item-index={index}
                                 data-element-id="lightning-button-icon"
                                 onclick={handleActionClick}
+                                ontouchstart={stopPropagation}
                             ></lightning-button-icon>
                         </template>
                     </div>

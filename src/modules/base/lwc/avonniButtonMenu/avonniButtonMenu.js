@@ -110,7 +110,14 @@ export default class AvonniButtonMenu extends LightningElement {
      * @type {string}
      * @default utility:down
      */
-    @api iconName = DEFAULT_ICON_NAME;
+    @api
+    get iconName() {
+        return this._iconName;
+    }
+
+    set iconName(icon) {
+        this._iconName = normalizeString(icon);
+    }
     /**
      * Optional text to be shown on the button.
      *
@@ -145,6 +152,8 @@ export default class AvonniButtonMenu extends LightningElement {
     _tooltip;
     _variant = BUTTON_VARIANTS.default;
 
+    _iconName = DEFAULT_ICON_NAME;
+    _hideDownArrow = false;
     _order = null;
 
     _boundingRect = {};
@@ -331,6 +340,22 @@ export default class AvonniButtonMenu extends LightningElement {
     }
 
     /**
+     * If present, the small down arrow normaly displayed to the right of a custom icon is hidden. Without a custom icon-name this does nothing.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideDownArrow() {
+        return this._hideDownArrow;
+    }
+
+    set hideDownArrow(value) {
+        this._hideDownArrow = normalizeBoolean(value);
+    }
+
+    /**
      * Displays title text when the mouse moves over the button menu.
      *
      * @public
@@ -434,7 +459,7 @@ export default class AvonniButtonMenu extends LightningElement {
                     this.variant === 'container' && isDropdownIcon,
                 'slds-button_icon-border':
                     this.variant === 'border' && isDropdownIcon,
-                'slds-button_icon-border-filled':
+                'slds-button_icon-border-filled avonni-button-menu_button-border-filled':
                     this.variant === 'border-filled',
                 'slds-button_icon-border-inverse':
                     this.variant === 'border-inverse',
@@ -490,6 +515,9 @@ export default class AvonniButtonMenu extends LightningElement {
      * @type {boolean}
      */
     get computedShowDownIcon() {
+        if (this.hideDownArrow) {
+            return false;
+        }
         return !(
             this.iconName === 'utility:down' ||
             this.iconName === 'utility:chevrondown'

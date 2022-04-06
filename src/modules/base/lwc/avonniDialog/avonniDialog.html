@@ -40,49 +40,57 @@
             data-element-id="modal"
         >
             <div class="slds-modal__container">
-                <div onclick={handleContentClick} data-element-id="div-content">
-                    <header class={computedHeaderClass}>
-                        <lightning-button-icon
-                            icon-name="utility:close"
+                <header
+                    class={computedHeaderClass}
+                    onclick={handleContentClick}
+                >
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        size="large"
+                        variant="bare"
+                        alternative-text="Close"
+                        class="slds-modal__close"
+                        icon-class="slds-button_icon-inverse"
+                        onclick={hide}
+                    ></lightning-button-icon>
+                    <template if:true={showHeader}>
+                        <h2
+                            if:true={hasStringTitle}
+                            class="slds-modal__title slds-hyphenate"
+                            data-element-id="h2"
+                        >
+                            {title}
+                        </h2>
+                        <template if:false={hasStringTitle}>
+                            <slot name="title"></slot>
+                        </template>
+                    </template>
+                </header>
+                <div
+                    class="slds-modal__content slds-p-around_medium"
+                    data-element-id="div-content"
+                    onclick={handleContentClick}
+                >
+                    <template if:true={isLoading}>
+                        <lightning-spinner
+                            alternative-text={loadingStateAlternativeText}
                             size="large"
-                            onclick={hide}
-                            variant="bare"
-                            alternative-text="Close"
-                            class="slds-modal__close"
-                            icon-class="slds-button_icon-inverse"
-                        ></lightning-button-icon>
-                        <template if:true={showHeader}>
-                            <h2
-                                if:true={hasStringTitle}
-                                class="slds-modal__title slds-hyphenate"
-                                data-element-id="h2"
-                            >
-                                {title}
-                            </h2>
-                            <template if:false={hasStringTitle}>
-                                <slot name="title"></slot>
-                            </template>
-                        </template>
-                    </header>
-                    <div class="slds-modal__content slds-p-around_medium">
-                        <template if:true={isLoading}>
-                            <lightning-spinner
-                                alternative-text={loadingStateAlternativeText}
-                                size="large"
-                                class="avonni-spinner"
-                                data-element-id="lightning-spinner"
-                            ></lightning-spinner>
-                        </template>
-                        <template if:false={isLoading}>
-                            <slot></slot>
-                        </template>
-                    </div>
-                    <template if:true={showFooter}>
-                        <footer class="slds-modal__footer">
-                            <slot name="footer"></slot>
-                        </footer>
+                            class="avonni-spinner"
+                            data-element-id="lightning-spinner"
+                        ></lightning-spinner>
+                    </template>
+                    <template if:false={isLoading}>
+                        <slot></slot>
                     </template>
                 </div>
+                <template if:true={showFooter}>
+                    <footer
+                        class="slds-modal__footer"
+                        onclick={handleContentClick}
+                    >
+                        <slot name="footer"></slot>
+                    </footer>
+                </template>
             </div>
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>

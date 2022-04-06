@@ -32,7 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeString, normalizeArray } from 'c/utilsPrivate';
 import { computeSldsClass } from 'c/iconUtils';
 
 const AVATAR_SIZES = {
@@ -59,7 +59,8 @@ const POSITIONS = {
     valid: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
     presenceDefault: 'bottom-right',
     statusDefault: 'top-right',
-    entityDefault: 'top-left'
+    entityDefault: 'top-left',
+    actionDefault: 'bottom-left'
 };
 const PRESENCE = {
     valid: ['online', 'busy', 'focus', 'offline', 'blocked', 'away'],
@@ -70,6 +71,7 @@ const DEFAULT_ALTERNATIVE_TEXT = 'Avatar';
 const DEFAULT_ENTITY_TITLE = 'Entity';
 const DEFAULT_PRESENCE_TITLE = 'Presence';
 const DEFAULT_STATUS_TITLE = 'Status';
+const DEFAULT_ICON_MENU_ICON = 'utility:down';
 
 export default class AvonniPrimitiveAvatar extends LightningElement {
     @api entityInitials;
@@ -94,6 +96,10 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
     _presenceTitle = DEFAULT_PRESENCE_TITLE;
     _size = AVATAR_SIZES.default;
     _src = '';
+    _actions = [];
+    _actionPosition = POSITIONS.actionDefault;
+    _actionMenuIcon = DEFAULT_ICON_MENU_ICON;
+    _actionTitle = '';
     _status = STATUS.default;
     _statusPosition = POSITIONS.statusDefault;
     _statusTitle = DEFAULT_STATUS_TITLE;
@@ -267,6 +273,90 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
     }
 
     /**
+     * Actions
+     */
+    @api
+    get actions() {
+        return this._actions;
+    }
+
+    set actions(value) {
+        this._actions = normalizeArray(value);
+    }
+
+    get actionMenu() {
+        return this.actions.length > 1;
+    }
+
+    get action() {
+        return this.actions[0];
+    }
+
+    @api
+    get actionPosition() {
+        return this._actionPosition;
+    }
+
+    set actionPosition(value) {
+        this._actionPosition = normalizeString(value, {
+            fallbackValue: POSITIONS.actionDefault,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    @api
+    get actionMenuIcon() {
+        return this._actionMenuIcon;
+    }
+
+    set actionMenuIcon(icon) {
+        if (icon && icon.length > 0) {
+            this._actionMenuIcon = icon;
+        } else {
+            this._actionMenuIcon = DEFAULT_ICON_MENU_ICON;
+        }
+    }
+
+    get computedActionClasses() {
+        return classSet('avonni-avatar__actions').add(
+            `avonni-avatar_${this._actionPosition}`
+        );
+    }
+
+    get showActions() {
+        const { size, actions } = this;
+        let _showAction = true;
+        if (
+            size === 'small' ||
+            size === 'x-small' ||
+            size === 'xx-small' ||
+            (actions && !actions.length > 0)
+        ) {
+            _showAction = false;
+        }
+        return _showAction;
+    }
+
+    get actionMenuSize() {
+        let _actionSize;
+        switch (this.size) {
+            case 'x-large':
+                _actionSize = 'x-small';
+                break;
+            case 'large':
+                _actionSize = 'xx-small';
+                break;
+            case 'medium':
+                _actionSize = 'xx-small';
+                break;
+            default:
+                _actionSize = 'small';
+                break;
+        }
+        return _actionSize;
+    }
+
+    /**
      * Status
      */
 
@@ -425,5 +515,29 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
             `Avatar component Image with src="${event.target.src}" failed to load.`
         );
         this._src = '';
+    }
+
+    /**
+     * Action clicked event handler.
+     *
+     * @param {event}
+     */
+    handleActionClick(event) {
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @bubbles
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('actionclick', {
+                bubbles: true,
+                detail: {
+                    name: event.currentTarget.value
+                }
+            })
+        );
     }
 }

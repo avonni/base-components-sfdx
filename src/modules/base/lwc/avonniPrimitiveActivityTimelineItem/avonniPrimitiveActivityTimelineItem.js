@@ -106,6 +106,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     @api href;
     /**
      * The Lightning Design System name of the icon. Specify the name in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. The icon is displayed in the header before the title.
+     * When omitted, a simplified timeline bullet replaces it.
      *
      * @public
      * @type {string}
@@ -141,6 +142,13 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      * @type {string}
      */
     @api title;
+    /**
+     * If true, this item gets a blue bullet incase it has no icon. 
+     *
+     * @public
+     * @type {boolean}
+     */
+    @api isActive;
 
     _buttonDisabled = false;
     _buttonIconPosition = BUTTON_ICON_POSITIONS.default;
@@ -150,7 +158,6 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     _hasCheckbox = false;
     _hasError = false;
     _isLoading = false;
-
     _color;
 
     renderedCallback() {
@@ -331,6 +338,20 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     }
 
     /**
+     * Classes for items bullet point.
+     *
+     * @type {string}
+     * @public
+     */
+    get timelineItemBullet() {
+        return classSet('slds-timeline__icon avonni-timeline-item__bullet')
+            .add({
+                'avonni-timeline-item__active-bullet': this.isActive
+            })
+            .toString();
+    }
+
+    /**
      * Computed styling class for item without fields.
      *
      * @type {string}
@@ -431,7 +452,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      * @returns {string} line background color
      */
     setLineColor() {
-        const icon = this.template.querySelector('lightning-icon');
+        const icon = this.template.querySelector('[data-element-id="item-marker"]');
         if (icon === null) return;
         const style = getComputedStyle(icon);
         this._color = style.backgroundColor;

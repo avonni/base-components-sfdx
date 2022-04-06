@@ -236,6 +236,21 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     /**
+     * If present, the options stretch to full width.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get stretch() {
+        return this._stretch || false;
+    }
+    set stretch(value) {
+        this._stretch = normalizeBoolean(value);
+    }
+
+    /**
      * If present, the input field is read-only and cannot be edited by users.
      *
      * @type {boolean}
@@ -571,9 +586,10 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * @type {string}
      */
     get computedButtonClass() {
-        return this.checkboxVariant
-            ? ''
-            : `slds-checkbox_button-group ${this.orientation}`;
+        return classSet(`avonni-input-choice-set__${this.orientation}`).add({
+            'slds-checkbox_button-group': !this.checkboxVariant,
+            'avonni-input-choice-set__stretch': this.stretch
+        });
     }
 
     /**
@@ -583,9 +599,9 @@ export default class AvonniInputChoiceSet extends LightningElement {
      */
     get computedCheckboxContainerClass() {
         const checkboxClass = this.isMultiSelect
-            ? `slds-checkbox ${this.orientation}`
-            : `slds-radio ${this.orientation}`;
-        const buttonClass = `slds-button slds-checkbox_button ${this.orientation}`;
+            ? `slds-checkbox avonni-input-choice-set__${this.orientation}`
+            : `slds-radio avonni-input-choice-set__${this.orientation}`;
+        const buttonClass = `slds-button slds-checkbox_button avonni-input-choice-set__${this.orientation}`;
 
         return this.checkboxVariant ? checkboxClass : buttonClass;
     }
@@ -596,7 +612,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * @type {string}
      */
     get computedLabelClass() {
-        const buttonLabelClass = `slds-checkbox_button__label slds-align_absolute-center ${this.orientation}`;
+        const buttonLabelClass = `slds-checkbox_button__label slds-align_absolute-center avonni-input-choice-set__${this.orientation}`;
         const checkboxLabelClass =
             this.isMultiSelect && this.checkboxVariant
                 ? 'slds-checkbox__label'

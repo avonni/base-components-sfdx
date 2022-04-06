@@ -1188,9 +1188,14 @@ export default class AvonniDateTimePicker extends LightningElement {
      * Handles the onchange event of the lightning-input to change the date.
      */
     handleDateChange(event) {
-        const dateString = event.detail.value
-            .toString()
-            .match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        const value = event.detail.value;
+        if (!value || typeof value !== 'string') {
+            // Prevent unselection of a date
+            event.currentTarget.value = this.firstWeekDayToString;
+            return;
+        }
+
+        const dateString = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
         if (dateString) {
             const year = dateString[1];

@@ -62,7 +62,8 @@ const POSITIONS = {
     valid: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
     presenceDefault: 'bottom-right',
     statusDefault: 'top-right',
-    entityDefault: 'top-left'
+    entityDefault: 'top-left',
+    actionDefault: 'bottom-left'
 };
 const PRESENCE = {
     valid: ['online', 'busy', 'focus', 'offline', 'blocked', 'away'],
@@ -116,7 +117,7 @@ export default class AvonniAvatar extends LightningElement {
      */
     @api initials;
     /**
-     * primary-text.
+     * Primary text to display, usually the name of the person.
      *
      * @public
      * @type {string}
@@ -157,9 +158,12 @@ export default class AvonniAvatar extends LightningElement {
     _textPosition = TEXT_POSITIONS.default;
     _tags;
     _computedTags;
+    _actions;
+    _actionPosition = POSITIONS.actionDefault;
 
     connectedCallback() {
         this._updateClassList();
+        this.template.addEventListener('actionclick', this.handleActionClick);
     }
 
     /**
@@ -463,6 +467,49 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
+     * Array of action objects. If the array contains a single action, it is displayed as a button icon. Otherwise, actions are placed in a button menu with a label and icon.
+     *
+     * @public
+     * @type {object[]}
+     */
+    @api
+    get actions() {
+        return this._actions;
+    }
+
+    set actions(value) {
+        this._actions = normalizeArray(value);
+    }
+
+    /**
+     * Position of the action button or menu relative to the avatar. Valid values include top-right, bottom-right, bottom-left or top-left.
+     *
+     * @public
+     * @type {string}
+     * @default bottom-left
+     */
+    @api
+    get actionPosition() {
+        return this._actionPosition;
+    }
+
+    set actionPosition(value) {
+        this._actionPosition = normalizeString(value, {
+            fallbackValue: POSITIONS.actionDefault,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    /**
+     * The Lightning Design System icon name for a custom menu icon. Unused if there is only one action.
+     *
+     * @public
+     * @type {string}
+     * @default utility:down
+     */
+    @api actionMenuIcon;
+
+    /**
      * Text position centered.
      *
      * @type {boolean}
@@ -547,4 +594,29 @@ export default class AvonniAvatar extends LightningElement {
                 return 'slds-badge';
         }
     }
+
+    /**
+     * Action clicked event handler.
+     *
+     * @param {event}
+     */
+    handleActionClick = (event) => {
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @param {string} name The action name.
+         * @bubbles
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('actionclick', {
+                bubbles: true,
+                detail: {
+                    name: event.detail.name
+                }
+            })
+        );
+    };
 }
