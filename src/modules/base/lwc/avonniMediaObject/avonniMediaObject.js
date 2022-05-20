@@ -50,28 +50,31 @@ const VERTICAL_ALIGNMENTS = {
  * @public
  */
 export default class AvonniMediaObject extends LightningElement {
-    _verticalAlign = VERTICAL_ALIGNMENTS.default;
-    _responsive = false;
     _inline = false;
+    _responsive = false;
     _size = MEDIA_OBJECT_SIZES.default;
+    _verticalAlign = VERTICAL_ALIGNMENTS.default;
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
-     * Determines how to align the media object items vertically in the container. The alignment options are start, center and end.
+     * If present, the figures and body are stacked on each other.
      *
-     * @type {string}
+     * @type {boolean}
      * @public
-     * @default start
+     * @default false
      */
     @api
-    get verticalAlign() {
-        return this._verticalAlign;
+    get inline() {
+        return this._inline;
     }
 
-    set verticalAlign(verticalAlign) {
-        this._verticalAlign = normalizeString(verticalAlign, {
-            fallbackValue: VERTICAL_ALIGNMENTS.default,
-            validValues: VERTICAL_ALIGNMENTS.value
-        });
+    set inline(value) {
+        this._inline = normalizeBoolean(value);
     }
 
     /**
@@ -88,22 +91,6 @@ export default class AvonniMediaObject extends LightningElement {
 
     set responsive(value) {
         this._responsive = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the figures and body are stacked on each other.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get inline() {
-        return this._inline;
-    }
-
-    set inline(value) {
-        this._inline = normalizeBoolean(value);
     }
 
     /**
@@ -124,6 +111,31 @@ export default class AvonniMediaObject extends LightningElement {
             validValues: MEDIA_OBJECT_SIZES.valid
         });
     }
+
+    /**
+     * Determines how to align the media object items vertically in the container. The alignment options are start, center and end.
+     *
+     * @type {string}
+     * @public
+     * @default start
+     */
+    @api
+    get verticalAlign() {
+        return this._verticalAlign;
+    }
+
+    set verticalAlign(verticalAlign) {
+        this._verticalAlign = normalizeString(verticalAlign, {
+            fallbackValue: VERTICAL_ALIGNMENTS.default,
+            validValues: VERTICAL_ALIGNMENTS.value
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Compute media object class styling based on selected attributes.

@@ -81,7 +81,7 @@
                                 >
                                     <!-- Carousel items -->
                                     <div
-                                        key={item.key}
+                                        key={item.name}
                                         class="
                                             slds-carousel__panel
                                             slds-p-horizontal_x-small
@@ -89,19 +89,20 @@
                                         style={carouselItemStyle}
                                     >
                                         <c-avonni-primitive-carousel-item
-                                            title={item.title}
-                                            description={item.description}
-                                            image-assistive-text={item.imageAssistiveText}
-                                            href={item.href}
-                                            src={item.src}
                                             actions={item.actions}
                                             actions-position={actionsPosition}
                                             actions-variant={actionsVariant}
-                                            panel-index={panelIndex}
+                                            description={item.description}
+                                            href={item.href}
+                                            image-assistive-text={item.imageAssistiveText}
                                             item-index={itemIndex}
+                                            name={item.name}
+                                            panel-index={panelIndex}
                                             panel-items={panelItems}
-                                            onitemclick={handleItemClick}
+                                            src={item.src}
+                                            title={item.title}
                                             onactionclick={handleActionClick}
+                                            onitemclick={handleItemClick}
                                         >
                                         </c-avonni-primitive-carousel-item>
                                     </div>

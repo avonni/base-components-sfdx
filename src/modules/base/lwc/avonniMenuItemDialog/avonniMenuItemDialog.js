@@ -45,13 +45,6 @@ const DEFAULT_TAB_INDEX = '0';
  */
 export default class AvonniMenuItemDialog extends LightningElement {
     /**
-     * A value associated with the menu item.
-     *
-     * @type {string}
-     * @public
-     */
-    @api value;
-    /**
      * The keyboard shortcut for the menu item.
      *
      * @type {string}
@@ -86,15 +79,28 @@ export default class AvonniMenuItemDialog extends LightningElement {
      * @public
      */
     @api prefixIconName;
+    /**
+     * A value associated with the menu item.
+     *
+     * @type {string}
+     * @public
+     */
+    @api value;
 
-    _tabIndex = DEFAULT_TAB_INDEX;
     _disabled = false;
     _isDraft = false;
+    _tabIndex = DEFAULT_TAB_INDEX;
 
     connectedCallback() {
         this.classList.add('slds-dropdown__item');
         this.setAttribute('role', 'presentation');
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * If present, the menu item is disabled and users cannot interact with it.
@@ -144,6 +150,12 @@ export default class AvonniMenuItemDialog extends LightningElement {
         this._tabIndex = newValue;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Sets focus on the anchor element in the menu item.
      *
@@ -161,6 +173,12 @@ export default class AvonniMenuItemDialog extends LightningElement {
          */
         this.dispatchEvent(new CustomEvent('focus'));
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Handler that removes focus on anchor element in the menu item.

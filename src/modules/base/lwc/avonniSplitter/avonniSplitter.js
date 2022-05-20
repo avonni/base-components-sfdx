@@ -46,6 +46,7 @@ const SPLITTER_ORIENTATIONS = {
  */
 export default class AvonniSplitter extends LightningElement {
     _orientation = SPLITTER_ORIENTATIONS.default;
+
     down = false;
     data;
     selectedSeparator;
@@ -320,6 +321,12 @@ export default class AvonniSplitter extends LightningElement {
         window.removeEventListener('mousemove', this.listenerOnMouseMove);
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Specifies the orientation of the widget. Supported values are "horizontal" and "vertical".
      *
@@ -338,6 +345,12 @@ export default class AvonniSplitter extends LightningElement {
             validValues: SPLITTER_ORIENTATIONS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed orientation class based on vertical or horizontal display.
@@ -361,6 +374,12 @@ export default class AvonniSplitter extends LightningElement {
             : 'separator-horizontal';
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * On mouse down event method.
      *
@@ -377,15 +396,17 @@ export default class AvonniSplitter extends LightningElement {
         let second = selectedSeparator.nextSibling;
         this.selectedSeparator = selectedSeparator;
 
-        this.data = {
-            event,
-            offsetLeft: selectedSeparator.offsetLeft,
-            offsetTop: selectedSeparator.offsetTop,
-            firstWidth: first.offsetWidth,
-            firstHeight: first.offsetHeight,
-            secondWidth: second.offsetWidth,
-            secondHeight: second.offsetHeight
-        };
+        if (second && first) {
+            this.data = {
+                event,
+                offsetLeft: selectedSeparator.offsetLeft,
+                offsetTop: selectedSeparator.offsetTop,
+                firstWidth: first.offsetWidth,
+                firstHeight: first.offsetHeight,
+                secondWidth: second.offsetWidth,
+                secondHeight: second.offsetHeight
+            };
+        }
 
         if (selectedSeparator.style.cursor !== 'auto') {
             this.down = true;

@@ -115,16 +115,15 @@ export default class AvonniInputDateRange extends LightningElement {
      */
     @api messageWhenValueMissing;
 
-    _timezone;
-    _startDate;
-    _endDate;
-
     _dateStyle = DATE_STYLES.defaultDate;
-    _timeStyle = DATE_STYLES.defaultTime;
-    _type = DATE_TYPES.default;
     _disabled = false;
-    _required = false;
+    _endDate;
     _readOnly = false;
+    _required = false;
+    _startDate;
+    _timeStyle = DATE_STYLES.defaultTime;
+    _timezone;
+    _type = DATE_TYPES.default;
     _variant = LABEL_VARIANTS.default;
 
     startTime;
@@ -146,68 +145,11 @@ export default class AvonniInputDateRange extends LightningElement {
         this.updateClassListWhenError();
     }
 
-    /**
-     * Value of the input. Object with two keys: <code>startDate</code> and <code>endDate</code>.
-     *
-     * @type {object}
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get value() {
-        return { startDate: this._startDate, endDate: this._endDate };
-    }
-
-    /**
-     * Specifies the value of the start date input, which can be a Date object, timestamp, or an ISO8601 formatted string.
-     *
-     * @type {(string|Date|number)}
-     * @public
-     */
-    @api
-    get startDate() {
-        return this._startDate;
-    }
-
-    set startDate(value) {
-        this._startDate = value;
-        this.initialStartDate = value;
-        this.initStartDate();
-    }
-
-    /**
-     * Specifies the value of the end date input, which can be a Date object, timestamp, or an ISO8601 formatted string.
-     *
-     * @type {(string|Date|number)}
-     * @public
-     */
-    @api
-    get endDate() {
-        return this._endDate;
-    }
-
-    set endDate(value) {
-        this._endDate = value;
-        this.initialEndDate = value;
-        this.initEndtDate();
-    }
-
-    /**
-     * Specifies the time zone used when the type is <code>datetime</code> only.
-     * This value defaults to the user's Salesforce time zone setting.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get timezone() {
-        return this._timezone;
-    }
-
-    set timezone(value) {
-        this._timezone = value;
-        this.initStartDate();
-        this.initEndtDate();
-    }
 
     /**
      * The display style of the date.
@@ -231,48 +173,6 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * The display style of the time when type='time' or type='datetime'.
-     * Valid values are short, medium and long. Currently, medium and long styles look the same.
-     * On mobile devices this attribute has no effect.
-     *
-     * @type {string}
-     * @default short
-     * @public
-     */
-    @api
-    get timeStyle() {
-        return this._timeStyle;
-    }
-
-    set timeStyle(value) {
-        this._timeStyle = normalizeString(value, {
-            fallbackValue: DATE_STYLES.defaultTime,
-            validValues: DATE_STYLES.valid
-        });
-    }
-
-    /**
-     * Valid types include date and datetime.
-     *
-     * @type {string}
-     * @default date
-     * @public
-     */
-    @api
-    get type() {
-        return this._type;
-    }
-
-    set type(type) {
-        this._type = normalizeString(type, {
-            fallbackValue: DATE_TYPES.default,
-            validValues: DATE_TYPES.valid
-        });
-        this.initStartDate();
-        this.initEndtDate();
-    }
-
-    /**
      * If present, the input field is disabled and users cannot interact with it.
      *
      * @type {boolean}
@@ -286,6 +186,23 @@ export default class AvonniInputDateRange extends LightningElement {
 
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
+    }
+
+    /**
+     * Specifies the value of the end date input, which can be a Date object, timestamp, or an ISO8601 formatted string.
+     *
+     * @type {(string|Date|number)}
+     * @public
+     */
+    @api
+    get endDate() {
+        return this._endDate;
+    }
+
+    set endDate(value) {
+        this._endDate = value;
+        this.initialEndDate = value;
+        this.initEndtDate();
     }
 
     /**
@@ -321,6 +238,105 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
+     * Specifies the value of the start date input, which can be a Date object, timestamp, or an ISO8601 formatted string.
+     *
+     * @type {(string|Date|number)}
+     * @public
+     */
+    @api
+    get startDate() {
+        return this._startDate;
+    }
+
+    set startDate(value) {
+        this._startDate = value;
+        this.initialStartDate = value;
+        this.initStartDate();
+    }
+
+    /**
+     * The display style of the time when type='time' or type='datetime'.
+     * Valid values are short, medium and long. Currently, medium and long styles look the same.
+     * On mobile devices this attribute has no effect.
+     *
+     * @type {string}
+     * @default short
+     * @public
+     */
+    @api
+    get timeStyle() {
+        return this._timeStyle;
+    }
+
+    set timeStyle(value) {
+        this._timeStyle = normalizeString(value, {
+            fallbackValue: DATE_STYLES.defaultTime,
+            validValues: DATE_STYLES.valid
+        });
+    }
+
+    /**
+     * Specifies the time zone used when the type is <code>datetime</code> only.
+     * This value defaults to the user's Salesforce time zone setting.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get timezone() {
+        return this._timezone;
+    }
+
+    set timezone(value) {
+        this._timezone = value;
+        this.initStartDate();
+        this.initEndtDate();
+    }
+
+    /**
+     * Valid types include date and datetime.
+     *
+     * @type {string}
+     * @default date
+     * @public
+     */
+    @api
+    get type() {
+        return this._type;
+    }
+
+    set type(type) {
+        this._type = normalizeString(type, {
+            fallbackValue: DATE_TYPES.default,
+            validValues: DATE_TYPES.valid
+        });
+        this.initStartDate();
+        this.initEndtDate();
+    }
+
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get validity() {
+        return this._constraint.validity;
+    }
+
+    /**
+     * Value of the input. Object with two keys: <code>startDate</code> and <code>endDate</code>.
+     *
+     * @type {object}
+     * @public
+     */
+    @api
+    get value() {
+        return { startDate: this._startDate, endDate: this._endDate };
+    }
+
+    /**
      * The variant changes the appearance of an input field.
      * Accepted variants include standard and label-hidden.
      * This value defaults to standard, which displays the label above the field.
@@ -342,16 +358,11 @@ export default class AvonniInputDateRange extends LightningElement {
         });
     }
 
-    /**
-     * Represents the validity states that an element can be in, with respect to constraint validation.
-     *
-     * @type {string}
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get validity() {
-        return this._constraint.validity;
-    }
 
     /**
      * Start date input.
@@ -495,37 +506,25 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Removes the slds-has-error class on the whole element if it's not valid.
-     * Aplies it on every input we need it applied.
-     * Removes it from every input when valid.
+     * Gets FieldConstraintApi.
+     *
+     * @type {object}
      */
-    updateClassListWhenError() {
-        if (!this._valid && !this._readOnly) {
-            this.classList.remove('slds-has-error');
-            this.startDateInput.classList.add('slds-has-error');
-            this.startDateInput.classList.add('avonni-date-range__input_error');
-            this.endDateInput.classList.add('slds-has-error');
-            this.endDateInput.classList.add('avonni-date-range__input_error');
-            if (this.showTime) {
-                this.startTimeInput.classList.add('slds-has-error');
-                this.endTimeInput.classList.add('slds-has-error');
-            }
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled && this.required && !this.startDate
+            });
         }
-        if (this._valid && !this._readOnly) {
-            this.startDateInput.classList.remove('slds-has-error');
-            this.startDateInput.classList.remove(
-                'avonni-date-range__input_error'
-            );
-            this.endDateInput.classList.remove('slds-has-error');
-            this.endDateInput.classList.remove(
-                'avonni-date-range__input_error'
-            );
-            if (this.showTime) {
-                this.startTimeInput.classList.remove('slds-has-error');
-                this.endTimeInput.classList.remove('slds-has-error');
-            }
-        }
+        return this._constraintApi;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Sets focus on the start date input.
@@ -594,19 +593,43 @@ export default class AvonniInputDateRange extends LightningElement {
         this.reportValidity();
     }
 
-    /**
-     * Gets FieldConstraintApi.
-     *
-     * @type {object}
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    get _constraint() {
-        if (!this._constraintApi) {
-            this._constraintApi = new FieldConstraintApi(() => this, {
-                valueMissing: () =>
-                    !this.disabled && this.required && !this.startDate
-            });
+
+    /**
+     * Removes the slds-has-error class on the whole element if it's not valid.
+     * Aplies it on every input we need it applied.
+     * Removes it from every input when valid.
+     */
+    updateClassListWhenError() {
+        if (!this._valid && !this._readOnly) {
+            this.classList.remove('slds-has-error');
+            this.startDateInput.classList.add('slds-has-error');
+            this.startDateInput.classList.add('avonni-date-range__input_error');
+            this.endDateInput.classList.add('slds-has-error');
+            this.endDateInput.classList.add('avonni-date-range__input_error');
+            if (this.showTime) {
+                this.startTimeInput.classList.add('slds-has-error');
+                this.endTimeInput.classList.add('slds-has-error');
+            }
         }
-        return this._constraintApi;
+        if (this._valid && !this._readOnly) {
+            this.startDateInput.classList.remove('slds-has-error');
+            this.startDateInput.classList.remove(
+                'avonni-date-range__input_error'
+            );
+            this.endDateInput.classList.remove('slds-has-error');
+            this.endDateInput.classList.remove(
+                'avonni-date-range__input_error'
+            );
+            if (this.showTime) {
+                this.startTimeInput.classList.remove('slds-has-error');
+                this.endTimeInput.classList.remove('slds-has-error');
+            }
+        }
     }
 
     /**
@@ -820,10 +843,12 @@ export default class AvonniInputDateRange extends LightningElement {
     handleChangeEndDate(event) {
         const value = event.detail.value;
         const normalizedValue = value instanceof Array ? value : [value];
-        const dates = normalizedValue.map((date) => new Date(date));
+        const dates = normalizedValue.map((date) => {
+            return date ? new Date(date) : null;
+        });
 
         // Handler if there is an end date and there is no start date.
-        if (dates.length === 1 && !this._startDate) {
+        if (dates.length === 1 && dates[0] && !this._startDate) {
             this._endDate = new Date(dates[0]);
             // Handler if there is no end date, but there is a start date.
         } else if (this.isOnlyStartDate) {

@@ -113,6 +113,12 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * If present, the visual picker is disabled and the user cannot interact with it.
      *
@@ -215,6 +221,17 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
     }
 
     /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get validity() {
+        return this._constraint.validity;
+    }
+
+    /**
      * Value of the selected item. For the checkbox type, the value can be an array. Ex: [value1, value2], 'value1' or ['value1'].
      *
      * @type {(string|string[])}
@@ -226,7 +243,8 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
     }
 
     set value(value) {
-        this._value = value instanceof Array ? value : [value];
+        this._value =
+            typeof value === 'string' ? [value] : normalizeArray(value);
     }
 
     /**
@@ -247,6 +265,12 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
             validValues: ITEM_VARIANTS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIESs
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed list of items for vertical visual picker.
@@ -389,15 +413,25 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
     }
 
     /**
-     * Represents the validity states that an element can be in, with respect to constraint validation.
+     * Validation with constraint Api.
      *
-     * @type {string}
-     * @public
+     * @type {object}
      */
-    @api
-    get validity() {
-        return this._constraint.validity;
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled && this.required && this.value.length === 0
+            });
+        }
+        return this._constraintApi;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Checks if the input is valid.
@@ -467,20 +501,11 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
         this.reportValidity();
     }
 
-    /**
-     * Validation with constraint Api.
-     *
-     * @type {object}
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    get _constraint() {
-        if (!this._constraintApi) {
-            this._constraintApi = new FieldConstraintApi(() => this, {
-                valueMissing: () =>
-                    !this.disabled && this.required && this.value.length === 0
-            });
-        }
-        return this._constraintApi;
-    }
 
     /**
      * Dispatches the blur event.
@@ -515,13 +540,13 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string[]} value The visual picker value.
+         * @param {string|string[]} value Selected items' value. Returns an array of string if the type is checkbox. Returns a string otherwise.
          * @public
          */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value
+                    value: this.type === 'radio' ? value[0] || null : value
                 }
             })
         );

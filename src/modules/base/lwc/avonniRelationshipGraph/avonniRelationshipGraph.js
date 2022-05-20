@@ -59,21 +59,6 @@ const DEFAULT_EXPAND_ICON_NAME = 'utility:chevronright';
  */
 export default class AvonniRelationshipGraph extends LightningElement {
     /**
-     * Root label.
-     *
-     * @type {string}
-     * @public
-     * @required
-     */
-    @api label;
-    /**
-     * Image URL for the avatar of the root item. If present, the avatar is displayed before the label.
-     *
-     * @type {string}
-     * @public
-     */
-    @api avatarSrc;
-    /**
      * The Lightning Design System name of the icon used as a fallback when the root avatar image fails to load.
      * Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
      *
@@ -82,20 +67,12 @@ export default class AvonniRelationshipGraph extends LightningElement {
      */
     @api avatarFallbackIconName;
     /**
-     * URL for the root label link.
+     * Image URL for the avatar of the root item. If present, the avatar is displayed before the label.
      *
      * @type {string}
      * @public
      */
-    @api href;
-    /**
-     * Icon used to shrink an expanded group of items.
-     *
-     * @type {string}
-     * @public
-     * @default utility:chevrondown
-     */
-    @api shrinkIconName = DEFAULT_SHRINK_ICON_NAME;
+    @api avatarSrc;
     /**
      * Icon used to expand a closed group of items.
      *
@@ -104,20 +81,43 @@ export default class AvonniRelationshipGraph extends LightningElement {
      * @default utility:chevronright
      */
     @api expandIconName = DEFAULT_EXPAND_ICON_NAME;
+    /**
+     * URL for the root label link.
+     *
+     * @type {string}
+     * @public
+     */
+    @api href;
+    /**
+     * Root label.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
+    @api label;
+    /**
+     * Icon used to shrink an expanded group of items.
+     *
+     * @type {string}
+     * @public
+     * @default utility:chevrondown
+     */
+    @api shrinkIconName = DEFAULT_SHRINK_ICON_NAME;
+
+    _actions = [];
+    _groupActions = [];
+    _groupActionsPosition = ACTIONS_POSITIONS.default;
+    _groups = [];
+    _hideItemsCount = false;
+    _itemActions = [];
+    _selectedItem;
+    _selectedItemName;
+    _variant = RELATIONSHIP_GRAPH_GROUP_VARIANTS.default;
 
     processedGroups;
     selectedItemPosition;
     inlineHeader;
-
-    _variant = RELATIONSHIP_GRAPH_GROUP_VARIANTS.default;
-    _actions = [];
-    _selectedItemName;
-    _selectedItem;
-    _groups = [];
-    _groupActions = [];
-    _groupActionsPosition = ACTIONS_POSITIONS.default;
-    _itemActions = [];
-    _hideItemsCount = false;
 
     connectedCallback() {
         this.updateSelection();
@@ -125,29 +125,18 @@ export default class AvonniRelationshipGraph extends LightningElement {
         if (this.variant === 'vertical') {
             this.inlineHeader = true;
         }
+        this._isConnected = true;
     }
 
     renderedCallback() {
         this.updateLine();
     }
 
-    /**
-     * The variant changes the appearance of the graph. Valid values include horizontal and vertical.
-     *
-     * @type {string}
-     * @public
-     * @default horizontal
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get variant() {
-        return this._variant;
-    }
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: RELATIONSHIP_GRAPH_GROUP_VARIANTS.default,
-            validValues: RELATIONSHIP_GRAPH_GROUP_VARIANTS.valid
-        });
-    }
 
     /**
      * Array of root actions.
@@ -161,41 +150,6 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
     set actions(value) {
         this._actions = normalizeArray(value);
-    }
-
-    /**
-     * Name of the selected item.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get selectedItemName() {
-        return this._selectedItemName;
-    }
-    set selectedItemName(name) {
-        this._selectedItemName =
-            (typeof name === 'string' && name.trim()) || '';
-
-        if (this.isConnected) this.updateSelection();
-    }
-
-    /**
-     * Array of group objects.
-     *
-     * @type {object[]}
-     * @public
-     */
-    @api
-    get groups() {
-        return this._groups;
-    }
-    set groups(value) {
-        this._groups = normalizeArray(value);
-
-        if (this.isConnected) {
-            this.updateSelection();
-        }
     }
 
     /**
@@ -231,17 +185,21 @@ export default class AvonniRelationshipGraph extends LightningElement {
     }
 
     /**
-     * Array of default actions for all items.
+     * Array of group objects.
      *
      * @type {object[]}
      * @public
      */
     @api
-    get itemActions() {
-        return this._itemActions;
+    get groups() {
+        return this._groups;
     }
-    set itemActions(value) {
-        this._itemActions = normalizeArray(value);
+    set groups(value) {
+        this._groups = normalizeArray(value);
+
+        if (this.isConnected) {
+            this.updateSelection();
+        }
     }
 
     /**
@@ -258,6 +216,61 @@ export default class AvonniRelationshipGraph extends LightningElement {
     set hideItemsCount(boolean) {
         this._hideItemsCount = normalizeBoolean(boolean);
     }
+
+    /**
+     * Array of default actions for all items.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get itemActions() {
+        return this._itemActions;
+    }
+    set itemActions(value) {
+        this._itemActions = normalizeArray(value);
+    }
+
+    /**
+     * Name of the selected item.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get selectedItemName() {
+        return this._selectedItemName;
+    }
+    set selectedItemName(name) {
+        this._selectedItemName =
+            (typeof name === 'string' && name.trim()) || '';
+
+        if (this.isConnected) this.updateSelection();
+    }
+
+    /**
+     * The variant changes the appearance of the graph. Valid values include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: RELATIONSHIP_GRAPH_GROUP_VARIANTS.default,
+            validValues: RELATIONSHIP_GRAPH_GROUP_VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Verify if avatar is displayed.
@@ -284,7 +297,7 @@ export default class AvonniRelationshipGraph extends LightningElement {
      */
     get childLevel() {
         return this.template.querySelector(
-            'c-primitive-relationship-graph-level'
+            '[data-element-id="avonni-primitive-relationship-graph-level"]'
         );
     }
 
@@ -346,11 +359,17 @@ export default class AvonniRelationshipGraph extends LightningElement {
      * @type {string}
      */
     get lineClass() {
-        return classSet('line').add({
+        return classSet().add({
             line_vertical: this.variant === 'horizontal',
             'line_horizontal slds-m-bottom_large': this.variant === 'vertical'
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Update line width and height based child element level.
@@ -358,7 +377,7 @@ export default class AvonniRelationshipGraph extends LightningElement {
      * @type {string}
      */
     updateLine() {
-        const line = this.template.querySelector('.line');
+        const line = this.template.querySelector('[data-element-id="div-line"]');
         const currentLevel = this.childLevel;
 
         if (this.variant === 'vertical') {

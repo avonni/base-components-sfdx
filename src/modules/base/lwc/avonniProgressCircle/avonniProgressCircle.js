@@ -67,30 +67,85 @@ const DEFAULT_VALUE = 0;
  */
 export default class AvonniProgressCircle extends LightningElement {
     /**
-     * The title is displayed at the bottom or top of the progress circle.
-     *
-     * @type {string}
-     * @public
-     */
-    @api title;
-    /**
      * The label is displayed after the value in the progress circle.
      *
      * @type {string}
      * @public
      */
     @api label;
+    /**
+     * The title is displayed at the bottom or top of the progress circle.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
 
+    _color = DEFAULT_COLOR;
+    _direction = PROGRESS_CIRCLE_DIRECTIONS.default;
+    _isLoading = false;
+    _size = PROGRESS_CIRCLE_SIZES.default;
+    _thickness = PROGRESS_CIRCLE_THICKNESSES.default;
     _titlePosition = TITLE_POSITIONS.default;
     _value = DEFAULT_VALUE;
     _variant = VALUE_VARIANTS.default;
-    _direction = PROGRESS_CIRCLE_DIRECTIONS.default;
-    _size = PROGRESS_CIRCLE_SIZES.default;
-    _thickness = PROGRESS_CIRCLE_THICKNESSES.default;
-    _color = DEFAULT_COLOR;
-    _isLoading = false;
-    _spinningValue = 0;
+
     _dots = 1;
+    _spinningValue = 0;
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * The color of the Progress Circle. Accepts a valid CSS color string, including hex and rgb.
+     *
+     * @type {string}
+     * @public
+     * @default #1589ee
+     */
+    @api
+    get color() {
+        return this._color;
+    }
+
+    set color(color) {
+        if (typeof color === 'string') {
+            let styles = new Option().style;
+            styles.color = color;
+
+            if (
+                styles.color === color ||
+                this.isHexColor(color.replace('#', ''))
+            ) {
+                this._color = color;
+            }
+        } else {
+            this._color = DEFAULT_COLOR;
+        }
+    }
+
+    /**
+     * Controls which way the color flows from the top of the ring, either clockwise or counterclockwise Valid values include fill and drain.
+     * The fill value corresponds to a color flow in the clockwise direction. The drain value indicates a color flow in the counterclockwise direction.
+     *
+     * @type {string}
+     * @public
+     * @default fill
+     */
+    @api
+    get direction() {
+        return this._direction;
+    }
+
+    set direction(direction) {
+        this._direction = normalizeString(direction, {
+            fallbackValue: PROGRESS_CIRCLE_DIRECTIONS.default,
+            validValues: PROGRESS_CIRCLE_DIRECTIONS.valid
+        });
+    }
 
     /**
      * If present the progress bar displays a loading animation. The value goes from 0 to 100 repeatedly and the label displays a 3 dots animation. The value and labels become hidden.
@@ -106,6 +161,44 @@ export default class AvonniProgressCircle extends LightningElement {
 
     set isLoading(loading) {
         this._isLoading = normalizeBoolean(loading);
+    }
+
+    /**
+     * The size of the progress circle. Valid values include x-small (26x26px), small (52x52px), medium (104x104px), large (152x152px) and x-large (208x208px).
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(size) {
+        this._size = normalizeString(size, {
+            fallbackValue: PROGRESS_CIRCLE_SIZES.default,
+            validValues: PROGRESS_CIRCLE_SIZES.valid
+        });
+    }
+
+    /**
+     * Set progress circle thickness. Valid values include x-small, small, medium, large and x-large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get thickness() {
+        return this._thickness;
+    }
+
+    set thickness(thickness) {
+        this._thickness = normalizeString(thickness, {
+            fallbackValue: PROGRESS_CIRCLE_THICKNESSES.default,
+            validValues: PROGRESS_CIRCLE_THICKNESSES.valid
+        });
     }
 
     /**
@@ -171,105 +264,11 @@ export default class AvonniProgressCircle extends LightningElement {
         });
     }
 
-    /**
-     * Controls which way the color flows from the top of the ring, either clockwise or counterclockwise Valid values include fill and drain.
-     * The fill value corresponds to a color flow in the clockwise direction. The drain value indicates a color flow in the counterclockwise direction.
-     *
-     * @type {string}
-     * @public
-     * @default fill
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get direction() {
-        return this._direction;
-    }
-
-    set direction(direction) {
-        this._direction = normalizeString(direction, {
-            fallbackValue: PROGRESS_CIRCLE_DIRECTIONS.default,
-            validValues: PROGRESS_CIRCLE_DIRECTIONS.valid
-        });
-    }
-
-    /**
-     * The size of the progress circle. Valid values include x-small (26x26px), small (52x52px), medium (104x104px), large (152x152px) and x-large (208x208px).
-     *
-     * @type {string}
-     * @public
-     * @default medium
-     */
-    @api
-    get size() {
-        return this._size;
-    }
-
-    set size(size) {
-        this._size = normalizeString(size, {
-            fallbackValue: PROGRESS_CIRCLE_SIZES.default,
-            validValues: PROGRESS_CIRCLE_SIZES.valid
-        });
-    }
-
-    /**
-     * Set progress circle thickness. Valid values include x-small, small, medium, large and x-large.
-     *
-     * @type {string}
-     * @public
-     * @default medium
-     */
-    @api
-    get thickness() {
-        return this._thickness;
-    }
-
-    set thickness(thickness) {
-        this._thickness = normalizeString(thickness, {
-            fallbackValue: PROGRESS_CIRCLE_THICKNESSES.default,
-            validValues: PROGRESS_CIRCLE_THICKNESSES.valid
-        });
-    }
-
-    /**
-     * The color of the Progress Circle. Accepts a valid CSS color string, including hex and rgb.
-     *
-     * @type {string}
-     * @public
-     * @default #1589ee
-     */
-    @api
-    get color() {
-        return this._color;
-    }
-
-    set color(color) {
-        if (typeof color === 'string') {
-            let styles = new Option().style;
-            styles.color = color;
-
-            if (
-                styles.color === color ||
-                this.isHexColor(color.replace('#', ''))
-            ) {
-                this._color = color;
-            }
-        } else {
-            this._color = DEFAULT_COLOR;
-        }
-    }
-
-    /**
-     * Verify if color is of hexadecimal type.
-     *
-     * @param {string} hex
-     * @returns {boolean}
-     */
-    isHexColor(hex) {
-        return (
-            typeof hex === 'string' &&
-            hex.length === 6 &&
-            !isNaN(Number('0x' + hex))
-        );
-    }
 
     /**
      * Progress ring class styling based on attributes.
@@ -476,5 +475,25 @@ export default class AvonniProgressCircle extends LightningElement {
      */
     get showPositionTop() {
         return this.titlePosition === 'top' && this.title;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Verify if color is of hexadecimal type.
+     *
+     * @param {string} hex
+     * @returns {boolean}
+     */
+    isHexColor(hex) {
+        return (
+            typeof hex === 'string' &&
+            hex.length === 6 &&
+            !isNaN(Number('0x' + hex))
+        );
     }
 }

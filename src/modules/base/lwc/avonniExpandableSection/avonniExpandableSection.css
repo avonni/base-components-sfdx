@@ -40,6 +40,41 @@
     background-color: var(--lwc-colorBackgroundAlt, #ffffff);
 }
 
+.avonni-expandable-section__title-button_base:focus {
+    text-decoration: var(
+        --avonni-expandable-section-base-header-text-decoration-focus,
+        none
+    );
+    color: var(
+        --avonni-expandable-section-base-header-text-color-focus,
+        #080707
+    );
+}
+
+.avonni-expandable-section__title-button_base:hover {
+    color: var(
+        --avonni-expandable-section-base-header-text-color-hover,
+        #080707
+    );
+}
+
+.avonni-expandable-section__title-button_shaded:focus {
+    text-decoration: var(
+        --avonni-expandable-section-shaded-header-text-decoration-focus,
+        none
+    );
+    color: var(
+        --avonni-expandable-section-shaded-header-text-color-focus,
+        #080707
+    );
+}
+.avonni-expandable-section__title-button_shaded:hover {
+    color: var(
+        --avonni-expandable-section-shaded-header-text-color-hover,
+        #080707
+    );
+}
+
 .avonni-expandable-section__header_shaded .slds-section__title-action,
 .avonni-expandable-section__header_shaded:not(.avonni-expandable-section__header_collapsible) {
     padding-left: var(
@@ -107,11 +142,47 @@
     );
 }
 
+.avonni-expandable-section__header_shaded:hover
+    .avonni-expandable-section__closed-icon,
+.avonni-expandable-section__header_shaded:hover
+    .avonni-expandable-section__opened-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-expandable-section-shaded-header-icon-color-foreground-default-hover
+    );
+}
+
+.avonni-expandable-section__title-button_shaded:focus
+    .avonni-expandable-section__closed-icon,
+.avonni-expandable-section__title-button_shaded:focus
+    .avonni-expandable-section__opened-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-expandable-section-shaded-header-icon-color-foreground-default-focus
+    );
+}
+
 .avonni-expandable-section__header_base .avonni-expandable-section__closed-icon,
 .avonni-expandable-section__header_base
     .avonni-expandable-section__opened-icon {
     --sds-c-icon-color-foreground-default: var(
         --avonni-expandable-section-base-header-icon-color-foreground-default
+    );
+}
+
+.avonni-expandable-section__header_base:hover
+    .avonni-expandable-section__closed-icon,
+.avonni-expandable-section__header_base:hover
+    .avonni-expandable-section__opened-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-expandable-section-base-header-icon-color-foreground-default-hover
+    );
+}
+
+.avonni-expandable-section__title-button_base:focus
+    .avonni-expandable-section__closed-icon,
+.avonni-expandable-section__title-button_base:focus
+    .avonni-expandable-section__opened-icon {
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-expandable-section-base-header-icon-color-foreground-default-focus
     );
 }
 

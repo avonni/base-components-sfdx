@@ -56,18 +56,7 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
         this.template.addEventListener('ieditfinishedcustom', () => {
             this.toggleInlineEdit();
         });
-
-        this.dispatchEvent(
-            new CustomEvent('getdatatablestateandcolumns', {
-                detail: {
-                    callbacks: {
-                        getStateAndColumns: this.getStateAndColumns.bind(this)
-                    }
-                },
-                bubbles: true,
-                composed: true
-            })
-        );
+        this.getStateAndColumnsEvent();
     }
 
     @api
@@ -111,6 +100,20 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
         this.readOnly = !this.readOnly;
     }
 
+    getStateAndColumnsEvent() {
+        this.dispatchEvent(
+            new CustomEvent('getdatatablestateandcolumns', {
+                detail: {
+                    callbacks: {
+                        getStateAndColumns: this.getStateAndColumns.bind(this)
+                    }
+                },
+                bubbles: true,
+                composed: true
+            })
+        );
+    }
+
     // Gets the state and columns information from the parent component with the dispatch event in the renderedCallback.
     getStateAndColumns(state, columns) {
         this.state = state;
@@ -139,6 +142,7 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
                 }
             })
         );
+        this.getStateAndColumnsEvent();
         this.toggleInlineEdit();
     }
 }

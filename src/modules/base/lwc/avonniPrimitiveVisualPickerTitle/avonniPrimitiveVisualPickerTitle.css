@@ -57,8 +57,8 @@
 .avonni-visual-picker__figure-title {
     color: var(--avonni-visual-picker-title-text-color, #080707);
     font-style: var(--avonni-visual-picker-title-font-style, normal);
-    font-weight: var(--avonni-visual-picker-title-font-weight, 400);
-    font-size: var(--avonni-visual-picker-title-font-size, 1.5rem);
+    font-weight: var(--avonni-visual-picker-title-font-weight, 700);
+    font-size: var(--avonni-visual-picker-title-font-size, 1.25rem);
     line-height: var(--lwc-lineHeightHeading, 1.25);
 }
 
@@ -69,4 +69,5 @@
 .avonni-visual-picker__figure-content_alignement {
     display: flex;
     justify-content: var(--avonni-visual-picker-title-alignment, center);
+    padding: var(--avonni-visual-picker-title-padding, 0.15rem 0.75rem);
 }

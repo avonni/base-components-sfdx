@@ -170,7 +170,6 @@ export default class AvonniCombobox extends LightningElement {
     _variant = VARIANTS.default;
 
     selectedOptions = [];
-    selectedOptionsActions = SELECTED_OPTIONS_ACTIONS;
     scopesValue;
 
     /*
@@ -212,7 +211,7 @@ export default class AvonniCombobox extends LightningElement {
      * Action object. The back action is used to go back to the previous level, after clicking on an option that has nested options.
      *
      * @type {object}
-     * @default { iconName: 'utility:chevronright', label: Label of the parent option }
+     * @default { iconName: 'utility:chevronleft', label: Label of the parent option }
      * @public
      */
     @api
@@ -435,9 +434,6 @@ export default class AvonniCombobox extends LightningElement {
     }
     set readOnly(value) {
         this._readOnly = normalizeBoolean(value);
-        this.selectedOptionsActions = this._readOnly
-            ? []
-            : SELECTED_OPTIONS_ACTIONS;
     }
 
     /**
@@ -664,6 +660,24 @@ export default class AvonniCombobox extends LightningElement {
         return this.template.querySelector(
             '[data-element-id="avonni-primitive-combobox-main"]'
         );
+    }
+
+    /**
+     * Selected options copied and converted to regular objects.
+     *
+     * @type {object[]}
+     */
+    get normalizedSelectedOptions() {
+        return deepCopy(this.selectedOptions);
+    }
+
+    /**
+     * Array of actions displayed on the selected options pills. Return a unique remove action, or an empty array, if disabled or read-only.
+     *
+     * @type {object[]}
+     */
+    get selectedOptionsActions() {
+        return this.readOnly || this.disabled ? [] : SELECTED_OPTIONS_ACTIONS;
     }
 
     /**

@@ -43,6 +43,7 @@
             accesskey={accessKey}
             value={value}
             type="button"
+            name={name}
             data-element-id="button"
             onclick={handleButtonClick}
             onblur={handleButtonBlur}
@@ -131,7 +132,11 @@
                         ></lightning-menu-divider>
                         <div
                             if:false={hideApplyResetButtons}
-                            class="slds-p-horizontal_small slds-p-bottom_x-small slds-text-align_right"
+                            class="
+                                slds-p-horizontal_small
+                                slds-p-bottom_x-small
+                                slds-text-align_right
+                            "
                         >
                             <lightning-button
                                 class="slds-m-right_x-small"

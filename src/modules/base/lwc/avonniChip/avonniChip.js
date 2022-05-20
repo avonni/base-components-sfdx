@@ -80,23 +80,28 @@ export default class AvonniChip extends LightningElement {
     }
 
     /**
-     * The variant changes the appearance of the chip. Accepted variants include base, brand, inverse, alt-inverse, success, info, warning, error, offline.
+     * Get left slot dom element.
      *
-     * @public
-     * @type {string}
-     * @default base
+     * @type {Element}
      */
-    @api
-    get variant() {
-        return this._variant;
+    get leftSlot() {
+        return this.template.querySelector('slot[name=left]');
     }
 
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: CHIP_VARIANTS.default,
-            validValues: CHIP_VARIANTS.valid
-        });
+    /**
+     * Get right slot dom element.
+     *
+     * @type {Element}
+     */
+    get rightSlot() {
+        return this.template.querySelector('slot[name=right]');
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * If true, display an outline style button.
@@ -115,22 +120,29 @@ export default class AvonniChip extends LightningElement {
     }
 
     /**
-     * Get left slot dom element.
+     * The variant changes the appearance of the chip. Accepted variants include base, brand, inverse, alt-inverse, success, info, warning, error, offline.
      *
-     * @type {Element}
+     * @public
+     * @type {string}
+     * @default base
      */
-    get leftSlot() {
-        return this.template.querySelector('slot[name=left]');
+    @api
+    get variant() {
+        return this._variant;
     }
 
-    /**
-     * Get right slot dom element.
-     *
-     * @type {Element}
-     */
-    get rightSlot() {
-        return this.template.querySelector('slot[name=right]');
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: CHIP_VARIANTS.default,
+            validValues: CHIP_VARIANTS.valid
+        });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Compute chip class style.

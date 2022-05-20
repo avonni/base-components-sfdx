@@ -42,20 +42,6 @@ import { normalizeBoolean } from 'c/utilsPrivate';
  */
 export default class AvonniWizardStep extends LightningElement {
     /**
-     * Label for the wizard step.
-     *
-     * @type {string}
-     * @public
-     */
-    @api label;
-    /**
-     * Unique name of the wizard step.
-     *
-     * @type {string}
-     * @public
-     */
-    @api name;
-    /**
      * Custom function to execute before advancing to the next step or going back to the previous step. If the value returned is falsy, the step change will be prevented.
      *
      * @type {function}
@@ -71,10 +57,25 @@ export default class AvonniWizardStep extends LightningElement {
      * @public
      */
     @api beforeChangeErrorMessage;
+    /**
+     * Label for the wizard step.
+     *
+     * @type {string}
+     * @public
+     */
+    @api label;
+    /**
+     * Unique name of the wizard step.
+     *
+     * @type {string}
+     * @public
+     */
+    @api name;
+
+    _hideNextFinishButton = false;
+    _hidePreviousButton = false;
 
     stepClass;
-    _hidePreviousButton = false;
-    _hideNextFinishButton = false;
 
     connectedCallback() {
         /**
@@ -112,14 +113,26 @@ export default class AvonniWizardStep extends LightningElement {
         this.dispatchEvent(stepRegister);
     }
 
-    /**
-     * Set the step class value.
-     *
-     * @param {string} value
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    setClass = (value) => {
-        this.stepClass = value;
-    };
+
+    /**
+     * If present, hide the next/finish button.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideNextFinishButton() {
+        return this._hideNextFinishButton;
+    }
+    set hideNextFinishButton(value) {
+        this._hideNextFinishButton = normalizeBoolean(value);
+    }
 
     /**
      * If present, hide the previous button.
@@ -136,18 +149,18 @@ export default class AvonniWizardStep extends LightningElement {
         this._hidePreviousButton = normalizeBoolean(value);
     }
 
-    /**
-     * If present, hide the next/finish button.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    @api
-    get hideNextFinishButton() {
-        return this._hideNextFinishButton;
-    }
-    set hideNextFinishButton(value) {
-        this._hideNextFinishButton = normalizeBoolean(value);
-    }
+
+    /**
+     * Set the step class value.
+     *
+     * @param {string} value
+     */
+    setClass = (value) => {
+        this.stepClass = value;
+    };
 }

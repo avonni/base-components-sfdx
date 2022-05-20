@@ -173,20 +173,11 @@ export default class AvonniInputToggle extends LightningElement {
         this._synchronizeA11y();
     }
 
-    /**
-     * Synchronize all inputs Aria help element ID.
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    _synchronizeA11y() {
-        const input = this.template.querySelector('[data-element-id="input"]');
-
-        if (input) {
-            synchronizeAttrs(input, {
-                [ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
-                [ARIA_CONTROLS]: this.computedAriaControls,
-                [ARIA_LABELEDBY]: this.computedAriaLabelledBy
-            });
-        }
-    }
 
     /**
      * A space-separated list of element IDs whose presence or content is controlled by the input.
@@ -386,75 +377,11 @@ export default class AvonniInputToggle extends LightningElement {
         return this._constraint.validity;
     }
 
-    /**
-     * Removes keyboard focus from the input element.
-     *
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    blur() {
-        if (this._rendered) {
-            this.template.querySelector('[data-element-id="input"]').blur();
-        }
-    }
-
-    /**
-     * Checks if the input is valid.
-     *
-     * @returns {boolean} True if the element meets all constraint validations.
-     * @public
-     */
-    @api
-    checkValidity() {
-        return this._constraint.checkValidity();
-    }
-
-    /**
-     * Sets focus on the input element.
-     *
-     * @public
-     */
-    @api
-    focus() {
-        if (this._rendered) {
-            this.template.querySelector('[data-element-id="input"]').focus();
-        }
-    }
-
-    /**
-     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
-     *
-     * @returns {boolean} False if invalid, true if valid.
-     * @public
-     */
-    @api
-    reportValidity() {
-        return this._constraint.reportValidity((message) => {
-            this.helpMessage = message;
-        });
-    }
-
-    /**
-     * Sets a custom error message to be displayed when a form is submitted.
-     *
-     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
-     * @public
-     */
-    @api
-    setCustomValidity(message) {
-        this._constraint.setCustomValidity(message);
-    }
-
-    /**
-     * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
-     *
-     * @public
-     */
-    @api
-    showHelpMessageIfInvalid() {
-        this.reportValidity();
-    }
 
     /**
      * Localization.
@@ -583,6 +510,103 @@ export default class AvonniInputToggle extends LightningElement {
                 });
         }
         return this._constraintApi;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Removes keyboard focus from the input element.
+     *
+     * @public
+     */
+    @api
+    blur() {
+        if (this._rendered) {
+            this.template.querySelector('[data-element-id="input"]').blur();
+        }
+    }
+
+    /**
+     * Checks if the input is valid.
+     *
+     * @returns {boolean} True if the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Sets focus on the input element.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        if (this._rendered) {
+            this.template.querySelector('[data-element-id="input"]').focus();
+        }
+    }
+
+    /**
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
+     *
+     * @returns {boolean} False if invalid, true if valid.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this.helpMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
+     *
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Synchronize all inputs Aria help element ID.
+     */
+    _synchronizeA11y() {
+        const input = this.template.querySelector('[data-element-id="input"]');
+
+        if (input) {
+            synchronizeAttrs(input, {
+                [ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
+                [ARIA_CONTROLS]: this.computedAriaControls,
+                [ARIA_LABELEDBY]: this.computedAriaLabelledBy
+            });
+        }
     }
 
     /**

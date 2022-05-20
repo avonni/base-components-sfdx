@@ -55,7 +55,21 @@
             ></lightning-helptext>
         </div>
         <div class="slds-form-element__control">
-            <div class={computedButtonClass} data-element-id="input-group">
+            <div
+                if:true={isLoading}
+                class="slds-is-relative avonni-input-choice-set__loading"
+            >
+                <lightning-spinner
+                    alternative-text="Loading..."
+                    size="small"
+                    data-element-id="lightning-spinner-loading"
+                ></lightning-spinner>
+            </div>
+            <div
+                if:false={isLoading}
+                class={computedButtonClass}
+                data-element-id="input-group"
+            >
                 <template for:each={transformedOptions} for:item="option">
                     <span
                         key={option.value}

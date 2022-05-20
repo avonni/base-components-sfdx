@@ -55,6 +55,12 @@ export default class AvonniTreeGrid extends LightningElement {
         ); // event received by the tree column header
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Pass through for aria-label on datatable.
      * @type {string}
@@ -261,6 +267,12 @@ export default class AvonniTreeGrid extends LightningElement {
         this._showRowNumberColumn = normalizeBoolean(value);
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     get normalizedColumns() {
         return this._columns;
     }
@@ -269,7 +281,11 @@ export default class AvonniTreeGrid extends LightningElement {
         return this._records;
     }
 
-    // Methods
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Returns data in each selected row.
@@ -315,7 +331,11 @@ export default class AvonniTreeGrid extends LightningElement {
         this.toggleAllRows(this.records, false);
     }
 
-    // Event handlers
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     handleToggle(event) {
         event.stopPropagation();
@@ -457,7 +477,6 @@ export default class AvonniTreeGrid extends LightningElement {
         }
     }
 
-    // does the provided row have a properly formatted _children key with content?
     hasChildrenContent(row) {
         let hasChildrenContent = false;
         if (

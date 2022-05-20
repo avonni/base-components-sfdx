@@ -46,6 +46,14 @@ const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
  */
 export default class AvonniVisualPickerLink extends LightningElement {
     /**
+     * The URL of the page that the link goes to.
+     *
+     * @type {string}
+     * @public
+     */
+    @api href;
+
+    /**
      * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
      *
      * @type {string}
@@ -59,17 +67,11 @@ export default class AvonniVisualPickerLink extends LightningElement {
      * @public
      */
     @api title;
-    /**
-     * The URL of the page that the link goes to.
-     *
-     * @type {string}
-     * @public
-     */
-    @api href;
 
-    _iconPosition = ICON_POSITIONS.default;
     _completed = false;
+    _iconPosition = ICON_POSITIONS.default;
     _infoOnly = false;
+
     showTitle = true;
 
     render() {
@@ -89,6 +91,28 @@ export default class AvonniVisualPickerLink extends LightningElement {
      */
     get titleSlot() {
         return this.template.querySelector('slot[name=title]');
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#With-Completed-Steps">completed</a>.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get completed() {
+        return this._completed;
+    }
+
+    set completed(value) {
+        this._completed = normalizeBoolean(value);
     }
 
     /**
@@ -111,22 +135,6 @@ export default class AvonniVisualPickerLink extends LightningElement {
     }
 
     /**
-     * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#With-Completed-Steps">completed</a>.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get completed() {
-        return this._completed;
-    }
-
-    set completed(value) {
-        this._completed = normalizeBoolean(value);
-    }
-
-    /**
      * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#Info-only">info only</a>.
      *
      * @type {boolean}
@@ -141,6 +149,12 @@ export default class AvonniVisualPickerLink extends LightningElement {
     set infoOnly(value) {
         this._infoOnly = normalizeBoolean(value);
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed container class styling.
@@ -195,6 +209,12 @@ export default class AvonniVisualPickerLink extends LightningElement {
     get leftPosition() {
         return this._iconPosition === 'left';
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Click event handler.

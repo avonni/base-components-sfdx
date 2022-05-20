@@ -140,7 +140,9 @@ export default class AvonniPrimitiveVisualPickerTitle extends LightningElement {
      * @type {string}
      */
     get computedContainerClass() {
-        return classSet('avonni-visual-picker__figure-content_alignement')
+        return classSet(
+            'avonni-visual-picker__figure-content_alignement slds-media slds-media_center'
+        )
             .add(`avonni-visual-picker__figure-content_${this._size}`)
             .toString();
     }

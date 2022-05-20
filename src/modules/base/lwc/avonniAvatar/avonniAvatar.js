@@ -88,6 +88,14 @@ const DEFAULT_STATUS_TITLE = 'Status';
  */
 export default class AvonniAvatar extends LightningElement {
     /**
+     * The Lightning Design System icon name for a custom menu icon. Unused if there is only one action.
+     *
+     * @public
+     * @type {string}
+     * @default utility:down
+     */
+    @api actionMenuIcon;
+    /**
      * The Lightning Design System name of the icon used as a fallback for the entity icon when the image fails to load. The initials fallback relies on this for its background color.
      * Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
      *
@@ -157,13 +165,52 @@ export default class AvonniAvatar extends LightningElement {
     _variant = AVATAR_VARIANTS.default;
     _textPosition = TEXT_POSITIONS.default;
     _tags;
-    _computedTags;
     _actions;
     _actionPosition = POSITIONS.actionDefault;
 
     connectedCallback() {
         this._updateClassList();
         this.template.addEventListener('actionclick', this.handleActionClick);
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Array of action objects. If the array contains a single action, it is displayed as a button icon. Otherwise, actions are placed in a button menu with a label and icon.
+     *
+     * @public
+     * @type {object[]}
+     */
+    @api
+    get actions() {
+        return this._actions;
+    }
+
+    set actions(value) {
+        this._actions = normalizeArray(value);
+    }
+
+    /**
+     * Position of the action button or menu relative to the avatar. Valid values include top-right, bottom-right, bottom-left or top-left.
+     *
+     * @public
+     * @type {string}
+     * @default bottom-left
+     */
+    @api
+    get actionPosition() {
+        return this._actionPosition;
+    }
+
+    set actionPosition(value) {
+        this._actionPosition = normalizeString(value, {
+            fallbackValue: POSITIONS.actionDefault,
+            validValues: POSITIONS.valid
+        });
     }
 
     /**
@@ -414,7 +461,7 @@ export default class AvonniAvatar extends LightningElement {
     }
 
     /**
-     * Array of tag objects. The tags are displayed as badges in the details.
+     * Array of tag objects. The tags are displayed as chips in the details.
      *
      * @public
      * @type {object[]}
@@ -466,48 +513,11 @@ export default class AvonniAvatar extends LightningElement {
         });
     }
 
-    /**
-     * Array of action objects. If the array contains a single action, it is displayed as a button icon. Otherwise, actions are placed in a button menu with a label and icon.
-     *
-     * @public
-     * @type {object[]}
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get actions() {
-        return this._actions;
-    }
-
-    set actions(value) {
-        this._actions = normalizeArray(value);
-    }
-
-    /**
-     * Position of the action button or menu relative to the avatar. Valid values include top-right, bottom-right, bottom-left or top-left.
-     *
-     * @public
-     * @type {string}
-     * @default bottom-left
-     */
-    @api
-    get actionPosition() {
-        return this._actionPosition;
-    }
-
-    set actionPosition(value) {
-        this._actionPosition = normalizeString(value, {
-            fallbackValue: POSITIONS.actionDefault,
-            validValues: POSITIONS.valid
-        });
-    }
-
-    /**
-     * The Lightning Design System icon name for a custom menu icon. Unused if there is only one action.
-     *
-     * @public
-     * @type {string}
-     * @default utility:down
-     */
-    @api actionMenuIcon;
 
     /**
      * Text position centered.
@@ -516,21 +526,6 @@ export default class AvonniAvatar extends LightningElement {
      */
     get computedMediaObjectInline() {
         return this.textPosition === 'center';
-    }
-
-    /**
-     * Computed JSON string of tags object.
-     *
-     * @type {object[]}
-     */
-    get computedTags() {
-        this._computedTags = JSON.parse(JSON.stringify(this._tags));
-        this._computedTags.forEach((tag) => {
-            if (tag) {
-                tag.class = this._determineBadgeStyle(tag);
-            }
-        });
-        return this._computedTags;
     }
 
     /**
@@ -560,6 +555,12 @@ export default class AvonniAvatar extends LightningElement {
         return this.textPosition === 'left';
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Media object layout based on text position.
      *
@@ -570,29 +571,6 @@ export default class AvonniAvatar extends LightningElement {
             'slds-text-align_right': this.textPosition === 'left',
             'slds-text-align_center': this.textPosition === 'center'
         });
-    }
-
-    /**
-     * Computed badge style based on tag object variant value.
-     *
-     * @param {object[]} tag
-     * @returns {string} slds badge style
-     */
-    _determineBadgeStyle(tag) {
-        switch (tag.variant) {
-            case 'inverse':
-                return 'slds-badge_inverse';
-            case 'lightest':
-                return 'slds-badge_lightest';
-            case 'success':
-                return 'slds-badge slds-theme_success';
-            case 'warning':
-                return 'slds-badge slds-theme_warning';
-            case 'error':
-                return 'slds-badge slds-theme_error';
-            default:
-                return 'slds-badge';
-        }
     }
 
     /**

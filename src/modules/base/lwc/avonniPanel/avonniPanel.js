@@ -59,8 +59,8 @@ export default class AvonniPagination extends LightningElement {
     _position = PANEL_POSITIONS.default;
     _size = PANEL_SIZES.default;
     _showPanel = false;
-    _isRight = true;
 
+    _isRight = true;
     showTitleSlot = true;
     showPanelBodySlot = true;
 
@@ -93,6 +93,12 @@ export default class AvonniPagination extends LightningElement {
         return this.template.querySelector('slot[name=panel-body]');
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Position of the panel. Valid values include left and right.
      *
@@ -110,6 +116,22 @@ export default class AvonniPagination extends LightningElement {
             fallbackValue: PANEL_POSITIONS.default,
             validValues: PANEL_POSITIONS.valid
         });
+    }
+
+    /**
+     * If present, the panel is visible by default.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get showPanel() {
+        return this._showPanel;
+    }
+
+    set showPanel(value) {
+        this._showPanel = normalizeBoolean(value);
     }
 
     /**
@@ -131,21 +153,11 @@ export default class AvonniPagination extends LightningElement {
         });
     }
 
-    /**
-     * If present, the panel is visible by default.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get showPanel() {
-        return this._showPanel;
-    }
-
-    set showPanel(value) {
-        this._showPanel = normalizeBoolean(value);
-    }
 
     /**
      * Computed Outer class styling basedf on selected attributes.
@@ -171,6 +183,12 @@ export default class AvonniPagination extends LightningElement {
     get hasStringTitle() {
         return !!this.title;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Close the panel.

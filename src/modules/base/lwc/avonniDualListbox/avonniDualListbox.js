@@ -74,7 +74,7 @@ const BUTTON_SIZES = {
 
 const BOXES_SIZES = {
     valid: ['small', 'medium', 'large', 'responsive'],
-    default: 'medium'
+    default: 'responsive'
 };
 
 const i18n = {
@@ -180,14 +180,12 @@ export default class AvonniDualListbox extends LightningElement {
      */
     @api upButtonLabel;
 
-    _requiredOptions = [];
-    _options = [];
     _addButtonIconName = DEFAULT_ADD_BUTTON_ICON_NAME;
     _allowSearch = false;
     _buttonSize = BUTTON_SIZES.default;
     _buttonVariant = BUTTON_VARIANTS.default;
-    _disabled;
     _disableReordering = false;
+    _disabled = false;
     _downButtonIconName = DEFAULT_DOWN_BUTTON_ICON_NAME;
     _draggable = false;
     _hideBottomDivider = false;
@@ -195,11 +193,16 @@ export default class AvonniDualListbox extends LightningElement {
     _max;
     _maxVisibleOptions = DEFAULT_MAX_VISIBLE_OPTIONS;
     _min = DEFAULT_MIN;
+    _options = [];
     _removeButtonIconName = DEFAULT_REMOVE_BUTTON_ICON_NAME;
     _required = false;
+    _requiredOptions = [];
     _size = BOXES_SIZES.default;
     _upButtonIconName = DEFAULT_UP_BUTTON_ICON_NAME;
     _variant = LABEL_VARIANTS.default;
+
+    _connected = false;
+    _rendered = false;
 
     _selectedValues = [];
     _groupedValues = [];
@@ -240,6 +243,7 @@ export default class AvonniDualListbox extends LightningElement {
             // reset the optionToFocus otherwise dualListbox will steal the focus any time it's rerendered.
             this.optionToFocus = null;
         });
+
         this._connected = true;
     }
 
@@ -249,6 +253,7 @@ export default class AvonniDualListbox extends LightningElement {
         if (this.disabled) {
             this._upButtonDisabled = true;
             this._downButtonDisabled = true;
+            this.updateBoxesHeight();
             return;
         }
 
@@ -262,14 +267,20 @@ export default class AvonniDualListbox extends LightningElement {
                 option.focus();
             }
         }
-        this.disabledButtons();
         this.updateBoxesHeight();
+        this.disabledButtons();
         this.setOptionIndexes();
-        if (!this.rendered) {
+        if (!this._rendered) {
             this.getGroupValues();
         }
-        this.rendered = true;
+        this._rendered = true;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Name of the add button icon, in the format 'utility:right'.
@@ -442,6 +453,25 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
+     * Maximum number of options allowed in the selected options listbox.
+     *
+     * @type {number}
+     * @default Infinity
+     * @public
+     */
+    @api
+    get max() {
+        return this._max;
+    }
+
+    set max(value) {
+        const number = isNaN(parseInt(value, 10))
+            ? Infinity
+            : parseInt(value, 10);
+        this._max = number;
+    }
+
+    /**
      * Number of options displayed in the listboxes before vertical scrollbars are displayed. Determines the height of the listbox.
      *
      * @type {number}
@@ -462,44 +492,6 @@ export default class AvonniDualListbox extends LightningElement {
         if (this._connected) {
             this.updateBoxesHeight();
         }
-    }
-
-    /**
-     * Maximum number of options allowed in the selected options listbox.
-     *
-     * @type {number}
-     * @default Infinity
-     * @public
-     */
-    @api
-    get max() {
-        return this._max;
-    }
-
-    set max(value) {
-        const number = isNaN(parseInt(value, 10))
-            ? Infinity
-            : parseInt(value, 10);
-        this._max = number;
-    }
-
-    /**
-     * Minimum number of options required in the selected options listbox.
-     *
-     * @type {number}
-     * @default 0
-     * @public
-     */
-    @api
-    get min() {
-        return this._min;
-    }
-
-    set min(value) {
-        const number = isNaN(parseInt(value, 10))
-            ? DEFAULT_MIN
-            : parseInt(value, 10);
-        this._min = number;
     }
 
     /**
@@ -533,6 +525,25 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     /**
+     * Minimum number of options required in the selected options listbox.
+     *
+     * @type {number}
+     * @default 0
+     * @public
+     */
+    @api
+    get min() {
+        return this._min;
+    }
+
+    set min(value) {
+        const number = isNaN(parseInt(value, 10))
+            ? DEFAULT_MIN
+            : parseInt(value, 10);
+        this._min = number;
+    }
+
+    /**
      * Array of option objects that are available for selection.
      *
      * @type {object[]}
@@ -547,10 +558,6 @@ export default class AvonniDualListbox extends LightningElement {
         this._options = Array.isArray(value)
             ? JSON.parse(JSON.stringify(value))
             : [];
-
-        if (this._connected) {
-            this.updateBoxesHeight();
-        }
     }
 
     /**
@@ -612,7 +619,7 @@ export default class AvonniDualListbox extends LightningElement {
      *
      * @type {string}
      * @public
-     * @default medium
+     * @default responsive
      */
     @api
     get size() {
@@ -680,71 +687,11 @@ export default class AvonniDualListbox extends LightningElement {
         });
     }
 
-    /**
-     * Sets focus on the first option from either list. If the source list doesn't contain any options, the first option on the selected list is focused on.
-     *
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    focus() {
-        const firstOption = this.template.querySelector(`div[data-index='0']`);
-        if (firstOption) {
-            firstOption.focus();
-            this.updateSelectedOptions(firstOption, true, false);
-        }
-    }
-
-    /**
-     * Get validity from field constraint API.
-     *
-     * @type {boolean}
-     */
-    get validity() {
-        return this._constraint.validity;
-    }
-
-    /**
-     * Checks if the input is valid.
-     *
-     * @returns {boolean} True if the element meets all constraint validations.
-     * @public
-     */
-    @api
-    checkValidity() {
-        return this._constraint.checkValidity();
-    }
-
-    /**
-     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
-     *
-     * @returns {boolean} False if invalid, true if valid.
-     * @public
-     */
-    @api
-    reportValidity() {
-        return this._constraint.reportValidity((message) => {
-            this.errorMessage = message;
-        });
-    }
-
-    /**
-     * Sets a custom error message to be displayed when a form is submitted.
-     *
-     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
-     * @public
-     */
-    @api
-    setCustomValidity(message) {
-        this._constraint.setCustomValidity(message);
-    }
-
-    /**
-     * Displays an error message if the dual listbox value is required.
-     */
-    @api
-    showHelpMessageIfInvalid() {
-        this.reportValidity();
-    }
 
     /**
      * Computed real DOM Id for Source List.
@@ -871,119 +818,6 @@ export default class AvonniDualListbox extends LightningElement {
      */
     get computedSelectedGroups() {
         return this.groupByName(this.computedSelectedList, 'groupName');
-    }
-
-    /**
-     * Compute List options from Selected and Source Lists.
-     *
-     * @param {object} options
-     * @param {string} focusableOptionValue
-     * @returns {object} list options
-     */
-    computeListOptions(options, focusableOptionValue) {
-        if (options.length > 0) {
-            const focusableOption = options.find((option) => {
-                return option.value === focusableOptionValue;
-            });
-
-            const focusableValue = focusableOption
-                ? focusableOption.value
-                : options[0].value;
-            return options.map((option) => {
-                return this.computeOptionProperties(option, focusableValue);
-            });
-        }
-
-        return [];
-    }
-
-    /**
-     * Computed Option object properties.
-     *
-     * @param {object} option
-     * @param {number} focusableValue
-     * @returns {object} object
-     */
-    computeOptionProperties(option, focusableValue) {
-        const isSelected = this.highlightedOptions.indexOf(option.value) > -1;
-        const hasDescription = option.description;
-        const classList = classSet(
-            'slds-listbox__option slds-listbox__option_plain slds-media slds-media_center slds-media_inline avonni-dual-listbox__list-item_min-height avonni-dual-listbox__option'
-        )
-            .add({ 'slds-media_small': !hasDescription })
-            .add({ 'slds-is-selected': isSelected })
-            .toString();
-
-        return {
-            ...option,
-            tabIndex: option.value === focusableValue ? '0' : '-1',
-            selected: isSelected ? true : false,
-            primaryText: option.description ? option.label : '',
-            secondaryText: option.description ? option.description : '',
-            size: option.avatar
-                ? option.avatar.size
-                    ? option.avatar.size
-                    : hasDescription
-                    ? 'medium'
-                    : 'small'
-                : hasDescription
-                ? 'medium'
-                : 'small',
-            classList
-        };
-    }
-
-    /**
-     * Update box heights based on content.
-     *
-     * @returns {number} Box heights
-     */
-    updateBoxesHeight() {
-        let overSelectedHeight;
-        let overSourceHeight;
-        const sourceOptions = this.template.querySelectorAll(
-            '[data-element-id="li-source"]'
-        );
-        const selectedOptions = this.template.querySelectorAll(
-            '[data-element-id="li-selected"]'
-        );
-
-        const sourceOptionsHeight = getListHeight(
-            sourceOptions,
-            this._maxVisibleOptions
-        );
-
-        if (
-            this.computedSourceList.length < this._maxVisibleOptions &&
-            sourceOptions.length > 0
-        ) {
-            overSourceHeight =
-                this.template.querySelector('[data-element-id="li-source"]')
-                    .offsetHeight *
-                (this._maxVisibleOptions - this.computedSourceList.length);
-        } else overSourceHeight = 0;
-
-        if (
-            this.computedSelectedList.length < this._maxVisibleOptions &&
-            selectedOptions.length > 0
-        ) {
-            overSelectedHeight =
-                this.template.querySelector('[data-element-id="li-selected"]')
-                    .offsetHeight *
-                (this._maxVisibleOptions - this.computedSelectedList.length);
-        } else overSelectedHeight = 0;
-
-        this._selectedBoxHeight =
-            getListHeight(selectedOptions, this._maxVisibleOptions) +
-            overSelectedHeight;
-
-        if (this.allowSearch) {
-            if (this.computedSourceList.length > 0) {
-                this._sourceBoxHeight = sourceOptionsHeight + overSourceHeight;
-            } else if (this.computedSourceList.length === 0) {
-                this._sourceBoxHeight = this._maxVisibleOptions * 41;
-            }
-        } else this._sourceBoxHeight = sourceOptionsHeight + overSourceHeight;
     }
 
     /**
@@ -1160,6 +994,217 @@ export default class AvonniDualListbox extends LightningElement {
                     !this.hideBottomDivider
             })
             .toString();
+    }
+
+    /**
+     * Get validity from field constraint API.
+     *
+     * @type {boolean}
+     */
+    get validity() {
+        return this._constraint.validity;
+    }
+
+    /**
+     * Validation with constraint Api.
+     *
+     * @type {object}
+     */
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled &&
+                    this.required &&
+                    this.computedSelectedList.length < 1,
+                rangeUnderflow: () =>
+                    this.computedSelectedList.length < this.min,
+                rangeOverflow: () => this.computedSelectedList.length > this.max
+            });
+        }
+        return this._constraintApi;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Sets focus on the first option from either list. If the source list doesn't contain any options, the first option on the selected list is focused on.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        const firstOption = this.template.querySelector(`div[data-index='0']`);
+        if (firstOption) {
+            firstOption.focus();
+            this.updateSelectedOptions(firstOption, true, false);
+        }
+    }
+
+    /**
+     * Checks if the input is valid.
+     *
+     * @returns {boolean} True if the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
+     *
+     * @returns {boolean} False if invalid, true if valid.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this.errorMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays an error message if the dual listbox value is required.
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Compute List options from Selected and Source Lists.
+     *
+     * @param {object} options
+     * @param {string} focusableOptionValue
+     * @returns {object} list options
+     */
+    computeListOptions(options, focusableOptionValue) {
+        if (options.length > 0) {
+            const focusableOption = options.find((option) => {
+                return option.value === focusableOptionValue;
+            });
+
+            const focusableValue = focusableOption
+                ? focusableOption.value
+                : options[0].value;
+            return options.map((option) => {
+                return this.computeOptionProperties(option, focusableValue);
+            });
+        }
+
+        return [];
+    }
+
+    /**
+     * Computed Option object properties.
+     *
+     * @param {object} option
+     * @param {number} focusableValue
+     * @returns {object} object
+     */
+    computeOptionProperties(option, focusableValue) {
+        const isSelected = this.highlightedOptions.indexOf(option.value) > -1;
+        const hasDescription = option.description;
+        const classList = classSet(
+            'slds-listbox__option slds-listbox__option_plain slds-media slds-media_center slds-media_inline avonni-dual-listbox__list-item_min-height avonni-dual-listbox__option'
+        )
+            .add({ 'slds-media_small': !hasDescription })
+            .add({ 'slds-is-selected': isSelected })
+            .toString();
+
+        return {
+            ...option,
+            tabIndex: option.value === focusableValue ? '0' : '-1',
+            selected: isSelected ? true : false,
+            primaryText: option.description ? option.label : '',
+            secondaryText: option.description ? option.description : '',
+            size: option.avatar
+                ? option.avatar.size
+                    ? option.avatar.size
+                    : hasDescription
+                    ? 'medium'
+                    : 'small'
+                : hasDescription
+                ? 'medium'
+                : 'small',
+            classList
+        };
+    }
+
+    /**
+     * Update box heights based on content.
+     *
+     * @returns {number} Box heights
+     */
+    updateBoxesHeight() {
+        let overSelectedHeight;
+        let overSourceHeight;
+        const sourceOptions = this.template.querySelectorAll(
+            '[data-element-id="li-source"]'
+        );
+        const selectedOptions = this.template.querySelectorAll(
+            '[data-element-id="li-selected"]'
+        );
+
+        const sourceOptionsHeight = getListHeight(
+            sourceOptions,
+            this._maxVisibleOptions
+        );
+
+        if (
+            this.computedSourceList.length < this._maxVisibleOptions &&
+            sourceOptions.length > 0
+        ) {
+            overSourceHeight =
+                this.template.querySelector('[data-element-id="li-source"]')
+                    .offsetHeight *
+                (this._maxVisibleOptions - this.computedSourceList.length);
+        } else overSourceHeight = 0;
+
+        if (
+            this.computedSelectedList.length < this._maxVisibleOptions &&
+            selectedOptions.length > 0
+        ) {
+            overSelectedHeight =
+                this.template.querySelector('[data-element-id="li-selected"]')
+                    .offsetHeight *
+                (this._maxVisibleOptions - this.computedSelectedList.length);
+        } else overSelectedHeight = 0;
+
+        this._selectedBoxHeight =
+            getListHeight(selectedOptions, this._maxVisibleOptions) +
+            overSelectedHeight;
+
+        if (this.allowSearch) {
+            if (this.computedSourceList.length > 0) {
+                this._sourceBoxHeight = sourceOptionsHeight + overSourceHeight;
+            } else if (this.computedSourceList.length === 0) {
+                this._sourceBoxHeight = this._maxVisibleOptions * 41;
+            }
+        } else this._sourceBoxHeight = sourceOptionsHeight + overSourceHeight;
     }
 
     /**
@@ -1548,26 +1593,6 @@ export default class AvonniDualListbox extends LightningElement {
             // value was changed
             this.dispatchChangeEvent(this._selectedValues);
         }
-    }
-
-    /**
-     * Validation with constraint Api.
-     *
-     * @type {object}
-     */
-    get _constraint() {
-        if (!this._constraintApi) {
-            this._constraintApi = new FieldConstraintApi(() => this, {
-                valueMissing: () =>
-                    !this.disabled &&
-                    this.required &&
-                    this.computedSelectedList.length < 1,
-                rangeUnderflow: () =>
-                    this.computedSelectedList.length < this.min,
-                rangeOverflow: () => this.computedSelectedList.length > this.max
-            });
-        }
-        return this._constraintApi;
     }
 
     /**

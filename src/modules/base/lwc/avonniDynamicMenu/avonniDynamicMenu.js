@@ -239,6 +239,12 @@ export default class AvonniDynamicMenu extends LightningElement {
         return this.template.querySelector('slot');
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * If present, display search box.
      *
@@ -489,6 +495,12 @@ export default class AvonniDynamicMenu extends LightningElement {
         });
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Computed list items.
      * @type {object[]}
@@ -620,29 +632,11 @@ export default class AvonniDynamicMenu extends LightningElement {
         return String(this._dropdownVisible);
     }
 
-    /**
-     * Return the list height.
-     *
-     * @type {string}
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
      */
-    calculateListHeight() {
-        let height = 0;
-        let length = 7;
-        if (this._menuLength === '5-items') {
-            length = 5;
-        } else if (this._menuLength === '10-items') {
-            length = 10;
-        }
-
-        const items = this.template.querySelectorAll(
-            '[data-element-id="item"]'
-        );
-
-        if (items) {
-            height += getListHeight(items, length);
-        }
-        this.listHeight = `max-height: ${height}px; overflow-y: auto;`;
-    }
 
     /**
      * Set focus on the button.
@@ -681,6 +675,36 @@ export default class AvonniDynamicMenu extends LightningElement {
                     .click();
             }
         }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Return the list height.
+     *
+     * @type {string}
+     */
+    calculateListHeight() {
+        let height = 0;
+        let length = 7;
+        if (this._menuLength === '5-items') {
+            length = 5;
+        } else if (this._menuLength === '10-items') {
+            length = 10;
+        }
+
+        const items = this.template.querySelectorAll(
+            '[data-element-id="item"]'
+        );
+
+        if (items) {
+            height += getListHeight(items, length);
+        }
+        this.listHeight = `max-height: ${height}px; overflow-y: auto;`;
     }
 
     /**

@@ -53,42 +53,29 @@ const ICON_SIZES = {
  */
 export default class AvonniBlockquote extends LightningElement {
     /**
-     * The title can include text and is displayed in the header.
-     *
-     * @public
-     * @type {string}
-     */
-    @api title;
-    /**
      * Icon displayed to the left of the title.
      *
      * @public
      * @type {string}
      */
     @api iconName;
+    /**
+     * The title can include text and is displayed in the header.
+     *
+     * @public
+     * @type {string}
+     */
+    @api title;
 
     _variant = BLOCKQUOTE_VARIANTS.default;
     _iconPosition = ICON_POSITIONS.default;
     _iconSize = ICON_SIZES.default;
 
-    /**
-     * The variant changes the appearance of the blockquote. Valid values include default, brand, warning, error, success.
-     *
-     * @public
-     * @type {string}
-     * @default default
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: BLOCKQUOTE_VARIANTS.default,
-            validValues: BLOCKQUOTE_VARIANTS.valid
-        });
-    }
 
     /**
      * Describes the position of the icon. Options include left and right.
@@ -127,6 +114,31 @@ export default class AvonniBlockquote extends LightningElement {
             validValues: ICON_SIZES.valid
         });
     }
+
+    /**
+     * The variant changes the appearance of the blockquote. Valid values include default, brand, warning, error, success.
+     *
+     * @public
+     * @type {string}
+     * @default default
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: BLOCKQUOTE_VARIANTS.default,
+            validValues: BLOCKQUOTE_VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Compute blockquote style by variant.

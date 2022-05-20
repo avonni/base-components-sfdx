@@ -74,14 +74,14 @@ export default class AvonniTimer extends LightningElement {
      */
     @api iconName;
 
-    _value = DEFAULT_VALUE;
-    _duration = DEFAULT_DURATION;
-    _variant = BUTTON_VARIANTS.default;
-    _type = COUNT_TYPES.default;
-    _iconPosition = ICON_POSITIONS.default;
-    _format = TIME_FORMATS.default;
     _autoStart = DEFAULT_AUTO_START;
+    _format = TIME_FORMATS.default;
+    _duration = DEFAULT_DURATION;
+    _iconPosition = ICON_POSITIONS.default;
     _repeat = DEFAULT_REPEAT;
+    _type = COUNT_TYPES.default;
+    _value = DEFAULT_VALUE;
+    _variant = BUTTON_VARIANTS.default;
 
     step;
     play = false;
@@ -91,22 +91,30 @@ export default class AvonniTimer extends LightningElement {
         clearInterval(this.interval);
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * Default value of the timer.
+     * If present, the timer automatically starts.
      *
-     * @type {number}
+     * @type {boolean}
      * @public
-     * @default 0
+     * @default false
      */
     @api
-    get value() {
-        return this._value;
+    get autoStart() {
+        return this._autoStart;
     }
 
-    set value(value) {
-        this._value = isNaN(parseInt(value, 10))
-            ? DEFAULT_VALUE
-            : Number(value / 1000);
+    set autoStart(value) {
+        this._autoStart = normalizeBoolean(value);
+
+        if (this._autoStart) {
+            this.start();
+        }
     }
 
     /**
@@ -134,40 +142,21 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
-     * The variant changes the appearance of the timer. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
+     * Format of the timer. Valid values include "hh:mm:ss", "mm:ss", "hh:mm", “hh”, “mm”, “ss”.
      *
      * @type {string}
      * @public
-     * @default neutral
+     * @default "hh:mm:ss"
      */
     @api
-    get variant() {
-        return this._variant;
+    get format() {
+        return this._format;
     }
 
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: BUTTON_VARIANTS.default,
-            validValues: BUTTON_VARIANTS.valid
-        });
-    }
-
-    /**
-     * Type of the timer. Valid values include count-up and count-down.
-     *
-     * @type {string}
-     * @public
-     * @default count-up
-     */
-    @api
-    get type() {
-        return this._type;
-    }
-
-    set type(value) {
-        this._type = normalizeString(value, {
-            fallbackValue: COUNT_TYPES.default,
-            validValues: COUNT_TYPES.valid
+    set format(value) {
+        this._format = normalizeString(value, {
+            fallbackValue: TIME_FORMATS.default,
+            validValues: TIME_FORMATS.valid
         });
     }
 
@@ -191,45 +180,6 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
-     * Format of the timer. Valid values include "hh:mm:ss", "mm:ss", "hh:mm", “hh”, “mm”, “ss”.
-     *
-     * @type {string}
-     * @public
-     * @default "hh:mm:ss"
-     */
-    @api
-    get format() {
-        return this._format;
-    }
-
-    set format(value) {
-        this._format = normalizeString(value, {
-            fallbackValue: TIME_FORMATS.default,
-            validValues: TIME_FORMATS.valid
-        });
-    }
-
-    /**
-     * If present, the timer automatically starts.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get autoStart() {
-        return this._autoStart;
-    }
-
-    set autoStart(value) {
-        this._autoStart = normalizeBoolean(value);
-
-        if (this._autoStart) {
-            this.start();
-        }
-    }
-
-    /**
      * If present, the timer automatically restarts when it finishes running.
      *
      * @type {boolean}
@@ -244,6 +194,68 @@ export default class AvonniTimer extends LightningElement {
     set repeat(value) {
         this._repeat = normalizeBoolean(value);
     }
+
+    /**
+     * Type of the timer. Valid values include count-up and count-down.
+     *
+     * @type {string}
+     * @public
+     * @default count-up
+     */
+    @api
+    get type() {
+        return this._type;
+    }
+
+    set type(value) {
+        this._type = normalizeString(value, {
+            fallbackValue: COUNT_TYPES.default,
+            validValues: COUNT_TYPES.valid
+        });
+    }
+
+    /**
+     * Default value of the timer.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = isNaN(parseInt(value, 10))
+            ? DEFAULT_VALUE
+            : Number(value / 1000);
+    }
+
+    /**
+     * The variant changes the appearance of the timer. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
+     *
+     * @type {string}
+     * @public
+     * @default neutral
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Return the time format to display based on inputted format ( hh, mm, ss ).
@@ -358,6 +370,12 @@ export default class AvonniTimer extends LightningElement {
         return Math.floor(time - this.minutes * 60);
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Start the timer.
      *
@@ -405,6 +423,12 @@ export default class AvonniTimer extends LightningElement {
         this._value = 0;
         this.dispatchTimerReset();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Timer start event dispatcher.

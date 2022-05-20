@@ -89,6 +89,7 @@ export default class AvonniCalendar extends LightningElement {
     _value = [];
     _dateLabels = [];
     _weekNumber = false;
+
     date = DEFAULT_DATE;
     year;
     month;
@@ -100,6 +101,12 @@ export default class AvonniCalendar extends LightningElement {
     connectedCallback() {
         this.updateDateParameters();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Array of date label objects. Priority is given to dates placed toward the end of the array.
@@ -300,6 +307,12 @@ export default class AvonniCalendar extends LightningElement {
         this.updateDateParameters();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Compute days from week.
      */
@@ -381,9 +394,11 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     get normalizedValue() {
+        if (!this.value.length)
+            return this.selectionMode === 'single' ? null : [];
+
         const stringDates = this.value.map((date) => {
-            const stringDate = date.toISOString();
-            return stringDate.match(/^\d{4}-\d{2}-\d{2}/)[0];
+            return date.toISOString();
         });
         return this.selectionMode === 'single' ? stringDates[0] : stringDates;
     }
@@ -407,6 +422,30 @@ export default class AvonniCalendar extends LightningElement {
             .add({ 'avonni-calendar__date-with-labels': isLabeled })
             .toString();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Set the focus on the fist focusable element of the calendar.
+     * @public
+     */
+    @api
+    focus() {
+        const button = this.template.querySelector(
+            '[data-element-id="previous-lightning-button-icon"]'
+        );
+        if (button) button.focus();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Create Dates array.
@@ -534,7 +573,7 @@ export default class AvonniCalendar extends LightningElement {
                     : '';
 
                 if (date.getMonth() !== currentMonth || disabled) {
-                    if (i > 3 && a === 0) {
+                    if (i > 5 && a === 0) {
                         weekData.splice(-1, 1);
                         break;
                     }

@@ -30,6 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { deepCopy } from './utility';
+
 export function normalizeString(value, config = {}) {
     const { fallbackValue = '', validValues, toLowerCase = true } = config;
     let normalized = (typeof value === 'string' && value.trim()) || '';
@@ -96,11 +98,9 @@ export function normalizeAriaAttribute(value) {
 }
 
 export function normalizeObject(value) {
-    if (
-        value &&
-        value.constructor === Object &&
-        Object.getPrototypeOf(value) === Object.prototype
-    ) {
+    // Make sure the value is a regular object, and not a class instance
+    const normalizedValue = deepCopy(value);
+    if (normalizedValue && normalizedValue.constructor === Object) {
         return value;
     }
     return {};

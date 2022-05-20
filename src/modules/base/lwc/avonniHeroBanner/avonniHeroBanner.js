@@ -55,37 +55,12 @@ const DEFAULT_CONTENT_WIDTH = 100;
  */
 export default class AvonniHeroBanner extends LightningElement {
     /**
-     * The title can include text, and is displayed in the banner.
-     *
-     * @type {string}
-     * @public
-     */
-    @api title;
-
-    /**
      * The caption can include text, and is displayed over the title.
      *
      * @type {string}
      * @public
      */
     @api caption;
-
-    /**
-     * The subtitle can include text, and is displayed under the title.
-     *
-     * @type {string}
-     * @public
-     */
-    @api subtitle;
-
-    /**
-     * URL for the background image.
-     *
-     * @type {string}
-     * @public
-     */
-    @api src;
-
     /**
      * The text to be displayed inside the primary button.
      *
@@ -93,7 +68,6 @@ export default class AvonniHeroBanner extends LightningElement {
      * @public
      */
     @api primaryButtonLabel;
-
     /**
      * The text to be displayed inside the secondary button.
      *
@@ -101,12 +75,33 @@ export default class AvonniHeroBanner extends LightningElement {
      * @public
      */
     @api secondaryButtonLabel;
+    /**
+     * URL for the background image.
+     *
+     * @type {string}
+     * @public
+     */
+    @api src;
+    /**
+     * The subtitle can include text, and is displayed under the title.
+     *
+     * @type {string}
+     * @public
+     */
+    @api subtitle;
+    /**
+     * The title can include text, and is displayed in the banner.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
 
+    _contentWidth = DEFAULT_CONTENT_WIDTH;
     _contentHorizontalAlignment = horizontal_alignment_options.default;
     _contentVerticalAlignment = vertical_alignment_options.default;
     _height = DEFAULT_HEIGHT;
     _maxWidth = DEFAULT_MAX_WIDTH;
-    _contentWidth = DEFAULT_CONTENT_WIDTH;
 
     _rendered = false;
     showSlot = true;
@@ -143,6 +138,12 @@ export default class AvonniHeroBanner extends LightningElement {
     get footerSlot() {
         return this.template.querySelector('slot[name=footer]');
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Horizontal alignment of the title, caption and description.
@@ -185,6 +186,25 @@ export default class AvonniHeroBanner extends LightningElement {
     }
 
     /**
+     * Width of the content inside of the banner in percentage.
+     *
+     * @type {number}
+     * @default 100
+     * @public
+     */
+    @api
+    get contentWidth() {
+        return this._contentWidth;
+    }
+
+    set contentWidth(value) {
+        const number = isNaN(parseInt(value, 10))
+            ? DEFAULT_CONTENT_WIDTH
+            : value;
+        this._contentWidth = number;
+    }
+
+    /**
      * Height of the banner in px.
      *
      * @type {number}
@@ -218,24 +238,11 @@ export default class AvonniHeroBanner extends LightningElement {
         this._maxWidth = number;
     }
 
-    /**
-     * Width of the content inside of the banner in percentage.
-     *
-     * @type {number}
-     * @default 100
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get contentWidth() {
-        return this._contentWidth;
-    }
-
-    set contentWidth(value) {
-        const number = isNaN(parseInt(value, 10))
-            ? DEFAULT_CONTENT_WIDTH
-            : value;
-        this._contentWidth = number;
-    }
 
     /**
      * Styling of the image.

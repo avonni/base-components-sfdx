@@ -58,6 +58,14 @@ export default class AvonniPageHeader extends LightningElement {
      */
     @api iconName;
     /**
+     * Text to display below the title. To include additional markup or another component, use the info slot.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
+    @api info;
+    /**
      * Label to display above the title. To include additional markup or another component, use the label slot.
      *
      * @type {string}
@@ -71,17 +79,10 @@ export default class AvonniPageHeader extends LightningElement {
      * @public
      */
     @api title;
-    /**
-     * Text to display below the title. To include additional markup or another component, use the info slot.
-     *
-     * @type {string}
-     * @public
-     * @default base
-     */
-    @api info;
 
-    _variant = PAGE_HEADER_VARIANTS.default;
     _isJoined = false;
+    _variant = PAGE_HEADER_VARIANTS.default;
+
     showTitle = true;
     showLabel = true;
     showActions = true;
@@ -177,6 +178,28 @@ export default class AvonniPageHeader extends LightningElement {
         return this.template.querySelector('slot[name=controls]');
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * If present, the bottom border-radius is set to zero and the shadow is removed. This allows the page-header to sit flush on top of another element.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get isJoined() {
+        return this._isJoined;
+    }
+
+    set isJoined(value) {
+        this._isJoined = normalizeBoolean(value);
+    }
+
     /**
      * The type of component. Valid values include base, object-home, record-home and record-home-vertical.
      *
@@ -196,21 +219,11 @@ export default class AvonniPageHeader extends LightningElement {
         });
     }
 
-    /**
-     * If present, the bottom border-radius is set to zero and the shadow is removed. This allows the page-header to sit flush on top of another element.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get isJoined() {
-        return this._isJoined;
-    }
-
-    set isJoined(value) {
-        this._isJoined = normalizeBoolean(value);
-    }
 
     /**
      * Computed Outer class styling based on variant 'object-home' or 'record-home'.

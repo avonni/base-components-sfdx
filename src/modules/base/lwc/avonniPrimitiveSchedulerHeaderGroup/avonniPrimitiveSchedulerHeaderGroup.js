@@ -36,7 +36,9 @@ import {
     addToDate,
     dateTimeObjectFrom,
     numberOfUnitsBetweenDates,
-    normalizeArray
+    normalizeArray,
+    removeFromDate,
+    equal
 } from 'c/utilsPrivate';
 import SchedulerHeader from './avonniSchedulerHeader';
 
@@ -46,9 +48,15 @@ const DEFAULT_AVAILABLE_MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK = [0, 1, 2, 3, 4, 5, 6];
 const DEFAULT_AVAILABLE_TIME_FRAMES = ['00:00-23:59'];
 const DEFAULT_TIME_SPAN = {
-    unit: 'hour',
-    span: '12'
+    unit: 'day',
+    span: 1
 };
+const DEFAULT_AVAILABLE_TIME_SPANS = [
+    { unit: 'day', span: 1, label: 'Day', headers: 'hourAndDay' },
+    { unit: 'week', span: 1, label: 'Week', headers: 'hourAndDay' },
+    { unit: 'month', span: 1, label: 'Month', headers: 'dayAndMonth' },
+    { unit: 'year', span: 1, label: 'Year', headers: 'dayAndMonth' }
+];
 const DEFAULT_HEADERS = [
     {
         unit: 'hour',
@@ -70,71 +78,20 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     _availableDaysOfTheWeek = DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK;
     _availableMonths = DEFAULT_AVAILABLE_MONTHS;
     _availableTimeFrames = DEFAULT_AVAILABLE_TIME_FRAMES;
+    _availableTimeSpans = DEFAULT_AVAILABLE_TIME_SPANS;
     _headers = DEFAULT_HEADERS;
     _scrollLeftOffset = 0;
     _start = DEFAULT_START_DATE;
     _timeSpan = DEFAULT_TIME_SPAN;
 
     _cellWidth = 0;
-    _numberOfVisibleCells = 0;
-    _previousStartTimes = [];
+    _connected = false;
+    _initHeadersTimeout;
     computedHeaders = [];
 
     connectedCallback() {
-        /**
-         * The event fired when the header group is connected.
-         *
-         * @event
-         * @name privateheaderregister
-         * @param {function} scrollHeadersTo Takes the direction of the scroll as an argument and creates the new header columns accordingly.
-         */
-        this.dispatchEvent(
-            new CustomEvent('privateheaderregister', {
-                detail: {
-                    callbacks: {
-                        scrollHeadersTo: this.scrollHeadersTo.bind(this)
-                    }
-                }
-            })
-        );
         this.initHeaders();
         this._connected = true;
-    }
-
-    renderedCallback() {
-        if (!this._cellWidth) {
-            const cellText = this.template.querySelector(
-                '.avonni-scheduler__header-row:last-of-type .avonni-scheduler__header-cell span'
-            );
-            // We add 20 pixels for padding
-            this._cellWidth =
-                Math.ceil(cellText.getBoundingClientRect().width) + 20;
-            this.dispatchCellWidth();
-        }
-
-        if (!this._numberOfVisibleCells) {
-            const totalWidth = this.template.host.getBoundingClientRect().width;
-            this._numberOfVisibleCells = Math.ceil(
-                totalWidth / this._cellWidth
-            );
-
-            // If the maximum number of visible cells on the screen is bigger
-            // than the actual number of cells, recompute the cell width so the
-            // schedule takes the full screen
-            if (
-                this.smallestHeader.numberOfColumns < this._numberOfVisibleCells
-            ) {
-                this._numberOfVisibleCells = this.smallestHeader.numberOfColumns;
-                this._cellWidth = totalWidth / this._numberOfVisibleCells;
-                this.dispatchCellWidth();
-            }
-
-            this.scrollHeadersTo();
-            return;
-        }
-
-        this.updateCellsWidths();
-        this.updateStickyLabels();
     }
 
     /**
@@ -148,8 +105,14 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return this._availableDaysOfTheWeek;
     }
     set availableDaysOfTheWeek(value) {
+        if (equal(value, this._availableDaysOfTheWeek)) {
+            return;
+        }
+
         this._availableDaysOfTheWeek = normalizeArray(value);
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
@@ -163,8 +126,14 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return this._availableMonths;
     }
     set availableMonths(value) {
+        if (equal(value, this._availableMonths)) {
+            return;
+        }
+
         this._availableMonths = normalizeArray(value);
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
@@ -178,8 +147,37 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return this._availableTimeFrames;
     }
     set availableTimeFrames(value) {
+        if (equal(value, this._availableTimeFrames)) {
+            return;
+        }
+
         this._availableTimeFrames = normalizeArray(value);
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
+    }
+
+    /**
+     * Array of available time spans. Each time span object must have the following properties:
+     * * unit: The unit of the time span.
+     * * span: The span of the time span.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get availableTimeSpans() {
+        return this._availableTimeSpans;
+    }
+    set availableTimeSpans(value) {
+        if (equal(value, this._availableTimeSpans)) {
+            return;
+        }
+
+        this._availableTimeSpans = normalizeArray(value, 'object');
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
@@ -193,8 +191,14 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return this._headers;
     }
     set headers(value) {
+        if (equal(value, this._headers)) {
+            return;
+        }
+
         this._headers = normalizeArray(value);
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
@@ -209,7 +213,10 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     }
     set scrollLeftOffset(value) {
         this._scrollLeftOffset = !isNaN(Number(value)) ? Number(value) : 0;
-        this.updateStickyLabels();
+
+        requestAnimationFrame(() => {
+            this.updateStickyLabels();
+        });
     }
 
     /**
@@ -226,12 +233,19 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     set start(value) {
         const start =
             value instanceof DateTime ? value : dateTimeObjectFrom(value);
+        const msStart = start && start.ts;
+        if (msStart === this._start.ts) {
+            return;
+        }
+
         this._start =
             start instanceof DateTime
                 ? start
                 : dateTimeObjectFrom(DEFAULT_START_DATE);
 
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
@@ -241,26 +255,34 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
      *
      * @type {object}
      * @public
-     * @default { unit: 'hour', span: 12 }
+     * @default { unit: 'day', span: 1 }
      */
     @api
     get timeSpan() {
         return this._timeSpan;
     }
     set timeSpan(value) {
+        if (equal(value, this._timeSpan)) {
+            return;
+        }
+
         this._timeSpan = typeof value === 'object' ? value : DEFAULT_TIME_SPAN;
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
-     * Interval of time between the start and end of the currently loaded header columns.
+     * Interval of time between the current start and end.
      *
      * @type {Interval}
      * @public
      */
     @api
     get visibleInterval() {
-        if (!this.smallestHeader) return undefined;
+        if (!this.smallestHeader) {
+            return undefined;
+        }
 
         const columns = this.smallestHeader.columns;
         const lastIndex = columns.length - 1;
@@ -278,11 +300,25 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         if (this._referenceHeader && this._referenceHeader.end) {
             return this._referenceHeader.end;
         }
-        const timeSpanEnd = addToDate(
-            this.start,
-            this.timeSpan.unit,
-            this.timeSpan.span
-        );
+
+        const { unit, span } = this.timeSpan;
+        let start = this.start;
+        if (this.endOnTimeSpanUnit) {
+            // Compensate the fact that Luxon weeks start on Monday
+            if (unit === 'week' && start.weekday === 7) {
+                // Start is on Sunday and the unit is week
+                start = start.startOf('day');
+            } else {
+                start = this.start.startOf(unit);
+
+                if (unit === 'week') {
+                    // Start is not on a Sunday and the unit is week
+                    start = removeFromDate(start, 'day', 1);
+                }
+            }
+        }
+        const timeSpanEnd = addToDate(start, unit, span);
+
         // We take one millisecond off to exclude the next unit
         return DateTime.fromMillis(timeSpanEnd - 1);
     }
@@ -293,191 +329,184 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
      * @type {SchedulerHeader}
      */
     get smallestHeader() {
-        if (!this.computedHeaders.length) return null;
+        if (!this.computedHeaders.length) {
+            return null;
+        }
 
         const lastIndex = this.computedHeaders.length - 1;
         return this.computedHeaders[lastIndex];
     }
 
     /**
-     * Update the headers columns depending on the direction of the scroll.
+     * True if the headers must stop at the end of the time span unit. If false, the headers can end in the middle of the time span unit.
      *
-     * @param {string} direction Direction of the scroll. Valid values are 'left' or 'right'.
+     * @type {boolean}
      */
-    scrollHeadersTo(direction) {
-        let startTime;
-        if (!this._previousStartTimes.length) {
-            startTime = DateTime.fromMillis(this.start.ts);
-            this._previousStartTimes = [startTime];
-        } else if (direction === 'left') {
-            const lastIndex = this._previousStartTimes.length - 1;
-            if (lastIndex > -1) {
-                startTime = this._previousStartTimes[lastIndex];
-                this._previousStartTimes.pop();
-            } else return;
-        } else {
-            const startColumn = this.smallestHeader.columns[
-                this._numberOfVisibleCells
-            ];
-            if (startColumn) {
-                startTime = dateTimeObjectFrom(startColumn.start);
-                this._previousStartTimes.push(startTime);
-            } else return;
-        }
-
-        [...this.computedHeaders].reverse().forEach((header) => {
-            if (header !== this.smallestHeader) {
-                const lastIndex = this.smallestHeader.columns.length - 1;
-                const lastColumn = this.smallestHeader.columns[lastIndex];
-                const lastColumnStart = dateTimeObjectFrom(lastColumn.start);
-                const lastColumnEnd =
-                    addToDate(
-                        lastColumnStart,
-                        this.smallestHeader.unit,
-                        this.smallestHeader.span
-                    ) - 1;
-                header.end = lastColumnEnd;
-            }
-
-            header.initColumns(startTime);
-            header.computeColumnWidths(
-                this._cellWidth,
-                this.smallestHeader.columns
+    get endOnTimeSpanUnit() {
+        return this.availableTimeSpans.find((timeSpan) => {
+            return (
+                timeSpan.unit === this.timeSpan.unit &&
+                timeSpan.span === this.timeSpan.span
             );
         });
-        this.computedHeaders = [...this.computedHeaders];
-
-        this.dispatchEvent(
-            new CustomEvent('privatevisibleheaderchange', {
-                detail: {
-                    direction,
-                    visibleCells: this._numberOfVisibleCells,
-                    visibleInterval: this.visibleInterval
-                }
-            })
-        );
     }
 
     /**
      * Create the headers.
      */
     initHeaders() {
-        // Sort the headers from the longest unit to the shortest
-        const sortedHeaders = [...this.headers].sort(
-            (firstHeader, secondHeader) => {
-                const firstIndex = UNITS.findIndex(
-                    (unit) => unit === firstHeader.unit
-                );
-                const secondIndex = UNITS.findIndex(
-                    (unit) => unit === secondHeader.unit
-                );
-                return secondIndex - firstIndex;
-            }
-        );
+        // We use a timeout to prevent the method from being called
+        // by several property changes at the same time
+        clearTimeout(this._initHeadersTimeout);
+        this._initHeadersTimeout = setTimeout(() => {
+            this._referenceHeader = null;
 
-        // Create the reference header
-        // The reference header is the header using the timeSpan unit
-        const referenceUnit = this.timeSpan.unit;
-        const referenceHeader = sortedHeaders.find(
-            (header) => header.unit === referenceUnit
-        );
-
-        const referenceColumns = numberOfUnitsBetweenDates(
-            referenceUnit,
-            this.start,
-            this.end
-        );
-
-        const referenceSpan = referenceHeader
-            ? referenceHeader.span
-            : this.timeSpan.span;
-
-        const reference = new SchedulerHeader({
-            unit: referenceUnit,
-            span: referenceSpan,
-            duration: this.timeSpan.span,
-            label: referenceHeader ? referenceHeader.label : '',
-            start: this.start,
-            end: this.end,
-            availableTimeFrames: this.availableTimeFrames,
-            availableDaysOfTheWeek: this.availableDaysOfTheWeek,
-            availableMonths: this.availableMonths,
-            numberOfColumns: referenceColumns / referenceSpan,
-            isReference: true,
-            // If there is no header using the timeSpan unit,
-            // hide the reference header
-            isHidden: !referenceHeader
-        });
-
-        // Make sure the reference end is at the end of the smallest header unit
-        reference.end = reference.end.endOf(
-            sortedHeaders[sortedHeaders.length - 1].unit
-        );
-
-        this._referenceHeader = reference;
-
-        // Create all headers
-        const headerObjects = [];
-        sortedHeaders.forEach((header) => {
-            const unit = header.unit;
-            let headerObject;
-
-            // If the current header is the reference, use the already made header object
-            if (
-                reference &&
-                referenceUnit === unit &&
-                reference.label === header.label
-            ) {
-                headerObject = reference;
-            } else {
-                const columns = numberOfUnitsBetweenDates(
-                    unit,
-                    this.start,
-                    this.end
-                );
-
-                headerObject = new SchedulerHeader({
-                    unit: unit,
-                    span: header.span,
-                    label: header.label,
-                    start: reference.start,
-                    end: this.end,
-                    availableTimeFrames: this.availableTimeFrames,
-                    availableDaysOfTheWeek: this.availableDaysOfTheWeek,
-                    availableMonths: this.availableMonths,
-                    numberOfColumns: columns / header.span
-                });
-            }
-
-            headerObjects.push(headerObject);
-
-            // Update the reference end if the current header ended before the reference
-            if (headerObject.end < reference.end) {
-                reference.end = headerObject.end;
-            }
-        });
-
-        this.computedHeaders = headerObjects;
-
-        // On next render, reset the cells calculation
-        this._cellWidth = undefined;
-        this._numberOfVisibleCells = undefined;
-        this._previousStartTimes = [];
-
-        /**
-         * The event fired when new headers are created.
-         *
-         * @event
-         * @name privateheaderchange
-         * @param {SchedulerHeader} smallestHeader Header with the smallest unit.
-         */
-        this.dispatchEvent(
-            new CustomEvent('privateheaderchange', {
-                detail: {
-                    smallestHeader: this.smallestHeader
+            // Sort the headers from the longest unit to the shortest
+            const sortedHeaders = [...this.headers].sort(
+                (firstHeader, secondHeader) => {
+                    const firstIndex = UNITS.findIndex(
+                        (unit) => unit === firstHeader.unit
+                    );
+                    const secondIndex = UNITS.findIndex(
+                        (unit) => unit === secondHeader.unit
+                    );
+                    return secondIndex - firstIndex;
                 }
-            })
+            );
+
+            // Create the reference header
+            // The reference header is the header using the timeSpan unit
+            const referenceUnit = this.timeSpan.unit;
+            const referenceHeader = sortedHeaders.find(
+                (header) => header.unit === referenceUnit
+            );
+
+            const referenceColumns = numberOfUnitsBetweenDates(
+                referenceUnit,
+                this.start,
+                this.end
+            );
+
+            const referenceSpan = referenceHeader
+                ? referenceHeader.span
+                : this.timeSpan.span;
+
+            const reference = new SchedulerHeader({
+                unit: referenceUnit,
+                span: referenceSpan,
+                duration: this.timeSpan.span,
+                label: referenceHeader ? referenceHeader.label : '',
+                start: this.start,
+                end: this.end,
+                availableTimeFrames: this.availableTimeFrames,
+                availableDaysOfTheWeek: this.availableDaysOfTheWeek,
+                availableMonths: this.availableMonths,
+                numberOfColumns: referenceColumns / referenceSpan,
+                isReference: true,
+                canExpandOverEndOfUnit: !this.endOnTimeSpanUnit,
+                // If there is no header using the timeSpan unit,
+                // hide the reference header
+                isHidden: !referenceHeader
+            });
+
+            // Make sure the reference end is at the end of the smallest header unit
+            reference.end = reference.end.endOf(
+                sortedHeaders[sortedHeaders.length - 1].unit
+            );
+
+            this._referenceHeader = reference;
+
+            // Create all headers
+            const headerObjects = [];
+            sortedHeaders.forEach((header) => {
+                const unit = header.unit;
+                let headerObject;
+
+                // If the current header is the reference, use the already made header object
+                if (
+                    reference &&
+                    referenceUnit === unit &&
+                    reference.label === header.label
+                ) {
+                    headerObject = reference;
+                } else {
+                    const columns = numberOfUnitsBetweenDates(
+                        unit,
+                        this.start,
+                        this.end
+                    );
+
+                    headerObject = new SchedulerHeader({
+                        unit: unit,
+                        span: header.span,
+                        label: header.label,
+                        start: reference.start,
+                        end: this.end,
+                        availableTimeFrames: this.availableTimeFrames,
+                        availableDaysOfTheWeek: this.availableDaysOfTheWeek,
+                        availableMonths: this.availableMonths,
+                        numberOfColumns: columns / header.span
+                    });
+                }
+
+                headerObjects.push(headerObject);
+
+                // Update the reference end if the current header ended before the reference
+                if (headerObject.end < reference.end) {
+                    reference.end = headerObject.end;
+                }
+            });
+
+            this.computedHeaders = headerObjects;
+
+            /**
+             * The event fired when new headers are created.
+             *
+             * @event
+             * @name privateheaderchange
+             * @param {SchedulerHeader} smallestHeader Header with the smallest unit.
+             */
+            this.dispatchEvent(
+                new CustomEvent('privateheaderchange', {
+                    detail: {
+                        smallestHeader: this.smallestHeader
+                    }
+                })
+            );
+
+            requestAnimationFrame(() => {
+                this.computeCellWidth();
+            });
+        }, 0);
+    }
+
+    computeCellWidth() {
+        const cellText = this.template.querySelector(
+            '[data-element-id="div-row"]:last-of-type [data-element-id^="span-label"]'
         );
+        if (!cellText) {
+            return;
+        }
+
+        const cellTextWidth = cellText.getBoundingClientRect().width;
+        // We add 20 pixels for padding
+        let cellWidth = Math.ceil(cellTextWidth) + 20;
+
+        const totalWidth = this.template.host.getBoundingClientRect().width;
+        const numberOfVisibleCells = Math.ceil(totalWidth / cellWidth);
+        const totalNumberOfCells = this.smallestHeader.numberOfColumns;
+
+        // If the maximum number of visible cells on the screen is bigger
+        // than the actual number of cells, recompute the cell width so the
+        // schedule takes the full screen
+        if (totalNumberOfCells < numberOfVisibleCells) {
+            cellWidth = totalWidth / totalNumberOfCells;
+        }
+        this.computedHeaders.forEach((header) => {
+            header.computeColumnWidths(cellWidth, this.smallestHeader.columns);
+        });
+        this.dispatchCellWidth(cellWidth);
+        this.updateCellsWidths();
     }
 
     /**
@@ -521,7 +550,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     /**
      * Dispatch the privatecellwidthchange event.
      */
-    dispatchCellWidth() {
+    dispatchCellWidth(width) {
         /**
          * The event fired when the cell width variable is changed.
          *
@@ -532,7 +561,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         this.dispatchEvent(
             new CustomEvent('privatecellwidthchange', {
                 detail: {
-                    cellWidth: this._cellWidth
+                    cellWidth: width
                 }
             })
         );

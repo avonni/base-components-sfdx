@@ -32,12 +32,15 @@
 
 import LightningDatatable from 'lightning/datatable';
 import { api } from 'lwc';
-import { normalizeArray, normalizeString } from 'c/utilsPrivate';
+import {
+    normalizeArray,
+    normalizeBoolean,
+    normalizeString
+} from 'c/utilsPrivate';
 import {
     getCellValue,
     getCurrentSelectionLength,
     isSelectedRow,
-    getChangesForCustomer,
     processInlineEditFinishCustom
 } from './avonniInlineEdit';
 
@@ -317,7 +320,7 @@ export default class AvonniDatatable extends LightningDatatable {
 
         this.template.addEventListener(
             'editbuttonclickcustom',
-            this.handleEditButtonClickCustom
+            this.handleEditButtonClickCustom.bind(this)
         );
 
         this.template.addEventListener(
@@ -372,25 +375,11 @@ export default class AvonniDatatable extends LightningDatatable {
         );
     }
 
-    /**
-     * Array of the columns object that's used to define the data types.
-     * Required properties include 'label', 'fieldName', and 'type'. The default type is 'text'.
-     * See the Documentation tab for more information.
-     * @public
-     * @type {array}
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get columns() {
-        return super.columns;
-    }
-
-    set columns(value) {
-        super.columns = value;
-
-        this._columns = JSON.parse(JSON.stringify(this._columns));
-        this.removeWrapOption();
-        this.computeEditableOption();
-    }
 
     /**
      * Specifies how column widths are calculated. Set to 'fixed' for columns with equal widths.
@@ -412,6 +401,27 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
+     * Array of the columns object that's used to define the data types.
+     * Required properties include 'label', 'fieldName', and 'type'. The default type is 'text'.
+     * See the Documentation tab for more information.
+     * @public
+     * @type {array}
+     */
+    @api
+    get columns() {
+        return super.columns;
+    }
+
+    set columns(value) {
+        value = JSON.parse(JSON.stringify(value));
+        this.removeWrapOption(value);
+        this.computeEditableOption(value);
+        super.columns = value;
+
+        this._columns = JSON.parse(JSON.stringify(super.columns));
+    }
+
+    /**
      * Specifies the default sorting direction on an unsorted column.
      * Valid options include 'asc' and 'desc'. The default is 'asc' for sorting in ascending order.
      * @public
@@ -428,6 +438,113 @@ export default class AvonniDatatable extends LightningDatatable {
             fallbackValue: SORT_DIRECTIONS.default,
             validValues: SORT_DIRECTIONS.valid
         });
+    }
+
+    /**
+     * The current values per row that are provided during inline edit.
+     * @public
+     * @type {object}
+     */
+    @api
+    get draftValues() {
+        return super.draftValues;
+    }
+
+    set draftValues(value) {
+        super.draftValues = value;
+    }
+
+    /**
+     * If present, you can load a subset of data and then display more
+     * when users scroll to the end of the table.
+     * Use with the onloadmore event handler to retrieve more data.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get enableInfiniteLoading() {
+        return super.enableInfiniteLoading;
+    }
+
+    set enableInfiniteLoading(value) {
+        super.enableInfiniteLoading = normalizeBoolean(value);
+    }
+
+    /**
+     * Specifies an object containing information about cell level, row level, and table level errors.
+     * When it's set, error messages are displayed on the table accordingly.
+     * @public
+     * @type {object}
+     */
+    @api
+    get errors() {
+        return super.errors;
+    }
+
+    set errors(value) {
+        super.errors = value;
+    }
+
+    /**
+     * If present, the checkbox column for row selection is hidden.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideCheckboxColumn() {
+        return super.hideCheckboxColumn;
+    }
+
+    set hideCheckboxColumn(value) {
+        super.hideCheckboxColumn = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the table header is hidden.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideTableHeader() {
+        return super.hideTableHeader;
+    }
+
+    set hideTableHeader(value) {
+        super.hideTableHeader = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, a spinner is shown to indicate that more data is loading.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get isLoading() {
+        return super.isLoading;
+    }
+
+    set isLoading(value) {
+        super.isLoading = normalizeBoolean(value);
+    }
+
+    /**
+     * Required for better performance.
+     * Associates each row with a unique ID.
+     * @public
+     * @type {string}
+     * @required
+     */
+    @api
+    get keyField() {
+        return super.keyField;
+    }
+
+    set keyField(value) {
+        super.keyField = value;
     }
 
     /**
@@ -509,6 +626,36 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
+     * Reserved for internal use.
+     * Enables and configures advanced rendering modes.
+     * @public
+     * @type {RenderManagerConfig} value - config object for datatable rendering
+     */
+    @api
+    get renderConfig() {
+        return super.renderConfig;
+    }
+
+    set renderConfig(value) {
+        super.renderConfig = value;
+    }
+
+    /**
+     * If present, column resizing is disabled.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get resizeColumnDisabled() {
+        return super.resizeColumnDisabled;
+    }
+
+    set resizeColumnDisabled(value) {
+        super.resizeColumnDisabled = normalizeBoolean(value);
+    }
+
+    /**
      * The width to resize the column when a user presses left or right arrow.
      * @public
      * @type {number}
@@ -556,6 +703,36 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
+     * If present, the row numbers are shown in the first column.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get showRowNumberColumn() {
+        return super.showRowNumberColumn;
+    }
+
+    set showRowNumberColumn(value) {
+        super.showRowNumberColumn = normalizeBoolean(value);
+    }
+
+    /**
+     * The column key or fieldName that controls the sorting order.
+     * Sort the data using the onsort event handler.
+     * @public
+     * @type {string}
+     */
+    @api
+    get sortedBy() {
+        return super.sortedBy;
+    }
+
+    set sortedBy(value) {
+        super.sortedBy = value;
+    }
+
+    /**
      * Specifies the sorting direction. Sort the data using the onsort event handler. Valid options include 'asc' and 'desc'.
      * @public
      * @type {string}
@@ -573,6 +750,21 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
+     * If present, the footer that displays the Save and Cancel buttons is hidden during inline editing.
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get suppressBottomBar() {
+        return super.suppressBottomBar;
+    }
+
+    set suppressBottomBar(value) {
+        super.suppressBottomBar = normalizeBoolean(value);
+    }
+
+    /**
      * This value specifies the number of lines after which the content will be cut off and hidden. It must be at least 1 or more.
      * The text in the last line is truncated and shown with an ellipsis.
      * @public
@@ -587,6 +779,12 @@ export default class AvonniDatatable extends LightningDatatable {
         if (value === undefined) return;
         super.wrapTextMaxLines = value;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Gets a row height.
@@ -630,23 +828,55 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
+     * Returns data in each selected row.
+     *
+     * @name getSelectedRows
+     * @function
+     * @public
+     */
+
+    /**
+     * Opens the inline edit panel for the datatable's currently active cell. If the active cell is not
+     * editable, then the panel is instead opened for the first editable cell in the table. Given two
+     * distinct cells, C_x and C_y, C_x is considered "first" in the cell ordering if the following condition
+     * evaluates to true:
+     *
+     * (C_x.rowIndex < C_y.rowIndex) || (C_x.rowIndex === C_y.rowIndex && C_x.columnIndex < C_y.columnIndex)
+     *
+     * If there is no data in the table or there are no editable cells in the table then calling this function
+     * results in a no-op.
+     *
+     * @name openInlineEdit
+     * @function
+     * @public
+     */
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
      * Sets the wrapText and hideDefaultActions attributes to true for custom types that are always wrapped.
      */
-    removeWrapOption() {
-        this.columns.forEach((column) => {
-            if (CUSTOM_TYPES_ALWAYS_WRAPPED.includes(column.type)) {
-                column.wrapText = true;
-                column.hideDefaultActions = true;
-            }
-        });
+    removeWrapOption(columns) {
+        if (columns) {
+            columns.forEach((column) => {
+                if (CUSTOM_TYPES_ALWAYS_WRAPPED.includes(column.type)) {
+                    column.wrapText = true;
+                    column.hideDefaultActions = true;
+                }
+            });
+        }
     }
 
     /**
      * If the data type is editable, transforms the value into an object containing the editable property.
      */
-    computeEditableOption() {
-        if (this.columns && this._data) {
-            this.columns.forEach((column) => {
+    computeEditableOption(columns) {
+        if (columns && this._data) {
+            columns.forEach((column) => {
                 if (CUSTOM_TYPES_EDITABLE.includes(column.type)) {
                     const fieldName = column.fieldName;
                     this._data.forEach((row) => {
@@ -668,9 +898,8 @@ export default class AvonniDatatable extends LightningDatatable {
      */
     handleEditButtonClickCustom(event) {
         event.stopPropagation();
-        const { colKeyValue, rowKeyValue, state } = event.detail;
+        const { colKeyValue, rowKeyValue } = event.detail;
         // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-        this.state = state;
         const inlineEdit = this.state.inlineEdit;
 
         inlineEdit.panelVisible = true;
@@ -688,6 +917,7 @@ export default class AvonniDatatable extends LightningDatatable {
 
         const colIndex = this.state.headerIndexes[colKeyValue];
         inlineEdit.columnDef = this.state.columns[colIndex];
+        super.state = this.state;
     }
 
     /**
@@ -709,15 +939,6 @@ export default class AvonniDatatable extends LightningDatatable {
         // Add the new cell value to the state dirty values
         dirtyValues[rowKeyValue][colKeyValue] = value;
 
-        const cellChange = { [rowKeyValue]: { [colKeyValue]: value } };
-
-        this.dispatchEvent(
-            new CustomEvent('cellchange', {
-                detail: {
-                    draftValues: getChangesForCustomer(cellChange, this.state)
-                }
-            })
-        );
         // Show yellow background and save/cancel button
         super.updateRowsState(this.state);
     };
@@ -754,6 +975,7 @@ export default class AvonniDatatable extends LightningDatatable {
             isMassEditChecked
         } = event.detail;
         processInlineEditFinishCustom(
+            this,
             this.state,
             reason,
             rowKeyValue,
@@ -762,5 +984,6 @@ export default class AvonniDatatable extends LightningDatatable {
             valid,
             isMassEditChecked
         );
+        super.state = this.state;
     };
 }

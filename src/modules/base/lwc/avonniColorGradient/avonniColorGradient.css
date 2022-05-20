@@ -29,16 +29,19 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
- .slds-color-picker__custom {
+
+.slds-color-picker__custom {
     max-width: 20rem;
+    cursor: pointer;
 }
+
 .avonni-opacity {
     padding-top: 0.25rem;
 }
 
 .slds-color-picker__range-indicator {
     border: 1px solid #ffffff;
+    pointer-events: none;
 }
 
 .slds-color-picker__input-custom-hex {
@@ -49,4 +52,8 @@
     padding-top: 0.5rem;
     color: #c23934;
     font-size: 0.75rem;
+}
+
+.slds-color-picker__custom-range_disabled {
+    cursor: not-allowed;
 }

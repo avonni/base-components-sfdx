@@ -35,8 +35,9 @@
 <template>
     <div class="slds-color-picker__custom">
         <div
-            class="slds-color-picker__custom-range"
+            class={computedDisabledClass}
             onclick={handlerClickPalet}
+            onmousedown={handlerMouseDown}
         >
             <div
                 if:false={disabled}
@@ -44,7 +45,6 @@
                 aria-live="assertive"
                 aria-atomic="true"
                 aria-describedby="color-picker-instructions"
-                onmousedown={handlerMouseDown}
             ></div>
         </div>
         <div class="slds-color-picker__hue-and-preview">
@@ -57,6 +57,7 @@
                 value={colors.H}
                 data-element-id="input"
                 onblur={handleBlur}
+                onchange={handleChange}
                 onfocus={handleFocus}
                 oninput={handlerInput}
             />

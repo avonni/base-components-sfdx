@@ -50,12 +50,15 @@ const ACTIONS_VARIANTS = {
     default: 'border'
 };
 
+const DEFAULT_CAROUSEL_HEIGHT = 6.625;
+
 export default class AvonniPrimitiveCarouselItem extends LightningElement {
     @api title;
     @api description;
     @api infos;
     @api imageAssistiveText;
     @api href;
+    @api name;
     @api src;
 
     @api itemIndex;
@@ -65,7 +68,13 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
     _actions = [];
     _actionsPosition = ACTIONS_POSITIONS.default;
     _actionsVariant = ACTIONS_VARIANTS.default;
-    _carouselContentHeight = 6.625;
+    _carouselContentHeight = DEFAULT_CAROUSEL_HEIGHT;
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Valid values include bare, border and menu.
@@ -121,6 +130,12 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
             validValues: ACTIONS_VARIANTS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Retrieve image class - set to relative if not in bottom position.
@@ -237,6 +252,12 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
         return `height: ${this._carouselContentHeight}rem`;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Carousel height initialization.
      */
@@ -251,8 +272,15 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
      * @param {event}
      */
     handleItemClick() {
-        const { title, description, src, href, actions, imageAssistiveText } =
-            this;
+        const {
+            title,
+            description,
+            src,
+            href,
+            actions,
+            imageAssistiveText,
+            name
+        } = this;
         /**
          * The event fired when an item is clicked.
          *
@@ -270,7 +298,8 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
                         src,
                         href,
                         actions,
-                        imageAssistiveText
+                        imageAssistiveText,
+                        name
                     }
                 }
             })
@@ -284,9 +313,16 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
      */
     handleActionClick(event) {
         event.preventDefault();
-        const name = event.currentTarget.name;
-        const { title, description, src, href, actions, imageAssistiveText } =
-            this;
+        const actionName = event.currentTarget.name;
+        const {
+            title,
+            description,
+            src,
+            href,
+            actions,
+            imageAssistiveText,
+            name
+        } = this;
 
         /**
          * The event fired when a user clicks on an action.
@@ -300,10 +336,11 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('actionclick', {
                 detail: {
-                    name: name,
+                    name: actionName,
                     item: {
                         title,
                         description,
+                        name,
                         src,
                         href,
                         actions,

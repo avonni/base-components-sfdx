@@ -127,6 +127,13 @@ export default class AvonniFilterMenu extends LightningElement {
      */
     @api label;
     /**
+     * Specifies the name of the filter menu.
+     *
+     * @type {string}
+     * @public
+     */
+    @api name;
+    /**
      * Title of the button (horizontal variant) or the label (vertical variant).
      *
      * @type {string}
@@ -135,27 +142,27 @@ export default class AvonniFilterMenu extends LightningElement {
     @api title;
 
     _alternativeText = i18n.showMenu;
-    _loadingStateAlternativeText = i18n.loading;
-    _tooltip;
+    _applyButtonLabel = DEFAULT_APPLY_BUTTON_LABEL;
+    _buttonVariant = BUTTON_VARIANTS.default;
     _disabled = false;
+    _dropdownAlignment = MENU_ALIGNMENTS.default;
+    _dropdownLength = MENU_LENGTHS.default;
+    _dropdownNubbin = false;
+    _dropdownWidth = MENU_WIDTHS.default;
+    _hideApplyResetButtons = false;
+    _hideSelectedItems = false;
     _iconName = DEFAULT_ICON_NAME;
     _iconSize = ICON_SIZES.default;
     _isLoading = false;
     _isMultiSelect = false;
     _items = [];
-    _dropdownAlignment = MENU_ALIGNMENTS.default;
-    _dropdownNubbin = false;
-    _value = [];
-    _variant = MENU_VARIANTS.default;
-    _buttonVariant = BUTTON_VARIANTS.default;
+    _loadingStateAlternativeText = i18n.loading;
+    _resetButtonLabel = DEFAULT_RESET_BUTTON_LABEL;
     _searchInputPlaceholder = DEFAULT_SEARCH_INPUT_PLACEHOLDER;
     _showSearchBox = false;
-    _applyButtonLabel = DEFAULT_APPLY_BUTTON_LABEL;
-    _resetButtonLabel = DEFAULT_RESET_BUTTON_LABEL;
-    _hideApplyResetButtons = false;
-    _dropdownWidth = MENU_WIDTHS.default;
-    _dropdownLength = MENU_LENGTHS.default;
-    _hideSelectedItems = false;
+    _tooltip;
+    _value = [];
+    _variant = MENU_VARIANTS.default;
 
     _cancelBlur = false;
     _dropdownVisible = false;
@@ -230,6 +237,12 @@ export default class AvonniFilterMenu extends LightningElement {
         return filterMenu;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * The assistive text for the button menu. This attribute isn’t supported for the vertical variant.
      *
@@ -247,48 +260,39 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Message displayed while the menu is in the loading state.
+     * Label of the apply button.
      *
      * @type {string}
      * @public
-     * @default Loading
+     * @default Apply
      */
     @api
-    get loadingStateAlternativeText() {
-        return this._loadingStateAlternativeText;
+    get applyButtonLabel() {
+        return this._applyButtonLabel;
     }
-    set loadingStateAlternativeText(value) {
-        this._loadingStateAlternativeText =
-            typeof value === 'string' ? value.trim() : i18n.loading;
+    set applyButtonLabel(value) {
+        this._applyButtonLabel =
+            value && typeof value === 'string'
+                ? value.trim()
+                : DEFAULT_APPLY_BUTTON_LABEL;
     }
 
     /**
-     * The tooltip is displayed on hover or focus on the button (horizontal variant), or on the help icon (vertical variant).
+     * The button variant changes the look of the horizontal variant’s button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse. This attribute isn’t supported for the vertical variant.
      *
      * @type {string}
      * @public
+     * @default border
      */
     @api
-    get tooltip() {
-        return this._tooltip ? this._tooltip.value : undefined;
+    get buttonVariant() {
+        return this._buttonVariant;
     }
-
-    set tooltip(value) {
-        // Used instead of the tooltip in vertical variant
-        this.fieldLevelHelp = value;
-
-        if (this._tooltip) {
-            this._tooltip.value = value;
-        } else if (value) {
-            // Note that because the tooltip target is a child element it may not be present in the
-            // dom during initial rendering.
-            this._tooltip = new Tooltip(value, {
-                root: this,
-                target: () =>
-                    this.template.querySelector('[data-element-id="button"]')
-            });
-            this._tooltip.initialize();
-        }
+    set buttonVariant(value) {
+        this._buttonVariant = normalizeString(value, {
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
+        });
     }
 
     /**
@@ -304,6 +308,105 @@ export default class AvonniFilterMenu extends LightningElement {
     }
     set disabled(bool) {
         this._disabled = normalizeBoolean(bool);
+    }
+
+    /**
+     * Determines the alignment of the dropdown menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
+    @api
+    get dropdownAlignment() {
+        return this._dropdownAlignment;
+    }
+    set dropdownAlignment(value) {
+        this._dropdownAlignment = normalizeString(value, {
+            fallbackValue: MENU_ALIGNMENTS.default,
+            validValues: MENU_ALIGNMENTS.valid
+        });
+    }
+
+    /**
+     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default 7-items
+     */
+    @api
+    get dropdownLength() {
+        return this._dropdownLength;
+    }
+    set dropdownLength(value) {
+        this._dropdownLength = normalizeString(value, {
+            fallbackValue: MENU_LENGTHS.default,
+            validValues: MENU_LENGTHS.valid
+        });
+    }
+
+    /**
+     * If present, a nubbin is present on the dropdown menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get dropdownNubbin() {
+        return this._dropdownNubbin;
+    }
+    set dropdownNubbin(bool) {
+        this._dropdownNubbin = normalizeBoolean(bool);
+    }
+
+    /**
+     * Minimum width of the dropdown menu. Valid values include xx-small, x-small, small, medium and large. This attribute isn’t supported for the vertical variant.
+     *
+     * @type {string}
+     * @public
+     * @default small
+     */
+    @api
+    get dropdownWidth() {
+        return this._dropdownWidth;
+    }
+    set dropdownWidth(value) {
+        this._dropdownWidth = normalizeString(value, {
+            fallbackValue: MENU_WIDTHS.default,
+            validValues: MENU_WIDTHS.valid
+        });
+    }
+
+    /**
+     * If present, the apply and reset buttons are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideApplyResetButtons() {
+        return this._hideApplyResetButtons;
+    }
+    set hideApplyResetButtons(bool) {
+        this._hideApplyResetButtons = normalizeBoolean(bool);
+    }
+
+    /**
+     * If present, the selected items are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideSelectedItems() {
+        return this._hideSelectedItems;
+    }
+    set hideSelectedItems(bool) {
+        this._hideSelectedItems = normalizeBoolean(bool);
     }
 
     /**
@@ -403,57 +506,37 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Array of selected item's values.
-     *
-     * @type {String[]}
-     * @public
-     */
-    @api
-    get value() {
-        return this._value;
-    }
-    set value(val) {
-        const array = typeof val === 'string' ? [val] : normalizeArray(val);
-        this._value = JSON.parse(JSON.stringify(array));
-
-        this.computeValue();
-        this.computeSelectedItems();
-    }
-
-    /**
-     * The variant changes the look of the menu. Accepted variants include horizontal and vertical.
+     * Message displayed while the menu is in the loading state.
      *
      * @type {string}
      * @public
-     * @default horizontal
+     * @default Loading
      */
     @api
-    get variant() {
-        return this._variant;
+    get loadingStateAlternativeText() {
+        return this._loadingStateAlternativeText;
     }
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: MENU_VARIANTS.default,
-            validValues: MENU_VARIANTS.valid
-        });
+    set loadingStateAlternativeText(value) {
+        this._loadingStateAlternativeText =
+            typeof value === 'string' ? value.trim() : i18n.loading;
     }
 
     /**
-     * The button variant changes the look of the horizontal variant’s button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse. This attribute isn’t supported for the vertical variant.
+     * Label of the reset button.
      *
      * @type {string}
      * @public
-     * @default border
+     * @default Reset
      */
     @api
-    get buttonVariant() {
-        return this._buttonVariant;
+    get resetButtonLabel() {
+        return this._resetButtonLabel;
     }
-    set buttonVariant(value) {
-        this._buttonVariant = normalizeString(value, {
-            fallbackValue: BUTTON_VARIANTS.default,
-            validValues: BUTTON_VARIANTS.valid
-        });
+    set resetButtonLabel(value) {
+        this._resetButtonLabel =
+            value && typeof value === 'string'
+                ? value.trim()
+                : DEFAULT_RESET_BUTTON_LABEL;
     }
 
     /**
@@ -490,139 +573,75 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Label of the apply button.
+     * The tooltip is displayed on hover or focus on the button (horizontal variant), or on the help icon (vertical variant).
      *
      * @type {string}
      * @public
-     * @default Apply
      */
     @api
-    get applyButtonLabel() {
-        return this._applyButtonLabel;
+    get tooltip() {
+        return this._tooltip ? this._tooltip.value : undefined;
     }
-    set applyButtonLabel(value) {
-        this._applyButtonLabel =
-            value && typeof value === 'string'
-                ? value.trim()
-                : DEFAULT_APPLY_BUTTON_LABEL;
+
+    set tooltip(value) {
+        // Used instead of the tooltip in vertical variant
+        this.fieldLevelHelp = value;
+
+        if (this._tooltip) {
+            this._tooltip.value = value;
+        } else if (value) {
+            // Note that because the tooltip target is a child element it may not be present in the
+            // dom during initial rendering.
+            this._tooltip = new Tooltip(value, {
+                root: this,
+                target: () =>
+                    this.template.querySelector('[data-element-id="button"]')
+            });
+            this._tooltip.initialize();
+        }
     }
 
     /**
-     * Label of the reset button.
+     * Array of selected item's values.
+     *
+     * @type {String[]}
+     * @public
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+    set value(val) {
+        const array = typeof val === 'string' ? [val] : normalizeArray(val);
+        this._value = JSON.parse(JSON.stringify(array));
+
+        this.computeValue();
+        this.computeSelectedItems();
+    }
+
+    /**
+     * The variant changes the look of the menu. Accepted variants include horizontal and vertical.
      *
      * @type {string}
      * @public
-     * @default Reset
+     * @default horizontal
      */
     @api
-    get resetButtonLabel() {
-        return this._resetButtonLabel;
+    get variant() {
+        return this._variant;
     }
-    set resetButtonLabel(value) {
-        this._resetButtonLabel =
-            value && typeof value === 'string'
-                ? value.trim()
-                : DEFAULT_RESET_BUTTON_LABEL;
-    }
-
-    /**
-     * If present, the apply and reset buttons are hidden.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideApplyResetButtons() {
-        return this._hideApplyResetButtons;
-    }
-    set hideApplyResetButtons(bool) {
-        this._hideApplyResetButtons = normalizeBoolean(bool);
-    }
-
-    /**
-     * Determines the alignment of the dropdown menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space. This attribute isn’t supported for the vertical variant.
-     *
-     * @type {string}
-     * @public
-     * @default left
-     */
-    @api
-    get dropdownAlignment() {
-        return this._dropdownAlignment;
-    }
-    set dropdownAlignment(value) {
-        this._dropdownAlignment = normalizeString(value, {
-            fallbackValue: MENU_ALIGNMENTS.default,
-            validValues: MENU_ALIGNMENTS.valid
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: MENU_VARIANTS.default,
+            validValues: MENU_VARIANTS.valid
         });
     }
 
-    /**
-     * Minimum width of the dropdown menu. Valid values include xx-small, x-small, small, medium and large. This attribute isn’t supported for the vertical variant.
-     *
-     * @type {string}
-     * @public
-     * @default small
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get dropdownWidth() {
-        return this._dropdownWidth;
-    }
-    set dropdownWidth(value) {
-        this._dropdownWidth = normalizeString(value, {
-            fallbackValue: MENU_WIDTHS.default,
-            validValues: MENU_WIDTHS.valid
-        });
-    }
-
-    /**
-     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items. This attribute isn’t supported for the vertical variant.
-     *
-     * @type {string}
-     * @public
-     * @default 7-items
-     */
-    @api
-    get dropdownLength() {
-        return this._dropdownLength;
-    }
-    set dropdownLength(value) {
-        this._dropdownLength = normalizeString(value, {
-            fallbackValue: MENU_LENGTHS.default,
-            validValues: MENU_LENGTHS.valid
-        });
-    }
-
-    /**
-     * If present, a nubbin is present on the dropdown menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment. This attribute isn’t supported for the vertical variant.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get dropdownNubbin() {
-        return this._dropdownNubbin;
-    }
-    set dropdownNubbin(bool) {
-        this._dropdownNubbin = normalizeBoolean(bool);
-    }
-
-    /**
-     * If present, the selected items are hidden.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideSelectedItems() {
-        return this._hideSelectedItems;
-    }
-    set hideSelectedItems(bool) {
-        this._hideSelectedItems = normalizeBoolean(bool);
-    }
 
     /**
      * Computed checkbox Items.
@@ -778,6 +797,12 @@ export default class AvonniFilterMenu extends LightningElement {
         return !this.hideSelectedItems && this.selectedItems.length > 0;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Set the focus on the menu.
      *
@@ -816,6 +841,12 @@ export default class AvonniFilterMenu extends LightningElement {
         this.computeValue();
         this.computeSelectedItems();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Compute Tab index.
@@ -996,12 +1027,12 @@ export default class AvonniFilterMenu extends LightningElement {
                 this.startPositioning();
 
                 /**
-                * The event fired when the dropdown is opened.
-                *
-                * @event
-                * @name open
-                * @public
-                */
+                 * The event fired when the dropdown is opened.
+                 *
+                 * @event
+                 * @name open
+                 * @public
+                 */
                 this.dispatchEvent(new CustomEvent('open'));
 
                 // update the bounding rect when the menu is toggled
@@ -1012,12 +1043,12 @@ export default class AvonniFilterMenu extends LightningElement {
                 this.stopPositioning();
 
                 /**
-                * The event fired when the dropdown is closed.
-                *
-                * @event
-                * @name close
-                * @public
-                */
+                 * The event fired when the dropdown is closed.
+                 *
+                 * @event
+                 * @name close
+                 * @public
+                 */
                 this.dispatchEvent(new CustomEvent('close'));
             }
 
@@ -1299,7 +1330,9 @@ export default class AvonniFilterMenu extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('apply', {
                 detail: {
-                    value: this.value
+                    value: this.isMultiSelect
+                        ? this.value
+                        : this.value[0] || null
                 }
             })
         );
@@ -1323,7 +1356,9 @@ export default class AvonniFilterMenu extends LightningElement {
             new CustomEvent('select', {
                 cancelable: true,
                 detail: {
-                    value: this.value
+                    value: this.isMultiSelect
+                        ? this.value
+                        : this.value[0] || null
                 }
             })
         );

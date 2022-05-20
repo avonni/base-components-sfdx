@@ -66,6 +66,12 @@ export default class AvonniAlert extends LightningElement {
     _variant = ALERT_VARIANTS.default;
     _isDismissible = false;
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * The variant change the apparence of the alert. Valid values include base, error, offline and warning.
      * @type {string}
@@ -98,6 +104,12 @@ export default class AvonniAlert extends LightningElement {
         this._isDismissible = normalizeBoolean(value);
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Wrapper div class, depending on the variant value.
      * @type {string}
@@ -107,6 +119,12 @@ export default class AvonniAlert extends LightningElement {
             .add(`avonni-alert_${this._variant}`)
             .toString();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Hide the alert and execute the close action.

@@ -34,6 +34,7 @@ import { DateTime, Interval } from 'c/luxon';
 
 /**
  * Convert a timestamp or a date object into a Luxon DateTime object.
+ *
  * @param {(number | Date)} date Timestamp or date object to convert.
  * @returns {(DateTime | false)} DateTime object or false.
  */
@@ -43,6 +44,8 @@ const dateTimeObjectFrom = (date) => {
         time = date.getTime();
     } else if (!isNaN(new Date(date).getTime())) {
         time = new Date(date).getTime();
+    } else if (date instanceof DateTime) {
+        return new DateTime(date);
     }
 
     if (time) return DateTime.fromMillis(time);
@@ -51,6 +54,7 @@ const dateTimeObjectFrom = (date) => {
 
 /**
  * Check if a time is included in a time frame.
+ *
  * @param {DateTime} date DateTime object.
  * @param {string} timeFrame The time frame of reference, in the format '00:00-00:00'.
  * @returns {boolean} true or false.
@@ -85,6 +89,7 @@ const isInTimeFrame = (date, timeFrame) => {
 
 /**
  * Add unit * span to the date.
+ *
  * @param {DateTime} date The date we want to add time to.
  * @param {string} unit The time unit (minute, hour, day, week, month or year).
  * @param {number} span The number of unit to add.
@@ -304,6 +309,20 @@ const containsAllowedDateTimes = (
     return true;
 };
 
+/**
+ * Remove unit * span from the date.
+ *
+ * @param {DateTime} date The date we want to remove time from.
+ * @param {string} unit The time unit (minute, hour, day, week, month or year).
+ * @param {number} span The number of unit to remove.
+ * @returns {DateTime} DateTime object with the removed time.
+ */
+const removeFromDate = (date, unit, span) => {
+    const options = {};
+    options[unit] = -span;
+    return date.plus(options);
+};
+
 export {
     addToDate,
     containsAllowedDateTimes,
@@ -311,5 +330,6 @@ export {
     nextAllowedDay,
     nextAllowedMonth,
     nextAllowedTime,
-    numberOfUnitsBetweenDates
+    numberOfUnitsBetweenDates,
+    removeFromDate
 };

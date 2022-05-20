@@ -34,26 +34,32 @@
 
 <template>
     <div class={sectionClass}>
-        <h3
-            if:true={showHeader}
-            class={headerClass}
-            data-element-id="h3"
-        >
+        <h3 if:true={showHeader} class={headerClass} data-element-id="h3">
             <template if:true={collapsible}>
-                <button class={titleButtonClass} onclick={toggleSection}>
+                <button
+                    class={titleButtonClass}
+                    type="button"
+                    onclick={toggleSection}
+                >
                     <template if:false={closed}>
                         <lightning-icon
                             icon-name="utility:chevrondown"
-                            size="xx-small"
-                            class="slds-button__icon slds-button__icon_left avonni-expandable-section__opened-icon"
+                            size="x-small"
+                            class="
+                                slds-button__icon slds-button__icon_left
+                                avonni-expandable-section__opened-icon
+                            "
                             data-element-id="lightning-icon-opened"
                         ></lightning-icon>
                     </template>
                     <template if:true={closed}>
                         <lightning-icon
                             icon-name="utility:chevronright"
-                            size="xx-small"
-                            class="slds-button__icon slds-button__icon_left avonni-expandable-section__closed-icon"
+                            size="x-small"
+                            class="
+                                slds-button__icon slds-button__icon_left
+                                avonni-expandable-section__closed-icon
+                            "
                             data-element-id="lightning-icon-closed"
                         ></lightning-icon>
                     </template>

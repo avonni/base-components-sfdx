@@ -41,11 +41,11 @@ import { normalizeBoolean } from 'c/utilsPrivate';
 export default class AvonniSplitterPane extends LightningElement {
     _collapsed = false;
     _collapsedSize;
-    _scrollable = false;
-    _resizable = false;
     _collapsible = false;
     _max;
     _min;
+    _resizable = false;
+    _scrollable = false;
     _size;
 
     startX;
@@ -92,6 +92,12 @@ export default class AvonniSplitterPane extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * If present, the pane is collapsed by default.
      *
@@ -126,23 +132,6 @@ export default class AvonniSplitterPane extends LightningElement {
     }
 
     /**
-     * If present, the pane is scrollable.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get scrollable() {
-        return this._scrollable;
-    }
-
-    set scrollable(value) {
-        this._scrollable = normalizeBoolean(value);
-        this.setAttribute('scrollable', this._scrollable);
-    }
-
-    /**
      * If present, the pane is collapsible.
      *
      * @type {boolean}
@@ -157,23 +146,6 @@ export default class AvonniSplitterPane extends LightningElement {
     set collapsible(value) {
         this._collapsible = normalizeBoolean(value);
         this.setAttribute('collapsible', this._collapsible);
-    }
-
-    /**
-     * If present, the user is allowed to resize the pane.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get resizable() {
-        return this._resizable;
-    }
-
-    set resizable(value) {
-        this._resizable = normalizeBoolean(value);
-        this.setAttribute('resizable', this._resizable);
     }
 
     /**
@@ -206,6 +178,40 @@ export default class AvonniSplitterPane extends LightningElement {
     set min(value) {
         this._min = value;
         this.setAttribute('min', this._min);
+    }
+
+    /**
+     * If present, the user is allowed to resize the pane.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get resizable() {
+        return this._resizable;
+    }
+
+    set resizable(value) {
+        this._resizable = normalizeBoolean(value);
+        this.setAttribute('resizable', this._resizable);
+    }
+
+    /**
+     * If present, the pane is scrollable.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get scrollable() {
+        return this._scrollable;
+    }
+
+    set scrollable(value) {
+        this._scrollable = normalizeBoolean(value);
+        this.setAttribute('scrollable', this._scrollable);
     }
 
     /**

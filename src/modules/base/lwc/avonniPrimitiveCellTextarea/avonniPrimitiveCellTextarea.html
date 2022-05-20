@@ -49,6 +49,7 @@
             min-length={minLength}
             name={name}
             placeholder={placeholder}
+            style="position: absolute; top: 0"
         ></c-avonni-primitive-datatable-iedit-panel-custom>
     </template>
     <template if:false={visible}>
@@ -58,7 +59,7 @@
                 slds-grid_align-spread slds-grid_vertical-align-center
             "
         >
-            <lightning-textarea
+            <lightning-input
                 value={value}
                 disabled={disabled}
                 label={label}
@@ -66,10 +67,9 @@
                 min-length={minLength}
                 name={name}
                 placeholder={placeholder}
-                readonly={readOnly}
+                readonly
                 variant="label-hidden"
-            >
-            </lightning-textarea>
+            ></lightning-input>
             <template if:true={showEditButton}>
                 <c-avonni-primitive-cell-editable-button
                     onclick={handleEditButtonClick}

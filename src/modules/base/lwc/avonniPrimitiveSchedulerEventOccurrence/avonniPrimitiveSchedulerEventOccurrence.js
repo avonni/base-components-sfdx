@@ -153,6 +153,11 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set columnDuration(value) {
         this._columnDuration = !isNaN(Number(value)) ? Number(value) : 0;
+
+        if (this._connected) {
+            this.updateWidth();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -168,6 +173,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set columns(value) {
         this._columns = normalizeArray(value);
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateWidth();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -183,6 +194,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set columnWidth(value) {
         this._columnWidth = !isNaN(Number(value)) ? Number(value) : 0;
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateWidth();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -215,6 +232,10 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
+
+        if (this._connected) {
+            this.updateHeight();
+        }
     }
 
     /**
@@ -248,6 +269,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set from(value) {
         this._from =
             value instanceof DateTime ? value : dateTimeObjectFrom(value);
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateWidth();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -357,7 +384,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set scrollLeftOffset(value) {
         this._scrollLeftOffset = !isNaN(Number(value)) ? Number(value) : 0;
-        this.updateStickyLabels();
+        if (this._connected) this.updateStickyLabels();
     }
 
     /**
@@ -390,6 +417,11 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     set to(value) {
         this._to =
             value instanceof DateTime ? value : dateTimeObjectFrom(value);
+
+        if (this._connected) {
+            this.updateWidth();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -405,7 +437,11 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set x(value) {
         this._x = parseInt(value, 10);
-        this.updateHostTranslate();
+
+        if (this._connected) {
+            this.updateHostTranslate();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -421,7 +457,8 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
     set y(value) {
         this._y = parseInt(value, 10);
-        this.updateHostTranslate();
+
+        if (this._connected) this.updateHostTranslate();
     }
 
     /**
@@ -840,6 +877,10 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         }
 
         this.computedLabels = labels;
+
+        requestAnimationFrame(() => {
+            this.updateStickyLabels();
+        });
     }
 
     /**

@@ -51,18 +51,7 @@ export default class AvonniPrimitiveCellTextarea extends LightningElement {
         this.template.addEventListener('ieditfinishedcustom', () => {
             this.toggleInlineEdit();
         });
-
-        this.dispatchEvent(
-            new CustomEvent('getdatatablestateandcolumns', {
-                detail: {
-                    callbacks: {
-                        getStateAndColumns: this.getStateAndColumns.bind(this)
-                    }
-                },
-                bubbles: true,
-                composed: true
-            })
-        );
+        this.getStateAndColumnsEvent();
     }
 
     @api
@@ -89,6 +78,20 @@ export default class AvonniPrimitiveCellTextarea extends LightningElement {
     toggleInlineEdit() {
         this.visible = !this.visible;
         this.readOnly = !this.readOnly;
+    }
+
+    getStateAndColumnsEvent() {
+        this.dispatchEvent(
+            new CustomEvent('getdatatablestateandcolumns', {
+                detail: {
+                    callbacks: {
+                        getStateAndColumns: this.getStateAndColumns.bind(this)
+                    }
+                },
+                bubbles: true,
+                composed: true
+            })
+        );
     }
 
     // Gets the state and columns information from the parent component with the dispatch event in the renderedCallback.
@@ -119,6 +122,7 @@ export default class AvonniPrimitiveCellTextarea extends LightningElement {
                 }
             })
         );
+        this.getStateAndColumnsEvent();
         this.toggleInlineEdit();
     }
 }

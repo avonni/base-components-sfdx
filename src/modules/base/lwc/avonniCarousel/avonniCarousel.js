@@ -168,6 +168,50 @@ export default class AvonniCarousel extends LightningElement {
         this._initialRender = true;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Position of the actions. Valid values include top-left, top-right,  bottom-left, bottom-right and bottom-center.
+     *
+     * @type {string}
+     * @public
+     * @default bottom-center
+     */
+    @api
+    get actionsPosition() {
+        return this._actionsPosition;
+    }
+
+    set actionsPosition(position) {
+        this._actionsPosition = normalizeString(position, {
+            fallbackValue: ACTIONS_POSITIONS.default,
+            validValues: ACTIONS_POSITIONS.valid
+        });
+    }
+
+    /**
+     * Changes the appearance of the actions. Valid values include bare, border and menu.
+     *
+     * @type {string}
+     * @public
+     * @default border
+     */
+    @api
+    get actionsVariant() {
+        return this._actionsVariant;
+    }
+
+    set actionsVariant(variant) {
+        this._actionsVariant = normalizeString(variant, {
+            fallbackValue: ACTIONS_VARIANTS.default,
+            validValues: ACTIONS_VARIANTS.valid
+        });
+    }
+
     /**
      * Description of the carousel items for screen-readers.
      *
@@ -192,6 +236,41 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     /**
+     * If present, the progress indicator is hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideIndicator() {
+        return this._hideIndicator;
+    }
+
+    set hideIndicator(value) {
+        this._hideIndicator = normalizeBoolean(value);
+    }
+
+    /**
+     * Changes the appearance of the progress indicators. Valid values are base or shaded.
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
+    @api
+    get indicatorVariant() {
+        return this._indicatorVariant;
+    }
+
+    set indicatorVariant(variant) {
+        this._indicatorVariant = normalizeString(variant, {
+            fallbackValue: INDICATOR_VARIANTS.default,
+            validValues: INDICATOR_VARIANTS.valid
+        });
+    }
+
+    /**
      * Array of item objects to display in the carousel.
      *
      * @type {object[]}
@@ -209,7 +288,7 @@ export default class AvonniCarousel extends LightningElement {
         this._carouselItems = [];
         allItems.forEach((item) => {
             this._carouselItems.push({
-                key: item.id,
+                name: item.name,
                 title: item.title,
                 description: item.description,
                 imageAssistiveText: item.imageAssistiveText || item.title,
@@ -250,78 +329,11 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
-    /**
-     * Changes the appearance of the progress indicators. Valid values are base or shaded.
-     *
-     * @type {string}
-     * @public
-     * @default base
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get indicatorVariant() {
-        return this._indicatorVariant;
-    }
-
-    set indicatorVariant(variant) {
-        this._indicatorVariant = normalizeString(variant, {
-            fallbackValue: INDICATOR_VARIANTS.default,
-            validValues: INDICATOR_VARIANTS.valid
-        });
-    }
-
-    /**
-     * If present, the progress indicator is hidden.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideIndicator() {
-        return this._hideIndicator;
-    }
-
-    set hideIndicator(value) {
-        this._hideIndicator = normalizeBoolean(value);
-    }
-
-    /**
-     * Changes the appearance of the actions. Valid values include bare, border and menu.
-     *
-     * @type {string}
-     * @public
-     * @default border
-     */
-    @api
-    get actionsVariant() {
-        return this._actionsVariant;
-    }
-
-    set actionsVariant(variant) {
-        this._actionsVariant = normalizeString(variant, {
-            fallbackValue: ACTIONS_VARIANTS.default,
-            validValues: ACTIONS_VARIANTS.valid
-        });
-    }
-
-    /**
-     * Position of the actions. Valid values include top-left, top-right,  bottom-left, bottom-right and bottom-center.
-     *
-     * @type {string}
-     * @public
-     * @default bottom-center
-     */
-    @api
-    get actionsPosition() {
-        return this._actionsPosition;
-    }
-
-    set actionsPosition(position) {
-        this._actionsPosition = normalizeString(position, {
-            fallbackValue: ACTIONS_POSITIONS.default,
-            validValues: ACTIONS_POSITIONS.valid
-        });
-    }
 
     /**
      * Verify if actions are present.
@@ -407,6 +419,112 @@ export default class AvonniCarousel extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Pause the slide cycle.
+     *
+     * @public
+     */
+    @api
+    pause() {
+        clearTimeout(this.autoScrollTimeOut);
+        this.autoScrollOn = false;
+        this.autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
+    }
+
+    /**
+     * Play the slide cycle.
+     *
+     * @public
+     */
+    @api
+    play() {
+        const scrollDuration = parseInt(this.scrollDuration, 10) * 1000;
+        const carouselPanelsLength = this.panelItems.length;
+
+        if (
+            this.activeIndexPanel === carouselPanelsLength - 1 &&
+            (this.disableAutoRefresh || !this.isInfinite)
+        ) {
+            this.pause();
+            return;
+        }
+
+        this.pause();
+        this.autoScrollTimeOut = setTimeout(
+            this.startAutoScroll.bind(this),
+            scrollDuration
+        );
+
+        this.autoScrollOn = true;
+        this.autoScrollIcon = DEFAULT_AUTOCROLL_PAUSE_ICON;
+    }
+
+    /**
+     * Go to first slide.
+     *
+     * @public
+     */
+    @api
+    first() {
+        this.selectNewPanel(0);
+    }
+
+    /**
+     * Go to last slide.
+     *
+     * @public
+     */
+    @api
+    last() {
+        this.selectNewPanel(this.paginationItems.length - 1);
+    }
+
+    /**
+     * Go to previous slide.
+     *
+     * @public
+     */
+    @api
+    previous() {
+        this.pause();
+        this.unselectCurrentPanel();
+        if (this.activeIndexPanel > 0) {
+            this.activeIndexPanel -= 1;
+        } else {
+            this.activeIndexPanel = this.paginationItems.length - 1;
+        }
+        this.selectNewPanel(this.activeIndexPanel);
+    }
+
+    /**
+     * Go to next slide.
+     *
+     * @public
+     */
+    @api
+    next() {
+        this.pause();
+        this.unselectCurrentPanel();
+        if (this.activeIndexPanel < this.paginationItems.length - 1) {
+            this.activeIndexPanel += 1;
+        } else {
+            this.activeIndexPanel = 0;
+        }
+        this.selectNewPanel(this.activeIndexPanel);
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Initialize current panel method.
      *
@@ -444,51 +562,11 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     /**
-     * Play the slide cycle.
-     *
-     * @public
-     */
-    @api
-    play() {
-        const scrollDuration = parseInt(this.scrollDuration, 10) * 1000;
-        const carouselPanelsLength = this.panelItems.length;
-
-        if (
-            this.activeIndexPanel === carouselPanelsLength - 1 &&
-            (this.disableAutoRefresh || !this.isInfinite)
-        ) {
-            this.pause();
-            return;
-        }
-
-        this.pause();
-        this.autoScrollTimeOut = setTimeout(
-            this.startAutoScroll.bind(this),
-            scrollDuration
-        );
-
-        this.autoScrollOn = true;
-        this.autoScrollIcon = DEFAULT_AUTOCROLL_PAUSE_ICON;
-    }
-
-    /**
      * Call the auto scroll.
      */
     startAutoScroll() {
         this.next();
         this.play();
-    }
-
-    /**
-     * Pause the slide cycle.
-     *
-     * @public
-     */
-    @api
-    pause() {
-        clearTimeout(this.autoScrollTimeOut);
-        this.autoScrollOn = false;
-        this.autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
     }
 
     /**
@@ -656,60 +734,6 @@ export default class AvonniCarousel extends LightningElement {
         } else {
             activePaginationItem.className = INDICATOR_ACTION;
         }
-    }
-
-    /**
-     * Go to first slide.
-     *
-     * @public
-     */
-    @api
-    first() {
-        this.selectNewPanel(0);
-    }
-
-    /**
-     * Go to last slide.
-     *
-     * @public
-     */
-    @api
-    last() {
-        this.selectNewPanel(this.paginationItems.length - 1);
-    }
-
-    /**
-     * Go to previous slide.
-     *
-     * @public
-     */
-    @api
-    previous() {
-        this.pause();
-        this.unselectCurrentPanel();
-        if (this.activeIndexPanel > 0) {
-            this.activeIndexPanel -= 1;
-        } else {
-            this.activeIndexPanel = this.paginationItems.length - 1;
-        }
-        this.selectNewPanel(this.activeIndexPanel);
-    }
-
-    /**
-     * Go to next slide.
-     *
-     * @public
-     */
-    @api
-    next() {
-        this.pause();
-        this.unselectCurrentPanel();
-        if (this.activeIndexPanel < this.paginationItems.length - 1) {
-            this.activeIndexPanel += 1;
-        } else {
-            this.activeIndexPanel = 0;
-        }
-        this.selectNewPanel(this.activeIndexPanel);
     }
 
     /**

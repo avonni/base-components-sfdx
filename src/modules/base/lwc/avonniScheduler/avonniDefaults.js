@@ -35,9 +35,15 @@ const DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK = [0, 1, 2, 3, 4, 5, 6];
 const DEFAULT_AVAILABLE_MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const DEFAULT_START_DATE = new Date();
 const DEFAULT_TIME_SPAN = {
-    unit: 'hour',
-    span: 12
+    unit: 'day',
+    span: 1
 };
+const DEFAULT_TOOLBAR_TIME_SPANS = [
+    { unit: 'day', span: 1, label: 'Day', headers: 'hourAndDay' },
+    { unit: 'week', span: 1, label: 'Week', headers: 'hourAndDay' },
+    { unit: 'month', span: 1, label: 'Month', headers: 'dayAndMonth' },
+    { unit: 'year', span: 1, label: 'Year', headers: 'dayAndMonth' }
+];
 const DEFAULT_CONTEXT_MENU_EVENT_ACTIONS = [
     {
         name: 'edit',
@@ -118,6 +124,7 @@ const HEADERS = {
         'hourAndDay',
         'hourDayAndWeek',
         'dayAndWeek',
+        'dayAndMonth',
         'dayLetterAndWeek',
         'dayWeekAndMonth',
         'weekAndMonth',
@@ -128,203 +135,179 @@ const HEADERS = {
     ],
     default: 'hourAndDay'
 };
-const PRESET_HEADERS = [
-    {
-        name: 'minuteAndHour',
-        headers: [
-            {
-                unit: 'minute',
-                span: 30,
-                label: 'mm'
-            },
-            {
-                unit: 'hour',
-                span: 1,
-                label: 'h a'
-            }
-        ]
-    },
-    {
-        name: 'minuteHourAndDay',
-        headers: [
-            {
-                unit: 'minute',
-                span: 30,
-                label: 'mm'
-            },
-            {
-                unit: 'hour',
-                span: 1,
-                label: 'h a'
-            },
-            {
-                unit: 'day',
-                span: 1,
-                label: 'ccc, LLL d'
-            }
-        ]
-    },
-    {
-        name: 'hourAndDay',
-        headers: [
-            {
-                unit: 'hour',
-                span: 1,
-                label: 'h a'
-            },
-            {
-                unit: 'day',
-                span: 1,
-                label: 'ccc, LLL d'
-            }
-        ]
-    },
-    {
-        name: 'hourDayAndWeek',
-        headers: [
-            {
-                unit: 'hour',
-                span: 1,
-                label: 'h a'
-            },
-            {
-                unit: 'day',
-                span: 1,
-                label: 'ccc, LLL d'
-            },
-            {
-                unit: 'week',
-                span: 1,
-                label: "'w.'W 'of' yyyy"
-            }
-        ]
-    },
-    {
-        name: 'dayAndWeek',
-        headers: [
-            {
-                unit: 'day',
-                span: 1,
-                label: 'ccc, LLL d'
-            },
-            {
-                unit: 'week',
-                span: 1,
-                label: "'w.'W 'of' yyyy"
-            }
-        ]
-    },
-    {
-        name: 'dayLetterAndWeek',
-        headers: [
-            {
-                unit: 'day',
-                span: 1,
-                label: 'ccccc'
-            },
-            {
-                unit: 'week',
-                span: 1,
-                label: "'w.'W 'of' yyyy"
-            }
-        ]
-    },
-    {
-        name: 'dayWeekAndMonth',
-        headers: [
-            {
-                unit: 'day',
-                span: 1,
-                label: 'dd'
-            },
-            {
-                unit: 'week',
-                span: 1,
-                label: "'w.'W 'of' yyyy"
-            },
-            {
-                unit: 'month',
-                span: 1,
-                label: 'LLLL yyyy'
-            }
-        ]
-    },
-    {
-        name: 'weekAndMonth',
-        headers: [
-            {
-                unit: 'week',
-                span: 1,
-                label: "'w.'W 'of' yyyy"
-            },
-            {
-                unit: 'month',
-                span: 1,
-                label: 'LLLL yyyy'
-            }
-        ]
-    },
-    {
-        name: 'weekMonthAndYear',
-        headers: [
-            {
-                unit: 'week',
-                span: 1,
-                label: "'w.'W 'of' yyyy"
-            },
-            {
-                unit: 'month',
-                span: 1,
-                label: 'LLLL'
-            },
-            {
-                unit: 'year',
-                span: 1,
-                label: 'yyyy'
-            }
-        ]
-    },
-    {
-        name: 'monthAndYear',
-        headers: [
-            {
-                unit: 'month',
-                span: 1,
-                label: 'LLLL'
-            },
-            {
-                unit: 'year',
-                span: 1,
-                label: 'yyyy'
-            }
-        ]
-    },
-    {
-        name: 'quartersAndYear',
-        headers: [
-            {
-                unit: 'month',
-                span: 4,
-                label: 'LLL'
-            },
-            {
-                unit: 'year',
-                span: 1,
-                label: 'yyyy'
-            }
-        ]
-    },
-    {
-        name: 'fiveYears',
-        headers: [
-            {
-                unit: 'year',
-                span: 5,
-                label: 'yyyy'
-            }
-        ]
-    }
-];
+const PRESET_HEADERS = {
+    minuteAndHour: [
+        {
+            unit: 'minute',
+            span: 30,
+            label: 'mm'
+        },
+        {
+            unit: 'hour',
+            span: 1,
+            label: 'h a'
+        }
+    ],
+    minuteHourAndDay: [
+        {
+            unit: 'minute',
+            span: 30,
+            label: 'mm'
+        },
+        {
+            unit: 'hour',
+            span: 1,
+            label: 'h a'
+        },
+        {
+            unit: 'day',
+            span: 1,
+            label: 'ccc, LLL d'
+        }
+    ],
+    hourAndDay: [
+        {
+            unit: 'hour',
+            span: 1,
+            label: 'h a'
+        },
+        {
+            unit: 'day',
+            span: 1,
+            label: 'ccc, LLL d'
+        }
+    ],
+    hourDayAndWeek: [
+        {
+            unit: 'hour',
+            span: 1,
+            label: 'h a'
+        },
+        {
+            unit: 'day',
+            span: 1,
+            label: 'ccc, LLL d'
+        },
+        {
+            unit: 'week',
+            span: 1,
+            label: "'w.'W 'of' yyyy"
+        }
+    ],
+    dayAndMonth: [
+        {
+            unit: 'day',
+            span: 1,
+            label: 'dd'
+        },
+        {
+            unit: 'month',
+            span: 1,
+            label: 'LLLL'
+        }
+    ],
+    dayAndWeek: [
+        {
+            unit: 'day',
+            span: 1,
+            label: 'ccc, LLL d'
+        },
+        {
+            unit: 'week',
+            span: 1,
+            label: "'w.'W 'of' yyyy"
+        }
+    ],
+    dayLetterAndWeek: [
+        {
+            unit: 'day',
+            span: 1,
+            label: 'ccccc'
+        },
+        {
+            unit: 'week',
+            span: 1,
+            label: "'w.'W 'of' yyyy"
+        }
+    ],
+    dayWeekAndMonth: [
+        {
+            unit: 'day',
+            span: 1,
+            label: 'dd'
+        },
+        {
+            unit: 'week',
+            span: 1,
+            label: "'w.'W 'of' yyyy"
+        },
+        {
+            unit: 'month',
+            span: 1,
+            label: 'LLLL yyyy'
+        }
+    ],
+    weekAndMonth: [
+        {
+            unit: 'week',
+            span: 1,
+            label: "'w.'W 'of' yyyy"
+        },
+        {
+            unit: 'month',
+            span: 1,
+            label: 'LLLL yyyy'
+        }
+    ],
+    weekMonthAndYear: [
+        {
+            unit: 'week',
+            span: 1,
+            label: "'w.'W 'of' yyyy"
+        },
+        {
+            unit: 'month',
+            span: 1,
+            label: 'LLLL'
+        },
+        {
+            unit: 'year',
+            span: 1,
+            label: 'yyyy'
+        }
+    ],
+    monthAndYear: [
+        {
+            unit: 'month',
+            span: 1,
+            label: 'LLLL'
+        },
+        {
+            unit: 'year',
+            span: 1,
+            label: 'yyyy'
+        }
+    ],
+    quartersAndYear: [
+        {
+            unit: 'month',
+            span: 4,
+            label: 'LLL'
+        },
+        {
+            unit: 'year',
+            span: 1,
+            label: 'yyyy'
+        }
+    ],
+    fiveYears: [
+        {
+            unit: 'year',
+            span: 5,
+            label: 'yyyy'
+        }
+    ]
+};
 
 const PALETTES = {
     aurora: ['#3296ed', '#77b9f2', '#9d53f2', '#c398f5', '#26aba4', '#4ed4cd'],
@@ -407,6 +390,7 @@ export {
     DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT,
     DEFAULT_START_DATE,
     DEFAULT_TIME_SPAN,
+    DEFAULT_TOOLBAR_TIME_SPANS,
     EDIT_MODES,
     EVENTS_THEMES,
     EVENTS_PALETTES,

@@ -76,13 +76,6 @@ export default class AvonniButtonIconDialog extends LightningElement {
      */
     @api alternativeText;
     /**
-     * Text to display when the user mouses over or focuses on the button. The tooltip is auto-positioned relative to the button and screen space.
-     *
-     * @public
-     * @type {string}
-     */
-    @api tooltip;
-    /**
      * The class to be applied to the contained icon element ( e.g. "slds-icon-text-success").
      *
      * @public
@@ -96,16 +89,45 @@ export default class AvonniButtonIconDialog extends LightningElement {
      * @type {string}
      */
     @api iconName;
+    /**
+     * Text to display when the user mouses over or focuses on the button. The tooltip is auto-positioned relative to the button and screen space.
+     *
+     * @public
+     * @type {string}
+     */
+    @api tooltip;
 
     _disabled = false;
     _size = BUTTON_SIZES.default;
     _variant = BUTTON_VARIANTS.default;
+
     _dialogSlot;
 
     renderedCallback() {
         this._dialogSlot = this.template.querySelector(
             '[data-element-id="slot"]'
         );
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * If present, the modal box can't be opened by users.
+     *
+     * @public
+     * @type {boolean}
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
     }
 
     /**
@@ -153,20 +175,11 @@ export default class AvonniButtonIconDialog extends LightningElement {
         });
     }
 
-    /**
-     * If present, the modal box can't be opened by users.
-     *
-     * @public
-     * @type {boolean}
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
      */
-    @api
-    get disabled() {
-        return this._disabled;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
-    }
 
     /**
      * Open the modal box.

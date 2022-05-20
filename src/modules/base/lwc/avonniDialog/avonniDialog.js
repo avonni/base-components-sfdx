@@ -54,23 +54,24 @@ export default class AvonniDialog extends LightningElement {
      */
     @api dialogName;
     /**
-     * The title can include text, and is displayed in the header. To include additional markup or another component, use the title slot.
-     *
-     * @type {string}
-     * @public
-     */
-    @api title;
-    /**
      * Message displayed while the modal box is in the loading state.
      *
      * @type {string}
      * @public
      */
     @api loadingStateAlternativeText;
+    /**
+     * The title can include text, and is displayed in the header. To include additional markup or another component, use the title slot.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
 
     _contentClicked = false;
-    _size = DIALOG_SIZES.default;
     _isLoading;
+    _size = DIALOG_SIZES.default;
+
     _showDialog = false;
     showFooter = true;
     showHeader = true;
@@ -113,24 +114,11 @@ export default class AvonniDialog extends LightningElement {
         return this.template.querySelector('slot[name=footer]');
     }
 
-    /**
-     * Width of the modal. Accepted sizes include small, medium, large.
-     *
-     * @type {string}
-     * @public
-     * @default medium
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get size() {
-        return this._size;
-    }
-
-    set size(size) {
-        this._size = normalizeString(size, {
-            fallbackValue: DIALOG_SIZES.default,
-            validValues: DIALOG_SIZES.valid
-        });
-    }
 
     /**
      * If present, the modal box is in a loading state and shows a spinner.
@@ -165,6 +153,31 @@ export default class AvonniDialog extends LightningElement {
     }
 
     /**
+     * Width of the modal. Accepted sizes include small, medium, large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(size) {
+        this._size = normalizeString(size, {
+            fallbackValue: DIALOG_SIZES.default,
+            validValues: DIALOG_SIZES.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
      * Computed Header class styling.
      *
      * @type {string}
@@ -196,6 +209,12 @@ export default class AvonniDialog extends LightningElement {
     get hasStringTitle() {
         return !!this.title;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Open the modal box.
@@ -234,6 +253,12 @@ export default class AvonniDialog extends LightningElement {
         const button = this.template.querySelector('.slds-modal__close');
         if (button) button.focus();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Handle a click on any part of the dialog.

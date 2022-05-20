@@ -76,13 +76,19 @@ const DEFAULT_DAY_CLASS = 'avonni-date-time-picker__day';
  */
 export default class AvonniDateTimePicker extends LightningElement {
     /**
+     * Array of disabled dates. The dates must be Date objects or valid ISO8601 strings.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api disabledDateTimes = [];
+    /**
      * Help text detailing the purpose and function of the input.
      *
      * @type {string}
      * @public
      */
     @api fieldLevelHelp;
-
     /**
      * Text label for the input.
      *
@@ -91,7 +97,6 @@ export default class AvonniDateTimePicker extends LightningElement {
      * @public
      */
     @api label;
-
     /**
      * Error message to be displayed when the value is missing.
      * The valueMissing error can be returned when you specify the required attribute for any input type.
@@ -100,7 +105,6 @@ export default class AvonniDateTimePicker extends LightningElement {
      * @public
      */
     @api messageWhenValueMissing;
-
     /**
      * Specifies the name of an input element.
      *
@@ -109,62 +113,37 @@ export default class AvonniDateTimePicker extends LightningElement {
      */
     @api name;
 
-    /**
-     * If present, the input field is read-only and cannot be edited by users.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api readOnly = false;
-
-    /**
-     * If present, the input field must be filled out before the form is submitted.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api required = false;
-
-    /**
-     * Array of disabled dates. The dates must be Date objects or valid ISO8601 strings.
-     *
-     * @type {object[]}
-     * @public
-     */
-    @api disabledDateTimes = [];
-
+    _dateFormatDay = DATE_TIME_FORMATS.dayDefault;
+    _dateFormatWeekday = WEEKDAY_FORMATS.default;
+    _dateFormatMonth = MONTH_FORMATS.default;
+    _dateFormatYear;
+    _endTime = DEFAULT_END_TIME;
+    _hideDatePicker = false;
     _hideLabel;
-    _variant = DATE_TIME_VARIANTS.default;
+    _hideNavigation = false;
     _max = DEFAULT_MAX;
     _min = DEFAULT_MIN;
-    _value;
+    _readOnly = false;
+    _required = false;
+    _value = [];
     _startTime = DEFAULT_START_TIME;
-    _endTime = DEFAULT_END_TIME;
     _timeSlotDuration = DEFAULT_TIME_SLOT_DURATION;
     _timeSlots;
     _timeFormatHour;
     _timeFormatHour12;
     _timeFormatMinute;
     _timeFormatSecond;
-    _dateFormatDay = DATE_TIME_FORMATS.dayDefault;
-    _dateFormatWeekday = WEEKDAY_FORMATS.default;
-    _dateFormatMonth = MONTH_FORMATS.default;
-    _dateFormatYear;
     _showEndTime;
     _showDisabledDates;
     _type = DATE_TIME_TYPES.default;
     _showTimeZone = false;
-    _hideNavigation = false;
-    _hideDatePicker = false;
     _disabled = false;
+    _variant = DATE_TIME_VARIANTS.default;
 
     table;
     today;
     firstWeekDay;
     lastWeekDay;
-    selectedDayTime = {};
     timeZones = TIME_ZONES;
     selectedTimeZone;
     helpMessage;
@@ -172,6 +151,8 @@ export default class AvonniDateTimePicker extends LightningElement {
     dayClass = DEFAULT_DAY_CLASS;
     calendarDisabledDates = [];
 
+    _connected = false;
+    _selectedDayTime;
     _valid = true;
 
     connectedCallback() {
@@ -200,285 +181,11 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._connected = true;
     }
 
-    /**
-     * If present, hides the label.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get hideLabel() {
-        return this._hideLabel;
-    }
-
-    set hideLabel(boolean) {
-        this._hideLabel = normalizeBoolean(boolean);
-    }
-
-    /**
-     * The variant changes the appearance of the time picker.
-     * Accepted variants include daily, weekly, monthly, inline and timeline.
-     *
-     * @type {string}
-     * @default daily
-     * @public
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: DATE_TIME_VARIANTS.default,
-            validValues: DATE_TIME_VARIANTS.valid
-        });
-
-        this.dayClass = classSet('slds-text-align_center slds-grid').add({
-            'avonni-date-time-picker__day_inline': this._variant === 'inline',
-            'avonni-date-time-picker__day': this._variant !== 'inline'
-        });
-
-        if (this._connected) {
-            if (this._variant === 'monthly') {
-                this._disableMonthlyCalendarDates();
-            }
-
-            const firstDay = this.today < this.min ? this.min : this.today;
-            this._setFirstWeekDay(firstDay);
-            this._generateTable();
-        }
-    }
-
-    /**
-     * Specifies the maximum date, which the calendar can show.
-     *
-     * @type {object}
-     * @default Date(2099, 11, 31)
-     * @public
-     */
-    @api
-    get max() {
-        return this._max;
-    }
-
-    set max(value) {
-        const date = this._processDate(value);
-        if (date) {
-            this._max = new Date(date.setHours(0, 0, 0, 0));
-        }
-
-        if (this._connected) {
-            this._generateTable();
-        }
-    }
-
-    /**
-     * Specifies the minimum date, which the calendar can show.
-     *
-     * @type {object}
-     * @default Date(1900, 0, 1)
-     * @public
-     */
-    @api
-    get min() {
-        return this._min;
-    }
-
-    set min(value) {
-        const date = this._processDate(value);
-        if (date) {
-            this._min = new Date(date.setHours(0, 0, 0, 0));
-        }
-
-        if (this._connected) {
-            const firstDay = this.today < this.min ? this.min : this.today;
-            this._setFirstWeekDay(firstDay);
-            this._generateTable();
-        }
-    }
-
-    /**
-     * Represents the validity states that an element can be in, with respect to constraint validation.
-     *
-     * @type {string}
-     * @public
-     */
-    @api get validity() {
-        return this._constraint.validity;
-    }
-
-    /**
-     * The value of the date selected, which can be a Date object, timestamp, or an ISO8601 formatted string.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get value() {
-        return this._value;
-    }
-
-    set value(value) {
-        this._value = value;
-    }
-
-    /**
-     * Start of the time slots. Must be an ISO8601 formatted time string.
-     *
-     * @type {string}
-     * @default 08:00
-     * @public
-     */
-    @api
-    get startTime() {
-        return this._startTime;
-    }
-
-    set startTime(value) {
-        const start = new Date(`1970-01-01T${value}`);
-        // Return start time in ms. Default value is 08:00.
-        this._startTime = isNaN(start.getTime())
-            ? DEFAULT_START_TIME
-            : start.getTime();
-        if (this._connected) {
-            this._initTimeSlots();
-            this._generateTable();
-        }
-    }
-
-    /**
-     * End of the time slots. Must be an ISO8601 formatted time string.
-     *
-     * @type {string}
-     * @default 18:00
-     * @public
-     */
-    @api
-    get endTime() {
-        return this._endTime;
-    }
-
-    set endTime(value) {
-        const end = new Date(`1970-01-01T${value}`);
-        // Return end time in ms. Default value is 18:00.
-        this._endTime = isNaN(end.getTime()) ? DEFAULT_END_TIME : end.getTime();
-        if (this._connected) {
-            this._initTimeSlots();
-            this._generateTable();
-        }
-    }
-
-    /**
-     * Duration of each time slot. Must be an ISO8601 formatted time string.
-     *
-     * @type {string}
-     * @default 00:30
-     * @public
-     */
-    @api
-    get timeSlotDuration() {
-        return this._timeSlotDuration;
-    }
-
-    set timeSlotDuration(value) {
-        const duration =
-            typeof value === 'string' &&
-            value.match(/(\d{2}):(\d{2}):?(\d{2})?/);
-        let durationMilliseconds = 0;
-        if (duration) {
-            const durationHours = parseInt(duration[1], 10);
-            const durationMinutes = parseInt(duration[2], 10);
-            const durationSeconds = parseInt(duration[3], 10) || 0;
-            durationMilliseconds =
-                durationHours * 3600000 +
-                durationMinutes * 60000 +
-                durationSeconds * 1000;
-        }
-
-        // Return duration in ms. Default value is 00:30.
-        this._timeSlotDuration =
-            durationMilliseconds > 0
-                ? durationMilliseconds
-                : DEFAULT_TIME_SLOT_DURATION;
-
-        if (this._connected) {
-            this._initTimeSlots();
-            this._generateTable();
-        }
-    }
-
-    /**
-     * Valid values include numeric and 2-digit.
-     *
-     * @type {string}
-     * @default numeric
-     * @public
-     */
-    @api
-    get timeFormatHour() {
-        return this._timeFormatHour || undefined;
-    }
-
-    set timeFormatHour(value) {
-        this._timeFormatHour = normalizeString(value, {
-            validValues: DATE_TIME_FORMATS.valid
-        });
-    }
-
-    /**
-     * Determines whether time is displayed as 12-hour.
-     * If false, time displays as 24-hour. The default setting is determined by the user's locale.
-     *
-     * @type {boolean}
-     * @public
-     */
-    @api
-    get timeFormatHour12() {
-        return this._timeFormatHour12;
-    }
-
-    set timeFormatHour12(boolean) {
-        if (boolean !== undefined) {
-            this._timeFormatHour12 = normalizeBoolean(boolean);
-        }
-    }
-
-    /**
-     * Valid values include numeric and 2-digit.
-     *
-     * @type {string}
-     * @default 2-digit
-     * @public
-     */
-    @api
-    get timeFormatMinute() {
-        return this._timeFormatMinute || undefined;
-    }
-
-    set timeFormatMinute(value) {
-        this._timeFormatMinute = normalizeString(value, {
-            validValues: DATE_TIME_FORMATS.valid
-        });
-    }
-
-    /**
-     * Valid values include numeric and 2-digit.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get timeFormatSecond() {
-        return this._timeFormatSecond || undefined;
-    }
-
-    set timeFormatSecond(value) {
-        this._timeFormatSecond = normalizeString(value, {
-            validValues: DATE_TIME_FORMATS.valid
-        });
-    }
 
     /**
      * Valid values include numeric and 2-digit.
@@ -559,19 +266,173 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     /**
-     * If present, show the end time in each slots.
-     * Ex: 1:00 PM - 1:30 PM.
+     * If present, the date time picker is disabled and users cannot interact with it.
      *
      * @type {boolean}
+     * @default false
      * @public
      */
     @api
-    get showEndTime() {
-        return this._showEndTime;
+    get disabled() {
+        return this._disabled;
     }
 
-    set showEndTime(boolean) {
-        this._showEndTime = normalizeBoolean(boolean);
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+        if (this._connected) {
+            this._initTimeFormat();
+            this._generateTable();
+        }
+    }
+
+    /**
+     * End of the time slots. Must be an ISO8601 formatted time string.
+     *
+     * @type {string}
+     * @default 18:00
+     * @public
+     */
+    @api
+    get endTime() {
+        return this._endTime;
+    }
+
+    set endTime(value) {
+        const end = new Date(`1970-01-01T${value}`);
+        // Return end time in ms. Default value is 18:00.
+        this._endTime = isNaN(end.getTime()) ? DEFAULT_END_TIME : end.getTime();
+        if (this._connected) {
+            this._initTimeSlots();
+            this._generateTable();
+        }
+    }
+
+    /**
+     * If present, hide the date picker button.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get hideDatePicker() {
+        return this._hideDatePicker;
+    }
+
+    set hideDatePicker(value) {
+        this._hideDatePicker = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, hides the label.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get hideLabel() {
+        return this._hideLabel;
+    }
+
+    set hideLabel(boolean) {
+        this._hideLabel = normalizeBoolean(boolean);
+    }
+
+    /**
+     * If present, hide next, previous and today buttons.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get hideNavigation() {
+        return this._hideNavigation;
+    }
+
+    set hideNavigation(value) {
+        this._hideNavigation = normalizeBoolean(value);
+    }
+
+    /**
+     * Specifies the maximum date, which the calendar can show.
+     *
+     * @type {object}
+     * @default Date(2099, 11, 31)
+     * @public
+     */
+    @api
+    get max() {
+        return this._max;
+    }
+
+    set max(value) {
+        const date = this._processDate(value);
+        if (date) {
+            this._max = new Date(date.setHours(0, 0, 0, 0));
+        }
+
+        if (this._connected) {
+            this._generateTable();
+        }
+    }
+
+    /**
+     * Specifies the minimum date, which the calendar can show.
+     *
+     * @type {object}
+     * @default Date(1900, 0, 1)
+     * @public
+     */
+    @api
+    get min() {
+        return this._min;
+    }
+
+    set min(value) {
+        const date = this._processDate(value);
+        if (date) {
+            this._min = new Date(date.setHours(0, 0, 0, 0));
+        }
+
+        if (this._connected) {
+            const firstDay = this.today < this.min ? this.min : this.today;
+            this._setFirstWeekDay(firstDay);
+            this._generateTable();
+        }
+    }
+
+    /**
+     * If present, the input field is read-only and cannot be edited by users.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get readOnly() {
+        return this._readOnly;
+    }
+
+    set readOnly(boolean) {
+        this._readOnly = normalizeBoolean(boolean);
+    }
+
+    /**
+     * If present, the input field must be filled out before the form is submitted.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get required() {
+        return this._required;
+    }
+
+    set required(boolean) {
+        this._required = normalizeBoolean(boolean);
     }
 
     /**
@@ -590,6 +451,172 @@ export default class AvonniDateTimePicker extends LightningElement {
         this._showDisabledDates = normalizeBoolean(boolean);
 
         if (this._connected) {
+            this._generateTable();
+        }
+    }
+
+    /**
+     * If present, show the end time in each slots.
+     * Ex: 1:00 PM - 1:30 PM.
+     *
+     * @type {boolean}
+     * @public
+     */
+    @api
+    get showEndTime() {
+        return this._showEndTime;
+    }
+
+    set showEndTime(boolean) {
+        this._showEndTime = normalizeBoolean(boolean);
+    }
+
+    /**
+     * If present, show the time zone.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get showTimeZone() {
+        return this._showTimeZone;
+    }
+
+    set showTimeZone(value) {
+        this._showTimeZone = normalizeBoolean(value);
+    }
+
+    /**
+     * Start of the time slots. Must be an ISO8601 formatted time string.
+     *
+     * @type {string}
+     * @default 08:00
+     * @public
+     */
+    @api
+    get startTime() {
+        return this._startTime;
+    }
+
+    set startTime(value) {
+        const start = new Date(`1970-01-01T${value}`);
+        // Return start time in ms. Default value is 08:00.
+        this._startTime = isNaN(start.getTime())
+            ? DEFAULT_START_TIME
+            : start.getTime();
+        if (this._connected) {
+            this._initTimeSlots();
+            this._generateTable();
+        }
+    }
+
+    /**
+     * Valid values include numeric and 2-digit.
+     *
+     * @type {string}
+     * @default numeric
+     * @public
+     */
+    @api
+    get timeFormatHour() {
+        return this._timeFormatHour || undefined;
+    }
+
+    set timeFormatHour(value) {
+        this._timeFormatHour = normalizeString(value, {
+            validValues: DATE_TIME_FORMATS.valid
+        });
+    }
+
+    /**
+     * Determines whether time is displayed as 12-hour.
+     * If false, time displays as 24-hour. The default setting is determined by the user's locale.
+     *
+     * @type {boolean}
+     * @public
+     */
+    @api
+    get timeFormatHour12() {
+        return this._timeFormatHour12;
+    }
+
+    set timeFormatHour12(boolean) {
+        if (boolean !== undefined) {
+            this._timeFormatHour12 = normalizeBoolean(boolean);
+        }
+    }
+
+    /**
+     * Valid values include numeric and 2-digit.
+     *
+     * @type {string}
+     * @default 2-digit
+     * @public
+     */
+    @api
+    get timeFormatMinute() {
+        return this._timeFormatMinute || undefined;
+    }
+
+    set timeFormatMinute(value) {
+        this._timeFormatMinute = normalizeString(value, {
+            validValues: DATE_TIME_FORMATS.valid
+        });
+    }
+
+    /**
+     * Valid values include numeric and 2-digit.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get timeFormatSecond() {
+        return this._timeFormatSecond || undefined;
+    }
+
+    set timeFormatSecond(value) {
+        this._timeFormatSecond = normalizeString(value, {
+            validValues: DATE_TIME_FORMATS.valid
+        });
+    }
+
+    /**
+     * Duration of each time slot. Must be an ISO8601 formatted time string.
+     *
+     * @type {string}
+     * @default 00:30
+     * @public
+     */
+    @api
+    get timeSlotDuration() {
+        return this._timeSlotDuration;
+    }
+
+    set timeSlotDuration(value) {
+        const duration =
+            typeof value === 'string' &&
+            value.match(/(\d{2}):(\d{2}):?(\d{2})?/);
+        let durationMilliseconds = 0;
+        if (duration) {
+            const durationHours = parseInt(duration[1], 10);
+            const durationMinutes = parseInt(duration[2], 10);
+            const durationSeconds = parseInt(duration[3], 10) || 0;
+            durationMilliseconds =
+                durationHours * 3600000 +
+                durationMinutes * 60000 +
+                durationSeconds * 1000;
+        }
+
+        // Return duration in ms. Default value is 00:30.
+        this._timeSlotDuration =
+            durationMilliseconds > 0
+                ? durationMilliseconds
+                : DEFAULT_TIME_SLOT_DURATION;
+
+        if (this._connected) {
+            this._initTimeSlots();
             this._generateTable();
         }
     }
@@ -618,52 +645,79 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     /**
-     * If present, show the time zone.
+     * Represents the validity states that an element can be in, with respect to constraint validation.
      *
-     * @type {boolean}
-     * @default false
+     * @type {string}
      * @public
      */
-    @api
-    get showTimeZone() {
-        return this._showTimeZone;
-    }
-
-    set showTimeZone(value) {
-        this._showTimeZone = normalizeBoolean(value);
+    @api get validity() {
+        return this._constraint.validity;
     }
 
     /**
-     * If present, hide next, previous and today buttons.
+     * The value of the date selected, which can be a Date object, timestamp, or an ISO8601 formatted string.
      *
-     * @type {boolean}
-     * @default false
+     * @type {string}
      * @public
      */
     @api
-    get hideNavigation() {
-        return this._hideNavigation;
+    get value() {
+        return this._value;
     }
 
-    set hideNavigation(value) {
-        this._hideNavigation = normalizeBoolean(value);
+    set value(value) {
+        if (!value) {
+            this._value = [];
+        } else {
+            this._value = value instanceof Array ? value : [value];
+        }
+
+        if (this._connected) {
+            this._processValue();
+            this._generateTable();
+        }
     }
 
     /**
-     * If present, hide the date picker button.
+     * The variant changes the appearance of the time picker.
+     * Accepted variants include daily, weekly, monthly, inline and timeline.
      *
-     * @type {boolean}
-     * @default false
+     * @type {string}
+     * @default daily
      * @public
      */
     @api
-    get hideDatePicker() {
-        return this._hideDatePicker;
+    get variant() {
+        return this._variant;
     }
 
-    set hideDatePicker(value) {
-        this._hideDatePicker = normalizeBoolean(value);
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: DATE_TIME_VARIANTS.default,
+            validValues: DATE_TIME_VARIANTS.valid
+        });
+
+        this.dayClass = classSet('slds-text-align_center slds-grid').add({
+            'avonni-date-time-picker__day_inline': this._variant === 'inline',
+            'avonni-date-time-picker__day': this._variant !== 'inline'
+        });
+
+        if (this._connected) {
+            if (this._variant === 'monthly') {
+                this._disableMonthlyCalendarDates();
+            }
+
+            const firstDay = this.today < this.min ? this.min : this.today;
+            this._setFirstWeekDay(firstDay);
+            this._generateTable();
+        }
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Retrieve constraint API for validation.
@@ -674,31 +728,164 @@ export default class AvonniDateTimePicker extends LightningElement {
         if (!this._constraintApi) {
             this._constraintApi = new FieldConstraintApi(() => this, {
                 valueMissing: () =>
-                    !this.disabled && this.required && !this.value
+                    !this.disabled && this.required && !this.value.length
             });
         }
         return this._constraintApi;
     }
 
     /**
-     * If present, the date time picker is disabled and users cannot interact with it.
+     * Returns an array of all the disabled date time.
      *
-     * @type {boolean}
-     * @default false
-     * @public
+     * @type {array}
      */
-    @api
-    get disabled() {
-        return this._disabled;
+    get _disabledFullDateTimes() {
+        let dateTimes = [];
+
+        this.disabledDateTimes.forEach((dateTime) => {
+            if (typeof dateTime === 'object') {
+                dateTimes.push(dateTime.getTime());
+            }
+        });
+
+        return dateTimes;
     }
 
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
-        if (this._connected) {
-            this._initTimeFormat();
-            this._generateTable();
-        }
+    /**
+     * Returns an array of all the disabled weekdays.
+     *
+     * @type {array}
+     */
+    get _disabledWeekDays() {
+        let dates = [];
+
+        this.disabledDateTimes.forEach((date) => {
+            if (typeof date === 'string') {
+                dates.push(DAYS.indexOf(date));
+            }
+        });
+
+        return dates;
     }
+
+    /**
+     * Returns an array of all the disabled monthdays.
+     *
+     * @type {array}
+     */
+    get _disabledMonthDays() {
+        let dates = [];
+
+        this.disabledDateTimes.forEach((date) => {
+            if (typeof date === 'number') {
+                dates.push(date);
+            }
+        });
+
+        return dates;
+    }
+
+    /**
+     * Returns a string with the date range depending on if variant is weekly or not.
+     *
+     * @type {string}
+     */
+    get currentDateRangeString() {
+        const options = {
+            month: this.dateFormatMonth,
+            day: this.dateFormatDay
+        };
+
+        if (this.dateFormatYear) options.year = this.dateFormatYear;
+
+        const firstWeekDay = this.firstWeekDay.toLocaleString('default', {
+            weekday: this.dateFormatWeekday
+        });
+        const firstDay = this.firstWeekDay.toLocaleString('default', options);
+        const lastDay = this.lastWeekDay.toLocaleString('default', options);
+
+        return this.variant === 'weekly'
+            ? `${firstDay} - ${lastDay}`
+            : `${firstWeekDay}, ${firstDay}`;
+    }
+
+    /**
+     * Returns first weekday in an ISOString format.
+     *
+     * @type {ISOstring}
+     */
+    get firstWeekDayToString() {
+        return this.firstWeekDay.toISOString();
+    }
+
+    /**
+     * Returns min in an ISOString format.
+     *
+     * @type {ISOstring}
+     */
+    get minToString() {
+        return this.min.toISOString();
+    }
+
+    /**
+     * Returns max in an ISOString format.
+     *
+     * @type {ISOstring}
+     */
+    get maxToString() {
+        return this.max.toISOString();
+    }
+
+    /**
+     * Returns true if the first weekday is smaller than min. It disables the prev button.
+     *
+     * @type {boolean}
+     */
+    get prevButtonIsDisabled() {
+        return this.firstWeekDay <= this.min;
+    }
+
+    /**
+     * Returns true if the last weekday is bigger than min. It disables the next button.
+     *
+     * @type {boolean}
+     */
+    get nextButtonIsDisabled() {
+        return this.lastWeekDay >= this.max;
+    }
+
+    /**
+     * Returns true if every day is disabled. It disables the entire period.
+     *
+     * @type {boolean}
+     */
+    get entirePeriodIsDisabled() {
+        return this.table.every((day) => day.disabled);
+    }
+
+    /**
+     * Returns true if variant is timeline.
+     *
+     * @type {boolean}
+     */
+    get isTimeline() {
+        return this.variant === 'timeline';
+    }
+
+    /**
+     * Returns true if variant is monthly.
+     *
+     * @type {boolean}
+     */
+    get isMonthly() {
+        return this.variant === 'monthly';
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Checks if the input is valid.
@@ -752,6 +939,12 @@ export default class AvonniDateTimePicker extends LightningElement {
         if (datePicker) datePicker.reportValidity();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Pushes all dates included in disabled-date-times to calendar-disabled-dates to be disabled on the calendar.
      */
@@ -770,7 +963,7 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     /**
-     * Pushes all dates included in disabled-date-times to calendar-disabled-dates to be disabled on the calendar.
+     * Transform the given value into a Date object, or return null.
      *
      * @param {string} value The value of the date selected.
      * @returns {Date|null} Returns a date object or null.
@@ -787,13 +980,10 @@ export default class AvonniDateTimePicker extends LightningElement {
      */
     _processValue() {
         if (this.type === 'checkbox') {
-            // Make sure the values are in an array
-            if (!Array.isArray(this._value)) this._value = [this._value];
-
             const selectedDayTimes = [];
             const values = [];
 
-            this._value.forEach((value) => {
+            this.value.forEach((value) => {
                 const date = this._processDate(value);
                 if (date) {
                     selectedDayTimes.push(date.getTime());
@@ -804,10 +994,12 @@ export default class AvonniDateTimePicker extends LightningElement {
             this._selectedDayTime = selectedDayTimes;
             this._value = values;
         } else {
-            const date = this._processDate(this.value);
+            const date = this._processDate(this.value[0]);
             if (date) {
                 this._selectedDayTime = date.getTime();
-                this._value = date.toISOString();
+                this._value = [date.toISOString()];
+            } else {
+                this._selectedDayTime = null;
             }
         }
     }
@@ -1006,153 +1198,6 @@ export default class AvonniDateTimePicker extends LightningElement {
     }
 
     /**
-     * Returns an array of all the disabled date time.
-     *
-     * @type {array}
-     */
-    get _disabledFullDateTimes() {
-        let dateTimes = [];
-
-        this.disabledDateTimes.forEach((dateTime) => {
-            if (typeof dateTime === 'object') {
-                dateTimes.push(dateTime.getTime());
-            }
-        });
-
-        return dateTimes;
-    }
-
-    /**
-     * Returns an array of all the disabled weekdays.
-     *
-     * @type {array}
-     */
-    get _disabledWeekDays() {
-        let dates = [];
-
-        this.disabledDateTimes.forEach((date) => {
-            if (typeof date === 'string') {
-                dates.push(DAYS.indexOf(date));
-            }
-        });
-
-        return dates;
-    }
-
-    /**
-     * Returns an array of all the disabled monthdays.
-     *
-     * @type {array}
-     */
-    get _disabledMonthDays() {
-        let dates = [];
-
-        this.disabledDateTimes.forEach((date) => {
-            if (typeof date === 'number') {
-                dates.push(date);
-            }
-        });
-
-        return dates;
-    }
-
-    /**
-     * Returns a string with the date range depending on if variant is weekly or not.
-     *
-     * @type {string}
-     */
-    get currentDateRangeString() {
-        const options = {
-            month: this.dateFormatMonth,
-            day: this.dateFormatDay
-        };
-
-        if (this.dateFormatYear) options.year = this.dateFormatYear;
-
-        const firstWeekDay = this.firstWeekDay.toLocaleString('default', {
-            weekday: this.dateFormatWeekday
-        });
-        const firstDay = this.firstWeekDay.toLocaleString('default', options);
-        const lastDay = this.lastWeekDay.toLocaleString('default', options);
-
-        return this.variant === 'weekly'
-            ? `${firstDay} - ${lastDay}`
-            : `${firstWeekDay}, ${firstDay}`;
-    }
-
-    /**
-     * Returns first weekday in an ISOString format.
-     *
-     * @type {ISOstring}
-     */
-    get firstWeekDayToString() {
-        return this.firstWeekDay.toISOString();
-    }
-
-    /**
-     * Returns min in an ISOString format.
-     *
-     * @type {ISOstring}
-     */
-    get minToString() {
-        return this.min.toISOString();
-    }
-
-    /**
-     * Returns max in an ISOString format.
-     *
-     * @type {ISOstring}
-     */
-    get maxToString() {
-        return this.max.toISOString();
-    }
-
-    /**
-     * Returns true if the first weekday is smaller than min. It disables the prev button.
-     *
-     * @type {boolean}
-     */
-    get prevButtonIsDisabled() {
-        return this.firstWeekDay <= this.min;
-    }
-
-    /**
-     * Returns true if the last weekday is bigger than min. It disables the next button.
-     *
-     * @type {boolean}
-     */
-    get nextButtonIsDisabled() {
-        return this.lastWeekDay >= this.max;
-    }
-
-    /**
-     * Returns true if every day is disabled. It disables the entire period.
-     *
-     * @type {boolean}
-     */
-    get entirePeriodIsDisabled() {
-        return this.table.every((day) => day.disabled);
-    }
-
-    /**
-     * Returns true if variant is timeline.
-     *
-     * @type {boolean}
-     */
-    get isTimeline() {
-        return this.variant === 'timeline';
-    }
-
-    /**
-     * Returns true if variant is monthly.
-     *
-     * @type {boolean}
-     */
-    get isMonthly() {
-        return this.variant === 'monthly';
-    }
-
-    /**
      * Handles the onchange event of the combobox to change the time zone.
      */
     handleTimeZoneChange(event) {
@@ -1234,7 +1279,7 @@ export default class AvonniDateTimePicker extends LightningElement {
                 this._selectedDayTime.push(date.getTime());
             }
         } else {
-            this._value = this._value === dateTimeISO ? null : dateTimeISO;
+            this._value = this._value[0] === dateTimeISO ? [] : [dateTimeISO];
             this._selectedDayTime =
                 this._selectedDayTime === date.getTime()
                     ? null
@@ -1255,9 +1300,10 @@ export default class AvonniDateTimePicker extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value: Array.isArray(this.value)
-                        ? this.value.join()
-                        : this.value,
+                    value:
+                        this.type === 'radio'
+                            ? this.value[0] || null
+                            : this.value,
                     name: this.name
                 }
             })
@@ -1269,7 +1315,7 @@ export default class AvonniDateTimePicker extends LightningElement {
      * Removes slds-has-error on the whole element if not valid.
      */
     handleValueBlur() {
-        this._valid = !(this.required && !this.value);
+        this._valid = !(this.required && !this.value.length);
         this.interactingState.leave();
         if (!this._valid) {
             this.classList.remove('slds-has-error');

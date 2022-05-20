@@ -107,6 +107,9 @@ export default class AvonniVisualPicker extends LightningElement {
     _variant = VISUAL_PICKER_VARIANTS.default;
 
     helpMessage;
+    displayImg = false;
+    displayImgC = false;
+    displayImgT = false;
 
     renderedCallback() {
         if (this.inputs) {
@@ -124,6 +127,12 @@ export default class AvonniVisualPicker extends LightningElement {
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * If present, the visual picker is disabled and the user cannot with it.
@@ -238,6 +247,18 @@ export default class AvonniVisualPicker extends LightningElement {
             validValues: INPUT_TYPES.valid
         });
     }
+
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get validity() {
+        return this._constraint.validity;
+    }
+
     /**
      * Value of the selected item. For the checkbox type, the value can be an array. Ex: [value1, value2], 'value1' or ['value1']
      *
@@ -250,8 +271,10 @@ export default class AvonniVisualPicker extends LightningElement {
     }
 
     set value(value) {
-        this._value = value instanceof Array ? value : [value];
+        this._value =
+            typeof value === 'string' ? [value] : normalizeArray(value);
     }
+
     /**
      * Changes the appearance of the item when selected. Valid values include coverable and non-coverable.
      *
@@ -270,6 +293,12 @@ export default class AvonniVisualPicker extends LightningElement {
             validValues: VISUAL_PICKER_VARIANTS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed list items
@@ -322,11 +351,11 @@ export default class AvonniVisualPicker extends LightningElement {
             const descriptionIsBottom =
                 descriptionPosition === 'bottom' && displayDescription;
             const computedDescriptionClass = classSet(
-                'avonni-visual-picker__figure-description'
+                'avonni-visual-picker__figure-description slds-line-clamp'
             ).add({
-                'slds-truncate slds-p-horizontal_x-small': this.truncateRatio,
-                'slds-p-around_small slds-m-around_none':
-                    descriptionPosition === titlePosition && this.truncateRatio
+                'slds-p-around_small': this.truncateRatio,
+                'slds-p-horizontal_xx-small':
+                    descriptionPosition === titlePosition && !this.truncateRatio
             });
 
             // Avatar management
@@ -348,11 +377,15 @@ export default class AvonniVisualPicker extends LightningElement {
 
             // Image management
             const displayImgCenter =
-                (this.isBiggerThanXSmall && titleIsTop) ||
-                (!this.isBiggerThanXSmall && !avatarIsCenter);
+                imgSrc &&
+                ((this.isBiggerThanXSmall && titleIsTop) ||
+                    (!this.isBiggerThanXSmall && !avatarIsCenter));
             const displayImgTop =
-                this.isBiggerThanXSmall && (titleIsCenter || titleIsBottom);
-
+                imgSrc &&
+                this.isBiggerThanXSmall &&
+                (titleIsCenter || titleIsBottom);
+            this.displayImgC = displayImgCenter;
+            this.displayImgT = displayImgTop;
             return {
                 key,
                 itemTitle,
@@ -413,8 +446,59 @@ export default class AvonniVisualPicker extends LightningElement {
             .add({
                 'slds-visual-picker__text': !this.isCoverable,
                 'slds-visual-picker__icon': this.isCoverable,
-                'avonni-hide-check-mark': this._hideCheckMark,
+                'avonni-hide-check-mark': this.hideCheckMark,
                 'slds-align_absolute-center': !this.isResponsive
+            })
+            .toString();
+    }
+
+    /**
+     * Compute visual picker items class styling based on size attributes and presence of image.
+     *
+     * @type {string}
+     */
+    get visualPickerItemsClass() {
+        return classSet('slds-has-flexi-truncate')
+            .add({
+                'avonni-visual-picker__items':
+                    this.size !== 'responsive' ||
+                    (this.size === 'responsive' && !this.displayImg),
+                'avonni-visual-picker__items_responsive':
+                    this.size === 'responsive' && this.displayImg
+            })
+            .toString();
+    }
+
+    /**
+     * Compute visual picker items class styling based on size attributes and presence of image.
+     *
+     * @type {string}
+     */
+    get visualPickerItemsClassTop() {
+        return classSet('slds-has-flexi-truncate')
+            .add({
+                'avonni-visual-picker__items':
+                    this.size !== 'responsive' ||
+                    (this.size === 'responsive' && !this.displayImgT),
+                'avonni-visual-picker__items_responsive_image':
+                    this.size === 'responsive' && this.displayImgT
+            })
+            .toString();
+    }
+
+    /**
+     * Compute visual picker items class styling based on size attributes and presence of image.
+     *
+     * @type {string}
+     */
+    get visualPickerItemsClassCenter() {
+        return classSet('slds-has-flexi-truncate')
+            .add({
+                'avonni-visual-picker__items':
+                    this.size !== 'responsive' ||
+                    (this.size === 'responsive' && !this.displayImgC),
+                'avonni-visual-picker__items_responsive_image':
+                    this.size === 'responsive' && this.displayImgC
             })
             .toString();
     }
@@ -451,7 +535,7 @@ export default class AvonniVisualPicker extends LightningElement {
      * @type {boolean}
      */
     get isBiggerThanXSmall() {
-        return !(this._size === 'x-small' || this._size === 'xx-small');
+        return !(this.size === 'x-small' || this.size === 'xx-small');
     }
 
     /**
@@ -460,7 +544,7 @@ export default class AvonniVisualPicker extends LightningElement {
      * @type {boolean}
      */
     get isCoverable() {
-        return this._variant === 'coverable';
+        return this.variant === 'coverable';
     }
 
     /**
@@ -469,7 +553,7 @@ export default class AvonniVisualPicker extends LightningElement {
      * @type {boolean}
      */
     get isResponsive() {
-        return this._size === 'responsive';
+        return this.size === 'responsive';
     }
 
     /**
@@ -523,6 +607,27 @@ export default class AvonniVisualPicker extends LightningElement {
     }
 
     /**
+     * Validation with constraint Api.
+     *
+     * @type {object}
+     */
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled && this.required && this.value.length === 0
+            });
+        }
+        return this._constraintApi;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
      * Removes keyboard focus from the input element.
      *
      * @public
@@ -540,17 +645,6 @@ export default class AvonniVisualPicker extends LightningElement {
     @api
     focus() {
         this.input.focus();
-    }
-
-    /**
-     * Represents the validity states that an element can be in, with respect to constraint validation.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get validity() {
-        return this._constraint.validity;
     }
 
     /**
@@ -601,20 +695,11 @@ export default class AvonniVisualPicker extends LightningElement {
         this.reportValidity();
     }
 
-    /**
-     * Validation with constraint Api.
-     *
-     * @type {object}
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    get _constraint() {
-        if (!this._constraintApi) {
-            this._constraintApi = new FieldConstraintApi(() => this, {
-                valueMissing: () =>
-                    !this.disabled && this.required && this.value.length === 0
-            });
-        }
-        return this._constraintApi;
-    }
 
     /**
      * Dispatches the blur event.
@@ -648,13 +733,13 @@ export default class AvonniVisualPicker extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string[]} value The visual picker value.
+         * @param {string|string[]} value Selected items' value. Returns an array of string if the type is checkbox. Returns a string otherwise.
          * @public
          */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value
+                    value: this.type === 'radio' ? value[0] || null : value
                 }
             })
         );

@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-rating:hover .avonni-active.avonni-continuous:not(:hover) {
+.avonni-active.avonni-continuous:hover ~ .avonni-active.avonni-continuous {
     border: 1px solid #1b5297;
     background-color: #ffffff;
     border-color: #1b5297;
@@ -38,31 +38,18 @@
     opacity: 0.85;
 }
 
-.avonni-rating:hover .avonni-active:hover {
-    border: 1px solid #ffffff;
-    background-color: #1b5297;
-    border-color: #1b5297;
-    color: #ffffff;
-    opacity: 1;
-}
-
-.avonni-active.avonni-continuous:hover,
-.avonni-active.avonni-continuous:hover ~ .avonni-active.avonni-continuous,
-.avonni-active.avonni-continuous:hover:before,
-.avonni-active.avonni-continuous:hover
-    ~ .avonni-active.avonni-continuous:before {
-    border: 1px solid #ffffff !important;
-    background-color: #1b5297 !important;
-    border-color: #1b5297 !important;
-    color: #ffffff !important;
-    opacity: 1 !important;
-}
-
 .avonni-rating {
     unicode-bidi: bidi-override;
-    direction: rtl;
-    text-align: left;
     width: fit-content;
+    pointer-events: none;
+}
+
+.avonni-active-star {
+    pointer-events: auto;
+}
+
+.avonni-active {
+    pointer-events: auto;
 }
 
 button {
@@ -70,9 +57,26 @@ button {
     margin-left: 1px !important;
 }
 
-.avonni-rating__container {
+.avonni-rating__container,
+[data-element-id='div-wrapper'] {
     display: flex;
     align-items: center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.avonni-rating__container:hover .avonni-active.avonni-continuous,
+.avonni-active:hover {
+    border: 1px solid #ffffff;
+    background-color: #1b5297;
+    border-color: #1b5297;
+    color: #ffffff;
+    opacity: 1;
+}
+
+.avonni-rating__container:hover .avonni-active-star.avonni-continuous-star {
+    fill: #1b5297;
+    opacity: 1;
 }
 
 .avonni-rating__container .avonni-rating__value {

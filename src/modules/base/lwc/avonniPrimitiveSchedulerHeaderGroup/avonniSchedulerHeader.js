@@ -41,9 +41,6 @@ import {
     numberOfUnitsBetweenDates
 } from 'c/utilsPrivate';
 
-// Number of cells displayed on a 4K screen, if the label was empty
-const MAX_VISIBLE_COLUMNS = Math.ceil(3840 / 17);
-
 /**
  * Represent one row of the scheduler header group.
  *
@@ -76,6 +73,8 @@ const MAX_VISIBLE_COLUMNS = Math.ceil(3840 / 17);
  *
  * @param {DateTime} start Starting date of the header.
  *
+ * @param {boolean} canExpandOverEndOfUnit If true, the header end does not have to stop at the exact end of its unit.
+ *
  * @param {string} unit Unit used by the header (minute, hour, day, week, month or year).
  */
 export default class AvonniSchedulerHeader {
@@ -83,6 +82,7 @@ export default class AvonniSchedulerHeader {
         this.availableDaysOfTheWeek = props.availableDaysOfTheWeek;
         this.availableMonths = props.availableMonths;
         this.availableTimeFrames = props.availableTimeFrames;
+        this.canExpandOverEndOfUnit = props.canExpandOverEndOfUnit;
         this._end = props.end;
         this.columns = [];
         this.columnWidths = [];
@@ -96,7 +96,7 @@ export default class AvonniSchedulerHeader {
         this.start = props.start;
         this.unit = props.unit;
 
-        this.initColumns(DateTime.fromMillis(this.start.ts), true);
+        this.initColumns();
     }
 
     get end() {
@@ -113,15 +113,12 @@ export default class AvonniSchedulerHeader {
 
     /**
      * Create the header columns.
-     *
-     * @param {DateTime} startDate Starting date of the header.
-     * @param {boolean} firstRender If true, this is the first render of the header. Only one column will be created.
      */
-    initColumns(startDate, firstRender = false) {
+    initColumns() {
         const { unit, label, span, isReference } = this;
-        let iterations = this.computeNumberOfColumns(firstRender);
+        let iterations = this.numberOfColumns;
         this.columns = [];
-        let date = startDate;
+        let date = this.start;
 
         for (let i = 0; i < iterations; i++) {
             // If this is not the first column, we start the month on the first day
@@ -160,7 +157,6 @@ export default class AvonniSchedulerHeader {
             // because of the allowed dates/times
             if (
                 isReference &&
-                firstRender &&
                 i === 0 &&
                 date.ts !== this.start.ts &&
                 unit === 'week'
@@ -174,9 +170,8 @@ export default class AvonniSchedulerHeader {
                     numberOfUnitsBetweenDates(unit, date, pushedEnd) / span;
             }
 
-            // Compensate the fact that luxon weeks start on Monday
+            // Compute the column end
             let columnEnd = addToDate(date, unit, span - 1);
-
             columnEnd =
                 unit === 'week'
                     ? columnEnd.plus({ day: 1 }).endOf(unit).minus({ day: 1 })
@@ -185,8 +180,6 @@ export default class AvonniSchedulerHeader {
             // If the current date is bigger than the reference end, stop adding columns
             if (!isReference && this.dateIsBiggerThanEnd(date)) {
                 this.columns[this.columns.length - 1].end = this.end.ts;
-                this.setHeaderEnd();
-                this.cleanEmptyLastColumn();
                 break;
             }
 
@@ -196,7 +189,7 @@ export default class AvonniSchedulerHeader {
                 end: columnEnd.ts
             });
 
-            // Compensate the fact that luxon week starts on Monday
+            // Set date to the next column's start
             date = addToDate(columnEnd, unit, 1);
             date =
                 unit === 'week'
@@ -204,28 +197,10 @@ export default class AvonniSchedulerHeader {
                     : date.startOf(unit);
         }
 
-        if (firstRender) {
-            this.start = DateTime.fromMillis(this.columns[0].start);
-        } else {
-            this.setHeaderEnd();
-            this.cleanEmptyLastColumn();
-        }
-    }
-
-    /**
-     * Computes the number of columns that should be created.
-     *
-     * @param {boolean} firstRender Should be true if it is the first render of the header.
-     * @returns {number} Number of visible columns.
-     */
-    computeNumberOfColumns(firstRender) {
-        // On the first render, we create only one column, to compute the default cell width.
-        if (firstRender || this.numberOfColumns < 1) {
-            return 1;
-        }
-        return this.numberOfColumns > MAX_VISIBLE_COLUMNS
-            ? MAX_VISIBLE_COLUMNS
-            : this.numberOfColumns;
+        this.start = DateTime.fromMillis(this.columns[0].start);
+        this.setHeaderEnd();
+        this.cleanEmptyLastColumn();
+        this.numberOfColumns = this.columns.length;
     }
 
     /**
@@ -248,14 +223,17 @@ export default class AvonniSchedulerHeader {
             endUnit = end.endOf(unit);
         }
 
-        if (endUnit < dateUnit) return true;
-        return false;
+        return endUnit < dateUnit;
     }
 
     /**
      * Make sure the last column contains allowed dates/times and remove it if not.
      */
     cleanEmptyLastColumn() {
+        if (this.columns.length <= 1) {
+            return;
+        }
+
         const lastColumn = this.columns[this.columns.length - 1];
         const nextDay = nextAllowedDay(
             DateTime.fromMillis(lastColumn.start),
@@ -283,11 +261,10 @@ export default class AvonniSchedulerHeader {
     setHeaderEnd() {
         const {
             unit,
-            duration,
-            span,
             columns,
             isReference,
-            numberOfColumns
+            numberOfColumns,
+            canExpandOverEndOfUnit
         } = this;
         const lastColumn = columns[columns.length - 1];
         const start = DateTime.fromMillis(columns[0].start);
@@ -297,35 +274,32 @@ export default class AvonniSchedulerHeader {
         const partialColumn = numberOfColumns % 1;
         if (partialColumn > 0) {
             const lastColumnStart = DateTime.fromMillis(lastColumn.start);
-            const visibleUnits =
-                partialColumn * span > duration
-                    ? duration
-                    : partialColumn * span;
-            end = DateTime.fromMillis(
-                addToDate(lastColumnStart, unit, visibleUnits) - 1
-            );
+            end = addToDate(lastColumnStart, unit, partialColumn);
+            end = DateTime.fromMillis(end.ts - 1);
         }
 
-        // If the start date is in the middle of the unit,
-        // make sure the end date is too
         if (isReference) {
-            if (unit === 'year') {
-                end = end.set({ months: start.month });
-            }
-            if ((unit === 'month' || unit === 'year') && start.day > 1) {
-                end = end.set({ days: start.day - 1 });
-            }
-            if (unit === 'week') {
-                if (start.weekday === 1) {
-                    end = addToDate(end, 'day', 1);
+            if (canExpandOverEndOfUnit) {
+                // If the start date is in the middle of the unit,
+                // make sure the end date is too
+                if (unit === 'year') {
+                    end = end.set({ months: start.month });
                 }
-                end = end.set({ weekday: start.weekday - 1 });
-            }
-            if (unit === 'day' && start.hour !== 0) {
-                end = end.set({ hours: start.hour - 1 });
-            }
-            if (unit === 'hour' && start.minute !== 0) {
-                end = end.set({ minutes: start.minute - 1 });
+                if ((unit === 'month' || unit === 'year') && start.day > 1) {
+                    end = end.set({ days: start.day - 1 });
+                }
+                if (unit === 'week') {
+                    if (start.weekday === 1) {
+                        end = addToDate(end, 'day', 1);
+                    }
+                    end = end.set({ weekday: start.weekday - 1 });
+                }
+                if (unit !== 'hour' && start.hour !== 0) {
+                    end = end.set({ hours: start.hour - 1 });
+                }
+                if (start.minute !== 0) {
+                    end = end.set({ minutes: start.minute - 1 });
+                }
             }
 
             lastColumn.end = end.ts;
@@ -376,7 +350,9 @@ export default class AvonniSchedulerHeader {
                     const endUnit = normalizedEnd.startOf(unit);
 
                     // Stop if the next smallestHeader column belongs to the next header unit
-                    if (endUnit <= startUnit) break;
+                    if (endUnit <= startUnit) {
+                        break;
+                    }
 
                     width += cellWidth;
                     columnIndex += 1;

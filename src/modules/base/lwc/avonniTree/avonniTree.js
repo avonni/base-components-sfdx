@@ -87,6 +87,7 @@ export default class AvonniTree extends LightningElement {
     _dragState;
     _editedItemKey;
     _focusedItem;
+    _isConnected = false;
     _mouseDownTimeout;
     _mouseOverItemTimeout;
     _selectTimeout;
@@ -97,6 +98,7 @@ export default class AvonniTree extends LightningElement {
 
         window.addEventListener('mouseup', this.handleMouseUp);
         window.addEventListener('mousemove', this.handleMouseMove);
+        this._isConnected = true;
     }
 
     renderedCallback() {
@@ -227,7 +229,7 @@ export default class AvonniTree extends LightningElement {
 
     set isMultiSelect(value) {
         this._isMultiSelect = value;
-        if (this.isConnected) this.resetSelection();
+        if (this._isConnected) this.resetSelection();
     }
 
     /**
@@ -247,7 +249,7 @@ export default class AvonniTree extends LightningElement {
             return this.treedata.cloneItems(item);
         });
 
-        if (this.isConnected) this.initItems();
+        if (this._isConnected) this.initItems();
     }
 
     /**
@@ -288,7 +290,7 @@ export default class AvonniTree extends LightningElement {
             typeof value === 'string'
                 ? [value]
                 : deepCopy(normalizeArray(value));
-        if (this.isConnected) this.resetSelection();
+        if (this._isConnected) this.resetSelection();
     }
 
     /**

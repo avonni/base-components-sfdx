@@ -78,9 +78,10 @@ export default class AvonniSubmenu extends LightningElement {
      */
     @api prefixIconName;
 
-    _tabIndex = DEFAULT_TAB_INDEX;
     _disabled = false;
     _isDraft = false;
+    _tabIndex = DEFAULT_TAB_INDEX;
+
     isOpen = false;
     init = false;
 
@@ -88,6 +89,12 @@ export default class AvonniSubmenu extends LightningElement {
         this.classList.add('slds-dropdown__item');
         this.classList.add('avonni-submenu');
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * If present, the menu item is disabled and users cannot interact with it.
@@ -139,6 +146,12 @@ export default class AvonniSubmenu extends LightningElement {
         this._tabIndex = newValue;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Sets focus on the anchor element in the menu item.
      *
@@ -166,6 +179,12 @@ export default class AvonniSubmenu extends LightningElement {
     close() {
         this.isOpen = false;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     handleBlur() {
         /**

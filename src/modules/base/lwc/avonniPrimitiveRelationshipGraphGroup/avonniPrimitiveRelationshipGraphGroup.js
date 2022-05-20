@@ -67,11 +67,13 @@ export default class AvonniPrimitiveRelationshipGraphGroup extends LightningElem
     _defaultActions = [];
     _expanded = true;
     _hasSelectedChildren;
+    _isConnected = false;
     _items = [];
     _variant = RELATIONSHIP_GRAPH_GROUP_VARIANTS.default;
 
     connectedCallback() {
         this._closed = this.expanded === false;
+        this._isConnected = true;
     }
 
     renderedCallback() {
@@ -104,7 +106,7 @@ export default class AvonniPrimitiveRelationshipGraphGroup extends LightningElem
     @api
     get selectedItemComponent() {
         const items = this.template.querySelectorAll(
-            'c-primitive-relationship-graph-item'
+            '[data-element-id="avonni-primitive-relationship-graph-item"]'
         );
 
         let selectedItem;
@@ -144,7 +146,7 @@ export default class AvonniPrimitiveRelationshipGraphGroup extends LightningElem
         // Because the default is true, falsy values (undefined, null, etc.) are considered true
         this._expanded = value === false ? false : true;
 
-        if (this.isConnected) {
+        if (this._isConnected) {
             this._closed = this.expanded === false;
         }
     }

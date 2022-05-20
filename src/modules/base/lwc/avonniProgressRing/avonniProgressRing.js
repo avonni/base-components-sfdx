@@ -51,10 +51,16 @@ const DEFAULT_VALUE = 0;
  */
 export default class AvonniProgressRing extends LightningElement {
     _direction = PROGRESS_RING_DIRECTIONS.default;
+    _hideIcon = false;
     _size = PROGRESS_RING_SIZES.default;
     _value = DEFAULT_VALUE;
     _variant = PROGRESS_RING_VARIANTS.default;
-    _hideIcon = false;
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Controls which way the color flows from the top of the ring, either clockwise or counterclockwise. Valid values include fill and drain.
@@ -74,6 +80,22 @@ export default class AvonniProgressRing extends LightningElement {
             fallbackValue: PROGRESS_RING_DIRECTIONS.default,
             validValues: PROGRESS_RING_DIRECTIONS.valid
         });
+    }
+
+    /**
+     * If present and the variant is equal to warning, base-autocomplete or expired, hide the icon in the progress ring content
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideIcon() {
+        return this._hideIcon;
+    }
+
+    set hideIcon(value) {
+        this._hideIcon = normalizeBoolean(value);
     }
 
     /**
@@ -109,7 +131,7 @@ export default class AvonniProgressRing extends LightningElement {
 
     set value(value) {
         const normalizedValue = parseInt(value, 10);
-        
+
         if (isNaN(normalizedValue)) {
             this._value = DEFAULT_VALUE;
             return;
@@ -143,21 +165,11 @@ export default class AvonniProgressRing extends LightningElement {
         });
     }
 
-    /**
-     * If present and the variant is equal to warning, base-autocomplete or expired, hide the icon in the progress ring content
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get hideIcon() {
-        return this._hideIcon;
-    }
-
-    set hideIcon(value) {
-        this._hideIcon = normalizeBoolean(value);
-    }
 
     /**
      * Computed outer class styling based on selected attributes.

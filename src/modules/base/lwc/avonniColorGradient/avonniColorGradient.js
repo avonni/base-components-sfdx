@@ -37,6 +37,7 @@ import {
     HSVToHSL,
     normalizeBoolean
 } from 'c/utilsPrivate';
+import { classSet } from 'c/utils';
 
 const INDICATOR_SIZE = 12;
 
@@ -53,7 +54,7 @@ const DEFAULT_MESSAGE_WHEN_BAD_INPUT = 'Please ensure value is correct';
 export default class AvonniColorGradient extends LightningElement {
     /**
      * Error message to be displayed when a bad input is detected.
-     * 
+     *
      * @public
      * @type {string}
      * @default Please ensure value is correct
@@ -61,10 +62,10 @@ export default class AvonniColorGradient extends LightningElement {
     @api messageWhenBadInput = DEFAULT_MESSAGE_WHEN_BAD_INPUT;
 
     _disabled = false;
-    _readOnly = false;
     _opacity = false;
-
+    _readOnly = false;
     _value = DEFAULT_VALUE;
+
     colors = generateColors(DEFAULT_VALUE);
     positionX;
     positionY;
@@ -103,39 +104,21 @@ export default class AvonniColorGradient extends LightningElement {
 
             this.setPaletteColor(this.colors.H);
             this.setSwatchColor(this.value);
-            this.setindIcatorPosition();
+            this.setIndicatorPosition();
 
             this.init = true;
         }
     }
 
-    /**
-     * Specifies the value of an input element.
-     * 
-     * @public
-     * @type {string}
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get value() {
-        return this._value;
-    }
-
-    set value(value) {
-        if (colorType(this.value) !== null) {
-            this._value = value;
-            this.colors = generateColors(this._value);
-
-            if (this.init) {
-                this.setPaletteColor(this.colors.H);
-                this.setSwatchColor(this.value);
-                this.setindIcatorPosition();
-            }
-        }
-    }
 
     /**
      * If present, the input field is disabled and users cannot interact with it.
-     * 
+     *
      * @public
      * @type {boolean}
      */
@@ -159,24 +142,8 @@ export default class AvonniColorGradient extends LightningElement {
     }
 
     /**
-     * If present, the palette is read-only and cannot be edited by users.
-     * 
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get readOnly() {
-        return this._readOnly;
-    }
-
-    set readOnly(value) {
-        this._readOnly = normalizeBoolean(value);
-    }
-
-    /**
      * If present, the alpha slider will be displayed.
-     * 
+     *
      * @public
      * @type {boolean}
      * @default false
@@ -197,8 +164,94 @@ export default class AvonniColorGradient extends LightningElement {
     }
 
     /**
+     * If present, the palette is read-only and cannot be edited by users.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get readOnly() {
+        return this._readOnly;
+    }
+
+    set readOnly(value) {
+        this._readOnly = normalizeBoolean(value);
+    }
+
+    /**
+     * Specifies the value of an input element.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        if (colorType(this.value) !== null) {
+            this._value = value;
+            this.colors = generateColors(this._value);
+
+            if (this.init) {
+                this.setPaletteColor(this.colors.H);
+                this.setSwatchColor(this.value);
+                this.setIndicatorPosition();
+            }
+        }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Disable cursor if disabled or readOnly.
+     *
+     * @type {string}
+     */
+    get computedDisabledClass() {
+        return classSet('slds-color-picker__custom-range')
+            .add({
+                'slds-color-picker__custom-range_disabled':
+                    this._disabled || this._readOnly
+            })
+            .toString();
+    }
+
+    /**
+     * Disable input handler.
+     *
+     * @type {boolean}
+     */
+    get disabledInput() {
+        return this.disabled || this.readOnly;
+    }
+
+    /**
+     * Retrieve color value if present.
+     *
+     * @type {string}
+     */
+    get colorValue() {
+        return this.colors.A < 1 && this.opacity
+            ? this.colors.hexa
+            : this.colors.hex;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
      * Display the given color in the color gradient.
-     * 
+     *
      * @param {string} color Color to display.
      */
     @api
@@ -213,29 +266,15 @@ export default class AvonniColorGradient extends LightningElement {
 
             this.setPaletteColor(this.colors.H);
             this.setSwatchColor(this.value);
-            this.setindIcatorPosition();
+            this.setIndicatorPosition();
         }
     }
 
-    /**
-     * Disable input handler.
-     * 
-     * @type {boolean}
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    get disabledInput() {
-        return this.disabled || this.readOnly;
-    }
-
-    /**
-     * Retrieve color value if present.
-     * 
-     * @type {string}
-     */
-    get colorValue() {
-        return this.colors.A < 1 && this.opacity
-            ? this.colors.hexa
-            : this.colors.hex;
-    }
 
     /**
      * Private focus handler.
@@ -262,7 +301,7 @@ export default class AvonniColorGradient extends LightningElement {
     handleBlur() {
         /**
          * The event fired when the color gradient loses focus.
-         * 
+         *
          * @event
          * @name blur
          * @public
@@ -292,7 +331,7 @@ export default class AvonniColorGradient extends LightningElement {
         if (!this.disabled && !this.readOnly) {
             /**
              * The event fired when the color value changed.
-             * 
+             *
              * @event
              * @name change
              * @public
@@ -321,11 +360,21 @@ export default class AvonniColorGradient extends LightningElement {
     }
 
     /**
+     * Change event handler.
+     *
+     * @param {object} event
+     */
+    handleChange(event) {
+        event.stopPropagation();
+    }
+
+    /**
      * Input event handler.
-     * 
+     *
      * @param {object} event
      */
     handlerInput(event) {
+        event.stopPropagation();
         if (!this.readOnly) {
             let H = event.target.value;
 
@@ -357,7 +406,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Input opacity event handler.
-     * 
+     *
      * @param {object} event
      */
     handlerInputOpacity(event) {
@@ -376,7 +425,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Input color event handler.
-     * 
+     *
      * @param {object} event
      */
     handleInputColor(event) {
@@ -404,7 +453,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Handle Red input in RGBA.
-     * 
+     *
      * @param {object} event
      */
     handleInputRed(event) {
@@ -414,7 +463,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Handle Green input in RGBA.
-     * 
+     *
      * @param {object} event
      */
     handleInputGreen(event) {
@@ -424,7 +473,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Handle Blue input in RGBA.
-     * 
+     *
      * @param {object} event
      */
     handleInputBlue(event) {
@@ -434,7 +483,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Handle Alpha input in RGBA.
-     * 
+     *
      * @param {object} event
      */
     handleInputAlpha(event) {
@@ -444,12 +493,11 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * RGBA computed color method.
-     * 
+     *
      * @param {object} event
      */
     processingRGBColor(event) {
         let color = `rgba(${this.colors.R},${this.colors.G},${this.colors.B},${this.colors.A})`;
-
         if (colorType(color) !== null) {
             this.hideErrors();
             this.updateColors(color);
@@ -463,7 +511,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Palette Click event handler.
-     * 
+     *
      * @param {object} event
      */
     handlerClickPalet(event) {
@@ -485,7 +533,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Mouse down event handler.
-     * 
+     *
      * @param {object} event
      */
     handlerMouseDown(event) {
@@ -493,8 +541,8 @@ export default class AvonniColorGradient extends LightningElement {
         this.data = {
             x: event.x,
             y: event.y,
-            top: event.target.offsetTop,
-            left: event.target.offsetLeft,
+            top: event.offsetY - INDICATOR_SIZE,
+            left: event.offsetX,
             width: this.paletteWidth,
             height: this.paletteHeight - INDICATOR_SIZE
         };
@@ -509,11 +557,11 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Mouse mouse event handler.
-     * 
+     *
      * @param {object} event
      */
     handlerMouseMove(event) {
-        if (this.down && !this.readOnly) {
+        if (this.down && !this.readOnly && !this.disabled) {
             let indicator = this.template.querySelector(
                 '.slds-color-picker__range-indicator'
             );
@@ -553,7 +601,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Set HSL/A colors via palette x/y coordinates.
-     * 
+     *
      * @param {number} x
      * @param {number} y
      */
@@ -577,25 +625,21 @@ export default class AvonniColorGradient extends LightningElement {
             lightness = 100;
         }
 
-        if (this.opacity) {
-            let color = `hsla(${this.colors.H}, ${saturation}%, ${lightness}%, ${this.colors.A})`;
+        const opacity = this.opacity ? this.colors.A : 100;
 
-            if (colorType(color) === null) {
-                color = `hsla(${this.colors.H}, ${saturation}%, ${lightness}%, 1)`;
-            }
+        let color = `hsla(${this.colors.H}, ${saturation}%, ${lightness}%, ${opacity})`;
 
-            let colors = generateColors(color);
-
-            if (colors.H !== this.colors.H) {
-                colors.H = this.colors.H;
-            }
-
-            this.colors = colors;
-        } else {
-            this.colors = generateColors(
-                `hsl(${this.colors.H}, ${saturation}%, ${lightness}%)`
-            );
+        if (colorType(color) === null) {
+            color = `hsla(${this.colors.H}, ${saturation}%, ${lightness}%, 1)`;
         }
+
+        let colors = generateColors(color);
+
+        if (colors.H !== this.colors.H) {
+            colors.H = this.colors.H;
+        }
+
+        this.colors = colors;
 
         this.positionX = x;
         this.positionY = y;
@@ -607,7 +651,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Update color parameters.
-     * 
+     *
      * @param {string} color
      */
     updateColors(color) {
@@ -619,14 +663,14 @@ export default class AvonniColorGradient extends LightningElement {
 
         this.setPaletteColor(this.colors.H);
         this.setSwatchColor(this.colors.hexa);
-        this.setindIcatorPosition();
+        this.setIndicatorPosition();
         this.dispatchChange();
     }
 
     /**
      * Set indicator position based on color value.
      */
-    setindIcatorPosition() {
+    setIndicatorPosition() {
         let x = this.paletteWidth * this.colors.hsv.s;
         let y = this.paletteHeight * (1 - this.colors.hsv.v);
 
@@ -650,7 +694,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Set palette color range.
-     * 
+     *
      * @param {string} value
      */
     setPaletteColor(value) {
@@ -663,7 +707,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Set swatch color.
-     * 
+     *
      * @param {string} value
      */
     setSwatchColor(value) {
@@ -673,7 +717,7 @@ export default class AvonniColorGradient extends LightningElement {
 
     /**
      * Set opacity color.
-     * 
+     *
      * @param {string} value
      */
     setOpacityColor(value) {

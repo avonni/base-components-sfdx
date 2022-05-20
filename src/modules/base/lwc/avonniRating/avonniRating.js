@@ -60,13 +60,6 @@ const DEFAULT_MAX = 5;
  */
 export default class AvonniRating extends LightningElement {
     /**
-     * Label for the rating component.
-     *
-     * @type {string}
-     * @public
-     */
-    @api label;
-    /**
      * Help text detailing the purpose and function of the rating component.
      *
      * @type {string}
@@ -74,28 +67,36 @@ export default class AvonniRating extends LightningElement {
      */
     @api fieldLevelHelp;
     /**
-     * Assign a unique ID through the name of the rating component.
-     *
-     * @type {string}
-     */
-    @api name = generateUUID();
-    /**
      * The Lightning Design System name of the icon. Specify the name in the format 'utility:favorite' where 'utility' is the category, and 'favorite' is the specific icon to be displayed.
      *
      * @type {string}
      * @public
      */
     @api iconName;
+    /**
+     * Label for the rating component.
+     *
+     * @type {string}
+     * @public
+     */
+    @api label;
+    /**
+     * Assign a unique ID through the name of the rating component.
+     *
+     * @type {string}
+     */
+    @api name = generateUUID();
 
-    _min = DEFAULT_MIN;
-    _max = DEFAULT_MAX;
-    _value;
-    _variant = LABEL_VARIANTS.default;
+    _disabled = false;
     _iconSize = RATING_SIZES.default;
+    _max = DEFAULT_MAX;
+    _min = DEFAULT_MIN;
+    _readOnly = false;
     _selection = RATING_SELECTIONS.default;
-    _disabled;
-    _readOnly;
-    _valueHidden;
+    _value;
+    _valueHidden = false;
+    _variant = LABEL_VARIANTS.default;
+
     init = false;
     initStyles = false;
 
@@ -112,29 +113,21 @@ export default class AvonniRating extends LightningElement {
                 style.innerText = `
                     .avonni-icon-selected .slds-button:disabled svg {fill: #a5a4a2;}
                     .avonni-icon-selected svg {fill: #1b5297 !important;}
-                    .avonni-rating:hover .avonni-active-star.avonni-continuous-star:not(:hover) svg {
-                        fill: #c9c7c5;
-                        opacity: 0.85;
-                    }
-                    .avonni-rating:hover .avonni-active-star:hover svg{
+                    .avonni-rating:hover .avonni-active-star.avonni-continuous-star svg {
                         fill: #1b5297;
                         opacity: 1;
                     }
                     .avonni-active-star.avonni-continuous-star svg {
                         fill: #c9c7c5;
                     }
-                    .avonni-active-star.avonni-continuous-star:hover svg,
                     .avonni-active-star.avonni-continuous-star:hover ~ .avonni-active-star.avonni-continuous-star svg {
-                        fill: #1b5297 !important;
-                        opacity: 1 !important;
+                        fill: #c9c7c5;
+                        opacity: 1;
                     }
                     .avonni-icon button, 
                     .avonni-icon button:active, 
                     .avonni-icon button:focus {
                         box-shadow: none;
-                    }
-                    .avonni-icon.avonni-active-star svg {
-                        fill: #c9c7c5;
                     }
                 `;
                 selectedIcons.appendChild(style);
@@ -145,24 +138,49 @@ export default class AvonniRating extends LightningElement {
         this.init = true;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * The minimum acceptable value for the rating component.
+     * If present, the rating component is disabled and users cannot interact with it.
      *
-     * @type {number}
+     * @type {boolean}
      * @public
-     * @default 1
+     * @default false
      */
     @api
-    get min() {
-        return this._min;
+    get disabled() {
+        return this._disabled;
     }
 
-    set min(value) {
-        this._min = isNaN(parseInt(value, 10)) ? DEFAULT_MIN : value;
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
 
         if (this.init) {
             this.ratingRecalculation();
         }
+    }
+
+    /**
+     * Valid values include x-small, small, medium and large.
+     *
+     * @type {string}
+     * @public
+     * @default large
+     */
+    @api
+    get iconSize() {
+        return this._iconSize;
+    }
+
+    set iconSize(size) {
+        this._iconSize = normalizeString(size, {
+            fallbackValue: RATING_SIZES.default,
+            validValues: RATING_SIZES.valid
+        });
     }
 
     /**
@@ -186,101 +204,19 @@ export default class AvonniRating extends LightningElement {
     }
 
     /**
-     * Specifies the value of the rating.
+     * The minimum acceptable value for the rating component.
      *
-     * @type {string}
+     * @type {number}
      * @public
+     * @default 1
      */
     @api
-    get value() {
-        return this._value;
+    get min() {
+        return this._min;
     }
 
-    set value(value) {
-        this._value = Number(value);
-
-        if (this.init) {
-            this.ratingRecalculation();
-        }
-    }
-
-    /**
-     * The variant changes the appearance of an input field. Accepted variants include standard, label-inline, label-hidden, and label-stacked.
-     * This value defaults to standard, which displays the label above the field. Use label-hidden to hide the label but make it available to assistive technology.
-     * Use label-inline to horizontally align the label and input field. Use label-stacked to place the label above the input field.
-     *
-     * @type {string}
-     * @public
-     * @default standard
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: LABEL_VARIANTS.default,
-            validValues: LABEL_VARIANTS.valid
-        });
-    }
-
-    /**
-     * Valid values include x-small, small, medium and large.
-     *
-     * @type {string}
-     * @public
-     * @default large
-     */
-    @api
-    get iconSize() {
-        return this._iconSize;
-    }
-
-    set iconSize(size) {
-        this._iconSize = normalizeString(size, {
-            fallbackValue: RATING_SIZES.default,
-            validValues: RATING_SIZES.valid
-        });
-    }
-
-    /**
-     * Valid values include continuous and single.
-     *
-     * @type {string}
-     * @public
-     * @default continuous
-     */
-    @api
-    get selection() {
-        return this._selection;
-    }
-
-    set selection(selection) {
-        this._selection = normalizeString(selection, {
-            fallbackValue: RATING_SELECTIONS.default,
-            validValues: RATING_SELECTIONS.valid
-        });
-
-        if (this.init) {
-            this.ratingRecalculation();
-        }
-    }
-
-    /**
-     * If present, the rating component is disabled and users cannot interact with it.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get disabled() {
-        return this._disabled;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
+    set min(value) {
+        this._min = isNaN(parseInt(value, 10)) ? DEFAULT_MIN : value;
 
         if (this.init) {
             this.ratingRecalculation();
@@ -308,6 +244,48 @@ export default class AvonniRating extends LightningElement {
     }
 
     /**
+     * Valid values include continuous and single.
+     *
+     * @type {string}
+     * @public
+     * @default continuous
+     */
+    @api
+    get selection() {
+        return this._selection;
+    }
+
+    set selection(selection) {
+        this._selection = normalizeString(selection, {
+            fallbackValue: RATING_SELECTIONS.default,
+            validValues: RATING_SELECTIONS.valid
+        });
+
+        if (this.init) {
+            this.ratingRecalculation();
+        }
+    }
+
+    /**
+     * Specifies the value of the rating.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = Number(value);
+
+        if (this.init) {
+            this.ratingRecalculation();
+        }
+    }
+
+    /**
      * Hide the rating fraction representation (e.g. "4/5" rating).
      *
      * @type {boolean}
@@ -322,6 +300,33 @@ export default class AvonniRating extends LightningElement {
     set valueHidden(value) {
         this._valueHidden = normalizeBoolean(value);
     }
+
+    /**
+     * The variant changes the appearance of an input field. Accepted variants include standard, label-inline, label-hidden, and label-stacked.
+     * This value defaults to standard, which displays the label above the field. Use label-hidden to hide the label but make it available to assistive technology.
+     * Use label-inline to horizontally align the label and input field. Use label-stacked to place the label above the input field.
+     *
+     * @type {string}
+     * @public
+     * @default standard
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: LABEL_VARIANTS.default,
+            validValues: LABEL_VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Display the rating.
@@ -344,7 +349,7 @@ export default class AvonniRating extends LightningElement {
             items.push(i);
         }
 
-        return items.reverse();
+        return items;
     }
 
     /**
@@ -375,6 +380,12 @@ export default class AvonniRating extends LightningElement {
             })
             .toString();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Get rating value and dispatch the change as the selected event.

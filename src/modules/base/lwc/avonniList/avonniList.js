@@ -64,6 +64,13 @@ const IMAGE_WIDTH = {
  */
 export default class AvonniList extends LightningElement {
     /**
+     * Alternative text used to describe the list. If the list is sortable, it should describe its behavior, for example: “Sortable menu. Press spacebar to grab or drop an item. Press up and down arrow keys to change position. Press escape to cancel.”
+     *
+     * @type {string}
+     * @public
+     */
+    @api alternativeText;
+    /**
      * Text label for the list.
      *
      * @type {string}
@@ -77,14 +84,10 @@ export default class AvonniList extends LightningElement {
      * @public
      */
     @api sortableIconName;
-    /**
-     * Alternative text used to describe the list. If the list is sortable, it should describe its behavior, for example: “Sortable menu. Press spacebar to grab or drop an item. Press up and down arrow keys to change position. Press escape to cancel.”
-     *
-     * @type {string}
-     * @public
-     */
-    @api alternativeText;
 
+    _actions = [];
+    _divider;
+    _imageWidth = IMAGE_WIDTH.default;
     _items = [];
     _sortable = false;
     _sortableIconPosition = ICON_POSITIONS.default;
@@ -97,14 +100,33 @@ export default class AvonniList extends LightningElement {
     _itemElements;
     _savedComputedItems;
     _currentItemDraggedHeight;
-    _actions = [];
     _hasActions = false;
-    _divider;
     _imageSrc = [];
-    _imageWidth = IMAGE_WIDTH.default;
     computedActions = [];
     computedItems = [];
     _hasImages;
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Array of action objects.
+     *
+     * @type {object}
+     * @public
+     */
+    @api
+    get actions() {
+        return this._actions;
+    }
+    set actions(proxy) {
+        this._actions = normalizeArray(proxy);
+        this.computedActions = JSON.parse(JSON.stringify(this._actions));
+        this._hasActions = true;
+    }
 
     /**
      * Position of the item divider. Valid valus include top, bottom and around.
@@ -193,21 +215,11 @@ export default class AvonniList extends LightningElement {
         });
     }
 
-    /**
-     * Array of action objects.
-     *
-     * @type {object}
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get actions() {
-        return this._actions;
-    }
-    set actions(proxy) {
-        this._actions = normalizeArray(proxy);
-        this.computedActions = JSON.parse(JSON.stringify(this._actions));
-        this._hasActions = true;
-    }
 
     /**
      * Computed Image container style width defined by user selected image width.
@@ -360,6 +372,12 @@ export default class AvonniList extends LightningElement {
             .toString();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * If the items have been sorted by the user, reset the items to their original order.
      *
@@ -370,6 +388,12 @@ export default class AvonniList extends LightningElement {
         this.clearSelection();
         this.computedItems = JSON.parse(JSON.stringify(this.items));
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Update assistive text based on new item ordering.

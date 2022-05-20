@@ -50,6 +50,13 @@ const DEFAULT_SIZE = 2;
  */
 export default class AvonniInputPen extends LightningElement {
     /**
+     * Array of buttons to remove from the toolbar. Values include pen, eraser, clear, size, color
+     *
+     * @type {string[]}
+     * @public
+     */
+    @api disabledButtons = [];
+    /**
      * Help text detailing the purpose and function of the input.
      *
      * @type {string}
@@ -63,24 +70,17 @@ export default class AvonniInputPen extends LightningElement {
      * @public
      */
     @api label;
-    /**
-     * Array of buttons to remove from the toolbar. Values include pen, eraser, clear, size, color
-     *
-     * @type {string[]}
-     * @public
-     */
-    @api disabledButtons = [];
 
-    _value;
     _color = DEFAULT_COLOR;
-    _size = DEFAULT_SIZE;
-    _variant = TOOLBAR_VARIANTS.default;
-    _mode = PEN_MODES.default;
     _disabled = false;
-    _readOnly = false;
-    _required = false;
     _hideControls = false;
     _invalid = false;
+    _mode = PEN_MODES.default;
+    _readOnly = false;
+    _required = false;
+    _size = DEFAULT_SIZE;
+    _value;
+    _variant = TOOLBAR_VARIANTS.default;
 
     sizeList;
     init = false;
@@ -151,24 +151,11 @@ export default class AvonniInputPen extends LightningElement {
         }
     }
 
-    /**
-     * dataUrl like 'data:image/png;base64, …'
-     *
-     * @type {string}
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get value() {
-        return this._value;
-    }
-
-    set value(value) {
-        this._value = value;
-
-        if (this.ctx) {
-            this.initSrc();
-        }
-    }
 
     /**
      * Color of the pen.
@@ -188,6 +175,124 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     /**
+     * If present, the input field is disabled and users cannot interact with it.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+
+        if (this._disabled) {
+            this.classList.add('avonni-disabled');
+        }
+    }
+
+    /**
+     * If present, hide the control bar.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideControls() {
+        if (
+            !this.showPen &&
+            !this.showErase &&
+            !this.showClear &&
+            !this.showSize &&
+            !this.showColor
+        ) {
+            return true;
+        }
+
+        return this._hideControls;
+    }
+
+    set hideControls(value) {
+        this._hideControls = normalizeBoolean(value);
+    }
+
+    /**
+     * If true, the editor is considered invalid.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get invalid() {
+        return this._invalid;
+    }
+
+    set invalid(value) {
+        this._invalid = normalizeBoolean(value);
+    }
+
+    /**
+     * Valid modes include draw and erase.
+     *
+     * @type {string}
+     * @public
+     * @default draw
+     */
+    @api
+    get mode() {
+        return this._mode;
+    }
+
+    set mode(value) {
+        this._mode = normalizeString(value, {
+            fallbackValue: PEN_MODES.default,
+            validValues: PEN_MODES.valid
+        });
+        this.initCursorStyles();
+    }
+
+    /**
+     * If present, the input field is read-only and cannot be edited by users.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get readOnly() {
+        return this._readOnly;
+    }
+
+    set readOnly(value) {
+        this._readOnly = normalizeBoolean(value);
+
+        if (this._readOnly) {
+            this.classList.add('avonni-disabled');
+        }
+    }
+
+    /**
+     * If present, the input field must be filled out before the form is submitted.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get required() {
+        return this._required;
+    }
+
+    set required(value) {
+        this._required = normalizeBoolean(value);
+    }
+
+    /**
      * Size of the pen.
      *
      * @type {string}
@@ -202,6 +307,25 @@ export default class AvonniInputPen extends LightningElement {
     set size(value) {
         this._size = Number(value);
         this.initCursorStyles();
+    }
+
+    /**
+     * dataUrl like 'data:image/png;base64, …'
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+
+        if (this.ctx) {
+            this.initSrc();
+        }
     }
 
     /**
@@ -229,117 +353,11 @@ export default class AvonniInputPen extends LightningElement {
         }
     }
 
-    /**
-     * Valid modes include draw and erase.
-     *
-     * @type {string}
-     * @public
-     * @default draw
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api get mode() {
-        return this._mode;
-    }
-
-    set mode(value) {
-        this._mode = normalizeString(value, {
-            fallbackValue: PEN_MODES.default,
-            validValues: PEN_MODES.valid
-        });
-        this.initCursorStyles();
-    }
-
-    /**
-     * If present, the input field is disabled and users cannot interact with it.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get disabled() {
-        return this._disabled;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
-
-        if (this._disabled) {
-            this.classList.add('avonni-disabled');
-        }
-    }
-
-    /**
-     * If present, the input field is read-only and cannot be edited by users.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get readOnly() {
-        return this._readOnly;
-    }
-
-    set readOnly(value) {
-        this._readOnly = normalizeBoolean(value);
-
-        if (this._readOnly) {
-            this.classList.add('avonni-disabled');
-        }
-    }
-
-    /**
-     * If present, the input field must be filled out before the form is submitted.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get required() {
-        return this._required;
-    }
-
-    set required(value) {
-        this._required = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, hide the control bar.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get hideControls() {
-        if (
-            !this.showPen &&
-            !this.showErase &&
-            !this.showClear &&
-            !this.showSize &&
-            !this.showColor
-        ) {
-            return true;
-        }
-
-        return this._hideControls;
-    }
-
-    set hideControls(value) {
-        this._hideControls = normalizeBoolean(value);
-    }
-
-    /**
-     * If true, the editor is considered invalid.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api get invalid() {
-        return this._invalid;
-    }
-
-    set invalid(value) {
-        this._invalid = normalizeBoolean(value);
-    }
 
     /**
      * Check if Pen is shown.
@@ -397,6 +415,12 @@ export default class AvonniInputPen extends LightningElement {
         );
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Clear the canvas.
      *
@@ -429,6 +453,12 @@ export default class AvonniInputPen extends LightningElement {
             validValues: PEN_MODES.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Initialize the Image canvas and dom elements.

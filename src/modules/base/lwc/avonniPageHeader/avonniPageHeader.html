@@ -149,6 +149,23 @@
                 </div>
             </template>
         </div>
+        <template if:true={showActions}>
+            <div
+                class="
+                    slds-page-header__col-actions
+                    slds-hide_small
+                    slds-p-top_x-small
+                "
+            >
+                <div class="slds-page-header__col-controls">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <slot name="actions"></slot>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
         <template if:true={isRecordHomeVariant}>
             <template if:true={showDetails}>
                 <div

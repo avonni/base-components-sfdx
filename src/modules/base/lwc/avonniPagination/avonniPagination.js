@@ -54,22 +54,6 @@ const DEFAULT_LIMIT = 5;
  */
 export default class AvonniPagination extends LightningElement {
     /**
-     * Number of rows per page
-     *
-     * @type {number}
-     * @public
-     * @default 20
-     */
-    @api perPage = DEFAULT_PER_PAGE;
-    /**
-     * Total number of rows in the dataset.
-     *
-     * @type {number}
-     * @public
-     * @default 0
-     */
-    @api totalRows = DEFAULT_TOTAL_ROWS;
-    /**
      * Content to place in the ellipsis placeholder.
      *
      * @type {string}
@@ -78,13 +62,6 @@ export default class AvonniPagination extends LightningElement {
      */
     @api ellipsisText = DEFAULT_ELLIPSIS_TEXT;
     /**
-     * Label for the first button.
-     *
-     * @type {string}
-     * @public
-     */
-    @api firstButtonLabel;
-    /**
      * The name of an icon to display after the label of the first button.
      *
      * @type {string}
@@ -92,19 +69,19 @@ export default class AvonniPagination extends LightningElement {
      */
     @api firstButtonIconName;
     /**
-     * Label for the previous button.
+     * Label for the first button.
      *
      * @type {string}
      * @public
      */
-    @api previousButtonLabel;
+    @api firstButtonLabel;
     /**
-     * Label for the next button.
+     * The name of an icon to display after the label for the last button.
      *
      * @type {string}
      * @public
      */
-    @api nextButtonLabel;
+    @api lastButtonIconName;
     /**
      * Label for the last button.
      *
@@ -113,23 +90,47 @@ export default class AvonniPagination extends LightningElement {
      */
     @api lastButtonLabel;
     /**
-     * The name of an icon to display after the label for the last button.
+     * Label for the next button.
      *
      * @type {string}
      * @public
      */
-    @api lastButtonIconName;
+    @api nextButtonLabel;
+    /**
+     * Number of rows per page
+     *
+     * @type {number}
+     * @public
+     * @default 20
+     */
+    @api perPage = DEFAULT_PER_PAGE;
+    /**
+     * Label for the previous button.
+     *
+     * @type {string}
+     * @public
+     */
+    @api previousButtonLabel;
+    /**
+     * Total number of rows in the dataset.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
+    @api totalRows = DEFAULT_TOTAL_ROWS;
 
-    _value = DEFAULT_VALUE;
+    _align = PAGINATION_ALIGNS.default;
+    _disabled = false;
     _limit = DEFAULT_LIMIT;
     _nextButtonIconName;
     _previousButtonIconName;
-    _align = PAGINATION_ALIGNS.default;
-    _disabled = false;
-    init = false;
+    _value = DEFAULT_VALUE;
+
+    _connected = false;
 
     renderedCallback() {
-        if (!this.init) {
+        if (!this._connected) {
             let container = this.template.querySelector(
                 '.avonni-pagination__container'
             );
@@ -163,25 +164,50 @@ export default class AvonniPagination extends LightningElement {
             `;
 
             container.appendChild(style);
-            this.init = true;
+            this._connected = true;
         }
         this.setActiveButton();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * Current page number, starting from 1
+     * Alignment of the page buttons. Values include left, center, right and fill.
      *
-     * @type {number}
+     * @type {string}
      * @public
-     * @default 1
+     * @default left
      */
     @api
-    get value() {
-        return this._value;
+    get align() {
+        return this._align;
     }
 
-    set value(value) {
-        this._value = Number(value);
+    set align(align) {
+        this._align = normalizeString(align, {
+            fallbackValue: PAGINATION_ALIGNS.default,
+            validValues: PAGINATION_ALIGNS.valid
+        });
+    }
+
+    /**
+     * If present, the pagination is disabled and the user cannot interact with it.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
     }
 
     /**
@@ -245,38 +271,26 @@ export default class AvonniPagination extends LightningElement {
     }
 
     /**
-     * Alignment of the page buttons. Values include left, center, right and fill.
+     * Current page number, starting from 1
      *
-     * @type {string}
+     * @type {number}
      * @public
-     * @default left
-     */
-    @api get align() {
-        return this._align;
-    }
-
-    set align(align) {
-        this._align = normalizeString(align, {
-            fallbackValue: PAGINATION_ALIGNS.default,
-            validValues: PAGINATION_ALIGNS.valid
-        });
-    }
-
-    /**
-     * If present, the pagination is disabled and the user cannot interact with it.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+     * @default 1
      */
     @api
-    get disabled() {
-        return this._disabled;
+    get value() {
+        return this._value;
     }
 
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
+    set value(value) {
+        this._value = Number(value);
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Get index of pagination buttons.
@@ -432,6 +446,12 @@ export default class AvonniPagination extends LightningElement {
         return paginationButtons;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Go to first page.
      *
@@ -490,6 +510,12 @@ export default class AvonniPagination extends LightningElement {
         this._value = Number(index);
         this.handlerChange();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Go to button index event handler.

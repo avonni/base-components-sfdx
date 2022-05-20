@@ -90,13 +90,12 @@ const DEFAULT_FRACTION_LABEL = 'of';
  */
 export default class AvonniWizard extends LightningElement {
     /**
-     * Title of the wizard, displayed in the header.
-     * To include additional markup or another component, use the title slot.
+     * The name of an icon to display for the finish button.
      *
      * @type {string}
      * @public
      */
-    @api title;
+    @api finishButtonIconName;
     /**
      * The Lightning Design System name of the icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. The icon is displayed in the header before the title.
      *
@@ -105,13 +104,6 @@ export default class AvonniWizard extends LightningElement {
      */
     @api iconName;
     /**
-     * The name of an icon to display for the previous button.
-     *
-     * @type {string}
-     * @public
-     */
-    @api previousButtonIconName;
-    /**
      * The name of an icon to display for the next button.
      *
      * @type {string}
@@ -119,33 +111,41 @@ export default class AvonniWizard extends LightningElement {
      */
     @api nextButtonIconName;
     /**
-     * The name of an icon to display for the finish button.
+     * The name of an icon to display for the previous button.
      *
      * @type {string}
      * @public
      */
-    @api finishButtonIconName;
+    @api previousButtonIconName;
+    /**
+     * Title of the wizard, displayed in the header.
+     * To include additional markup or another component, use the title slot.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
 
-    _variant = VARIANTS.default;
-    _hideNavigation = false;
-    _indicatorPosition = INDICATOR_POSITIONS.default;
-    _indicatorType = INDICATOR_TYPES.default;
-    _hideIndicator = false;
+    _actionPosition = POSITIONS.defaultAction;
+    _buttonAlignmentBump;
     _currentStep;
-    _initialCurrentStep;
-    _previousButtonIconPosition = POSITIONS.defaultPreviousButtonIcon;
-    _previousButtonLabel = DEFAULT_PREVIOUS_BUTTON_LABEL;
-    _previousButtonVariant = BUTTON_VARIANTS.defaultPreviousButton;
-    _nextButtonIconPosition = POSITIONS.defaultNextButtonIcon;
-    _nextButtonLabel = DEFAULT_NEXT_BUTTON_LABEL;
-    _nextButtonVariant = BUTTON_VARIANTS.defaultNextButton;
     _finishButtonIconPosition = POSITIONS.defaultFinishButtonIcon;
     _finishButtonLabel = DEFAULT_FINISH_BUTTON_LABEL;
     _finishButtonVariant = BUTTON_VARIANTS.defaultFinishButton;
-    _buttonAlignmentBump;
-    _actionPosition = POSITIONS.defaultAction;
-    _fractionPrefixLabel = DEFAULT_FRACTION_PREFIX_LABEL;
     _fractionLabel = DEFAULT_FRACTION_LABEL;
+    _fractionPrefixLabel = DEFAULT_FRACTION_PREFIX_LABEL;
+    _hideIndicator = false;
+    _hideNavigation = false;
+    _indicatorPosition = INDICATOR_POSITIONS.default;
+    _indicatorType = INDICATOR_TYPES.default;
+    _initialCurrentStep;
+    _nextButtonIconPosition = POSITIONS.defaultNextButtonIcon;
+    _nextButtonLabel = DEFAULT_NEXT_BUTTON_LABEL;
+    _nextButtonVariant = BUTTON_VARIANTS.defaultNextButton;
+    _previousButtonIconPosition = POSITIONS.defaultPreviousButtonIcon;
+    _previousButtonLabel = DEFAULT_PREVIOUS_BUTTON_LABEL;
+    _previousButtonVariant = BUTTON_VARIANTS.defaultPreviousButton;
+    _variant = VARIANTS.default;
 
     steps = [];
     showWizard = true;
@@ -216,6 +216,47 @@ export default class AvonniWizard extends LightningElement {
         this.steps[this.currentStepIndex].callbacks.setClass(undefined);
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Position of the actions. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
+    @api
+    get actionPosition() {
+        return this._actionPosition;
+    }
+    set actionPosition(position) {
+        this._actionPosition = normalizeString(position, {
+            fallbackValue: POSITIONS.defaultAction,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    /**
+     * Bump to apply to the buttons. Valid values include left and right.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get buttonAlignmentBump() {
+        return this._buttonAlignmentBump;
+    }
+    set buttonAlignmentBump(position) {
+        this._buttonAlignmentBump = normalizeString(position, {
+            fallbackValue: null,
+            validValues: POSITIONS.valid
+        });
+    }
+
     /**
      * Set current-step to match the value attribute of one of wizard-step components. If current-step is not provided, the value of the first wizard-step component is used.
      *
@@ -233,6 +274,108 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
+     * Describes the position of the icon with respect to body. Options include left and right.
+     *
+     * @type {string}
+     * @public
+     * @default left
+     */
+    @api
+    get finishButtonIconPosition() {
+        return this._finishButtonIconPosition;
+    }
+    set finishButtonIconPosition(position) {
+        this._finishButtonIconPosition = normalizeString(position, {
+            fallbackValue: POSITIONS.defaultfinishButtonIcon,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    /**
+     * Label for the finish button.
+     *
+     * @type {string}
+     * @public
+     * @default Finish
+     */
+    @api
+    get finishButtonLabel() {
+        return this._finishButtonLabel;
+    }
+    set finishButtonLabel(label) {
+        this._finishButtonLabel =
+            (typeof label === 'string' && label.trim()) ||
+            DEFAULT_FINISH_BUTTON_LABEL;
+    }
+
+    /**
+     * Change the appearance of the finish button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     *
+     * @type {string}
+     * @public
+     * @default neutral
+     */
+    @api
+    get finishButtonVariant() {
+        return this._finishButtonVariant;
+    }
+    set finishButtonVariant(variant) {
+        this._finishButtonVariant = normalizeString(variant, {
+            fallbackValue: BUTTON_VARIANTS.defaultfinishButton,
+            validValues: BUTTON_VARIANTS.valid
+        });
+    }
+
+    /**
+     * Label displayed between the current index and the maximum number of slides. For example, if "of" is used, the indicator would display "1 of 3". Only used by the fractions indicator type.
+     *
+     * @type {string}
+     * @public
+     * @default of
+     */
+    @api
+    get fractionLabel() {
+        return this._fractionLabel;
+    }
+    set fractionLabel(label) {
+        this._fractionLabel =
+            (typeof label === 'string' && label.trim()) ||
+            DEFAULT_FRACTION_LABEL;
+    }
+
+    /**
+     * Label displayed before the fraction indicator. For example, if "Page" is used, the indicator would display "Page 1 of 3". Only used by the fractions indicator type.
+     *
+     * @type {string}
+     * @public
+     * @default step
+     */
+    @api
+    get fractionPrefixLabel() {
+        return this._fractionPrefixLabel;
+    }
+    set fractionPrefixLabel(prefix) {
+        this._fractionPrefixLabel =
+            (typeof prefix === 'string' && prefix.trim()) ||
+            DEFAULT_FRACTION_PREFIX_LABEL;
+    }
+
+    /**
+     * If present, hide the indicator.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideIndicator() {
+        return this._hideIndicator;
+    }
+    set hideIndicator(value) {
+        this._hideIndicator = normalizeBoolean(value);
+    }
+
+    /**
      * If true, hide the navigation (buttons and indicator).
      *
      * @type {boolean}
@@ -245,25 +388,6 @@ export default class AvonniWizard extends LightningElement {
     }
     set hideNavigation(boolean) {
         this._hideNavigation = normalizeBoolean(boolean);
-    }
-
-    /**
-     * Variant of the wizard. Valid values include base, modal, quickActionPanel and card.
-     *
-     * @type {string}
-     * @public
-     * @default base
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid,
-            toLowerCase: false
-        });
     }
 
     /**
@@ -299,74 +423,6 @@ export default class AvonniWizard extends LightningElement {
         this._indicatorType = normalizeString(type, {
             fallbackValue: INDICATOR_TYPES.default,
             validValues: INDICATOR_TYPES.valid
-        });
-    }
-
-    /**
-     * If present, hide the indicator.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideIndicator() {
-        return this._hideIndicator;
-    }
-    set hideIndicator(value) {
-        this._hideIndicator = normalizeBoolean(value);
-    }
-
-    /**
-     * Position of the icon with respect to the body. Options include left and right.
-     *
-     * @type {string}
-     * @public
-     * @default left
-     */
-    @api
-    get previousButtonIconPosition() {
-        return this._previousButtonIconPosition;
-    }
-    set previousButtonIconPosition(value) {
-        this._previousButtonIconPosition = normalizeString(value, {
-            fallbackValue: POSITIONS.defaultpreviousButtonIcon,
-            validValues: POSITIONS.valid
-        });
-    }
-
-    /**
-     * Label for the previous button.
-     *
-     * @type {string}
-     * @public
-     * @default Previous
-     */
-    @api
-    get previousButtonLabel() {
-        return this._previousButtonLabel;
-    }
-    set previousButtonLabel(label) {
-        this._previousButtonLabel =
-            (typeof label === 'string' && label.trim()) ||
-            DEFAULT_PREVIOUS_BUTTON_LABEL;
-    }
-
-    /**
-     * Changes the appearance of the previous button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text and success.
-     *
-     * @type {string}
-     * @public
-     * @default neutral
-     */
-    @api
-    get previousButtonVariant() {
-        return this._previousButtonVariant;
-    }
-    set previousButtonVariant(value) {
-        this._previousButtonVariant = normalizeString(value, {
-            fallbackValue: BUTTON_VARIANTS.defaultpreviousButton,
-            validValues: BUTTON_VARIANTS.valid
         });
     }
 
@@ -424,126 +480,82 @@ export default class AvonniWizard extends LightningElement {
     }
 
     /**
-     * Describes the position of the icon with respect to body. Options include left and right.
+     * Position of the icon with respect to the body. Options include left and right.
      *
      * @type {string}
      * @public
      * @default left
      */
     @api
-    get finishButtonIconPosition() {
-        return this._finishButtonIconPosition;
+    get previousButtonIconPosition() {
+        return this._previousButtonIconPosition;
     }
-    set finishButtonIconPosition(position) {
-        this._finishButtonIconPosition = normalizeString(position, {
-            fallbackValue: POSITIONS.defaultfinishButtonIcon,
+    set previousButtonIconPosition(value) {
+        this._previousButtonIconPosition = normalizeString(value, {
+            fallbackValue: POSITIONS.defaultpreviousButtonIcon,
             validValues: POSITIONS.valid
         });
     }
 
     /**
-     * Label for the finish button.
+     * Label for the previous button.
      *
      * @type {string}
      * @public
-     * @default Finish
+     * @default Previous
      */
     @api
-    get finishButtonLabel() {
-        return this._finishButtonLabel;
+    get previousButtonLabel() {
+        return this._previousButtonLabel;
     }
-    set finishButtonLabel(label) {
-        this._finishButtonLabel =
+    set previousButtonLabel(label) {
+        this._previousButtonLabel =
             (typeof label === 'string' && label.trim()) ||
-            DEFAULT_FINISH_BUTTON_LABEL;
+            DEFAULT_PREVIOUS_BUTTON_LABEL;
     }
 
     /**
-     * Change the appearance of the finish button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text, success.
+     * Changes the appearance of the previous button. Valid values include bare, neutral, brand, brand-outline, inverse, destructive, destructive-text and success.
      *
      * @type {string}
      * @public
      * @default neutral
      */
     @api
-    get finishButtonVariant() {
-        return this._finishButtonVariant;
+    get previousButtonVariant() {
+        return this._previousButtonVariant;
     }
-    set finishButtonVariant(variant) {
-        this._finishButtonVariant = normalizeString(variant, {
-            fallbackValue: BUTTON_VARIANTS.defaultfinishButton,
+    set previousButtonVariant(value) {
+        this._previousButtonVariant = normalizeString(value, {
+            fallbackValue: BUTTON_VARIANTS.defaultpreviousButton,
             validValues: BUTTON_VARIANTS.valid
         });
     }
 
     /**
-     * Bump to apply to the buttons. Valid values include left and right.
+     * Variant of the wizard. Valid values include base, modal, quickActionPanel and card.
      *
      * @type {string}
      * @public
+     * @default base
      */
     @api
-    get buttonAlignmentBump() {
-        return this._buttonAlignmentBump;
+    get variant() {
+        return this._variant;
     }
-    set buttonAlignmentBump(position) {
-        this._buttonAlignmentBump = normalizeString(position, {
-            fallbackValue: null,
-            validValues: POSITIONS.valid
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid,
+            toLowerCase: false
         });
     }
 
-    /**
-     * Position of the actions. Valid values include left and right.
-     *
-     * @type {string}
-     * @public
-     * @default left
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get actionPosition() {
-        return this._actionPosition;
-    }
-    set actionPosition(position) {
-        this._actionPosition = normalizeString(position, {
-            fallbackValue: POSITIONS.defaultAction,
-            validValues: POSITIONS.valid
-        });
-    }
-
-    /**
-     * Label displayed before the fraction indicator. For example, if "Page" is used, the indicator would display "Page 1 of 3". Only used by the fractions indicator type.
-     *
-     * @type {string}
-     * @public
-     * @default step
-     */
-    @api
-    get fractionPrefixLabel() {
-        return this._fractionPrefixLabel;
-    }
-    set fractionPrefixLabel(prefix) {
-        this._fractionPrefixLabel =
-            (typeof prefix === 'string' && prefix.trim()) ||
-            DEFAULT_FRACTION_PREFIX_LABEL;
-    }
-
-    /**
-     * Label displayed between the current index and the maximum number of slides. For example, if "of" is used, the indicator would display "1 of 3". Only used by the fractions indicator type.
-     *
-     * @type {string}
-     * @public
-     * @default of
-     */
-    @api
-    get fractionLabel() {
-        return this._fractionLabel;
-    }
-    set fractionLabel(label) {
-        this._fractionLabel =
-            (typeof label === 'string' && label.trim()) ||
-            DEFAULT_FRACTION_LABEL;
-    }
 
     get currentStepHasError() {
         return normalizeBoolean(this.errorMessage);
@@ -628,6 +640,12 @@ export default class AvonniWizard extends LightningElement {
         });
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Display the wizard.
      *
@@ -701,6 +719,12 @@ export default class AvonniWizard extends LightningElement {
 
         this._updateStepDisplay();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * State of step before change.

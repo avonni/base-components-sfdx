@@ -33,6 +33,111 @@
 -->
 
 <template>
+    <!-- Toolbar -->
+    <div
+        if:false={hideToolbar}
+        class="slds-grid slds-m-bottom_medium slds-grid_vertical-align-center"
+        data-element-id="div-toolbar"
+    >
+        <lightning-button-group
+            if:true={toolbarTimeSpans.length}
+            onclick={handleToolbarTimeSpanClick}
+        >
+            <template for:each={toolbarTimeSpanButtons} for:item="button">
+                <lightning-button
+                    key={button.label}
+                    label={button.label}
+                    variant={button.variant}
+                    data-headers={button.headers}
+                    data-span={button.span}
+                    data-unit={button.unit}
+                    data-element-id="lightning-button-toolbar-time-span"
+                ></lightning-button>
+            </template>
+            <c-avonni-button-menu
+                if:true={toolbarTimeSpanMenuItems.length}
+                icon-name="utility:down"
+                data-element-id="avonni-button-menu-toolbar-spans"
+            >
+                <template
+                    for:each={toolbarTimeSpanMenuItems}
+                    for:item="menuItem"
+                >
+                    <lightning-menu-item
+                        key={menuItem.label}
+                        checked={menuItem.checked}
+                        label={menuItem.label}
+                        data-headers={menuItem.headers}
+                        data-span={menuItem.span}
+                        data-unit={menuItem.unit}
+                        data-element-id="lightning-menu-item-toolbar-time-span"
+                    ></lightning-menu-item>
+                </template>
+            </c-avonni-button-menu>
+        </lightning-button-group>
+
+        <div
+            class="
+                slds-col
+                slds-text-align_center
+                slds-p-horizontal_small
+                slds-has-flexi-truncate
+            "
+            onfocusin={handleToolbarCalendarFocusin}
+            onfocusout={handleToolbarCalendarFocusout}
+        >
+            <button
+                class="
+                    slds-truncate slds-button
+                    slds-text-heading_small
+                    avonni-scheduler__toolbar-date-range
+                "
+                type="button"
+                data-element-id="button-toolbar-calendar"
+                onclick={handleToggleToolbarCalendar}
+            >
+                <span class="slds-truncate">{visibleIntervalLabel}</span>
+                <span>
+                    <lightning-icon
+                        class="slds-button__icon slds-button__icon_right"
+                        aria-hidden="true"
+                        icon-name="utility:chevrondown"
+                        size="xx-small"
+                    ></lightning-icon>
+                </span>
+            </button>
+            <div
+                if:true={showToolbarCalendar}
+                class="slds-dropdown slds-dropdown_center"
+            >
+                <lightning-focus-trap>
+                    <c-avonni-calendar
+                        value={selectedDate}
+                        data-element-id="calendar-toolbar"
+                        onchange={handleToolbarCalendarChange}
+                    ></c-avonni-calendar>
+                </lightning-focus-trap>
+            </div>
+        </div>
+
+        <lightning-button-group>
+            <lightning-button-icon
+                icon-name="utility:chevronleft"
+                data-element-id="lightning-button-icon-toolbar-prev"
+                onclick={handleToolbarPrevClick}
+            ></lightning-button-icon>
+            <lightning-button
+                label="Today"
+                data-element-id="lightning-button-icon-toolbar-today"
+                onclick={handleToolbarTodayClick}
+            ></lightning-button>
+            <lightning-button-icon
+                icon-name="utility:chevronright"
+                data-element-id="lightning-button-icon-toolbar-next"
+                onclick={handleToolbarNextClick}
+            ></lightning-button-icon>
+        </lightning-button-group>
+    </div>
     <div
         class="
             slds-grid slds-is-relative
@@ -97,22 +202,6 @@
 
         <!-- Schedule -->
         <div class="slds-col slds-grid avonni-scheduler__schedule-col">
-            <!-- Left infinite loading spinner -->
-            <div if:true={showLeftInfiniteLoadSpinner} class="slds-is-relative">
-                <div
-                    role="status"
-                    class="
-                        avonni-scheduler__infinite-load-spinner_left
-                        slds-spinner slds-spinner_medium
-                    "
-                >
-                    <span class="slds-assistive-text"
-                        >{loadingStateAlternativeText}</span
-                    >
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
-                </div>
-            </div>
             <div class="slds-col">
                 <!-- Headers -->
                 <c-avonni-primitive-scheduler-header-group
@@ -120,16 +209,14 @@
                     available-days-of-the-week={availableDaysOfTheWeek}
                     available-months={availableMonths}
                     available-time-frames={availableTimeFrames}
+                    available-time-spans={availableToolbarTimeSpans}
                     headers={computedHeaders}
                     scroll-left-offset={datatableWidth}
                     start={start}
                     time-span={timeSpan}
                     data-element-id="avonni-primitive-scheduler-header-group"
-                    onprivateheaderregister={handleHeaderRegister}
                     onprivatecellwidthchange={handleHeaderCellWidthChange}
                     onprivateheaderchange={handleHeaderChange}
-                    onprivateheaderfirstrender={handleHeaderFirstRender}
-                    onprivatevisibleheaderchange={handleHeaderVisibleCellsChange}
                 ></c-avonni-primitive-scheduler-header-group>
                 <!-- Rows -->
                 <div class="slds-is-relative avonni-scheduler__body">
@@ -157,8 +244,9 @@
                                         slds-wrap
                                         avonni-scheduler__cell
                                     "
-                                    data-start={column.start}
                                     data-end={column.end}
+                                    data-element-id="div-cell"
+                                    data-start={column.start}
                                     oncontextmenu={handleEmptySpotContextMenu}
                                     onmousedown={handleMouseDown}
                                     ondblclick={handleDoubleClick}
@@ -217,25 +305,6 @@
                             </div>
                         </template>
                     </div>
-                </div>
-            </div>
-            <!-- Right infinite loading spinner -->
-            <div
-                if:true={showRightInfiniteLoadSpinner}
-                class="slds-is-relative"
-            >
-                <div
-                    role="status"
-                    class="
-                        avonni-scheduler__infinite-load-spinner
-                        slds-spinner slds-spinner_medium
-                    "
-                >
-                    <span class="slds-assistive-text"
-                        >{loadingStateAlternativeText}</span
-                    >
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
                 </div>
             </div>
         </div>

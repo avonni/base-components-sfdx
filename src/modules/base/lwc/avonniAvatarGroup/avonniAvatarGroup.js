@@ -161,6 +161,12 @@ export default class AvonniAvatarGroup extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * An array of items to be rendered as avatar in a group.
      * @type {object[]}
@@ -173,6 +179,81 @@ export default class AvonniAvatarGroup extends LightningElement {
 
     set items(value) {
         this._items = normalizeArray(value);
+    }
+
+    /**
+     * Defines the layout of the avatar group. Valid values include stack, grid and list.
+     * @type {string}
+     * @default stack
+     * @public
+     */
+    @api
+    get layout() {
+        return this._layout;
+    }
+
+    set layout(value) {
+        this._layout = normalizeString(value, {
+            fallbackValue: AVATAR_GROUP_LAYOUTS.default,
+            validValues: AVATAR_GROUP_LAYOUTS.valid
+        });
+    }
+
+    /**
+     * Position of the list button’s icon. Valid values include left and right.
+     * @type {string}
+     * @name list-button-show-less-icon-position
+     * @default left
+     * @public
+     */
+    @api
+    get listButtonShowLessIconPosition() {
+        return this._listButtonShowLessIconPosition;
+    }
+
+    set listButtonShowLessIconPosition(value) {
+        this._listButtonShowLessIconPosition = normalizeString(value, {
+            fallbackValue: BUTTON_ICON_POSITIONS.default,
+            validValues: BUTTON_ICON_POSITIONS.valid
+        });
+    }
+
+    /**
+     * Position of the list button’s icon. Valid values include left and right.
+     * @type {string}
+     * @name list-button-show-more-icon-position
+     * @default left
+     * @public
+     */
+    @api
+    get listButtonShowMoreIconPosition() {
+        return this._listButtonShowMoreIconPosition;
+    }
+
+    set listButtonShowMoreIconPosition(value) {
+        this._listButtonShowMoreIconPosition = normalizeString(value, {
+            fallbackValue: BUTTON_ICON_POSITIONS.default,
+            validValues: BUTTON_ICON_POSITIONS.valid
+        });
+    }
+
+    /**
+     * Variant of the button that appears in the list layout, when the number of avatars exceeds the max-count number.
+     * @type {string}
+     * @name list-button-variant
+     * @default neutral
+     * @public
+     */
+    @api
+    get listButtonVariant() {
+        return this._listButtonVariant;
+    }
+
+    set listButtonVariant(value) {
+        this._listButtonVariant = normalizeString(value, {
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
+        });
     }
 
     /**
@@ -210,81 +291,6 @@ export default class AvonniAvatarGroup extends LightningElement {
     }
 
     /**
-     * Defines the layout of the avatar group. Valid values include stack, grid and list.
-     * @type {string}
-     * @default stack
-     * @public
-     */
-    @api
-    get layout() {
-        return this._layout;
-    }
-
-    set layout(value) {
-        this._layout = normalizeString(value, {
-            fallbackValue: AVATAR_GROUP_LAYOUTS.default,
-            validValues: AVATAR_GROUP_LAYOUTS.valid
-        });
-    }
-
-    /**
-     * Variant of the button that appears in the list layout, when the number of avatars exceeds the max-count number.
-     * @type {string}
-     * @name list-button-variant
-     * @default neutral
-     * @public
-     */
-    @api
-    get listButtonVariant() {
-        return this._listButtonVariant;
-    }
-
-    set listButtonVariant(value) {
-        this._listButtonVariant = normalizeString(value, {
-            fallbackValue: BUTTON_VARIANTS.default,
-            validValues: BUTTON_VARIANTS.valid
-        });
-    }
-
-    /**
-     * Position of the list button’s icon. Valid values include left and right.
-     * @type {string}
-     * @name list-button-show-more-icon-position
-     * @default left
-     * @public
-     */
-    @api
-    get listButtonShowMoreIconPosition() {
-        return this._listButtonShowMoreIconPosition;
-    }
-
-    set listButtonShowMoreIconPosition(value) {
-        this._listButtonShowMoreIconPosition = normalizeString(value, {
-            fallbackValue: BUTTON_ICON_POSITIONS.default,
-            validValues: BUTTON_ICON_POSITIONS.valid
-        });
-    }
-
-    /**
-     * Position of the list button’s icon. Valid values include left and right.
-     * @type {string}
-     * @name list-button-show-less-icon-position
-     * @default left
-     * @public
-     */
-    @api
-    get listButtonShowLessIconPosition() {
-        return this._listButtonShowLessIconPosition;
-    }
-
-    set listButtonShowLessIconPosition(value) {
-        this._listButtonShowLessIconPosition = normalizeString(value, {
-            fallbackValue: BUTTON_ICON_POSITIONS.default,
-            validValues: BUTTON_ICON_POSITIONS.valid
-        });
-    }
-
-    /**
      * Shape of the avatars. Valid values include empty, circle or square.
      * @type {string}
      * @default square
@@ -301,6 +307,12 @@ export default class AvonniAvatarGroup extends LightningElement {
             validValues: AVATAR_GROUP_VARIANTS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Current label of the list button (show more or show less)
@@ -565,6 +577,12 @@ export default class AvonniAvatarGroup extends LightningElement {
     get isNotList() {
         return !(this.layout === 'list');
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Change the value of _allowBlur to true

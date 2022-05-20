@@ -80,7 +80,7 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
         if (!currentLevel) return 0;
 
         const lastGroup = currentLevel.querySelector(
-            'c-primitive-relationship-graph-group:last-child'
+            '[data-element-id="avonni-primitive-relationship-graph-group"]:last-child'
         );
         if (!lastGroup) return 0;
 
@@ -102,7 +102,7 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
 
     get childLevel() {
         return this.template.querySelector(
-            'c-primitive-relationship-graph-level'
+            '[data-element-id="avonni-primitive-relationship-graph-level"]'
         );
     }
 
@@ -144,7 +144,7 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
 
     get selectedItemComponent() {
         const groups = this.template.querySelectorAll(
-            'c-primitive-relationship-graph-group'
+            '[data-element-id="avonni-primitive-relationship-graph-group"]'
         );
 
         let selectedItem;
@@ -157,7 +157,7 @@ export default class AvonniPrimitiveRelationshipGraphLevel extends LightningElem
 
     get selectedGroupComponent() {
         const groups = this.template.querySelectorAll(
-            'c-primitive-relationship-graph-group'
+            '[data-element-id="avonni-primitive-relationship-graph-group"]'
         );
 
         let selectedGroup;

@@ -63,10 +63,18 @@ export default class AvonniOutputData extends LightningElement {
     _variant = VARIANTS.default;
 
     normalizedTypeAttributes = {};
+    _isConnected = false;
 
     connectedCallback() {
         this.normalizeTypeAttributes();
+        this._isConnected = true;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Attributes specific to the type (see <strong>Types and Type Attributes</strong>).
@@ -81,7 +89,7 @@ export default class AvonniOutputData extends LightningElement {
     set typeAttributes(value) {
         this._typeAttributes = typeof value === 'object' ? value : {};
 
-        if (this.isConnected) this.normalizeTypeAttributes();
+        if (this._isConnected) this.normalizeTypeAttributes();
     }
 
     /**
@@ -100,7 +108,7 @@ export default class AvonniOutputData extends LightningElement {
             validValues: TYPES.valid
         });
 
-        if (this.isConnected) this.normalizeTypeAttributes();
+        if (this._isConnected) this.normalizeTypeAttributes();
     }
 
     /**
@@ -138,6 +146,12 @@ export default class AvonniOutputData extends LightningElement {
             validValues: VARIANTS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     get computedLabelClass() {
         return classSet('slds-item_label slds-text-color_weak slds-truncate')
@@ -259,6 +273,12 @@ export default class AvonniOutputData extends LightningElement {
     get showBoolean() {
         return this.isBoolean && this.value;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Normalize the type attributes, to remove the invalid and unsupported attributes.

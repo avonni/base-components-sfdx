@@ -69,6 +69,12 @@ export default class AvonniQrcode extends LightningElement {
         this._rendered = true;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Background color of the qr-code. Accepts a valid CSS color string, including hex and rgb.
      *
@@ -331,6 +337,12 @@ export default class AvonniQrcode extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Render QR Code as SVG.
      *
@@ -348,19 +360,11 @@ export default class AvonniQrcode extends LightningElement {
         return !this._background;
     }
 
-    /**
-     * Verify if color is hexadecimal.
-     *
-     * @param {string} hex
-     * @returns {boolean}
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
      */
-    isHexColor(hex) {
-        return (
-            typeof hex === 'string' &&
-            hex.length === 6 &&
-            !isNaN(Number('0x' + hex))
-        );
-    }
 
     /**
      * Redraws the QR code using the current value and options.
@@ -433,5 +437,25 @@ export default class AvonniQrcode extends LightningElement {
                     encodeURIComponent(svgCode);
             }
         }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Verify if color is hexadecimal.
+     *
+     * @param {string} hex
+     * @returns {boolean}
+     */
+    isHexColor(hex) {
+        return (
+            typeof hex === 'string' &&
+            hex.length === 6 &&
+            !isNaN(Number('0x' + hex))
+        );
     }
 }

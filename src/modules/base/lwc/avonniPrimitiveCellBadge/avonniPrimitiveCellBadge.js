@@ -31,12 +31,21 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { classSet } from 'c/utils';
 import { normalizeString } from 'c/utilsPrivate';
 
 const BADGE_VARIANTS = {
-    valid: ['default', 'inverse', 'success', 'warning', 'error', 'lightest'],
-    default: 'default'
+    valid: [
+        'base',
+        'brand',
+        'inverse',
+        'alt-inverse',
+        'success',
+        'warning',
+        'error',
+        'info',
+        'offline'
+    ],
+    default: 'base'
 };
 
 export default class AvonniPrimitiveCellBadge extends LightningElement {
@@ -54,17 +63,5 @@ export default class AvonniPrimitiveCellBadge extends LightningElement {
             fallbackValue: BADGE_VARIANTS.default,
             validValues: BADGE_VARIANTS.valid
         });
-    }
-
-    get computedBadgeClass() {
-        return classSet('slds-badge')
-            .add({
-                'slds-badge_inverse': this._variant === 'inverse',
-                'slds-badge_lightest': this._variant === 'lightest',
-                'slds-theme_success': this._variant === 'success',
-                'slds-theme_warning': this._variant === 'warning',
-                'slds-theme_error': this._variant === 'error'
-            })
-            .toString();
     }
 }

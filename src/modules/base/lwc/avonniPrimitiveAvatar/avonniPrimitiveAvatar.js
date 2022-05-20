@@ -117,6 +117,57 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
         if (this.showEntity) this._computeEntityClasses();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Actions
+     */
+    @api
+    get actions() {
+        return this._actions;
+    }
+
+    set actions(value) {
+        this._actions = normalizeArray(value);
+    }
+
+    get actionMenu() {
+        return this.actions.length > 1;
+    }
+
+    get action() {
+        return this.actions[0];
+    }
+
+    @api
+    get actionPosition() {
+        return this._actionPosition;
+    }
+
+    set actionPosition(value) {
+        this._actionPosition = normalizeString(value, {
+            fallbackValue: POSITIONS.actionDefault,
+            validValues: POSITIONS.valid
+        });
+    }
+
+    @api
+    get actionMenuIcon() {
+        return this._actionMenuIcon;
+    }
+
+    set actionMenuIcon(icon) {
+        if (icon && icon.length > 0) {
+            this._actionMenuIcon = icon;
+        } else {
+            this._actionMenuIcon = DEFAULT_ICON_MENU_ICON;
+        }
+    }
+
     @api
     get alternativeText() {
         return this._alternativeText;
@@ -125,41 +176,6 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
     set alternativeText(value) {
         this._alternativeText =
             typeof value === 'string' ? value.trim() : DEFAULT_ALTERNATIVE_TEXT;
-    }
-
-    @api
-    get size() {
-        return this._size;
-    }
-
-    set size(value) {
-        this._size = normalizeString(value, {
-            fallbackValue: AVATAR_SIZES.default,
-            validValues: AVATAR_SIZES.valid
-        });
-        this._updateClassList();
-    }
-
-    @api
-    get src() {
-        return this._src;
-    }
-
-    set src(value) {
-        this._src = (typeof value === 'string' && value.trim()) || '';
-    }
-
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: AVATAR_VARIANTS.default,
-            validValues: AVATAR_VARIANTS.valid
-        });
-        this._updateClassList();
     }
 
     /**
@@ -261,99 +277,17 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
             typeof value === 'string' ? value.trim() : DEFAULT_PRESENCE_TITLE;
     }
 
-    get computedInitialsClass() {
-        return classSet(
-            'slds-avatar__initials avonni-avatar__initials_text-color'
-        )
-            .add({
-                'slds-avatar-grouped__initials': this.groupedAvatar
-            })
-            .add(computeSldsClass(this.fallbackIconName))
-            .toString();
-    }
-
-    /**
-     * Actions
-     */
     @api
-    get actions() {
-        return this._actions;
+    get size() {
+        return this._size;
     }
 
-    set actions(value) {
-        this._actions = normalizeArray(value);
-    }
-
-    get actionMenu() {
-        return this.actions.length > 1;
-    }
-
-    get action() {
-        return this.actions[0];
-    }
-
-    @api
-    get actionPosition() {
-        return this._actionPosition;
-    }
-
-    set actionPosition(value) {
-        this._actionPosition = normalizeString(value, {
-            fallbackValue: POSITIONS.actionDefault,
-            validValues: POSITIONS.valid
+    set size(value) {
+        this._size = normalizeString(value, {
+            fallbackValue: AVATAR_SIZES.default,
+            validValues: AVATAR_SIZES.valid
         });
-    }
-
-    @api
-    get actionMenuIcon() {
-        return this._actionMenuIcon;
-    }
-
-    set actionMenuIcon(icon) {
-        if (icon && icon.length > 0) {
-            this._actionMenuIcon = icon;
-        } else {
-            this._actionMenuIcon = DEFAULT_ICON_MENU_ICON;
-        }
-    }
-
-    get computedActionClasses() {
-        return classSet('avonni-avatar__actions').add(
-            `avonni-avatar_${this._actionPosition}`
-        );
-    }
-
-    get showActions() {
-        const { size, actions } = this;
-        let _showAction = true;
-        if (
-            size === 'small' ||
-            size === 'x-small' ||
-            size === 'xx-small' ||
-            (actions && !actions.length > 0)
-        ) {
-            _showAction = false;
-        }
-        return _showAction;
-    }
-
-    get actionMenuSize() {
-        let _actionSize;
-        switch (this.size) {
-            case 'x-large':
-                _actionSize = 'x-small';
-                break;
-            case 'large':
-                _actionSize = 'xx-small';
-                break;
-            case 'medium':
-                _actionSize = 'xx-small';
-                break;
-            default:
-                _actionSize = 'small';
-                break;
-        }
-        return _actionSize;
+        this._updateClassList();
     }
 
     /**
@@ -395,6 +329,84 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
             validValues: POSITIONS.valid
         });
         this._computeStatus();
+    }
+
+    @api
+    get src() {
+        return this._src;
+    }
+
+    set src(value) {
+        this._src = (typeof value === 'string' && value.trim()) || '';
+    }
+
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: AVATAR_VARIANTS.default,
+            validValues: AVATAR_VARIANTS.valid
+        });
+        this._updateClassList();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    get computedInitialsClass() {
+        return classSet(
+            'slds-avatar__initials avonni-avatar__initials_text-color'
+        )
+            .add({
+                'slds-avatar-grouped__initials': this.groupedAvatar
+            })
+            .add(computeSldsClass(this.fallbackIconName))
+            .toString();
+    }
+
+    get computedActionClasses() {
+        return classSet('avonni-avatar__actions').add(
+            `avonni-avatar_${this._actionPosition}`
+        );
+    }
+
+    get showActions() {
+        const { size, actions } = this;
+        let _showAction = true;
+        if (
+            size === 'small' ||
+            size === 'x-small' ||
+            size === 'xx-small' ||
+            (actions && !actions.length > 0)
+        ) {
+            _showAction = false;
+        }
+        return _showAction;
+    }
+
+    get actionMenuSize() {
+        let _actionSize;
+        switch (this.size) {
+            case 'x-large':
+                _actionSize = 'x-small';
+                break;
+            case 'large':
+                _actionSize = 'xx-small';
+                break;
+            case 'medium':
+                _actionSize = 'xx-small';
+                break;
+            default:
+                _actionSize = 'small';
+                break;
+        }
+        return _actionSize;
     }
 
     get groupedAvatar() {
@@ -483,6 +495,12 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
             title: statusTitle
         };
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     _computePresenceClasses() {
         const { presence, presencePosition } = this;

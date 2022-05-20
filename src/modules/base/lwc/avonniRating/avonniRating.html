@@ -35,7 +35,9 @@
 <template>
     <div class={computedContainerClass} data-element-id="div-wrapper">
         <template if:true={label}>
-            <label class={computedLegendClass} data-element-id="label"> {label} </label>
+            <label class={computedLegendClass} data-element-id="label">
+                {label}
+            </label>
             <lightning-helptext
                 if:true={fieldLevelHelp}
                 content={fieldLevelHelp}
@@ -49,6 +51,7 @@
                         class="slds-button slds-button_outline-brand"
                         key={item}
                         title={item}
+                        type="button"
                         value={item}
                         disabled={disabled}
                         data-element-id="button"
@@ -74,7 +77,12 @@
                     ></lightning-button-icon>
                 </template>
             </span>
-            <span if:true={showRating} class="avonni-rating__value" data-element-id="avonni-rating-value">{value}/{max}</span>
+            <span
+                if:true={showRating}
+                class="avonni-rating__value"
+                data-element-id="avonni-rating-value"
+                >{value}/{max}</span
+            >
         </div>
     </div>
 </template>

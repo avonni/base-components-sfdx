@@ -43,6 +43,22 @@
     box-shadow: 0 0 0 2px white;
 }
 
+.avonni-primitive-activity-timeline-item__bullet-xx-small {
+    left: -5px;
+}
+
+.avonni-primitive-activity-timeline-item__bullet-x-small {
+    left: -4px;
+}
+
+.avonni-primitive-activity-timeline-item__bullet-medium {
+    left: 3.95px;
+}
+
+.avonni-primitive-activity-timeline-item__bullet-large {
+    left: 12px;
+}
+
 .slds-timeline__icon.avonni-timeline-item__bullet.avonni-timeline-item__active-bullet::after {
     position: absolute;
     content: '';
@@ -70,10 +86,70 @@
     height: 100%;
     width: 2px;
     position: absolute;
-    left: 2.25rem;
-    top: 5px;
+    top: 11px;
     bottom: 0;
     margin-left: 1px;
+}
+
+.avonni-primitive-activity-timeline-item__action-icon_xx-small {
+    margin: -0.1rem 0 0 -0.5rem;
+    transform: scale(0.55);
+}
+
+.avonni-primitive-activity-timeline-item__action-icon_x-small {
+    margin: -0.15rem 0 0 -0.5rem;
+    transform: scale(0.6);
+}
+
+.avonni-primitive-activity-timeline-item__action-icon_small {
+    margin: -0.3rem 0 0 -0.5rem;
+    transform: scale(0.7);
+}
+
+.avonni-primitive-activity-timeline-item__action-icon_medium {
+    margin: -0.5rem 0 0 -0.5rem;
+    transform: scale(0.8);
+}
+
+.avonni-primitive-activity-timeline-item__action-icon_large {
+    margin: -0.7rem 0 0 -0.5rem;
+    transform: scale(0.85);
+}
+
+.avonni-primitive-activity-timeline-item__icon_xx-small {
+    margin-top: 0.4rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_x-small {
+    margin-top: 0.35rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_small {
+    margin-top: 0.2rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_medium {
+    margin-top: -0.15rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_xx-small:before {
+    left: 1.95rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_x-small:before {
+    left: 2rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_small:before {
+    left: 2.25rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_medium:before {
+    left: 2.5rem;
+}
+
+.avonni-primitive-activity-timeline-item__icon_large:before {
+    left: 3rem;
 }
 
 .avonni-activity-timeline-item-no-fields_margin {

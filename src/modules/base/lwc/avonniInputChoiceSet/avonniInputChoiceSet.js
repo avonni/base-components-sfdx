@@ -66,7 +66,13 @@ const INPUT_CHOICE_TYPES = { valid: ['default', 'button'], default: 'default' };
  */
 export default class AvonniInputChoiceSet extends LightningElement {
     static delegatesFocus = true;
-
+    /**
+     * Help text detailing the purpose and function of the input.
+     *
+     * @type {string}
+     * @public
+     */
+    @api fieldLevelHelp;
     /**
      * Text label for the input.
      *
@@ -75,13 +81,6 @@ export default class AvonniInputChoiceSet extends LightningElement {
      * @required
      */
     @api label;
-    /**
-     * Help text detailing the purpose and function of the input.
-     *
-     * @type {string}
-     * @public
-     */
-    @api fieldLevelHelp;
     /**
      * Optional message to be displayed when no option is selected and the required attribute is set.
      *
@@ -107,6 +106,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
     @api options;
 
     _disabled = false;
+    _isLoading = false;
     _isMultiSelect = false;
     _orientation = INPUT_CHOICE_ORIENTATIONS.default;
     _required = false;
@@ -115,6 +115,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
     _variant;
 
     _helpMessage;
+    _isConnected = false;
 
     constructor() {
         super();
@@ -148,43 +149,18 @@ export default class AvonniInputChoiceSet extends LightningElement {
         this.updateClassList();
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
-    }
-
-    /**
-     * Update form class styling.
-     */
-    updateClassList() {
-        classListMutation(this.classList, {
-            'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
-            'slds-form-element_horizontal':
-                this.variant === VARIANT.LABEL_INLINE
-        });
+        this._isConnected = true;
     }
 
     renderedCallback() {
         this.synchronizeA11y();
     }
 
-    /**
-     * The list of selected options. Each array entry contains the value of a selected option. The value of each option is set in the options attribute.
-     *
-     * @type {string}
-     * @public
-     * @required
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get value() {
-        return this._value;
-    }
-
-    set value(value) {
-        this._value = value;
-
-        if (value && this.isConnected && this.isMultiSelect) {
-            this._value =
-                typeof value === 'string' ? [value] : normalizeArray(value);
-        }
-    }
 
     /**
      * If present, the input field is disabled and users cannot interact with it.
@@ -199,6 +175,37 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the input is loading and a spinner is visible where the options should be.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get isLoading() {
+        return this._isLoading;
+    }
+
+    set isLoading(value) {
+        this._isLoading = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, multiple choices can be selected.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get isMultiSelect() {
+        return this._isMultiSelect || false;
+    }
+    set isMultiSelect(value) {
+        this._isMultiSelect = normalizeBoolean(value);
     }
 
     /**
@@ -218,36 +225,6 @@ export default class AvonniInputChoiceSet extends LightningElement {
             fallbackValue: INPUT_CHOICE_ORIENTATIONS.default,
             validValues: INPUT_CHOICE_ORIENTATIONS.valid
         });
-    }
-
-    /**
-     * If present, multiple choices can be selected.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get isMultiSelect() {
-        return this._isMultiSelect || false;
-    }
-    set isMultiSelect(value) {
-        this._isMultiSelect = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the options stretch to full width.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get stretch() {
-        return this._stretch || false;
-    }
-    set stretch(value) {
-        this._stretch = normalizeBoolean(value);
     }
 
     /**
@@ -281,24 +258,18 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     /**
-     * The variant changes the appearance of the input label.
-     * Accepted variants include standard, label-hidden, label-inline, and label-stacked.
-     * Use label-hidden to hide the label but make it available to assistive technology.
-     * Use label-inline to horizontally align the label and checkbox group.
-     * Use label-stacked to place the label above the checkbox group.
+     * If present, the options stretch to full width.
      *
-     * @type {string}
-     * @default standard
+     * @type {boolean}
+     * @default false
      * @public
      */
     @api
-    get variant() {
-        return this._variant || VARIANT.STANDARD;
+    get stretch() {
+        return this._stretch || false;
     }
-
-    set variant(value) {
-        this._variant = normalizeVariant(value);
-        this.updateClassList();
+    set stretch(value) {
+        this._stretch = normalizeBoolean(value);
     }
 
     /**
@@ -319,6 +290,65 @@ export default class AvonniInputChoiceSet extends LightningElement {
             validValues: INPUT_CHOICE_TYPES.valid
         });
     }
+
+    /**
+     * The list of selected options. Each array entry contains the value of a selected option. The value of each option is set in the options attribute.
+     *
+     * @type {string}
+     * @public
+     * @required
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+
+        if (value && this.isConnected && this.isMultiSelect) {
+            this._value =
+                typeof value === 'string' ? [value] : normalizeArray(value);
+        }
+    }
+
+    /**
+     * Represents the validity states that an element can be in, with respect to constraint validation.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get validity() {
+        return this._constraint.validity;
+    }
+
+    /**
+     * The variant changes the appearance of the input label.
+     * Accepted variants include standard, label-hidden, label-inline, and label-stacked.
+     * Use label-hidden to hide the label but make it available to assistive technology.
+     * Use label-inline to horizontally align the label and checkbox group.
+     * Use label-stacked to place the label above the checkbox group.
+     *
+     * @type {string}
+     * @default standard
+     * @public
+     */
+    @api
+    get variant() {
+        return this._variant || VARIANT.STANDARD;
+    }
+
+    set variant(value) {
+        this._variant = normalizeVariant(value);
+        this.updateClassList();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * True if type is default.
@@ -354,63 +384,6 @@ export default class AvonniInputChoiceSet extends LightningElement {
     }
 
     /**
-     * Represents the validity states that an element can be in, with respect to constraint validation.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get validity() {
-        return this._constraint.validity;
-    }
-
-    /**
-     * Checks if the input is valid.
-     *
-     * @returns {boolean} True if the element meets all constraint validations.
-     * @public
-     */
-    @api
-    checkValidity() {
-        return this._constraint.checkValidity();
-    }
-
-    /**
-     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
-     *
-     * @returns {boolean} False if invalid, true if valid.
-     * @public
-     */
-    @api
-    reportValidity() {
-        return this._constraint.reportValidity((message) => {
-            this._helpMessage = message;
-        });
-    }
-
-    /**
-     * Sets a custom error message to be displayed when a form is submitted.
-     *
-     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
-     * @public
-     */
-    @api
-    setCustomValidity(message) {
-        this._constraint.setCustomValidity(message);
-    }
-
-    /**
-     * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
-     *
-     * @public
-     */
-    @api
-    showHelpMessageIfInvalid() {
-        this.reportValidity();
-    }
-
-    /**
      * Get element unique help ID.
      *
      * @type {string}
@@ -418,134 +391,6 @@ export default class AvonniInputChoiceSet extends LightningElement {
     get computedUniqueHelpElementId() {
         const helpElement = this.template.querySelector('[data-helptext]');
         return getRealDOMId(helpElement);
-    }
-
-    /**
-     * Sets the focus on the first input option.
-     *
-     * @public
-     */
-    @api
-    focus() {
-        const firstCheckbox = this.template.querySelector(
-            '[data-element-id="input"]'
-        );
-        if (firstCheckbox) {
-            firstCheckbox.focus();
-        }
-    }
-
-    /**
-     * Dispatch the focus event.
-     */
-    handleFocus() {
-        this.interactingState.enter();
-
-        /**
-         * The event fired when you focus the input.
-         *
-         * @event
-         * @name focus
-         * @public
-         */
-        this.dispatchEvent(new CustomEvent('focus'));
-    }
-
-    /**
-     * Dispatch the blur event.
-     */
-    handleBlur() {
-        this.interactingState.leave();
-
-        /**
-         * The event fired when the focus is removed from the input.
-         *
-         * @event
-         * @name blur
-         * @public
-         */
-        this.dispatchEvent(new CustomEvent('blur'));
-    }
-
-    /**
-     * Click handler.
-     *
-     * @param {Event} event
-     */
-    handleClick(event) {
-        if (this.readOnly) {
-            event.preventDefault();
-        }
-        if (this.template.activeElement !== event.target) {
-            event.target.focus();
-        }
-    }
-
-    /**
-     * Value change handler.
-     *
-     * @param {array} inputs All inputs.
-     * @returns {array} Checked values.
-     */
-    handleValueChange(inputs) {
-        const checkedValues = Array.from(inputs)
-            .filter((checkbox) => checkbox.checked)
-            .map((checkbox) => checkbox.value);
-
-        if (!checkedValues.length) return null;
-        return this.isMultiSelect ? checkedValues : checkedValues[0];
-    }
-
-    /**
-     * Dispatches the change event.
-     */
-    handleChange(event) {
-        event.stopPropagation();
-
-        const value = event.currentTarget.value;
-        const checkboxes = this.template.querySelectorAll(
-            '[data-element-id^="input"]'
-        );
-        if (this.isMultiSelect) {
-            this._value = this.handleValueChange(checkboxes);
-        } else {
-            if (this.required && this.value === value) {
-                // Prevent unselecting the current option when the input is required
-                // (make sure the radio behaviour works when the type is 'button')
-                event.currentTarget.checked = true;
-                return;
-            }
-
-            const checkboxesToUncheck = Array.from(checkboxes).filter(
-                (checkbox) => checkbox.value !== value
-            );
-            checkboxesToUncheck.forEach((checkbox) => {
-                checkbox.checked = false;
-            });
-            this._value = this.handleValueChange(checkboxes);
-        }
-
-        /**
-         * The event fired when the value changed.
-         *
-         * @event
-         * @name change
-         * @param {string} value The input value.
-         * @public
-         * @bubbles
-         * @cancelable
-         * @composed
-         */
-        this.dispatchEvent(
-            new CustomEvent('change', {
-                detail: {
-                    value: this._value
-                },
-                composed: true,
-                bubbles: true,
-                cancelable: true
-            })
-        );
     }
 
     /**
@@ -639,5 +484,200 @@ export default class AvonniInputChoiceSet extends LightningElement {
      */
     get computedCheckboxShapeClass() {
         return this.isMultiSelect ? 'slds-checkbox_faux' : 'slds-radio_faux';
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Checks if the input is valid.
+     *
+     * @returns {boolean} True if the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
+     *
+     * @returns {boolean} False if invalid, true if valid.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this._helpMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
+     *
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /**
+     * Sets the focus on the first input option.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        const firstCheckbox = this.template.querySelector(
+            '[data-element-id="input"]'
+        );
+        if (firstCheckbox) {
+            firstCheckbox.focus();
+        }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Update form class styling.
+     */
+    updateClassList() {
+        classListMutation(this.classList, {
+            'slds-form-element_stacked': this.variant === VARIANT.LABEL_STACKED,
+            'slds-form-element_horizontal':
+                this.variant === VARIANT.LABEL_INLINE
+        });
+    }
+
+    /**
+     * Dispatch the focus event.
+     */
+    handleFocus() {
+        this.interactingState.enter();
+
+        /**
+         * The event fired when you focus the input.
+         *
+         * @event
+         * @name focus
+         * @public
+         */
+        this.dispatchEvent(new CustomEvent('focus'));
+    }
+
+    /**
+     * Dispatch the blur event.
+     */
+    handleBlur() {
+        this.interactingState.leave();
+
+        /**
+         * The event fired when the focus is removed from the input.
+         *
+         * @event
+         * @name blur
+         * @public
+         */
+        this.dispatchEvent(new CustomEvent('blur'));
+    }
+
+    /**
+     * Click handler.
+     *
+     * @param {Event} event
+     */
+    handleClick(event) {
+        if (this.readOnly) {
+            event.preventDefault();
+        }
+        if (this.template.activeElement !== event.target) {
+            event.target.focus();
+        }
+    }
+
+    /**
+     * Value change handler.
+     *
+     * @param {array} inputs All inputs.
+     * @returns {array} Checked values.
+     */
+    handleValueChange(inputs) {
+        const checkedValues = Array.from(inputs)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+        return this.isMultiSelect ? checkedValues : checkedValues[0] || null;
+    }
+
+    /**
+     * Dispatches the change event.
+     */
+    handleChange(event) {
+        event.stopPropagation();
+
+        const value = event.currentTarget.value;
+        const checkboxes = this.template.querySelectorAll(
+            '[data-element-id^="input"]'
+        );
+        if (this.isMultiSelect) {
+            this._value = this.handleValueChange(checkboxes);
+        } else {
+            if (this.required && this.value === value) {
+                // Prevent unselecting the current option when the input is required
+                // (make sure the radio behaviour works when the type is 'button')
+                event.currentTarget.checked = true;
+                return;
+            }
+
+            const checkboxesToUncheck = Array.from(checkboxes).filter(
+                (checkbox) => checkbox.value !== value
+            );
+            checkboxesToUncheck.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+            this._value = this.handleValueChange(checkboxes);
+        }
+
+        /**
+         * The event fired when the value changed.
+         *
+         * @event
+         * @name change
+         * @param {string|string[]} value Selected options' value. Returns an array of string if the input is multi-select. Returns a string otherwise.
+         * @public
+         * @bubbles
+         * @cancelable
+         * @composed
+         */
+        this.dispatchEvent(
+            new CustomEvent('change', {
+                detail: {
+                    value: this._value
+                },
+                composed: true,
+                bubbles: true,
+                cancelable: true
+            })
+        );
     }
 }

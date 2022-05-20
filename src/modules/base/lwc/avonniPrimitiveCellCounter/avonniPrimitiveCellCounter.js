@@ -51,18 +51,7 @@ export default class AvonniPrimitiveCellCounter extends LightningElement {
         this.template.addEventListener('ieditfinishedcustom', () => {
             this.toggleInlineEdit();
         });
-
-        this.dispatchEvent(
-            new CustomEvent('getdatatablestateandcolumns', {
-                detail: {
-                    callbacks: {
-                        getStateAndColumns: this.getStateAndColumns.bind(this)
-                    }
-                },
-                bubbles: true,
-                composed: true
-            })
-        );
+        this.getStateAndColumnsEvent();
     }
 
     @api
@@ -116,6 +105,20 @@ export default class AvonniPrimitiveCellCounter extends LightningElement {
         this.editable = inputCounter.editable;
     }
 
+    getStateAndColumnsEvent() {
+        this.dispatchEvent(
+            new CustomEvent('getdatatablestateandcolumns', {
+                detail: {
+                    callbacks: {
+                        getStateAndColumns: this.getStateAndColumns.bind(this)
+                    }
+                },
+                bubbles: true,
+                composed: true
+            })
+        );
+    }
+
     // Handles the edit button click and dispatches the event.
     handleEditButtonClick() {
         const { rowKeyValue, colKeyValue, state } = this;
@@ -130,6 +133,7 @@ export default class AvonniPrimitiveCellCounter extends LightningElement {
                 }
             })
         );
+        this.getStateAndColumnsEvent();
         this.toggleInlineEdit();
     }
 }

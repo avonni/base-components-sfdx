@@ -88,13 +88,17 @@
                                 <button
                                     class={actionButtonClass}
                                     disabled={action.disabled}
+                                    type="button"
                                     onclick={handleActionClick}
                                     value={action.name}
                                 >
                                     <lightning-icon
                                         if:true={action.iconName}
                                         icon-name={action.iconName}
-                                        class="slds-current-color slds-m-right_x-small"
+                                        class="
+                                            slds-current-color
+                                            slds-m-right_x-small
+                                        "
                                         size="xx-small"
                                     ></lightning-icon>
                                     {action.label}
@@ -125,6 +129,7 @@
                         active-selection={item.activeSelection}
                         default-actions={itemActions}
                         variant={variant}
+                        data-element-id="avonni-primitive-relationship-graph-item"
                     ></c-avonni-primitive-relationship-graph-item>
                 </template>
             </template>
@@ -142,6 +147,7 @@
                                 name={action.name}
                                 class={actionButtonClass}
                                 disabled={action.disabled}
+                                type="button"
                                 onclick={handleActionClick}
                                 value={action.name}
                                 variant="neutral"
@@ -149,7 +155,10 @@
                                 <lightning-icon
                                     if:true={action.iconName}
                                     icon-name={action.iconName}
-                                    class="slds-current-color slds-m-right_x-small"
+                                    class="
+                                        slds-current-color
+                                        slds-m-right_x-small
+                                    "
                                     size="xx-small"
                                 ></lightning-icon>
                                 {action.label}

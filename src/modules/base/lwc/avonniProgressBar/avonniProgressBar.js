@@ -107,16 +107,16 @@ export default class AvonniProgressBar extends LightningElement {
      */
     @api valueLabel;
 
-    _size = PROGRESS_BAR_SIZES.default;
-    _value = DEFAULT_VALUE;
-    _showValue = false;
-    _valuePosition = VALUE_POSITIONS.default;
-    _referenceLines = [];
-    _variant = PROGRESS_BAR_VARIANTS.default;
-    _theme = PROGRESS_BAR_THEMES.default;
-    _textured = false;
-    _thickness = PROGRESS_BAR_THICKNESSES.default;
     _orientation = PROGRESS_BAR_ORIENTATIONS.default;
+    _referenceLines = [];
+    _showValue = false;
+    _size = PROGRESS_BAR_SIZES.default;
+    _textured = false;
+    _theme = PROGRESS_BAR_THEMES.default;
+    _thickness = PROGRESS_BAR_THICKNESSES.default;
+    _value = DEFAULT_VALUE;
+    _valuePosition = VALUE_POSITIONS.default;
+    _variant = PROGRESS_BAR_VARIANTS.default;
 
     /**
      * Render the progress bar depending on its orientation.
@@ -129,6 +129,12 @@ export default class AvonniProgressBar extends LightningElement {
         }
         return progressBarVertical;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Orientation of the progress bar to be used. Valid values include horizontal and vertical.
@@ -314,6 +320,12 @@ export default class AvonniProgressBar extends LightningElement {
             validValues: PROGRESS_BAR_VARIANTS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed Sizing class for the progress bar.

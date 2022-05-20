@@ -67,40 +67,6 @@ export function isSelectedRow(state, rowKeyValue) {
     return !!state.selectedRowsKeys[rowKeyValue];
 }
 
-/**
- *
- * @param {Object} changes - The internal representation of changes in a row.
- * @returns {Object} - the list of customer changes in a row
- */
-export function getColumnsChangesForCustomer(changes, state) {
-    return Object.keys(changes).reduce((result, colKey) => {
-        const columns = state.columns;
-        const columnIndex = state.headerIndexes[colKey];
-
-        result[columns[columnIndex].fieldName] = changes[colKey];
-
-        return result;
-    }, {});
-}
-
-/**
- *
- * @param {Object} changes - The internal representation of changes in a row
- * @returns {Object} - The formatted data for draft values.
- */
-export function getChangesForCustomer(changes, state) {
-    const keyField = state.keyField;
-    return Object.keys(changes).reduce((result, rowKey) => {
-        const rowChanges = getColumnsChangesForCustomer(changes[rowKey], state);
-
-        if (Object.keys(rowChanges).length > 0) {
-            rowChanges[keyField] = rowKey;
-            result.push(rowChanges);
-        }
-        return result;
-    }, []);
-}
-
 /* -------------- processInlineEditFinish ------------- */
 
 /**
@@ -147,6 +113,7 @@ export function updateDirtyValues(state, rowColKeyValues) {
  * @param {boolean} massEdit -  boolean value that indicates if the edition it's more than one row edited
  */
 export function processInlineEditFinishCustom(
+    dt,
     dtState,
     reason,
     rowKeyValue,
@@ -183,7 +150,6 @@ export function processInlineEditFinishCustom(
                     cellChange[rowKey][colKeyValue] = editValue;
                 });
             }
-
             updateDirtyValues(state, cellChange);
         }
     }

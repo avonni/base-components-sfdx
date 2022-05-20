@@ -76,6 +76,12 @@ export default class AvonniConfetti extends LightningElement {
     _variant = CONFETTI_VARIANTS.default;
     _zIndex = DEFAULT_Z_INDEX;
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * An array of color strings, in the HEX format.
      *
@@ -90,8 +96,11 @@ export default class AvonniConfetti extends LightningElement {
 
     set colors(value) {
         const colors = normalizeArray(value);
-        const allColorsAreString = colors.every(color => typeof color === 'string');
-        this._colors = colors.length && allColorsAreString ? colors : DEFAULT_COLORS;
+        const allColorsAreString = colors.every(
+            (color) => typeof color === 'string'
+        );
+        this._colors =
+            colors.length && allColorsAreString ? colors : DEFAULT_COLORS;
     }
 
     /**
@@ -174,11 +183,17 @@ export default class AvonniConfetti extends LightningElement {
     get zIndex() {
         return this._zIndex;
     }
-    
+
     set zIndex(value) {
         const zIndex = parseInt(value, 10);
         this._zIndex = !isNaN(zIndex) ? zIndex : DEFAULT_Z_INDEX;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Fire the confetti.
@@ -210,6 +225,12 @@ export default class AvonniConfetti extends LightningElement {
                 this.base();
         }
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Base variant.

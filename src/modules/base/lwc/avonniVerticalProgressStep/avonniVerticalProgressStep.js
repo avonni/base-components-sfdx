@@ -48,13 +48,28 @@ export default class AvonniVerticalProgressStep extends LightningElement {
      */
     @api label;
 
-    _value;
     iconName;
     contentInLine = false;
+    _value;
 
     connectedCallback() {
         this.classList.add('slds-progress__item');
     }
+
+    /**
+     * Get the item elements from the default slot.
+     *
+     * @type {Element}
+     */
+    get slotItems() {
+        return this.template.querySelector('[data-element-id="slot-default"]');
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Text to name the step.
@@ -71,6 +86,12 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         this._value = value;
         this.setAttribute('data-step', value);
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Reserved for internal use. Attributes for in line and variant shade sent from avonni-vertical-progress-indicator.
@@ -100,14 +121,11 @@ export default class AvonniVerticalProgressStep extends LightningElement {
         this.iconName = iconName;
     }
 
-    /**
-     * Get the item elements from the default slot.
-     *
-     * @type {Element}
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    get slotItems() {
-        return this.template.querySelector('[data-element-id="slot-default"]');
-    }
 
     /**
      * Mouse enter event handler.

@@ -136,8 +136,8 @@ export default class AvonniRange extends LightningElement {
     @api unitAttributes = {};
 
     _disabled = false;
-    _min = DEFAULT_MIN;
     _max = DEFAULT_MAX;
+    _min = DEFAULT_MIN;
     _pin = false;
     _size = RANGE_SIZES.default;
     _step = DEFAULT_STEP;
@@ -158,6 +158,12 @@ export default class AvonniRange extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * If present, the slider is disabled and users cannot interact with it.
      *
@@ -165,7 +171,8 @@ export default class AvonniRange extends LightningElement {
      * @public
      * @default false
      */
-    @api get disabled() {
+    @api
+    get disabled() {
         return this._disabled;
     }
 
@@ -212,7 +219,8 @@ export default class AvonniRange extends LightningElement {
      * @public
      * @default false
      */
-    @api get pin() {
+    @api
+    get pin() {
         return this._pin;
     }
 
@@ -227,7 +235,8 @@ export default class AvonniRange extends LightningElement {
      * @public
      * @default full
      */
-    @api get size() {
+    @api
+    get size() {
         return this._size;
     }
 
@@ -265,7 +274,8 @@ export default class AvonniRange extends LightningElement {
      * @public
      * @default horizontal
      */
-    @api get type() {
+    @api
+    get type() {
         return this._type;
     }
 
@@ -283,7 +293,8 @@ export default class AvonniRange extends LightningElement {
      * @public
      * @default decimal
      */
-    @api get unit() {
+    @api
+    get unit() {
         return this._unit;
     }
 
@@ -292,6 +303,20 @@ export default class AvonniRange extends LightningElement {
             fallbackValue: RANGE_UNITS.default,
             validValues: RANGE_UNITS.valid
         });
+    }
+
+    /**
+     * Represents the validity states of the slider inputs, with respect to constraint validation.
+     *
+     * @public
+     */
+    @api
+    get validity() {
+        return (
+            this._constraintLeft.validity +
+            ', ' +
+            this._constraintRight.validity
+        );
     }
 
     /**
@@ -349,67 +374,11 @@ export default class AvonniRange extends LightningElement {
         });
     }
 
-    /**
-     * Initialize range cmp.
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    initRange() {
-        this.showHelpMessageIfInvalid();
-        this.setInputsWidth();
-        this.addProgressLine();
-        this.setBubblesPosition();
-    }
-
-    /**
-     * Handle left slider point value change.
-     *
-     * @param {Event} event
-     */
-    handleChangeLeft(event) {
-        this._valueLower = event.target.value;
-        this.setInputsWidth();
-        this.addProgressLine();
-        this.changeRange();
-        this.setBubblesPosition();
-    }
-
-    /**
-     * Handle right slider point value change.
-     *
-     * @param {Event} event
-     */
-    handleChangeRight(event) {
-        this._valueUpper = event.target.value;
-        this.setInputsWidth();
-        this.addProgressLine();
-        this.changeRange();
-        this.setBubblesPosition();
-    }
-
-    /**
-     * Update range upper and lower values.
-     */
-    changeRange() {
-        this._updateProxyInputLeftAttributes('value');
-        this._updateProxyInputRightAttributes('value');
-
-        /**
-         * The event fired when the range value changed.
-         *
-         * @event
-         * @name change
-         * @param {number} valueLower The lower value of the range.
-         * @param {number} valueUpper The upper value of the range.
-         * @public
-         */
-        const selectedEvent = new CustomEvent('change', {
-            detail: {
-                valueLower: Number(this.valueLower),
-                valueUpper: Number(this.valueUpper)
-            }
-        });
-
-        this.dispatchEvent(selectedEvent);
-    }
 
     /**
      * Computed label class styling.
@@ -501,6 +470,192 @@ export default class AvonniRange extends LightningElement {
         }
 
         return minVaule.toFixed(3);
+    }
+
+    /**
+     * Get the left constraint API via proxy input.
+     *
+     * @return {object} constraintApiLeft
+     */
+    get _constraintLeft() {
+        if (!this._constraintApiLeft) {
+            this._constraintApiLeft = new FieldConstraintApiWithProxyInput(
+                () => this
+            );
+
+            this._constraintApiProxyInputLeftUpdater =
+                this._constraintApiLeft.setInputAttributes({
+                    type: () => 'range',
+                    value: () => this.valueLower,
+                    max: () => this.max,
+                    min: () => this.min,
+                    step: () => this.step,
+                    disabled: () => this.disabled
+                });
+        }
+        return this._constraintApiLeft;
+    }
+
+    /**
+     * Get the right constraint API via proxy input.
+     *
+     * @return {object} constraintApiRight
+     */
+    get _constraintRight() {
+        if (!this._constraintApiRight) {
+            this._constraintApiRight = new FieldConstraintApiWithProxyInput(
+                () => this
+            );
+
+            this._constraintApiProxyInputRightUpdater =
+                this._constraintRight.setInputAttributes({
+                    type: () => 'range',
+                    value: () => this.valueUpper,
+                    max: () => this.max,
+                    min: () => this.min,
+                    step: () => this.step,
+                    disabled: () => this.disabled
+                });
+        }
+        return this._constraintApiRight;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Checks if the input is valid.
+     *
+     * @returns {boolean} True if the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return (
+            this._constraintLeft.checkValidity() &&
+            this._constraintRight.checkValidity()
+        );
+    }
+
+    /**
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
+     *
+     * @returns {boolean} False if invalid, true if valid.
+     * @public
+     */
+    @api
+    reportValidity() {
+        let helpMessage = '';
+
+        let leftInput = this._constraintLeft.reportValidity((message) => {
+            helpMessage = helpMessage + message;
+        });
+
+        let rightInput = this._constraintRight.reportValidity((message) => {
+            if (!leftInput) {
+                helpMessage = helpMessage + ', ';
+            }
+
+            helpMessage = helpMessage + message;
+        });
+
+        this._helpMessage = helpMessage;
+
+        return leftInput && rightInput;
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraintLeft.setCustomValidity(message);
+        this._constraintRight.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
+     *
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Initialize range cmp.
+     */
+    initRange() {
+        this.showHelpMessageIfInvalid();
+        this.setInputsWidth();
+        this.addProgressLine();
+        this.setBubblesPosition();
+    }
+
+    /**
+     * Handle left slider point value change.
+     *
+     * @param {Event} event
+     */
+    handleChangeLeft(event) {
+        this._valueLower = event.target.value;
+        this.setInputsWidth();
+        this.addProgressLine();
+        this.changeRange();
+        this.setBubblesPosition();
+    }
+
+    /**
+     * Handle right slider point value change.
+     *
+     * @param {Event} event
+     */
+    handleChangeRight(event) {
+        this._valueUpper = event.target.value;
+        this.setInputsWidth();
+        this.addProgressLine();
+        this.changeRange();
+        this.setBubblesPosition();
+    }
+
+    /**
+     * Update range upper and lower values.
+     */
+    changeRange() {
+        this._updateProxyInputLeftAttributes('value');
+        this._updateProxyInputRightAttributes('value');
+
+        /**
+         * The event fired when the range value changed.
+         *
+         * @event
+         * @name change
+         * @param {number} valueLower The lower value of the range.
+         * @param {number} valueUpper The upper value of the range.
+         * @public
+         */
+        const selectedEvent = new CustomEvent('change', {
+            detail: {
+                valueLower: Number(this.valueLower),
+                valueUpper: Number(this.valueUpper)
+            }
+        });
+
+        this.dispatchEvent(selectedEvent);
     }
 
     /**
@@ -659,83 +814,6 @@ export default class AvonniRange extends LightningElement {
     }
 
     /**
-     * Represents the validity states of the slider inputs, with respect to constraint validation.
-     *
-     * @public
-     */
-    @api get validity() {
-        return (
-            this._constraintLeft.validity +
-            ', ' +
-            this._constraintRight.validity
-        );
-    }
-
-    /**
-     * Checks if the input is valid.
-     *
-     * @returns {boolean} True if the element meets all constraint validations.
-     * @public
-     */
-    @api
-    checkValidity() {
-        return (
-            this._constraintLeft.checkValidity() &&
-            this._constraintRight.checkValidity()
-        );
-    }
-
-    /**
-     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
-     *
-     * @returns {boolean} False if invalid, true if valid.
-     * @public
-     */
-    @api
-    reportValidity() {
-        let helpMessage = '';
-
-        let leftInput = this._constraintLeft.reportValidity((message) => {
-            helpMessage = helpMessage + message;
-        });
-
-        let rightInput = this._constraintRight.reportValidity((message) => {
-            if (!leftInput) {
-                helpMessage = helpMessage + ', ';
-            }
-
-            helpMessage = helpMessage + message;
-        });
-
-        this._helpMessage = helpMessage;
-
-        return leftInput && rightInput;
-    }
-
-    /**
-     * Sets a custom error message to be displayed when a form is submitted.
-     *
-     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
-     * @public
-     */
-    @api
-    setCustomValidity(message) {
-        this._constraintLeft.setCustomValidity(message);
-        this._constraintRight.setCustomValidity(message);
-    }
-
-    /**
-     * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
-     *
-     * @public
-     */
-    @api
-    showHelpMessageIfInvalid() {
-        this.reportValidity();
-    }
-
-    /**
      * Update input left proxy attributes.
      *
      * @param {object} attributes
@@ -755,53 +833,5 @@ export default class AvonniRange extends LightningElement {
         if (this._constraintApiProxyInputRightUpdater) {
             this._constraintApiProxyInputRightUpdater(attributes);
         }
-    }
-
-    /**
-     * Get the left constraint API via proxy input.
-     *
-     * @return {object} constraintApiLeft
-     */
-    get _constraintLeft() {
-        if (!this._constraintApiLeft) {
-            this._constraintApiLeft = new FieldConstraintApiWithProxyInput(
-                () => this
-            );
-
-            this._constraintApiProxyInputLeftUpdater =
-                this._constraintApiLeft.setInputAttributes({
-                    type: () => 'range',
-                    value: () => this.valueLower,
-                    max: () => this.max,
-                    min: () => this.min,
-                    step: () => this.step,
-                    disabled: () => this.disabled
-                });
-        }
-        return this._constraintApiLeft;
-    }
-
-    /**
-     * Get the right constraint API via proxy input.
-     *
-     * @return {object} constraintApiRight
-     */
-    get _constraintRight() {
-        if (!this._constraintApiRight) {
-            this._constraintApiRight = new FieldConstraintApiWithProxyInput(
-                () => this
-            );
-
-            this._constraintApiProxyInputRightUpdater =
-                this._constraintRight.setInputAttributes({
-                    type: () => 'range',
-                    value: () => this.valueUpper,
-                    max: () => this.max,
-                    min: () => this.min,
-                    step: () => this.step,
-                    disabled: () => this.disabled
-                });
-        }
-        return this._constraintApiRight;
     }
 }

@@ -53,63 +53,19 @@ const DEFAULT_RESET_BUTTON_LABEL = 'Reset';
  * @public
  */
 export default class AvonniFilterMenuGroup extends LightningElement {
-    _menus = [];
-    _hideSelectedItems = false;
-    _variant = MENU_VARIANTS.default;
     _applyButtonLabel = DEFAULT_APPLY_BUTTON_LABEL;
+    _hideSelectedItems = false;
+    _menus = [];
     _resetButtonLabel = DEFAULT_RESET_BUTTON_LABEL;
+    _variant = MENU_VARIANTS.default;
 
     selectedPills = [];
 
-    /**
-     * Array of menu objects.
-     *
-     * @type {object[]}
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get menus() {
-        return this._menus;
-    }
-    set menus(value) {
-        const array = normalizeArray(value);
-        this._menus = JSON.parse(JSON.stringify(array));
-
-        this.computeSelectedPills();
-    }
-
-    /**
-     * If present, the selected items are hidden.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideSelectedItems() {
-        return this._hideSelectedItems;
-    }
-    set hideSelectedItems(bool) {
-        this._hideSelectedItems = normalizeBoolean(bool);
-    }
-
-    /**
-     * The variant changes the look of the menu group. Accepted variants include horizontal and vertical.
-     *
-     * @type {string}
-     * @public
-     * @default horizontal
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-    set variant(value) {
-        this._variant = normalizeString(value, {
-            fallbackValue: MENU_VARIANTS.default,
-            validValues: MENU_VARIANTS.valid
-        });
-    }
 
     /**
      * Label of the apply button.
@@ -130,6 +86,38 @@ export default class AvonniFilterMenuGroup extends LightningElement {
     }
 
     /**
+     * If present, the selected items are hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideSelectedItems() {
+        return this._hideSelectedItems;
+    }
+    set hideSelectedItems(bool) {
+        this._hideSelectedItems = normalizeBoolean(bool);
+    }
+
+    /**
+     * Array of menu objects.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get menus() {
+        return this._menus;
+    }
+    set menus(value) {
+        const array = normalizeArray(value);
+        this._menus = JSON.parse(JSON.stringify(array));
+
+        this.computeSelectedPills();
+    }
+
+    /**
      * Label of the reset button.
      *
      * @type {string}
@@ -146,6 +134,30 @@ export default class AvonniFilterMenuGroup extends LightningElement {
                 ? value.trim()
                 : DEFAULT_RESET_BUTTON_LABEL;
     }
+
+    /**
+     * The variant changes the look of the menu group. Accepted variants include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: MENU_VARIANTS.default,
+            validValues: MENU_VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Check if Vertical variant.
@@ -199,6 +211,12 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         );
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Clear the selected items.
      *
@@ -234,6 +252,12 @@ export default class AvonniFilterMenuGroup extends LightningElement {
             this.computeSelectedPills();
         }
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Compute Pills selection.

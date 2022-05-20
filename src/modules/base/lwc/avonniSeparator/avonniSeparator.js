@@ -75,6 +75,12 @@ export default class AvonniSeparator extends LightningElement {
     _iconSize = VALID_ICON_SIZES;
     _orientation = VALID_ORIENTATIONS;
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Position of the content in the separator. Valid values include start, center and end.
      *
@@ -150,6 +156,12 @@ export default class AvonniSeparator extends LightningElement {
             validValues: VALID_ORIENTATIONS.valid
         });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Verify if the content is populated.

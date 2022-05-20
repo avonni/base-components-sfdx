@@ -51,9 +51,9 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
      */
     @api currentStep;
 
-    _variant = INDICATOR_VARIANTS.default;
     _hasError = false;
     _contentInLine = false;
+    _variant = INDICATOR_VARIANTS.default;
 
     renderedCallback() {
         let elements = this.template
@@ -92,6 +92,44 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
         });
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * If present, the steps are separated by lines.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get contentInLine() {
+        return this._contentInLine;
+    }
+
+    set contentInLine(value) {
+        this._contentInLine = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the current step is in error state and an error icon is displayed on the step indicator. Only the base type can display errors.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hasError() {
+        return this._hasError;
+    }
+
+    set hasError(value) {
+        this._hasError = normalizeBoolean(value);
+    }
+
     /**
      * Changes the appearance of the progress indicator for the base type only. Valid values are base or shaded.
      * The shaded variant adds a light gray border to the step indicators.
@@ -112,37 +150,11 @@ export default class AvonniVerticalProgressIndicator extends LightningElement {
         });
     }
 
-    /**
-     * If present, the current step is in error state and an error icon is displayed on the step indicator. Only the base type can display errors.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get hasError() {
-        return this._hasError;
-    }
-
-    set hasError(value) {
-        this._hasError = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the steps are separated by lines.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get contentInLine() {
-        return this._contentInLine;
-    }
-
-    set contentInLine(value) {
-        this._contentInLine = normalizeBoolean(value);
-    }
 
     /**
      * Computed progress class styling.

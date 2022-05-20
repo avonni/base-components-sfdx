@@ -1,3 +1,35 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 import { LightningElement, api, track } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
@@ -32,7 +64,7 @@ const TABS = {
     default: 'Standard'
 };
 
-const DEFAULT_HIDDEN_CATEGORIES = ['Utility', 'Doctype', 'Action'];
+const NB_VISIBLE_TABS = 2;
 
 /**
  * @class
@@ -43,29 +75,12 @@ const DEFAULT_HIDDEN_CATEGORIES = ['Utility', 'Doctype', 'Action'];
  */
 export default class AvonniIconPicker extends LightningElement {
     /**
-     * Text label for the input.
-     *
-     * @type {string}
-     * @public
-     */
-    @api label;
-
-    /**
-     * Specifies the name of an input element.
-     *
-     * @type {string}
-     * @public
-     */
-    @api name;
-
-    /**
      * Specifies a shortcut key to activate or focus an element.
      *
      * @type {string}
      * @public
      */
     @api accessKey;
-
     /**
      * Help text detailing the purpose and function of the input.
      *
@@ -73,7 +88,13 @@ export default class AvonniIconPicker extends LightningElement {
      * @public
      */
     @api fieldLevelHelp;
-
+    /**
+     * Text label for the input.
+     *
+     * @type {string}
+     * @public
+     */
+    @api label;
     /**
      * Optional text to be shown on the button.
      *
@@ -81,7 +102,13 @@ export default class AvonniIconPicker extends LightningElement {
      * @public
      */
     @api menuLabel;
-
+    /**
+     * Specifies the name of an input element.
+     *
+     * @type {string}
+     * @public
+     */
+    @api name;
     /**
      * Text that is displayed when the field is empty, to prompt the user for a valid entry.
      *
@@ -90,17 +117,17 @@ export default class AvonniIconPicker extends LightningElement {
      */
     @api placeholder;
 
-    _value;
     _disabled = false;
+    _hiddenCategories = [];
+    _hideFooter = false;
+    _hideInputText = false;
+    _menuIconSize = MENU_ICON_SIZES.default;
+    _menuVariant = MENU_VARIANTS.default;
+    _messageWhenBadInput = DEFAULT_BAD_INPUT_MESSAGE;
     _readOnly = false;
     _required = false;
+    _value;
     _variant = VARIANTS.default;
-    _hideFooter = false;
-    _hiddenCategories = DEFAULT_HIDDEN_CATEGORIES.slice();
-    _menuVariant = MENU_VARIANTS.default;
-    _menuIconSize = MENU_ICON_SIZES.default;
-    _messageWhenBadInput = DEFAULT_BAD_INPUT_MESSAGE;
-    _hideInputText = false;
 
     iconMenuOpened = false;
     isInvalidInput = false;
@@ -124,6 +151,56 @@ export default class AvonniIconPicker extends LightningElement {
         this.initEventListeners();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * If present, the input field is disabled and users cannot interact with it.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+    }
+
+    /**
+     * The icon categories that will be hidden by default.
+     *
+     * @type {string[]}
+     * @public
+     */
+    @api
+    get hiddenCategories() {
+        return this._hiddenCategories;
+    }
+
+    set hiddenCategories(value) {
+        this._hiddenCategories = [];
+        const categories =
+            value === undefined ? [] : JSON.parse(JSON.stringify(value));
+        for (const category of TABS.valid) {
+            if (categories.includes(category)) {
+                this._hiddenCategories.push(category);
+            }
+        }
+        if (this._hiddenCategories.length === 5) {
+            let index = this._hiddenCategories.indexOf(TABS.default);
+            if (index !== -1) {
+                this._hiddenCategories.splice(index, 1);
+            }
+        }
+    }
+
     /**
      * If present, the dropdown footer is hidden.
      *
@@ -141,18 +218,92 @@ export default class AvonniIconPicker extends LightningElement {
     }
 
     /**
-     * The Lightning Design System name of the selected icon. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed.
+     * If present, the input text next to the icon button is hidden.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get hideInputText() {
+        return this._hideInputText;
+    }
+
+    set hideInputText(value) {
+        this._hideInputText = normalizeBoolean(value);
+    }
+
+    /**
+     * The size of the icon.
+     * Options include xx-small, x-small, small, medium, or large.
+     *
+     * @type {string}
+     * @default medium
+     * @public
+     */
+    @api
+    get menuIconSize() {
+        return this._menuIconSize;
+    }
+
+    set menuIconSize(size) {
+        this._menuIconSize = normalizeString(size, {
+            fallbackValue: MENU_ICON_SIZES.default,
+            validValues: MENU_ICON_SIZES.valid
+        });
+    }
+
+    /**
+     * The variant changes the look of the button.
+     * Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
+     * This value defaults to border.
+     *
+     * @type {string}
+     * @default border
+     * @public
+     */
+    @api
+    get menuVariant() {
+        return this._menuVariant;
+    }
+
+    set menuVariant(variant) {
+        this._menuVariant = normalizeString(variant, {
+            fallbackValue: MENU_VARIANTS.default,
+            validValues: MENU_VARIANTS.valid
+        });
+    }
+
+    /**
+     * Error message to be displayed when a bad input is detected.
      *
      * @type {string}
      * @public
      */
     @api
-    get value() {
-        return this._value;
+    get messageWhenBadInput() {
+        return this._messageWhenBadInput;
     }
 
-    set value(value) {
-        this._value = value;
+    set messageWhenBadInput(value) {
+        this._messageWhenBadInput =
+            typeof value === 'string' ? value : DEFAULT_BAD_INPUT_MESSAGE;
+    }
+
+    /**
+     * If present, the input field is read-only and cannot be edited by users.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get readOnly() {
+        return this._readOnly;
+    }
+
+    set readOnly(value) {
+        this._readOnly = normalizeBoolean(value);
     }
 
     /**
@@ -169,6 +320,21 @@ export default class AvonniIconPicker extends LightningElement {
 
     set required(value) {
         this._required = normalizeBoolean(value);
+    }
+
+    /**
+     * The Lightning Design System name of the selected icon. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
     }
 
     /**
@@ -194,155 +360,15 @@ export default class AvonniIconPicker extends LightningElement {
         });
     }
 
-    /**
-     * Error message to be displayed when a bad input is detected.
-     *
-     * @type {string}
-     * @public
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get messageWhenBadInput() {
-        return this._messageWhenBadInput;
-    }
-    set messageWhenBadInput(value) {
-        this._messageWhenBadInput =
-            typeof value === 'string' ? value : DEFAULT_BAD_INPUT_MESSAGE;
-    }
-
-    /**
-     * The variant changes the look of the button.
-     * Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
-     * This value defaults to border.
-     *
-     * @type {string}
-     * @default border
-     * @public
-     */
-    @api
-    get menuVariant() {
-        return this._menuVariant;
-    }
-
-    set menuVariant(variant) {
-        this._menuVariant = normalizeString(variant, {
-            fallbackValue: MENU_VARIANTS.default,
-            validValues: MENU_VARIANTS.valid
-        });
-    }
-
-    /**
-     * The size of the icon.
-     * Options include xx-small, x-small, small, medium, or large.
-     *
-     * @type {string}
-     * @default medium
-     * @public
-     */
-    @api
-    get menuIconSize() {
-        return this._menuIconSize;
-    }
-
-    set menuIconSize(size) {
-        this._menuIconSize = normalizeString(size, {
-            fallbackValue: MENU_ICON_SIZES.default,
-            validValues: MENU_ICON_SIZES.valid
-        });
-    }
-
-    /**
-     * The icon categories that will be hidden by default.
-     *
-     * @type {string[]}
-     * @default ['Utility', 'Doctype', 'Action']
-     * @public
-     */
-    @api
-    get hiddenCategories() {
-        return this._hiddenCategories;
-    }
-
-    set hiddenCategories(value) {
-        this._hiddenCategories = [];
-        const categories =
-            value === undefined
-                ? DEFAULT_HIDDEN_CATEGORIES
-                : JSON.parse(JSON.stringify(value));
-        for (const category of TABS.valid) {
-            if (categories.includes(category)) {
-                this._hiddenCategories.push(category);
-            }
-        }
-
-        if (this._hiddenCategories.length === 5) {
-            let index = this._hiddenCategories.indexOf(TABS.default);
-            if (index !== -1) {
-                this._hiddenCategories.splice(index, 1);
-            }
-        } else if (this._hiddenCategories.length < 3) {
-            let i;
-            for (i = TABS.valid.length - 1; i >= 0; i--) {
-                if (!this._hiddenCategories.includes(TABS.valid[i])) {
-                    this._hiddenCategories.push(TABS.valid[i]);
-                    if (this._hiddenCategories.length === 3) {
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * If present, the input field is disabled and users cannot interact with it.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get disabled() {
-        return this._disabled;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the input field is read-only and cannot be edited by users.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get readOnly() {
-        return this._readOnly;
-    }
-
-    set readOnly(value) {
-        this._readOnly = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the input text next to the icon button is hidden.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get hideInputText() {
-        return this._hideInputText;
-    }
-
-    set hideInputText(value) {
-        this._hideInputText = normalizeBoolean(value);
-    }
 
     /**
      * The tabs of the icon picker.
-     * The tabs are ordered as they should be displayed: the array starts with the visible tabs, followed by the hidden tabs.
+     * Hidden tabs are not displayed.
      *
      * @type {string[]}
      */
@@ -353,8 +379,7 @@ export default class AvonniIconPicker extends LightningElement {
                 orderedTabs.push(tab);
             }
         });
-
-        return [...orderedTabs, ...this.hiddenCategories];
+        return [...orderedTabs];
     }
 
     get computedValue() {
@@ -382,7 +407,10 @@ export default class AvonniIconPicker extends LightningElement {
      * @type {number}
      */
     get nHiddenCategories() {
-        return this.hiddenCategories.length;
+        return Math.max(
+            0,
+            TABS.valid.length - NB_VISIBLE_TABS - this.hiddenCategories.length
+        );
     }
 
     /**
@@ -515,7 +543,8 @@ export default class AvonniIconPicker extends LightningElement {
             classes.add({
                 'slds-p-horizontal_xx-small': true,
                 'slds-button_neutral': this.menuVariant === 'border',
-                'slds-button_inverse': this.menuVariant === 'border-inverse'
+                'slds-button_inverse': this.menuVariant === 'border-inverse',
+                'avonni-icon-picker__toggle-button_size-limit': true
             });
         } else {
             classes.add({
@@ -553,13 +582,7 @@ export default class AvonniIconPicker extends LightningElement {
      */
     get computedIconClass() {
         const classes = classSet();
-
-        if (this.value && this.value.split(':')[0] === 'action') {
-            classes.add({
-                'medium-icon-padding': this.menuIconSize === 'xx-small',
-                'large-icon-padding': this.menuIconSize !== 'xx-small'
-            });
-        } else {
+        if (!this.value.split(':')[0] === 'action') {
             classes.add({
                 'avonni-builder-icon-picker-x-small-icon-padding':
                     this.menuIconSize === 'x-small',
@@ -570,6 +593,46 @@ export default class AvonniIconPicker extends LightningElement {
         }
 
         return classes.toString();
+    }
+
+    /**
+     * Computed CSS classes for the button icon container.
+     * Adds a scaling class if icon is of type "action".
+     *
+     * @type {string}
+     */
+    get computedIconContainerClass() {
+        const classes = classSet('slds-icon_container');
+        if (this.value && this.value.split(':')[0] === 'action') {
+            classes.add({
+                'avonni-icon-picker__action-icon_small-scaling':
+                    this.menuIconSize === 'xx-small',
+                'avonni-icon-picker__action-icon_medium-scaling':
+                    this.menuIconSize === 'x-small' ||
+                    this.menuIconSize === 'small' ||
+                    this.menuIconSize === 'medium',
+                'avonni-icon-picker__action-icon_large-scaling':
+                    this.menuIconSize === 'large'
+            });
+        }
+        return classes.toString();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Sets focus on the input element.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        const input = this.template.querySelector('[data-element-id="input"]');
+        if (input) input.focus();
     }
 
     /**
@@ -595,6 +658,12 @@ export default class AvonniIconPicker extends LightningElement {
         this.showError = this.value ? this.isInvalidInput : this.required;
         return !!this.showError;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Initializes the event listeners.
@@ -681,7 +750,7 @@ export default class AvonniIconPicker extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string} icon The Lightning Design System name of the icon. Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed.
+         * @param {string} value Value of the selected icon.
          * @public
          */
         this.dispatchEvent(

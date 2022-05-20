@@ -65,6 +65,15 @@
     justify-content: center;
 }
 
+.avonni-visual-picker__items_responsive {
+    height: 33.333333%;
+}
+
+.avonni-visual-picker__items_responsive_image {
+    height: 33.333333%;
+    overflow: hidden;
+}
+
 /*-- disabled --*/
 .slds-visual-picker input[disabled] ~ label .avonni-visual-picker__figure {
     border-color: #c9c7c5;
@@ -150,11 +159,6 @@
     text-align: var(--avonni-visual-picker-item-title-alignment, center);
 }
 
-/*-- figure title --*/
-.avonni-visual-picker__figure-title_margin {
-    margin: var(--avonni-visual-picker-title-margin-around, 0rem);
-}
-
 /*-- description --*/
 .avonni-visual-picker__item-description {
     color: var(--avonni-visual-picker-item-description-text-color, #3e3e3c);
@@ -172,7 +176,6 @@
     font-size: var(--avonni-visual-picker-description-font-size, 0.75rem);
     line-height: var(--avonni-visual-picker-description-line-height, 1.25);
     text-align: var(--avonni-visual-picker-description-alignment, center);
-    margin: var(--avonni-visual-picker-description-margin-around, 0.25rem);
 }
 
 /*-- xx-small --*/
@@ -451,6 +454,7 @@
 /*-- tags --*/
 .avonni-visual-picker__tags-container {
     text-align: var(--avonni-visual-picker-tags-alignment, center);
+    padding: var(--avonni-visual-picker-tags-padding, 0.5rem);
 }
 
 .avonni-visual-picker__tags:not(:first-child) {
@@ -459,15 +463,13 @@
 
 /*-- images --*/
 .avonni-visual-picker__figure-image-top-container {
-    height: 90%;
     width: 100%;
-    padding: var(--avonni-visual-picker-image-padding-around, 0);
+    padding: var(--avonni-visual-picker-image-padding, 0);
 }
 
 .avonni-visual-picker__figure-image-center-container {
-    height: 75%;
     width: 100%;
-    padding: var(--avonni-visual-picker-image-padding-around, 0);
+    padding: var(--avonni-visual-picker-image-padding, 0.75rem);
 }
 
 .avonni-visual-picker__figure-image {
@@ -480,5 +482,114 @@
     .avonni-visual-picker__figure-image-center-container,
 .avonni-visual-picker_xx-small
     .avonni-visual-picker__figure-image-center-container {
-    padding: var(--avonni-visual-picker-image-padding-around, 15px);
+    padding: var(--avonni-visual-picker-image-padding, 15px);
+}
+
+.avonni-visual-picker__app-screens {
+    display: flex;
+    overflow: hidden;
+    padding: 0.75rem;
+    justify-content: center;
+}
+
+.avonni-visual-picker_small.ratio-16-by-9 .avonni-visual-picker__app-screens {
+    height: 0.25rem;
+}
+
+.avonni-visual-picker_small.ratio-4-by-3 .avonni-visual-picker__app-screens {
+    height: 0.5rem;
+}
+
+.avonni-visual-picker_small.ratio-1-by-1 .avonni-visual-picker__app-screens {
+    height: 1rem;
+}
+
+.avonni-visual-picker_small.ratio-3-by-4 .avonni-visual-picker__app-screens {
+    height: 3.5rem;
+}
+
+.avonni-visual-picker_small.ratio-9-by-16 .avonni-visual-picker__app-screens {
+    height: 4.75rem;
+}
+
+.avonni-visual-picker_medium.ratio-16-by-9 .avonni-visual-picker__app-screens {
+    height: 2rem;
+}
+
+.avonni-visual-picker_medium.ratio-4-by-3 .avonni-visual-picker__app-screens {
+    height: 2.5rem;
+}
+
+.avonni-visual-picker_medium.ratio-1-by-1 .avonni-visual-picker__app-screens {
+    height: 3rem;
+}
+
+.avonni-visual-picker_medium.ratio-3-by-4 .avonni-visual-picker__app-screens {
+    height: 5.25rem;
+}
+
+.avonni-visual-picker_medium.ratio-9-by-16 .avonni-visual-picker__app-screens {
+    height: 7rem;
+}
+
+.avonni-visual-picker_large.ratio-16-by-9 .avonni-visual-picker__app-screens {
+    height: 2.25rem;
+}
+
+.avonni-visual-picker_large.ratio-4-by-3 .avonni-visual-picker__app-screens {
+    height: 3rem;
+}
+
+.avonni-visual-picker_large.ratio-1-by-1 .avonni-visual-picker__app-screens {
+    height: 5rem;
+}
+
+.avonni-visual-picker_large.ratio-3-by-4 .avonni-visual-picker__app-screens {
+    height: 6.5rem;
+}
+
+.avonni-visual-picker_large.ratio-9-by-16 .avonni-visual-picker__app-screens {
+    height: 9rem;
+}
+
+.avonni-visual-picker_x-large.ratio-16-by-9 .avonni-visual-picker__app-screens {
+    height: 3.25rem;
+}
+
+.avonni-visual-picker_x-large.ratio-4-by-3 .avonni-visual-picker__app-screens {
+    height: 3.5rem;
+}
+
+.avonni-visual-picker_x-large.ratio-1-by-1 .avonni-visual-picker__app-screens {
+    height: 6rem;
+}
+
+.avonni-visual-picker_x-large.ratio-3-by-4 .avonni-visual-picker__app-screens {
+    height: 8rem;
+}
+
+.avonni-visual-picker_x-large.ratio-9-by-16 .avonni-visual-picker__app-screens {
+    height: 10.5rem;
+}
+
+.avonni-visual-picker_xx-large.ratio-16-by-9
+    .avonni-visual-picker__app-screens {
+    height: 4rem;
+}
+
+.avonni-visual-picker_xx-large.ratio-4-by-3 .avonni-visual-picker__app-screens {
+    height: 4rem;
+}
+
+.avonni-visual-picker_xx-large.ratio-1-by-1 .avonni-visual-picker__app-screens {
+    height: 7rem;
+}
+
+.avonni-visual-picker_xx-large.ratio-3-by-4 .avonni-visual-picker__app-screens {
+    height: 9.25rem;
+}
+
+.avonni-visual-picker_xx-large.ratio-9-by-16
+    .avonni-visual-picker__app-screens {
+    height: 12.5rem;
 }

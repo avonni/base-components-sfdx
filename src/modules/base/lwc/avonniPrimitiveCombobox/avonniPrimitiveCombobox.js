@@ -409,6 +409,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
 
         if (this._connected) {
             this.initValue();
+            this.visibleOptions = this.currentParent
+                ? this.currentParent.options
+                : this.options;
+            this.showLoader = this.currentParent
+                ? this.currentParent.isLoading
+                : this.isLoading;
         }
     }
 

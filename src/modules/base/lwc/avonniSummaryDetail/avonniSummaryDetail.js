@@ -52,26 +52,32 @@ export default class AvonniSummaryDetail extends LightningElement {
      */
     @api title;
 
-    _removeBodyIndentation;
-    _shrinkIconName = DEFAULT_SHRINK_ICON_NAME;
+    _closed = false;
     _expandIconName = DEFAULT_EXPAND_ICON_NAME;
-    _fullWidth;
-    _closed;
-    _hideIcon;
+    _fullWidth = false;
+    _hideIcon = false;
+    _removeBodyIndentation = false;
+    _shrinkIconName = DEFAULT_SHRINK_ICON_NAME;
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
-     * Name of the icon used to close the summary detail, in the format utility:down.
+     * If present, the summary detail is closed by default.
      *
-     * @type {string}
+     * @type {boolean}
      * @public
-     * @default utility:chevrondown
+     * @default false
      */
     @api
-    get shrinkIconName() {
-        return this._shrinkIconName;
+    get closed() {
+        return this._closed;
     }
-    set shrinkIconName(name) {
-        this._shrinkIconName = (typeof name === 'string' && name.trim()) || '';
+    set closed(value) {
+        this._closed = normalizeBoolean(value);
     }
 
     /**
@@ -105,6 +111,36 @@ export default class AvonniSummaryDetail extends LightningElement {
     }
 
     /**
+     * If present, the icon to close/expand is hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideIcon() {
+        return this._hideIcon;
+    }
+    set hideIcon(value) {
+        this._hideIcon = normalizeBoolean(value);
+    }
+
+    /**
+     * Name of the icon used to close the summary detail, in the format utility:down.
+     *
+     * @type {string}
+     * @public
+     * @default utility:chevrondown
+     */
+    @api
+    get shrinkIconName() {
+        return this._shrinkIconName;
+    }
+    set shrinkIconName(name) {
+        this._shrinkIconName = (typeof name === 'string' && name.trim()) || '';
+    }
+
+    /**
      * If present, the body left indentation will be removed.
      *
      * @type {boolean}
@@ -119,35 +155,11 @@ export default class AvonniSummaryDetail extends LightningElement {
         this._removeBodyIndentation = normalizeBoolean(boolean);
     }
 
-    /**
-     * If present, the summary detail is closed by default.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api
-    get closed() {
-        return this._closed;
-    }
-    set closed(value) {
-        this._closed = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the icon to close/expand is hidden.
-     *
-     * @type {boolean}
-     * @public
-     * @default false
-     */
-    @api
-    get hideIcon() {
-        return this._hideIcon;
-    }
-    set hideIcon(value) {
-        this._hideIcon = normalizeBoolean(value);
-    }
 
     /**
      * Verify if the section is opened.
@@ -211,6 +223,12 @@ export default class AvonniSummaryDetail extends LightningElement {
     get iconName() {
         return this.closed ? this.expandIconName : this.shrinkIconName;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Toggle status of the section from closed to open.

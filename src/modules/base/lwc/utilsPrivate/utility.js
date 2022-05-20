@@ -88,3 +88,28 @@ export function arraysEqual(array1, array2) {
 }
 
 export const ArraySlice = Array.prototype.slice;
+
+/**
+ * Check if the two arguments have the same content, even if they are different objects.
+ *
+ * @param {any} first First argument to compare.
+ * @param {any} second Second argument to compare.
+ * @returns {boolean} True if the two arguments are equal, false otherwise.
+ */
+export function equal(first, second) {
+    let normalizedFirst = first;
+    let normalizedSecond = second;
+
+    if (first instanceof RegExp) {
+        normalizedFirst = first.source;
+    } else if (first instanceof Object) {
+        normalizedFirst = JSON.stringify(first);
+    }
+    if (second instanceof RegExp) {
+        normalizedSecond = second.source;
+    } else if (second instanceof Object) {
+        normalizedSecond = JSON.stringify(second);
+    }
+
+    return normalizedFirst === normalizedSecond;
+}

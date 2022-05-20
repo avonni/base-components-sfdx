@@ -58,6 +58,7 @@
                     name={action.name}
                     class={actionButtonClass}
                     disabled={action.disabled}
+                    type="button"
                     onclick={handleActionClick}
                     value={action.name}
                 >
@@ -74,7 +75,7 @@
     </div>
 
     <div class={wrapperClass}>
-        <div class={lineClass}></div>
+        <div class={lineClass} data-element-id="div-line"></div>
 
         <!-- Levels -->
         <c-avonni-primitive-relationship-graph-level
@@ -89,6 +90,7 @@
             group-actions-position={groupActionsPosition}
             item-actions={itemActions}
             hide-items-count={hideItemsCount}
+            data-element-id="avonni-primitive-relationship-graph-level"
         ></c-avonni-primitive-relationship-graph-level>
     </div>
 </template>

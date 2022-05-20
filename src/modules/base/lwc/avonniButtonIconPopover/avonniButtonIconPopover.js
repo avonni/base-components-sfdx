@@ -114,13 +114,12 @@ export default class AvonniButtonIconPopover extends LightningElement {
     @api alternativeText;
 
     /**
-     * The tile can include text, and is displayed in the header.
-     * To include additional markup or another component, use the title slot.
+     * The class to be applied to the contained icon element.
      *
      * @type {string}
      * @public
      */
-    @api title;
+    @api iconClass;
 
     /**
      * The Lightning Design System name of the icon. Names are written in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
@@ -132,12 +131,13 @@ export default class AvonniButtonIconPopover extends LightningElement {
     @api iconName;
 
     /**
-     * The class to be applied to the contained icon element.
+     * The tile can include text, and is displayed in the header.
+     * To include additional markup or another component, use the title slot.
      *
      * @type {string}
      * @public
      */
-    @api iconClass;
+    @api title;
 
     /**
      * Text to display when the user mouses over or focuses on the button.
@@ -152,12 +152,13 @@ export default class AvonniButtonIconPopover extends LightningElement {
     _hideCloseButton = false;
     _isLoading = false;
     _loadingStateAlternativeText = DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
-    _size = BUTTON_SIZES.default;
     _placement = POPOVER_PLACEMENTS.default;
-    _variant = BUTTON_VARIANTS.default;
     _popoverSize = POPOVER_SIZES.default;
-    _triggers = BUTTON_TRIGGERS.default;
     _popoverVariant = POPOVER_VARIANTS.default;
+    _size = BUTTON_SIZES.default;
+    _triggers = BUTTON_TRIGGERS.default;
+    _variant = BUTTON_VARIANTS.default;
+
     popoverVisible = false;
     showTitle = true;
     showFooter = true;
@@ -208,132 +209,26 @@ export default class AvonniButtonIconPopover extends LightningElement {
         return this.template.querySelector('slot[name=footer]');
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * The size of the button icon. For the bare variant,
-     * options include x-small, small, medium, and large.
-     * For non-bare variants, options include xx-small, x-small, small, and medium.
+     * If present, the popover can't be opened by users.
      *
-     * @type {string}
-     * @default medium
+     * @type {boolean}
+     * @default false
      * @public
      */
     @api
-    get size() {
-        return this._size;
+    get disabled() {
+        return this._disabled;
     }
 
-    set size(size) {
-        if (this._variant === 'bare' || this._variant === 'bare-inverse') {
-            this._size = normalizeString(size, {
-                fallbackValue: BUTTON_SIZES.default,
-                validValues: BUTTON_SIZES.validBare
-            });
-        } else {
-            this._size = normalizeString(size, {
-                fallbackValue: BUTTON_SIZES.default,
-                validValues: BUTTON_SIZES.validNonBare
-            });
-        }
-    }
-
-    /**
-     * Determines the alignment of the popover relative to the button.
-     * Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right.
-     * The auto option aligns the popover based on available space.
-     *
-     * @type {string}
-     * @default left
-     * @public
-     */
-    @api
-    get placement() {
-        return this._placement;
-    }
-
-    set placement(placement) {
-        this._placement = normalizeString(placement, {
-            fallbackValue: POPOVER_PLACEMENTS.default,
-            validValues: POPOVER_PLACEMENTS.valid
-        });
-    }
-
-    /**
-     * The variant changes the appearance of button icon.
-     * Accepted variants include bare, container, brand, border,
-     * border-filled, bare-inverse, and border-inverse.
-     *
-     * @type {string}
-     * @default border
-     * @public
-     */
-    @api
-    get variant() {
-        return this._variant;
-    }
-
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: BUTTON_VARIANTS.default,
-            validValues: BUTTON_VARIANTS.valid
-        });
-    }
-
-    /**
-     * Width of the popover. Accepted values include small, medium and large.
-     *
-     * @type {string}
-     * @default medium
-     * @public
-     */
-    @api
-    get popoverSize() {
-        return this._popoverSize;
-    }
-
-    set popoverSize(popoverSize) {
-        this._popoverSize = normalizeString(popoverSize, {
-            fallbackValue: POPOVER_SIZES.default,
-            validValues: POPOVER_SIZES.valid
-        });
-    }
-
-    /**
-     * Specify which triggers will show the popover. Supported values are 'click', 'hover', 'focus'.
-     *
-     * @type {string}
-     * @default click
-     * @public
-     */
-    @api
-    get triggers() {
-        return this._triggers;
-    }
-
-    set triggers(triggers) {
-        this._triggers = normalizeString(triggers, {
-            fallbackValue: BUTTON_TRIGGERS.default,
-            validValues: BUTTON_TRIGGERS.valid
-        });
-    }
-
-    /**
-     * The variant changes the appearance of the popover.
-     * Accepted variants include base, warning, error, walkthrough.
-     *
-     * @type {string}
-     * @default base
-     * @public
-     */
-    @api
-    get popoverVariant() {
-        return this._popoverVariant;
-    }
-
-    set popoverVariant(popoverVariant) {
-        this._popoverVariant = normalizeString(popoverVariant, {
-            fallbackValue: POPOVER_VARIANTS.default,
-            validValues: POPOVER_VARIANTS.valid
-        });
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
     }
 
     /**
@@ -350,22 +245,6 @@ export default class AvonniButtonIconPopover extends LightningElement {
 
     set hideCloseButton(value) {
         this._hideCloseButton = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the popover can't be opened by users.
-     *
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get disabled() {
-        return this._disabled;
-    }
-
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
     }
 
     /**
@@ -401,6 +280,140 @@ export default class AvonniButtonIconPopover extends LightningElement {
                 ? value.trim()
                 : DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
     }
+
+    /**
+     * Determines the alignment of the popover relative to the button.
+     * Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right.
+     * The auto option aligns the popover based on available space.
+     *
+     * @type {string}
+     * @default left
+     * @public
+     */
+    @api
+    get placement() {
+        return this._placement;
+    }
+
+    set placement(placement) {
+        this._placement = normalizeString(placement, {
+            fallbackValue: POPOVER_PLACEMENTS.default,
+            validValues: POPOVER_PLACEMENTS.valid
+        });
+    }
+
+    /**
+     * Width of the popover. Accepted values include small, medium and large.
+     *
+     * @type {string}
+     * @default medium
+     * @public
+     */
+    @api
+    get popoverSize() {
+        return this._popoverSize;
+    }
+
+    set popoverSize(popoverSize) {
+        this._popoverSize = normalizeString(popoverSize, {
+            fallbackValue: POPOVER_SIZES.default,
+            validValues: POPOVER_SIZES.valid
+        });
+    }
+
+    /**
+     * The variant changes the appearance of the popover.
+     * Accepted variants include base, warning, error, walkthrough.
+     *
+     * @type {string}
+     * @default base
+     * @public
+     */
+    @api
+    get popoverVariant() {
+        return this._popoverVariant;
+    }
+
+    set popoverVariant(popoverVariant) {
+        this._popoverVariant = normalizeString(popoverVariant, {
+            fallbackValue: POPOVER_VARIANTS.default,
+            validValues: POPOVER_VARIANTS.valid
+        });
+    }
+
+    /**
+     * The size of the button icon. For the bare variant,
+     * options include x-small, small, medium, and large.
+     * For non-bare variants, options include xx-small, x-small, small, and medium.
+     *
+     * @type {string}
+     * @default medium
+     * @public
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(size) {
+        if (this._variant === 'bare' || this._variant === 'bare-inverse') {
+            this._size = normalizeString(size, {
+                fallbackValue: BUTTON_SIZES.default,
+                validValues: BUTTON_SIZES.validBare
+            });
+        } else {
+            this._size = normalizeString(size, {
+                fallbackValue: BUTTON_SIZES.default,
+                validValues: BUTTON_SIZES.validNonBare
+            });
+        }
+    }
+
+    /**
+     * Specify which triggers will show the popover. Supported values are 'click', 'hover', 'focus'.
+     *
+     * @type {string}
+     * @default click
+     * @public
+     */
+    @api
+    get triggers() {
+        return this._triggers;
+    }
+
+    set triggers(triggers) {
+        this._triggers = normalizeString(triggers, {
+            fallbackValue: BUTTON_TRIGGERS.default,
+            validValues: BUTTON_TRIGGERS.valid
+        });
+    }
+
+    /**
+     * The variant changes the appearance of button icon.
+     * Accepted variants include bare, container, brand, border,
+     * border-filled, bare-inverse, and border-inverse.
+     *
+     * @type {string}
+     * @default border
+     * @public
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * True if there is a title.
@@ -471,6 +484,12 @@ export default class AvonniButtonIconPopover extends LightningElement {
             .toString();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Simulates a mouse click on the button.
      *
@@ -534,6 +553,12 @@ export default class AvonniButtonIconPopover extends LightningElement {
          */
         this.dispatchEvent(new CustomEvent('close'));
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Sets the focus on the button-icon.

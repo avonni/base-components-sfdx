@@ -94,12 +94,7 @@
                             </span>
                             <span class={notSelectedClass}>
                                 <!-- Position Top -->
-                                <div
-                                    class="
-                                        avonni-visual-picker__items
-                                        slds-has-flexi-truncate
-                                    "
-                                >
+                                <div class={visualPickerItemsClassTop}>
                                     <c-avonni-primitive-avatar
                                         alternative-text={item.avatarAltText}
                                         fallback-icon-name={item.avatar.iconName}
@@ -119,18 +114,16 @@
                                         display-avatar={item.displayAvatar}
                                         size={size}
                                         title={item.title}
-                                        class="
-                                            avonni-visual-picker__figure-title_margin
-                                        "
                                         data-element-id="c-primitive-visual-picker-title-top"
                                         if:true={item.titleIsTop}
                                     >
                                     </c-avonni-primitive-visual-picker-title>
-                                    <span
+                                    <p
                                         if:true={item.descriptionIsTop}
                                         class={item.computedDescriptionClass}
-                                        >{item.description}
-                                    </span>
+                                    >
+                                        {item.description}
+                                    </p>
                                     <template if:true={item.displayImgTop}>
                                         <div
                                             if:true={item.imgSrc}
@@ -138,23 +131,33 @@
                                                 avonni-visual-picker__figure-image-top-container
                                             "
                                         >
-                                            <img
-                                                src={item.imgSrc}
-                                                alt={item.imgAlternativeText}
+                                            <div
                                                 class="
-                                                    avonni-visual-picker__figure-image
+                                                    avonni-visual-picker__app-screens
                                                 "
-                                            />
+                                            >
+                                                <div
+                                                    class="
+                                                        avonni-visual-picker__app-preview-group
+                                                    "
+                                                >
+                                                    <div
+                                                        class="
+                                                            avonni-visual-picker__app-screen
+                                                        "
+                                                    >
+                                                        <img
+                                                            src={item.imgSrc}
+                                                            alt={item.imgAlternativeText}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </template>
                                 </div>
                                 <!-- Position Center -->
-                                <div
-                                    class="
-                                        avonni-visual-picker__items
-                                        slds-has-flexi-truncate
-                                    "
-                                >
+                                <div class={visualPickerItemsClassCenter}>
                                     <c-avonni-primitive-visual-picker-title
                                         alternative-text={item.avatarAltText}
                                         avatar={item.avatar}
@@ -162,18 +165,16 @@
                                         display-avatar={item.displayAvatar}
                                         size={size}
                                         title={item.title}
-                                        class="
-                                            avonni-visual-picker__figure-title_margin
-                                        "
                                         data-element-id="c-primitive-visual-picker-title-center"
                                         if:true={item.titleIsCenter}
                                     >
                                     </c-avonni-primitive-visual-picker-title>
-                                    <span
+                                    <p
                                         if:true={item.descriptionIsCenter}
                                         class={item.computedDescriptionClass}
-                                        >{item.description}
-                                    </span>
+                                    >
+                                        {item.description}
+                                    </p>
                                     <c-avonni-primitive-avatar
                                         alternative-text={item.avatarAltText}
                                         fallback-icon-name={item.avatar.iconName}
@@ -196,20 +197,12 @@
                                             <img
                                                 src={item.imgSrc}
                                                 alt={item.imgAlternativeText}
-                                                class="
-                                                    avonni-visual-picker__figure-image
-                                                "
                                             />
                                         </div>
                                     </template>
                                 </div>
                                 <!-- Position Bottom -->
-                                <div
-                                    class="
-                                        avonni-visual-picker__items
-                                        slds-has-flexi-truncate
-                                    "
-                                >
+                                <div class={visualPickerItemsClass}>
                                     <c-avonni-primitive-visual-picker-title
                                         alternative-text={item.avatarAltText}
                                         avatar={item.avatar}
@@ -217,18 +210,16 @@
                                         display-avatar={item.displayAvatar}
                                         size={size}
                                         title={item.title}
-                                        class="
-                                            avonni-visual-picker__figure-title_margin
-                                        "
                                         data-element-id="c-primitive-visual-picker-title-bottom"
                                         if:true={item.titleIsBottom}
                                     >
                                     </c-avonni-primitive-visual-picker-title>
-                                    <span
+                                    <p
                                         if:true={item.descriptionIsBottom}
                                         class={item.computedDescriptionClass}
-                                        >{item.description}
-                                    </span>
+                                    >
+                                        {item.description}
+                                    </p>
                                     <c-avonni-primitive-avatar
                                         alternative-text={item.avatarAltText}
                                         fallback-icon-name={item.avatar.iconName}

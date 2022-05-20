@@ -59,6 +59,7 @@
                     aria-haspopup="true"
                     aria-expanded="true"
                     data-element-id="button"
+                    type="button"
                     onclick={handleStepClick}
                     onmouseenter={handleStepMouseEnter}
                     onmouseleave={handleStepMouseLeave}
@@ -116,6 +117,7 @@
                     <template if:true={popoverButton}>
                         <button
                             class={computedPopoverClass}
+                            type="button"
                             data-element-id="button-propover"
                             onclick={handleStepPopoverClick}
                         >

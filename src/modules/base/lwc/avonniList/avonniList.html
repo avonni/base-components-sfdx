@@ -171,7 +171,9 @@
                                     avonni-list__item-description_font
                                 "
                             >
-                                {item.description}
+                                <lightning-formatted-rich-text
+                                    value={item.description}
+                                ></lightning-formatted-rich-text>
                             </p>
 
                             <!-- Info -->

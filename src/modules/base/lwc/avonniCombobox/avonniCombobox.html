@@ -116,7 +116,7 @@
             <c-avonni-pill-container
                 actions={selectedOptionsActions}
                 alternative-text={selectedOptionsAriaLabel}
-                items={selectedOptions}
+                items={normalizedSelectedOptions}
                 sortable={sortableSelectedOptions}
                 data-element-id="avonni-pill-container"
                 onactionclick={handleRemovePill}
@@ -132,7 +132,7 @@
                 actions={selectedOptionsActions}
                 alternative-text={selectedOptionsAriaLabel}
                 divider="around"
-                items={selectedOptions}
+                items={normalizedSelectedOptions}
                 sortable={sortableSelectedOptions}
                 data-element-id="avonni-list"
                 onactionclick={handleRemoveListItem}

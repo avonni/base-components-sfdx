@@ -59,41 +59,6 @@ const AVATAR_VARIANTS = { valid: ['circle', 'square'], default: 'circle' };
  */
 export default class AvonniProfileCard extends LightningElement {
     /**
-     * The title can include text, and is displayed in the header.
-     *
-     * @type {string}
-     * @public
-     */
-    @api title;
-    /**
-     * The subtitle can include text, and is displayed under the title.
-     *
-     * @type {string}
-     * @public
-     */
-    @api subtitle;
-    /**
-     * URL for the optional image.
-     *
-     * @type {string}
-     * @public
-     */
-    @api backgroundSrc;
-    /**
-     * Value to set the image attribute 'alt'.
-     *
-     * @type {string}
-     * @public
-     */
-    @api backgroundAlternativeText;
-    /**
-     * URL for the avatar image.
-     *
-     * @type {string}
-     * @public
-     */
-    @api avatarSrc;
-    /**
      * Value to set the image attribute 'alt'.
      *
      * @type {string}
@@ -108,11 +73,47 @@ export default class AvonniProfileCard extends LightningElement {
      * @public
      */
     @api avatarFallbackIconName;
+    /**
+     * URL for the avatar image.
+     *
+     * @type {string}
+     * @public
+     */
+    @api avatarSrc;
+    /**
+     * Value to set the image attribute 'alt'.
+     *
+     * @type {string}
+     * @public
+     */
+    @api backgroundAlternativeText;
+    /**
+     * URL for the optional image.
+     *
+     * @type {string}
+     * @public
+     */
+    @api backgroundSrc;
+    /**
+     * The subtitle can include text, and is displayed under the title.
+     *
+     * @type {string}
+     * @public
+     */
+    @api subtitle;
+    /**
+     * The title can include text, and is displayed in the header.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
 
-    _size = AVATAR_SIZES.default;
-    _avatarPosition = AVATAR_POSITIONS.default;
     _avatarMobilePosition = AVATAR_POSITIONS.default;
+    _avatarPosition = AVATAR_POSITIONS.default;
     _avatarVariant = AVATAR_VARIANTS.default;
+    _size = AVATAR_SIZES.default;
+
     isError = false;
     showActions = true;
     showFooter = true;
@@ -195,22 +196,27 @@ export default class AvonniProfileCard extends LightningElement {
         return this.template.querySelector('slot[name=footer]');
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * The size of the avatar. Valid values include x-small, small, medium, large, x-large.
+     * Position of the avatar when screen width is under 480px. Valid values include top-left, top-center, top-right, bottom-left, bottom-center, bottom-right.
      *
      * @type {string}
      * @public
-     * @default medium
      */
     @api
-    get size() {
-        return this._size;
+    get avatarMobilePosition() {
+        return this._avatarMobilePosition;
     }
 
-    set size(size) {
-        this._size = normalizeString(size, {
-            fallbackValue: AVATAR_SIZES.default,
-            validValues: AVATAR_SIZES.valid
+    set avatarMobilePosition(avatarMobilePosition) {
+        this._avatarMobilePosition = normalizeString(avatarMobilePosition, {
+            fallbackValue: AVATAR_POSITIONS.default,
+            validValues: AVATAR_POSITIONS.valid
         });
     }
 
@@ -234,24 +240,6 @@ export default class AvonniProfileCard extends LightningElement {
     }
 
     /**
-     * Position of the avatar when screen width is under 480px. Valid values include top-left, top-center, top-right, bottom-left, bottom-center, bottom-right.
-     *
-     * @type {string}
-     * @public
-     */
-    @api
-    get avatarMobilePosition() {
-        return this._avatarMobilePosition;
-    }
-
-    set avatarMobilePosition(avatarMobilePosition) {
-        this._avatarMobilePosition = normalizeString(avatarMobilePosition, {
-            fallbackValue: AVATAR_POSITIONS.default,
-            validValues: AVATAR_POSITIONS.valid
-        });
-    }
-
-    /**
      * The variant change the shape of the avatar. Valid values are circle, square.
      *
      * @type {string}
@@ -269,6 +257,31 @@ export default class AvonniProfileCard extends LightningElement {
             validValues: AVATAR_VARIANTS.valid
         });
     }
+
+    /**
+     * The size of the avatar. Valid values include x-small, small, medium, large, x-large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get size() {
+        return this._size;
+    }
+
+    set size(size) {
+        this._size = normalizeString(size, {
+            fallbackValue: AVATAR_SIZES.default,
+            validValues: AVATAR_SIZES.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed container class styling based on selected attributes.
@@ -357,6 +370,12 @@ export default class AvonniProfileCard extends LightningElement {
             ? 'avonni-profile-card__avatar-img-circle'
             : '';
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Set the fallback Icon for the avatar.

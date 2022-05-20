@@ -101,6 +101,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     popoverVisible = false;
     _checkboxIsIndeterminate = false;
     _focusOn = false;
+    _isConnected = false;
     _menuIsOpen = false;
 
     connectedCallback() {
@@ -138,9 +139,9 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
 
         this.addEventListener('keydown', this.handleKeydown);
         this.addEventListener('mousedown', this.handleMouseDown);
-        this.updateLevel();
         this.splitActions();
         this.computeSelection();
+        this._isConnected = true;
     }
 
     renderedCallback() {
@@ -153,7 +154,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
         }
 
         if (this.popoverVisible) this.positionPopover();
-
+        if (this.level) this.updateLevel();
         this.updateCheckboxStatus();
     }
 
@@ -180,7 +181,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set actions(value) {
         this._actions = normalizeArray(value);
-        if (this.isConnected) this.splitActions();
+        if (this._isConnected) this.splitActions();
     }
 
     /**
@@ -195,7 +196,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set actionsWhenDisabled(value) {
         this._actionsWhenDisabled = normalizeArray(value);
-        if (this.isConnected) this.splitActions();
+        if (this._isConnected) this.splitActions();
     }
 
     /**
@@ -239,7 +240,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set childItems(value) {
         this._childItems = normalizeArray(value);
-        if (this.isConnected) this.computeSelection();
+        if (this._isConnected) this.computeSelection();
     }
 
     /**
@@ -300,7 +301,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
-        if (this.isConnected) this.splitActions();
+        if (this._isConnected) this.splitActions();
     }
 
     /**
@@ -316,7 +317,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set independentMultiSelect(value) {
         this._independentMultiSelect = normalizeBoolean(value);
-        if (this.isConnected) this.computeSelection();
+        if (this._isConnected) this.computeSelection();
     }
 
     /**
@@ -436,7 +437,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set selected(value) {
         this._selected = normalizeBoolean(value);
-        if (this.isConnected) this.computeSelection();
+        if (this._isConnected) this.computeSelection();
     }
 
     /**
@@ -452,7 +453,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
     }
     set showCheckbox(value) {
         this._showCheckbox = normalizeBoolean(value);
-        if (this.isConnected) this.computeSelection();
+        if (this._isConnected) this.computeSelection();
     }
 
     /**
@@ -950,9 +951,8 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
      * Update the visual level offset of the item.
      */
     updateLevel() {
-        let style = this.template.host.style.cssText;
-        style += `--avonni-tree-item-spacing-inline-left: ${this.level}rem;`;
-        this.template.host.style.cssText = style;
+        if (this.itemElement)
+            this.itemElement.style = `--avonni-tree-item-spacing-inline-left: ${this.level}rem;`;
     }
 
     /**

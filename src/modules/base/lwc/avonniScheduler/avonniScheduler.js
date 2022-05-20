@@ -36,7 +36,9 @@ import {
     normalizeBoolean,
     normalizeString,
     dateTimeObjectFrom,
-    addToDate
+    addToDate,
+    deepCopy,
+    removeFromDate
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import { eventCrudMethods } from './avonniEventCrud';
@@ -55,6 +57,7 @@ import {
     DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT,
     DEFAULT_START_DATE,
     DEFAULT_TIME_SPAN,
+    DEFAULT_TOOLBAR_TIME_SPANS,
     HEADERS,
     PALETTES,
     PRESET_HEADERS
@@ -86,6 +89,7 @@ export default class AvonniScheduler extends LightningElement {
     _eventsPalette = EVENTS_PALETTES.default;
     _eventsTheme = EVENTS_THEMES.default;
     _headers = HEADERS.default;
+    _hideToolbar = false;
     _isLoading = false;
     _loadingStateAlternativeText = DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT;
     _readOnly = false;
@@ -96,10 +100,10 @@ export default class AvonniScheduler extends LightningElement {
     _rowsKeyField;
     _start = dateTimeObjectFrom(DEFAULT_START_DATE);
     _timeSpan = DEFAULT_TIME_SPAN;
+    _toolbarTimeSpans = DEFAULT_TOOLBAR_TIME_SPANS;
 
     _allEvents = [];
     _datatableRowsHeight;
-    datatableWidth = 0;
     _draggedEvent;
     _draggedSplitter = false;
     _initialDatatableWidth;
@@ -107,8 +111,7 @@ export default class AvonniScheduler extends LightningElement {
     _mouseIsDown = false;
     _numberOfVisibleCells = 0;
     _resizedEvent;
-    _headerHeightChange = false;
-    _visibleInterval;
+    _toolbarCalendarIsFocused = false;
     cellWidth = 0;
     computedDisabledDatesTimes = [];
     computedHeaders = [];
@@ -118,36 +121,28 @@ export default class AvonniScheduler extends LightningElement {
     contextMenuActions = [];
     datatableIsHidden = false;
     datatableIsOpen = false;
-    scrollHeadersTo = () => {
-        return true;
-    };
+    datatableWidth = 0;
+    selectedDate = dateTimeObjectFrom(DEFAULT_START_DATE);
     selectedEvent;
     showContextMenu = false;
     showEditDialog = false;
     showDeleteConfirmationDialog = false;
     showDetailPopover = false;
     showRecurrenceDialog = false;
+    showToolbarCalendar = false;
     smallestHeader;
 
     connectedCallback() {
         this.crud = eventCrudMethods(this);
         this.initHeaders();
+        this.initEvents();
         this._connected = true;
     }
 
     renderedCallback() {
-        if (this._headerHeightChange) {
-            // The first header primitive render will set this variable to true
-            // and trigger a re-render. So we return to prevent running the other calculations twice.
-            this.updateDatatablePosition();
-            this._headerHeightChange = false;
-            return;
-        }
-
         // Save the default datatable column width
         if (!this._initialDatatableWidth) {
-            this._initialDatatableWidth = this.datatableCol.getBoundingClientRect().width;
-            this.datatableWidth = this._initialDatatableWidth;
+            this.resetDatatableWidth();
         }
 
         // Save the datatable row height and update the body styles
@@ -191,9 +186,17 @@ export default class AvonniScheduler extends LightningElement {
 
         // If the edit dialog is opened, focus on the first input
         if (this.showEditDialog || this.showRecurrenceDialog) {
-            this.template.querySelector('[data-element-id="avonni-dialog"]').focusOnCloseButton();
+            this.template
+                .querySelector('[data-element-id="avonni-dialog"]')
+                .focusOnCloseButton();
         }
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Array of available days of the week. If present, the scheduler will only show the available days of the week. Defaults to all days being available.
@@ -331,7 +334,9 @@ export default class AvonniScheduler extends LightningElement {
     set customEventsPalette(value) {
         this._customEventsPalette = normalizeArray(value);
 
-        if (this._connected) this.initRows();
+        if (this._connected) {
+            this.initRows();
+        }
     }
 
     /**
@@ -370,7 +375,7 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * The date format to use in the events' details popup and the labels. See {@link https://moment.github.io/luxon/#/formatting?id=table-of-tokens Luxon’s documentation} for accepted format. If you want to insert text in the label, you need to escape it using single quote.
+     * The date format to use in the events' details popup and the labels. See [Luxon’s documentation](https://moment.github.io/luxon/#/formatting?id=table-of-tokens) for accepted format. If you want to insert text in the label, you need to escape it using single quote.
      * For example, the format of "Jan 14 day shift" would be <code>"LLL dd 'day shift'"</code>.
      *
      * @type {string}
@@ -574,6 +579,7 @@ export default class AvonniScheduler extends LightningElement {
      * * minuteHourAndDay
      * * hourAndDay
      * * hourDayAndWeek
+     * * dayAndMonth
      * * dayAndWeek
      * * dayLetterAndWeek
      * * dayWeekAndMonth
@@ -603,6 +609,21 @@ export default class AvonniScheduler extends LightningElement {
             this.computedEvents = [];
             this.initHeaders();
         }
+    }
+
+    /**
+     * If present, the toolbar is hidden.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideToolbar() {
+        return this._hideToolbar;
+    }
+    set hideToolbar(value) {
+        this._hideToolbar = normalizeBoolean(value);
     }
 
     /**
@@ -744,7 +765,9 @@ export default class AvonniScheduler extends LightningElement {
     set rows(value) {
         this._rows = normalizeArray(value);
 
-        if (this._connected) this.initRows();
+        if (this._connected) {
+            this.initRows();
+        }
     }
 
     /**
@@ -761,7 +784,9 @@ export default class AvonniScheduler extends LightningElement {
     set rowsKeyField(value) {
         this._rowsKeyField = value.toString();
 
-        if (this._connected) this.initRows();
+        if (this._connected) {
+            this.initRows();
+        }
     }
 
     /**
@@ -778,20 +803,22 @@ export default class AvonniScheduler extends LightningElement {
     set start(value) {
         const computedDate = dateTimeObjectFrom(value);
         this._start = computedDate || dateTimeObjectFrom(DEFAULT_START_DATE);
+        this.selectedDate = dateTimeObjectFrom(this._start);
 
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
     }
 
     /**
      * Object used to set the duration of the scheduler. It has two keys:
-     * * <code>unit</code>. Valid values include minute, hour, day, week, month and year.
-     * * <code>span</code>. The number of unit the scheduler will show.
-     * For example, if the scheduler should be four-day long, the value would be: <code>{ unit: ‘day’, span: 4 }</code>
+     * * `unit`. Valid values include minute, hour, day, week, month and year.
+     * * `span`. The number of unit the scheduler will show.
+     * For example, if the scheduler should be four-day long, the value would be: `{ unit: 'day', span: 4 }`
      *
      * @type {object}
      * @public
-     * @default { unit: ‘hour’, span: 12 }
-     * @required
+     * @default { unit: 'day', span: 1 }
      */
     @api
     get timeSpan() {
@@ -800,7 +827,41 @@ export default class AvonniScheduler extends LightningElement {
     set timeSpan(value) {
         this._timeSpan = typeof value === 'object' ? value : DEFAULT_TIME_SPAN;
 
-        if (this._connected) this.initHeaders();
+        if (this._connected) {
+            this.initHeaders();
+        }
+    }
+
+    /**
+     * Time spans, to display as buttons in the toolbar. On click on the button, the scheduler time span will be updated. Only three options can be visible, the others will be listed in a button menu.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get toolbarTimeSpans() {
+        return this._toolbarTimeSpans;
+    }
+    set toolbarTimeSpans(value) {
+        this._toolbarTimeSpans = normalizeArray(value, 'object');
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Toolbar time spans available to the headers. If the toolbar is hidden, return an empty array.
+     *
+     * @type {object[]}
+     */
+    get availableToolbarTimeSpans() {
+        if (this.hideToolbar) {
+            return [];
+        }
+        return this.toolbarTimeSpans;
     }
 
     /**
@@ -827,7 +888,9 @@ export default class AvonniScheduler extends LightningElement {
      * @type {HTMLElement}
      */
     get datatable() {
-        return this.template.querySelector('[data-element-id="avonni-datatable"]');
+        return this.template.querySelector(
+            '[data-element-id="avonni-datatable"]'
+        );
     }
 
     /**
@@ -850,8 +913,8 @@ export default class AvonniScheduler extends LightningElement {
             'slds-border_right avonni-scheduler__datatable-col slds-grid'
         )
             .add({
-                'avonni-scheduler__datatable-col_hidden': this
-                    .datatableIsHidden,
+                'avonni-scheduler__datatable-col_hidden':
+                    this.datatableIsHidden,
                 'avonni-scheduler__datatable-col_open': this.datatableIsOpen
             })
             .toString();
@@ -985,38 +1048,6 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * If true, a loading spinner is displayed on the left of the schedule.
-     *
-     * @type {boolean}
-     * @default false
-     */
-    get showLeftInfiniteLoadSpinner() {
-        if (!this.smallestHeader || this.isLoading) return false;
-
-        const firstVisibleColumn = this.smallestHeader.columns[0];
-        const firstVisibleTime =
-            firstVisibleColumn && dateTimeObjectFrom(firstVisibleColumn.start);
-        return firstVisibleTime > this.smallestHeader.start;
-    }
-
-    /**
-     * If true, a loading spinner is displayed on the right of the schedule.
-     *
-     * @type {boolean}
-     * @default false
-     */
-    get showRightInfiniteLoadSpinner() {
-        if (!this.smallestHeader || this.isLoading) return false;
-
-        const lastVisibleColumn = this.smallestHeader.columns[
-            this.smallestHeader.columns.length - 1
-        ];
-        const lastVisibleTime =
-            lastVisibleColumn && dateTimeObjectFrom(lastVisibleColumn.end);
-        return lastVisibleTime < this.smallestHeader.end;
-    }
-
-    /**
      * Duration of one column of the smallest unit header, in milliseconds.
      *
      * @type {number}
@@ -1024,7 +1055,9 @@ export default class AvonniScheduler extends LightningElement {
      */
     get smallestColumnDuration() {
         const header = this.smallestHeader;
-        if (!header) return 0;
+        if (!header) {
+            return 0;
+        }
 
         const headerColumnEnd =
             addToDate(header.start, header.unit, header.span) - 1;
@@ -1041,12 +1074,104 @@ export default class AvonniScheduler extends LightningElement {
     get splitterClass() {
         return classSet('avonni-scheduler__splitter slds-is-absolute slds-grid')
             .add({
-                'avonni-scheduler__splitter_disabled': this
-                    .resizeColumnDisabled,
+                'avonni-scheduler__splitter_disabled':
+                    this.resizeColumnDisabled,
                 'slds-grid_align-end': this.datatableIsOpen
             })
             .toString();
     }
+
+    /**
+     * Array of toolbar time spans that should be displayed as buttons in the toolbar.
+     *
+     * @type {object[]}
+     */
+    get toolbarTimeSpanButtons() {
+        const buttons = deepCopy(this.toolbarTimeSpans.slice(0, 3));
+        const { span, unit } = this.timeSpan;
+        buttons.forEach((button) => {
+            if (button.span === span && button.unit === unit) {
+                button.variant = 'brand';
+            } else {
+                button.variant = 'neutral';
+            }
+        });
+        return buttons;
+    }
+
+    /**
+     * Array of toolbar time spans that should be displayed as menu items in the toolbar.
+     *
+     * @type {object[]}
+     */
+    get toolbarTimeSpanMenuItems() {
+        const items = deepCopy(this.toolbarTimeSpans.slice(3));
+        const { span, unit } = this.timeSpan;
+        items.forEach((item) => {
+            if (item.span === span && item.unit === unit) {
+                item.checked = true;
+            }
+        });
+        return items;
+    }
+
+    /**
+     * Label of the toolbar interval button.
+     *
+     * @type {string}
+     */
+    get visibleIntervalLabel() {
+        if (!this.visibleInterval) {
+            return null;
+        }
+
+        const unit = this.timeSpan.unit;
+        let format;
+        switch (unit) {
+            case 'day':
+            case 'week': {
+                format = 'ccc, LLLL d, kkkk';
+                break;
+            }
+            case 'month':
+            case 'year': {
+                format = 'LLLL yyyy';
+                break;
+            }
+            case 'minute':
+            case 'hour': {
+                format = 't';
+                break;
+            }
+            default:
+                break;
+        }
+
+        const start = this.visibleInterval.s.toFormat(format);
+        const end = this.visibleInterval.e.toFormat(format);
+        return start === end ? start : `${start} - ${end}`;
+    }
+
+    /**
+     * Currently visible date interval, as a Luxon Interval object.
+     *
+     * @type {Interval}
+     */
+    get visibleInterval() {
+        const header = this.template.querySelector(
+            '[data-element-id="avonni-primitive-scheduler-header-group"]'
+        );
+        if (header) {
+            return header.visibleInterval;
+        }
+        return null;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Create a new event.
@@ -1083,6 +1208,38 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
+     * Move the position of the scheduler so the specified date is visible. The difference with setting the start attribute is that the current time span is taken into account, so the scheduler won’t necessarily start with the given date.
+     *
+     * @param {string | number | Date} date Date the scheduler should be positioned on.
+     * @public
+     */
+    @api
+    goToDate(date) {
+        const selectedDate = dateTimeObjectFrom(date);
+        if (!selectedDate) {
+            console.warn(`The date ${date} is not valid.`);
+            return;
+        }
+        this.selectedDate = selectedDate;
+        const unit = this.timeSpan.unit;
+        let start;
+
+        // Compensate the fact that Luxon weeks start on Monday
+        if (unit === 'week' && selectedDate.weekday === 7) {
+            // Start is on Sunday and the unit is week
+            start = selectedDate.startOf('day');
+        } else {
+            start = selectedDate.startOf(unit);
+
+            if (unit === 'week') {
+                // Start is not on a Sunday and the unit is week
+                start = removeFromDate(start, 'day', 1);
+            }
+        }
+        this._start = start;
+    }
+
+    /**
      * Open the edit event dialog.
      *
      * @param {string} name Unique name of the event to edit.
@@ -1106,34 +1263,36 @@ export default class AvonniScheduler extends LightningElement {
         this.crud.newEvent();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
     /**
      * Create the computed headers.
      */
     initHeaders() {
         // Use the custom headers or a preset
-        let headers = [...this.customHeaders];
-        if (!headers.length) {
-            const presetConfig = PRESET_HEADERS.find(
-                (preset) => preset.name === this.headers
-            );
-            headers = presetConfig.headers;
-        }
-
-        this.computedHeaders = headers;
+        const headers = this.customHeaders.length
+            ? this.customHeaders
+            : PRESET_HEADERS[this.headers];
+        this.computedHeaders = deepCopy(headers);
     }
 
     /**
      * Create the computed events.
      */
     initEvents() {
-        if (!this.smallestHeader) return;
-
         // The disabled dates/times and reference lines are special events
         this._allEvents = this.events
             .concat(this.computedDisabledDatesTimes)
             .concat(this.computedReferenceLines);
 
-        if (!this._allEvents.length) return;
+        if (!this._allEvents.length) {
+            this.computedEvents = [];
+            return;
+        }
 
         this._allEvents.sort((first, second) => {
             return (
@@ -1149,7 +1308,10 @@ export default class AvonniScheduler extends LightningElement {
      * Create the computed rows.
      */
     initRows() {
-        if (!this.smallestHeader || !this.rows || !this.rowsKeyField) return;
+        if (!this.smallestHeader || !this.rows || !this.rowsKeyField) {
+            this.computedRows = [];
+            return;
+        }
 
         let colorIndex = 0;
         this.computedRows = this.rows.map((row) => {
@@ -1319,8 +1481,8 @@ export default class AvonniScheduler extends LightningElement {
         // We store the initial event object in a variable,
         // in case a custom field is used by the labels
         event.data = { ...event };
-        event.schedulerEnd = this._visibleInterval.e;
-        event.schedulerStart = this._visibleInterval.s;
+        event.schedulerEnd = this.visibleInterval.e;
+        event.schedulerStart = this.visibleInterval.s;
         event.availableMonths = this.availableMonths;
         event.availableDaysOfTheWeek = this.availableDaysOfTheWeek;
         event.availableTimeFrames = this.availableTimeFrames;
@@ -1465,10 +1627,16 @@ export default class AvonniScheduler extends LightningElement {
 
             // Handle the cases where the events are on the side
             // and the mouse moved out of the schedule
-            if (index === 0 && left >= x) return td;
-            if (index === cells.length - 1 && x > right) return td;
+            if (index === 0 && left >= x) {
+                return td;
+            }
+            if (index === cells.length - 1 && x > right) {
+                return td;
+            }
 
-            if (x >= left && x < right) return td;
+            if (x >= left && x < right) {
+                return td;
+            }
             return undefined;
         });
     }
@@ -1517,7 +1685,9 @@ export default class AvonniScheduler extends LightningElement {
             const top = tr.getBoundingClientRect().top;
             const bottom = tr.getBoundingClientRect().bottom;
 
-            if (y >= top && y <= bottom) return tr;
+            if (y >= top && y <= bottom) {
+                return tr;
+            }
             return undefined;
         });
     }
@@ -1591,11 +1761,13 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Create the computed events that are included in the currently loaded interval of time.
+     * Create the computed events that are included in the currently visible interval of time.
      */
     createVisibleEvents() {
-        const interval = this._visibleInterval;
-        if (!interval) return [];
+        const interval = this.visibleInterval;
+        if (!interval) {
+            return [];
+        }
 
         const events = this._allEvents.filter((event) => {
             const from = dateTimeObjectFrom(event.from);
@@ -1668,6 +1840,12 @@ export default class AvonniScheduler extends LightningElement {
             y,
             draftValues: {}
         };
+    }
+
+    resetDatatableWidth() {
+        const columnWidth = this.datatableCol.getBoundingClientRect().width;
+        this._initialDatatableWidth = columnWidth;
+        this.datatableWidth = columnWidth;
     }
 
     /**
@@ -1867,13 +2045,6 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Handle the privateheaderregister event fired by the primitive header. Save the header callback method to a variable.
-     */
-    handleHeaderRegister(event) {
-        this.scrollHeadersTo = event.detail.callbacks.scrollHeadersTo;
-    }
-
-    /**
      * Handle the privatecellwidthchange event fired by the primitive header. Save the smallest unit header cell width to a variable.
      */
     handleHeaderCellWidthChange(event) {
@@ -1885,23 +2056,13 @@ export default class AvonniScheduler extends LightningElement {
      */
     handleHeaderChange(event) {
         this.smallestHeader = event.detail.smallestHeader;
-        this._headerHeightChange = true;
-    }
 
-    /**
-     * Handle the privatevisibleheaderchange event fired by the primitive header. Create the computed events and computed rows of the new visible interval.
-     */
-    handleHeaderVisibleCellsChange(event) {
-        const { direction, visibleCells, visibleInterval } = event.detail;
-        this._numberOfVisibleCells = visibleCells;
-        this._visibleInterval = visibleInterval;
+        // Update the start date in case it was not available
+        this._start = this.smallestHeader.start;
 
         // Create the visible events
-        if (!this.computedEvents.length) {
-            this.initEvents();
-        } else {
-            this.computedEvents = this.createVisibleEvents();
-        }
+        this.computedEvents = this.createVisibleEvents();
+
         // Create the rows or update the visible columns
         if (!this.computedRows.length) {
             this.initRows();
@@ -1909,17 +2070,10 @@ export default class AvonniScheduler extends LightningElement {
             this.updateVisibleRows();
         }
 
-        if (direction) {
-            const schedule = this.template.querySelector(
-                '.avonni-scheduler__wrapper'
-            );
-            const scrollOffset = this.cellWidth * visibleCells;
-            const scrollValue =
-                schedule.scrollLeft <= scrollOffset * 2
-                    ? schedule.scrollLeft + scrollOffset
-                    : schedule.scrollLeft - scrollOffset;
-            schedule.scrollTo({ left: scrollValue });
-        }
+        requestAnimationFrame(() => {
+            this.resetDatatableWidth();
+            this.updateDatatablePosition();
+        });
     }
 
     /**
@@ -1970,7 +2124,9 @@ export default class AvonniScheduler extends LightningElement {
      * Handle the mousedown event fired by an empty cell or a disabled primitive event occurrence. Prepare the scheduler for a new event to be created on drag.
      */
     handleMouseDown(mouseEvent) {
-        if (mouseEvent.button || this.readOnly) return;
+        if (mouseEvent.button || this.readOnly) {
+            return;
+        }
 
         this._mouseIsDown = true;
         this.hideAllPopovers();
@@ -1986,7 +2142,9 @@ export default class AvonniScheduler extends LightningElement {
      * Handle the privatemouseenter event fired by a primitive event occurrence. Select the hovered event and show the detail popover.
      */
     handleEventMouseEnter(event) {
-        if (this._mouseIsDown || this.showContextMenu) return;
+        if (this._mouseIsDown || this.showContextMenu) {
+            return;
+        }
 
         this.selectEvent(event);
         this.showDetailPopover = true;
@@ -2011,7 +2169,9 @@ export default class AvonniScheduler extends LightningElement {
      * Handle the mousemove event fired by the schedule. If the splitter is being clicked, compute its movement. If an event is being clicked, compute its resizong or dragging.
      */
     handleMouseMove(mouseEvent) {
-        if (!this._mouseIsDown) return;
+        if (!this._mouseIsDown) {
+            return;
+        }
 
         // Prevent scrolling
         mouseEvent.preventDefault();
@@ -2064,7 +2224,9 @@ export default class AvonniScheduler extends LightningElement {
      */
     handleMouseUp(mouseEvent) {
         this._mouseIsDown = false;
-        if (mouseEvent.button !== 0) return;
+        if (mouseEvent.button !== 0) {
+            return;
+        }
 
         if (this._draggedSplitter) {
             this._draggedSplitter = false;
@@ -2092,11 +2254,15 @@ export default class AvonniScheduler extends LightningElement {
             switch (side) {
                 case 'right':
                     draftValues.to = to.toUTC().toISO();
-                    if (newEvent) occurrence.to = to;
+                    if (newEvent) {
+                        occurrence.to = to;
+                    }
                     break;
                 case 'left':
                     draftValues.from = from.toUTC().toISO();
-                    if (newEvent) occurrence.from = from;
+                    if (newEvent) {
+                        occurrence.from = from;
+                    }
                     break;
                 default:
                     this.dragEventTo(rowElement, cellElement);
@@ -2146,7 +2312,9 @@ export default class AvonniScheduler extends LightningElement {
      */
     handleEventContextMenu(mouseEvent) {
         const target = mouseEvent.currentTarget;
-        if (target.disabled || target.referenceLine) return;
+        if (target.disabled || target.referenceLine) {
+            return;
+        }
 
         if (this.computedContextMenuEvent.length) {
             this.hideAllPopovers();
@@ -2314,12 +2482,18 @@ export default class AvonniScheduler extends LightningElement {
         } else {
             // Update the event with the selected occurrence values,
             // in case the selected occurrence had already been edited
-            if (occurrence.from !== event.from) event._from = occurrence.from;
-            if (occurrence.to !== event.to) event._to = occurrence.to;
-            if (occurrence.title !== event.title)
+            if (occurrence.from !== event.from) {
+                event._from = occurrence.from;
+            }
+            if (occurrence.to !== event.to) {
+                event._to = occurrence.to;
+            }
+            if (occurrence.title !== event.title) {
                 event.title = occurrence.title;
-            if (occurrence.keyFields !== event.keyFields)
+            }
+            if (occurrence.keyFields !== event.keyFields) {
                 event.keyFields = occurrence.keyFields;
+            }
 
             // Update the event with the draft values from the edit form
             this.crud.saveEvent();
@@ -2344,38 +2518,25 @@ export default class AvonniScheduler extends LightningElement {
     handleEditSaveKeyDown(event) {
         if (event.key === 'Tab') {
             event.preventDefault();
-            this.template.querySelector('[data-element-id^="avonni-dialog"]').focusOnCloseButton();
+            this.template
+                .querySelector('[data-element-id^="avonni-dialog"]')
+                .focusOnCloseButton();
         }
     }
 
     /**
-     * Handle the scroll event fired by the schedule. Trigger the headers, events and rows reloading if the scroll is big enough. Hide the popovers of the events that are scrolled out of the screen.
+     * Handle the scroll event fired by the schedule. Hide the popovers of the events that are scrolled out of the screen.
      */
     handleScroll() {
         if (this.showDetailPopover) {
             // Hide the detail popover only if it goes off screen
             const right = this._draggedEvent.getBoundingClientRect().right;
-            if (right < 0) this.hideDetailPopover();
+            if (right < 0) {
+                this.hideDetailPopover();
+            }
         } else {
             this.hideDetailPopover();
             this.hideContextMenu();
-        }
-
-        const schedule = this.template.querySelector(
-            '.avonni-scheduler__wrapper'
-        );
-        const scroll = schedule.scrollLeft;
-        const scrollOffset = this.cellWidth * this._numberOfVisibleCells;
-        const startOfSchedule =
-            this._visibleInterval.s.ts === this.smallestHeader.start.ts;
-        const loadLeftSchedule = !startOfSchedule && scroll <= scrollOffset;
-        const loadRightSchedule = scroll >= scrollOffset * 3;
-
-        // If the scroll value is at less or more than a quarter of the visible interval,
-        // reload the schedule with a new interval
-        if (loadRightSchedule || loadLeftSchedule) {
-            const direction = loadRightSchedule ? 'right' : 'left';
-            this.scrollHeadersTo(direction);
         }
     }
 
@@ -2442,6 +2603,92 @@ export default class AvonniScheduler extends LightningElement {
             this.datatable.style.width = `${width}px`;
             this.datatableWidth = width;
         }
+    }
+
+    handleToggleToolbarCalendar() {
+        this.showToolbarCalendar = !this.showToolbarCalendar;
+
+        requestAnimationFrame(() => {
+            const calendar = this.template.querySelector(
+                '[data-element-id="calendar-toolbar"]'
+            );
+            if (calendar) {
+                calendar.focus();
+            }
+        });
+    }
+
+    handleToolbarCalendarChange(event) {
+        this.showToolbarCalendar = false;
+        const { value } = event.detail;
+        if (!value) {
+            return;
+        }
+
+        this.goToDate(value);
+    }
+
+    handleToolbarCalendarFocusin() {
+        this._toolbarCalendarIsFocused = true;
+    }
+
+    handleToolbarCalendarFocusout() {
+        this._toolbarCalendarIsFocused = false;
+
+        requestAnimationFrame(() => {
+            if (!this._toolbarCalendarIsFocused) {
+                this.showToolbarCalendar = false;
+            }
+        });
+    }
+
+    handleToolbarNextClick() {
+        const { unit, span } = this.timeSpan;
+        const date = addToDate(this.start, unit, span);
+        this.goToDate(date);
+    }
+
+    handleToolbarPrevClick() {
+        const { unit, span } = this.timeSpan;
+        const date = removeFromDate(this.start, unit, span);
+        this.goToDate(date);
+    }
+
+    /**
+     * Handle a click on one of the toolbar time span buttons.
+     *
+     * @param {Event} event
+     */
+    handleToolbarTimeSpanClick(event) {
+        const span = Number(event.target.dataset.span);
+        const { unit, headers } = event.target.dataset;
+        if (!unit) {
+            return;
+        }
+
+        const selectedDate = this.selectedDate || this.start;
+        this._start = selectedDate.startOf(unit);
+        this._timeSpan = { unit, span };
+
+        if (unit === 'week') {
+            // Compensate the fact that luxon weeks start on Monday
+            this._start = removeFromDate(this.start, 'day', 1);
+        }
+
+        const normalizedHeaders = normalizeString(headers, {
+            validValues: HEADERS.valid,
+            fallbackValue: HEADERS.default,
+            toLowerCase: false
+        });
+
+        this.computedHeaders = deepCopy(PRESET_HEADERS[normalizedHeaders]);
+    }
+
+    /**
+     * Handle a click on the toolbar "Today" button.
+     */
+    handleToolbarTodayClick() {
+        this.goToDate(new Date());
     }
 
     /**

@@ -50,3 +50,11 @@
     font-style: var(--avonni-avatar-tertiary-text-font-style, normal);
     font-weight: var(--avonni-avatar-tertiary-text-font-weight, 400);
 }
+
+.avonni-avatar__chip:first-of-type {
+    margin-left: 0;
+}
+
+.avonni-avatar__chip {
+    margin: 0 0.25rem;
+}

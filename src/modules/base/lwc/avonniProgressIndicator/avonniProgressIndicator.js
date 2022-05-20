@@ -53,11 +53,12 @@ export default class AvonniProgressIndicator extends LightningElement {
 
     _completedSteps = [];
     _disabledSteps = [];
-    _warningSteps = [];
     _errorSteps = [];
-    _variant = INDICATOR_VARIANTS.default;
-    _initialRender = true;
     _steps = [];
+    _variant = INDICATOR_VARIANTS.default;
+    _warningSteps = [];
+
+    _initialRender = true;
 
     renderedCallback() {
         this.updateErrorSteps();
@@ -65,6 +66,12 @@ export default class AvonniProgressIndicator extends LightningElement {
         this.updateCompletedSteps();
         this.updateCurrentStep();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Array of completed steps values.
@@ -95,20 +102,6 @@ export default class AvonniProgressIndicator extends LightningElement {
     }
 
     /**
-     * Array of warning steps values.
-     *
-     * @type {string[]}
-     * @public
-     */
-    @api
-    get warningSteps() {
-        return this._warningSteps;
-    }
-    set warningSteps(value) {
-        this._warningSteps = normalizeArray(value);
-    }
-
-    /**
      * Array of error steps values.
      *
      * @type {string[]}
@@ -120,6 +113,21 @@ export default class AvonniProgressIndicator extends LightningElement {
     }
     set errorSteps(value) {
         this._errorSteps = normalizeArray(value);
+    }
+
+    /**
+     * Array of step bjects.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get steps() {
+        return this._steps;
+    }
+
+    set steps(value) {
+        this._steps = normalizeArray(value);
     }
 
     /**
@@ -143,19 +151,24 @@ export default class AvonniProgressIndicator extends LightningElement {
     }
 
     /**
-     * Array of step bjects.
+     * Array of warning steps values.
      *
-     * @type {object[]}
+     * @type {string[]}
      * @public
      */
     @api
-    get steps() {
-        return this._steps;
+    get warningSteps() {
+        return this._warningSteps;
+    }
+    set warningSteps(value) {
+        this._warningSteps = normalizeArray(value);
     }
 
-    set steps(value) {
-        this._steps = normalizeArray(value);
-    }
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed Outer class styling.
@@ -165,11 +178,16 @@ export default class AvonniProgressIndicator extends LightningElement {
     get computedOuterClass() {
         return classSet('slds-progress slds-progress_horizontal')
             .add({
-                'slds-progress_shade':
-                    this._variant === 'shaded'
+                'slds-progress_shade': this._variant === 'shaded'
             })
             .toString();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Set what type of step (active, completed, warning, error, disabled).
@@ -178,7 +196,9 @@ export default class AvonniProgressIndicator extends LightningElement {
      */
     getSteps() {
         return Array.from(
-            this.template.querySelectorAll('[data-element-id="avonni-primitive-progress-step"]')
+            this.template.querySelectorAll(
+                '[data-element-id="avonni-primitive-progress-step"]'
+            )
         );
     }
 

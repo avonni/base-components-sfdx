@@ -65,12 +65,12 @@ export default class AvonniButtonDialog extends LightningElement {
      */
     @api accessKey;
     /**
-     * Optional text to be shown on the button.
+     * The assistive text for the button.
      *
      * @public
      * @type {string}
      */
-    @api label;
+    @api alternativeText;
     /**
      * The name of the icon to be used in the format 'utility:down'.
      *
@@ -79,12 +79,12 @@ export default class AvonniButtonDialog extends LightningElement {
      */
     @api iconName;
     /**
-     * The assistive text for the button.
+     * Optional text to be shown on the button.
      *
      * @public
      * @type {string}
      */
-    @api alternativeText;
+    @api label;
 
     _disabled = false;
     _variant = BUTTON_VARIANTS.default;
@@ -97,23 +97,26 @@ export default class AvonniButtonDialog extends LightningElement {
         );
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * The variant changes the appearance of the button. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
+     * If present, the modal box can't be opened by users.
      *
      * @public
-     * @type {string}
-     * @default neutral
+     * @type {boolean}
+     * @default false
      */
     @api
-    get variant() {
-        return this._variant;
+    get disabled() {
+        return this._disabled;
     }
 
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: BUTTON_VARIANTS.default,
-            validValues: BUTTON_VARIANTS.valid
-        });
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
     }
 
     /**
@@ -136,20 +139,29 @@ export default class AvonniButtonDialog extends LightningElement {
     }
 
     /**
-     * If present, the modal box can't be opened by users.
+     * The variant changes the appearance of the button. Accepted variants include base, neutral, brand, brand-outline, destructive, destructive-text, inverse, and success.
      *
      * @public
-     * @type {boolean}
-     * @default false
+     * @type {string}
+     * @default neutral
      */
     @api
-    get disabled() {
-        return this._disabled;
+    get variant() {
+        return this._variant;
     }
 
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: BUTTON_VARIANTS.default,
+            validValues: BUTTON_VARIANTS.valid
+        });
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Open the modal box.

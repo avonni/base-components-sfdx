@@ -51,13 +51,6 @@ const ICON_SIZES = {
  */
 export default class AvonniScopedNotification extends LightningElement {
     /**
-     * Title of the notification.
-     *
-     * @type {string}
-     * @public
-     */
-    @api title;
-    /**
      * The name of the icon to be used in the format 'utility:down'.
      *
      * @type {}
@@ -65,9 +58,17 @@ export default class AvonniScopedNotification extends LightningElement {
      * @default
      */
     @api iconName;
+    /**
+     * Title of the notification.
+     *
+     * @type {string}
+     * @public
+     */
+    @api title;
 
-    _variant = SCOPED_NOTIFICATION_VARIANTS.default;
     _iconSize = ICON_SIZES.default;
+    _variant = SCOPED_NOTIFICATION_VARIANTS.default;
+
     showTitle = true;
 
     renderedCallback() {
@@ -81,6 +82,30 @@ export default class AvonniScopedNotification extends LightningElement {
      */
     get titleSlot() {
         return this.template.querySelector('slot[name=title]');
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * The size of the icon. Valid options include xx-small, x-small, small, medium, or large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api get iconSize() {
+        return this._iconSize;
+    }
+
+    set iconSize(iconSize) {
+        this._iconSize = normalizeString(iconSize, {
+            fallbackValue: ICON_SIZES.default,
+            validValues: ICON_SIZES.valid
+        });
     }
 
     /**
@@ -101,23 +126,11 @@ export default class AvonniScopedNotification extends LightningElement {
         });
     }
 
-    /**
-     * The size of the icon. Valid options include xx-small, x-small, small, medium, or large.
-     *
-     * @type {string}
-     * @public
-     * @default medium
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api get iconSize() {
-        return this._iconSize;
-    }
-
-    set iconSize(iconSize) {
-        this._iconSize = normalizeString(iconSize, {
-            fallbackValue: ICON_SIZES.default,
-            validValues: ICON_SIZES.valid
-        });
-    }
 
     /**
      * Computed notification class styling.

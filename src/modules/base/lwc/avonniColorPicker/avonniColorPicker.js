@@ -176,24 +176,24 @@ export default class AvonniColorPicker extends LightningElement {
      */
     @api messageWhenValueMissing;
 
+    _colors = DEFAULT_COLORS;
     _columns = DEFAULT_COLUMNS;
-    _groups = [];
-    _value;
-    _name;
-    _variant = VARIANTS.default;
-    _type = TYPES.default;
-    _menuVariant = MENU_VARIANTS.default;
-    _menuIconSize = MENU_ICON_SIZES.default;
-    _menuAlignment = MENU_ALIGNMENTS.default;
     _disabled = false;
+    _groups = [];
+    _hideColorInput = false;
     _isLoading = false;
+    _menuAlignment = MENU_ALIGNMENTS.default;
+    _menuNubbin = false;
+    _menuIconSize = MENU_ICON_SIZES.default;
+    _menuVariant = MENU_VARIANTS.default;
+    _name;
+    _opacity = false;
     _readOnly = false;
     _required = false;
-    _hideColorInput = false;
-    _menuNubbin = false;
-    _colors = DEFAULT_COLORS;
-    _opacity = false;
     _tokens = [];
+    _type = TYPES.default;
+    _value;
+    _variant = VARIANTS.default;
 
     _currentTab = DEFAULT_TAB;
     _draftToken = {};
@@ -206,12 +206,14 @@ export default class AvonniColorPicker extends LightningElement {
     showError = false;
 
     _inputValue = '';
+    _isConnected = false;
     _rendered = false;
 
     connectedCallback() {
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
         this.computeToken();
+        this._isConnected = true;
     }
 
     renderedCallback() {
@@ -231,6 +233,29 @@ export default class AvonniColorPicker extends LightningElement {
             palette.tileWidth = tileSize;
             palette.tileHeight = tileSize;
         }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Array of colors displayed in the default palette. Each color can either be a string, or a color object. The color objects are used in conjunction with the groups attribute, to split the colors into different groups.
+     *
+     * @public
+     * @type {string[]}
+     * @default [“#e3abec”, “#c2dbf6”, ”#9fd6ff”, ”#9de7da”, ”#9df0bf”, ”#fff099”, ”#fed49a”, ”#d073df”, ”#86b9f3”, ”#5ebbff”, ”#44d8be”, ”#3be281”, ”#ffe654”, ”#ffb758”, ”#bd35bd”, ”#5778c1”, ”#5ebbff”, ”#00aea9”, ”#3bba4c”, ”#f4bc25”, ”#f99120”, ”#580d8c”, ”#001870”, ”#0a2399”, ”#097476”, ”#096a50”, ”#b67d11”, ”#b85d0d”]
+     */
+    @api
+    get colors() {
+        return this._colors;
+    }
+
+    set colors(value) {
+        const colors = normalizeArray(value);
+        this._colors = colors.length > 0 ? colors : DEFAULT_COLORS;
     }
 
     /**
@@ -254,6 +279,22 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
+     * If present, the input field is disabled and users cannot interact with it.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get disabled() {
+        return this._disabled;
+    }
+
+    set disabled(value) {
+        this._disabled = normalizeBoolean(value);
+    }
+
+    /**
      * Array of group objects. Groups can be used by the tokens and the predefined palette.
      *
      * @type {object[]}
@@ -269,99 +310,53 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Specifies the name of an input element.
+     * If true, hide the input color value.
      *
      * @public
-     * @type {string}
+     * @type {boolean}
+     * @default false
      */
     @api
-    get name() {
-        return this._name;
+    get hideColorInput() {
+        return this._hideColorInput;
     }
 
-    set name(value) {
-        this._name = value ? value : generateUUID();
+    set hideColorInput(value) {
+        this._hideColorInput = normalizeBoolean(value);
     }
 
     /**
-     * Specifies the value of an input element.
+     * If present, a spinner is displayed to indicate that data is loading.
      *
      * @public
-     * @type {string}
+     * @type {boolean}
+     * @default false
      */
     @api
-    get value() {
-        return this._value;
+    get isLoading() {
+        return this._isLoading;
     }
 
-    set value(value) {
-        if (value && typeof value === 'string') {
-            this._value = value;
-            this.inputValue = value;
-            if (this.isConnected) this.computeToken();
-        } else {
-            this._value = null;
-            this._inputValue = '';
-            this.currentToken = {};
-        }
-        this.initSwatchColor();
+    set isLoading(value) {
+        this._isLoading = normalizeBoolean(value);
     }
 
     /**
-     * The variant changes the appearance of an input field. Accepted variants include standard, label-inline, label-hidden, and label-stacked. This value defaults to standard, which displays the label above the field. Use label-hidden to hide the label but make it available to assistive technology. Use label-inline to horizontally align the label and input field. Use label-stacked to place the label above the input field.
+     * Determines the alignment of the menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space.
      *
      * @public
      * @type {string}
-     * @default standard
+     * @default left
      */
     @api
-    get variant() {
-        return this._variant;
+    get menuAlignment() {
+        return this._menuAlignment;
     }
 
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: VARIANTS.default,
-            validValues: VARIANTS.valid
-        });
-    }
-
-    /**
-     * Type of the color picker. The base type uses tabs for all the other types.
-     * Valid values include base, custom, predefined and tokens.
-     *
-     * @public
-     * @type {string}
-     * @default base
-     */
-    @api
-    get type() {
-        return this._type;
-    }
-
-    set type(type) {
-        this._type = normalizeString(type, {
-            fallbackValue: TYPES.default,
-            validValues: TYPES.valid
-        });
-    }
-
-    /**
-     * The variant changes the look of the button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
-     *
-     * @public
-     * @type {string}
-     * @default border
-     */
-    @api
-    get menuVariant() {
-        return this._menuVariant;
-    }
-
-    set menuVariant(variant) {
-        this._menuVariant = normalizeString(variant, {
-            fallbackValue: MENU_VARIANTS.default,
-            validValues: MENU_VARIANTS.valid
+    set menuAlignment(value) {
+        this._menuAlignment = normalizeString(value, {
+            fallbackValue: MENU_ALIGNMENTS.default,
+            validValues: MENU_ALIGNMENTS.valid
         });
     }
 
@@ -385,54 +380,69 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Determines the alignment of the menu relative to the button. Available options are: auto, left, center, right, bottom-left, bottom-center, bottom-right. The auto option aligns the dropdown menu based on available space.
+     * If present, a nubbin is present on the menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get menuNubbin() {
+        return this._menuNubbin;
+    }
+
+    set menuNubbin(value) {
+        this._menuNubbin = normalizeBoolean(value);
+    }
+
+    /**
+     * The variant changes the look of the button. Accepted variants include bare, container, border, border-filled, bare-inverse, and border-inverse.
      *
      * @public
      * @type {string}
-     * @default left
+     * @default border
      */
     @api
-    get menuAlignment() {
-        return this._menuAlignment;
+    get menuVariant() {
+        return this._menuVariant;
     }
 
-    set menuAlignment(value) {
-        this._menuAlignment = normalizeString(value, {
-            fallbackValue: MENU_ALIGNMENTS.default,
-            validValues: MENU_ALIGNMENTS.valid
+    set menuVariant(variant) {
+        this._menuVariant = normalizeString(variant, {
+            fallbackValue: MENU_VARIANTS.default,
+            validValues: MENU_VARIANTS.valid
         });
     }
 
     /**
-     * If present, the input field is disabled and users cannot interact with it.
+     * Specifies the name of an input element.
      *
      * @public
-     * @type {boolean}
-     * @default false
+     * @type {string}
      */
     @api
-    get disabled() {
-        return this._disabled;
+    get name() {
+        return this._name;
     }
 
-    set disabled(value) {
-        this._disabled = normalizeBoolean(value);
+    set name(value) {
+        this._name = value ? value : generateUUID();
     }
 
     /**
-     * If present, a spinner is displayed to indicate that data is loading.
+     * If present, the alpha slider will be displayed.
      *
      * @public
      * @type {boolean}
      * @default false
      */
     @api
-    get isLoading() {
-        return this._isLoading;
+    get opacity() {
+        return this._opacity;
     }
 
-    set isLoading(value) {
-        this._isLoading = normalizeBoolean(value);
+    set opacity(value) {
+        this._opacity = normalizeBoolean(value);
     }
 
     /**
@@ -468,71 +478,6 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * Array of colors displayed in the default palette. Each color can either be a string, or a color object. The color objects are used in conjunction with the groups attribute, to split the colors into different groups.
-     *
-     * @public
-     * @type {string[]}
-     * @default [“#e3abec”, “#c2dbf6”, ”#9fd6ff”, ”#9de7da”, ”#9df0bf”, ”#fff099”, ”#fed49a”, ”#d073df”, ”#86b9f3”, ”#5ebbff”, ”#44d8be”, ”#3be281”, ”#ffe654”, ”#ffb758”, ”#bd35bd”, ”#5778c1”, ”#5ebbff”, ”#00aea9”, ”#3bba4c”, ”#f4bc25”, ”#f99120”, ”#580d8c”, ”#001870”, ”#0a2399”, ”#097476”, ”#096a50”, ”#b67d11”, ”#b85d0d”]
-     */
-    @api
-    get colors() {
-        return this._colors;
-    }
-
-    set colors(value) {
-        const colors = normalizeArray(value);
-        this._colors = colors.length > 0 ? colors : DEFAULT_COLORS;
-    }
-
-    /**
-     * If true, hide the input color value.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get hideColorInput() {
-        return this._hideColorInput;
-    }
-
-    set hideColorInput(value) {
-        this._hideColorInput = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, a nubbin is present on the menu. A nubbin is a stub that protrudes from the menu item towards the button menu. The nubbin position is based on the menu-alignment.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get menuNubbin() {
-        return this._menuNubbin;
-    }
-
-    set menuNubbin(value) {
-        this._menuNubbin = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the alpha slider will be displayed.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get opacity() {
-        return this._opacity;
-    }
-
-    set opacity(value) {
-        this._opacity = normalizeBoolean(value);
-    }
-
-    /**
      * Array of token objects.
      *
      * @public
@@ -547,6 +492,75 @@ export default class AvonniColorPicker extends LightningElement {
         this._tokens = normalizeArray(value);
         if (this.isConnected) this.computeToken();
     }
+
+    /**
+     * Type of the color picker. The base type uses tabs for all the other types.
+     * Valid values include base, custom, predefined and tokens.
+     *
+     * @public
+     * @type {string}
+     * @default base
+     */
+    @api
+    get type() {
+        return this._type;
+    }
+
+    set type(type) {
+        this._type = normalizeString(type, {
+            fallbackValue: TYPES.default,
+            validValues: TYPES.valid
+        });
+    }
+
+    /**
+     * Specifies the value of an input element.
+     *
+     * @public
+     * @type {string}
+     */
+    @api
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        if (value && typeof value === 'string') {
+            this._value = value;
+            this.inputValue = value;
+            if (this._isConnected) this.computeToken();
+        } else {
+            this._value = null;
+            this._inputValue = '';
+            this.currentToken = {};
+        }
+        this.initSwatchColor();
+    }
+
+    /**
+     * The variant changes the appearance of an input field. Accepted variants include standard, label-inline, label-hidden, and label-stacked. This value defaults to standard, which displays the label above the field. Use label-hidden to hide the label but make it available to assistive technology. Use label-inline to horizontally align the label and input field. Use label-stacked to place the label above the input field.
+     *
+     * @public
+     * @type {string}
+     * @default standard
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Variant of the color palette.
@@ -850,7 +864,11 @@ export default class AvonniColorPicker extends LightningElement {
         return this._constraintApi;
     }
 
-    /*-------- Public methods --------*/
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Checks if the input is valid.
@@ -920,7 +938,11 @@ export default class AvonniColorPicker extends LightningElement {
         if (input) input.blur();
     }
 
-    /*-------- Private methods --------*/
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Initialize swatch colors.
@@ -1151,7 +1173,7 @@ export default class AvonniColorPicker extends LightningElement {
         if (this.isAutoAlignment() && this.dropdownVisible) {
             // eslint-disable-next-line @lwc/lwc/no-async-operation
             setTimeout(() => {
-                if (this.isConnected) {
+                if (this._isConnected) {
                     observePosition(this, 300, this._boundingRect, () => {
                         this.close();
                     });

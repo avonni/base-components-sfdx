@@ -44,25 +44,26 @@ const validVariants = ['base', 'comment'];
  */
 export default class AvonniPublisher extends LightningElement {
     /**
-     * Text that is displayed when the field is empty, to prompt the user for a valid entry.
-     *
-     * @type {string}
-     * @public
-     */
-    @api placeholder;
-    /**
      * Optional text to be shown on the button.
      *
      * @type {string}
      * @public
      */
     @api buttonLabel;
-    @api submitAction; //? in use ??
+    /**
+     * Text that is displayed when the field is empty, to prompt the user for a valid entry.
+     *
+     * @type {string}
+     * @public
+     */
+    @api placeholder;
+    @api submitAction;
 
+    _disabled = false;
     _variant = 'base';
-    _disabled;
-    isActive = false;
     _value;
+
+    isActive = false;
     showFigureSlot = true;
     showActionsSlot = true;
 
@@ -101,23 +102,11 @@ export default class AvonniPublisher extends LightningElement {
         return this.template.querySelector('slot[name=actions]');
     }
 
-    /**
-     * Valid variants include base and comment
-     *
-     * @type {string}
-     * @public
-     * @default base
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
      */
-    @api get variant() {
-        return this._variant;
-    }
-
-    set variant(variant) {
-        this._variant = normalizeString(variant, {
-            fallbackValue: 'base',
-            validValues: validVariants
-        });
-    }
 
     /**
      * If present, the publisher can't be used by users.
@@ -149,6 +138,30 @@ export default class AvonniPublisher extends LightningElement {
     }
 
     /**
+     * Valid variants include base and comment
+     *
+     * @type {string}
+     * @public
+     * @default base
+     */
+    @api get variant() {
+        return this._variant;
+    }
+
+    set variant(variant) {
+        this._variant = normalizeString(variant, {
+            fallbackValue: 'base',
+            validValues: validVariants
+        });
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
+    /**
      * Compute Publisher class isActive.
      *
      * @type {string}
@@ -176,6 +189,28 @@ export default class AvonniPublisher extends LightningElement {
     }
 
     /**
+     * Check if the button is disabled.
+     *
+     * @type {boolean}
+     */
+    get buttonDisabled() {
+        return (this.isActive && !this.value) || this._disabled;
+    }
+
+    /**
+     * Render button on base variant or isActive.
+     */
+    get renderButton() {
+        return this._variant === 'base' || this.isActive;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
      * Set focus on the publisher.
      *
      * @public
@@ -196,6 +231,12 @@ export default class AvonniPublisher extends LightningElement {
             this.template.querySelector('.richTextPublisher').blur();
         }
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Change event handler.
@@ -231,21 +272,5 @@ export default class AvonniPublisher extends LightningElement {
         } else {
             this.isActive = true;
         }
-    }
-
-    /**
-     * Check if the button is disabled.
-     *
-     * @type {boolean}
-     */
-    get buttonDisabled() {
-        return (this.isActive && !this.value) || this._disabled;
-    }
-
-    /**
-     * Render button on base variant or isActive.
-     */
-    get renderButton() {
-        return this._variant === 'base' || this.isActive;
     }
 }

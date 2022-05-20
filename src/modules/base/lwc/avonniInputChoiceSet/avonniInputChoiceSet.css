@@ -97,3 +97,7 @@
 .avonni-input-choice-set__stretch .slds-radio {
     flex-grow: 1;
 }
+
+.avonni-input-choice-set__loading {
+    height: 3rem;
+}

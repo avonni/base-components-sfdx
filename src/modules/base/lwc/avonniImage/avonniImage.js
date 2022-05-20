@@ -108,6 +108,12 @@ export default class AvonniImage extends LightningElement {
         this.getImageDimensions();
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Image fit behaviour inside its container. Valid values include cover, contain, fill and none.
      *
@@ -359,6 +365,12 @@ export default class AvonniImage extends LightningElement {
         }
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     get computedHeight() {
         return !isNaN(Number(this.height)) ? `${this.height}px` : 'auto';
     }
@@ -403,6 +415,12 @@ export default class AvonniImage extends LightningElement {
         height: ${this.computedHeight};        
         `;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Compute No Crop image style.
