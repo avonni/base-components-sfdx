@@ -378,6 +378,11 @@ const REFERENCE_LINE_VARIANTS = {
     default: 'default'
 };
 
+const VARIANTS = {
+    valid: ['horizontal', 'vertical'],
+    default: 'horizontal'
+};
+
 export {
     DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK,
     DEFAULT_AVAILABLE_TIME_FRAMES,
@@ -398,5 +403,6 @@ export {
     PALETTES,
     PRESET_HEADERS,
     RECURRENCES,
-    REFERENCE_LINE_VARIANTS
+    REFERENCE_LINE_VARIANTS,
+    VARIANTS
 };

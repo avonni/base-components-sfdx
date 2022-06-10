@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-div:focus {
-    outline: none;
+.avonni-color-picker__tab:focus {
+    text-decoration: underline;
 }
 
 .slds-form-element_stacked .slds-form-element {

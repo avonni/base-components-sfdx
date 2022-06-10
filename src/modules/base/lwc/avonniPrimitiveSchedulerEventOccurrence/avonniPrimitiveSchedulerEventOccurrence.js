@@ -34,15 +34,21 @@ import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
 import { DateTime } from 'c/luxon';
 import {
+    classListMutation,
     dateTimeObjectFrom,
     normalizeArray,
-    normalizeBoolean
+    normalizeBoolean,
+    normalizeString
 } from 'c/utilsPrivate';
 import disabled from './avonniDisabled.html';
 import eventOccurrence from './avonniEventOccurrence.html';
 import referenceLine from './avonniReferenceLine.html';
 
 const DEFAULT_DATE_FORMAT = 'ff';
+const VARIANTS = {
+    default: 'horizontal',
+    valid: ['horizontal', 'vertical']
+};
 
 /**
  * Event occurrence displayed by the scheduler.
@@ -92,12 +98,13 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     @api theme;
 
-    _columnDuration = 0;
-    _columns = [];
-    _columnWidth = 0;
+    _cellDuration = 0;
+    _cellHeight = 0;
+    _cellWidth = 0;
+    _headerCells = [];
     _dateFormat = DEFAULT_DATE_FORMAT;
     _eventData = {};
-    _scrollLeftOffset = 0;
+    _scrollOffset = 0;
     _disabled = false;
     _event;
     _from;
@@ -106,15 +113,17 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     _occurrence = {};
     _readOnly = false;
     _referenceLine = false;
-    _rowKey;
-    _rows = [];
+    _resourceKey;
+    _resources = [];
     _title;
     _to;
-
-    _focused = false;
-    _offsetX = 0;
+    _variant = VARIANTS.default;
     _x = 0;
     _y = 0;
+    _zoomToFit = false;
+
+    _focused = false;
+    _offsetStart = 0;
     computedLabels = {};
 
     connectedCallback() {
@@ -129,8 +138,8 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
 
     renderedCallback() {
         this.updatePosition();
-        this.updateWidth();
-        this.updateHeight();
+        this.updateLength();
+        this.updateThickness();
         this.updateStickyLabels();
     }
 
@@ -148,56 +157,76 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @default 0
      */
     @api
-    get columnDuration() {
-        return this._columnDuration;
+    get cellDuration() {
+        return this._cellDuration;
     }
-    set columnDuration(value) {
-        this._columnDuration = !isNaN(Number(value)) ? Number(value) : 0;
+    set cellDuration(value) {
+        this._cellDuration = !isNaN(Number(value)) ? Number(value) : 0;
 
         if (this._connected) {
-            this.updateWidth();
+            this.updateLength();
             this.updateStickyLabels();
         }
     }
 
     /**
-     * The columns of the shortest header unit of the scheduler.
+     * The cells of the shortest header unit of the scheduler.
      *
      * @type {object[]}
      * @public
      * @required
      */
     @api
-    get columns() {
-        return this._columns;
+    get headerCells() {
+        return this._headerCells;
     }
-    set columns(value) {
-        this._columns = normalizeArray(value);
+    set headerCells(value) {
+        this._headerCells = normalizeArray(value);
 
         if (this._connected) {
             this.updatePosition();
-            this.updateWidth();
+            this.updateLength();
             this.updateStickyLabels();
         }
     }
 
     /**
-     * Width of a column, in pixels.
+     * Height of a cell, in pixels.
      *
      * @type {number}
      * @public
      * @default 0
      */
     @api
-    get columnWidth() {
-        return this._columnWidth;
+    get cellHeight() {
+        return this._cellHeight;
     }
-    set columnWidth(value) {
-        this._columnWidth = !isNaN(Number(value)) ? Number(value) : 0;
+    set cellHeight(value) {
+        this._cellHeight = !isNaN(Number(value)) ? Number(value) : 0;
 
         if (this._connected) {
             this.updatePosition();
-            this.updateWidth();
+            this.updateLength();
+        }
+    }
+
+    /**
+     * Width of a cell, in pixels.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
+    @api
+    get cellWidth() {
+        return this._cellWidth;
+    }
+    set cellWidth(value) {
+        this._cellWidth = !isNaN(Number(value)) ? Number(value) : 0;
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateLength();
             this.updateStickyLabels();
         }
     }
@@ -234,7 +263,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         this._disabled = normalizeBoolean(value);
 
         if (this._connected) {
-            this.updateHeight();
+            this.updateThickness();
         }
     }
 
@@ -272,7 +301,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
 
         if (this._connected) {
             this.updatePosition();
-            this.updateWidth();
+            this.updateLength();
             this.updateStickyLabels();
         }
     }
@@ -339,36 +368,83 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Unique key of the scheduler row this occurrence appears on.
+     * Unique key of the scheduler resource this occurrence appears on.
      *
      * @type {string}
      * @public
      * @required
      */
     @api
-    get rowKey() {
-        return this._rowKey;
+    get resourceKey() {
+        return this._resourceKey;
     }
-    set rowKey(value) {
-        this._rowKey = value;
+    set resourceKey(value) {
+        this._resourceKey = value;
 
         if (this._connected) this.initLabels();
     }
 
     /**
-     * Array of the scheduler row objects.
+     * Array of the scheduler resource objects.
      *
      * @type {object[]}
      * @public
      */
     @api
-    get rows() {
-        return this._rows;
+    get resources() {
+        return this._resources;
     }
-    set rows(value) {
-        this._rows = normalizeArray(value);
+    set resources(value) {
+        this._resources = normalizeArray(value);
 
         if (this._connected) this.initLabels();
+    }
+
+    /**
+     * Deprecated. Use `resource-key` instead.
+     *
+     * @type {string}
+     * @deprecated
+     */
+    @api
+    get rowKey() {
+        return this._resourceKey;
+    }
+    set rowKey(value) {
+        this._resourceKey = value;
+
+        if (this._connected) this.initLabels();
+    }
+
+    /**
+     * Deprecated. Use `resources` instead.
+     *
+     * @type {object[]}
+     * @deprecated
+     */
+    @api
+    get rows() {
+        return this._resources;
+    }
+    set rows(value) {
+        this._resources = normalizeArray(value);
+
+        if (this._connected) this.initLabels();
+    }
+
+    /**
+     * Deprecated. Use `scrollOffset` instead.
+     *
+     * @type {number}
+     * @deprecated
+     */
+    @api
+    get scrollLeftOffset() {
+        return this._scrollOffset;
+    }
+    set scrollLeftOffset(value) {
+        this._scrollOffset = !isNaN(Number(value)) ? Number(value) : 0;
+        if (this._connected) this.updateStickyLabels();
     }
 
     /**
@@ -379,11 +455,11 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @default 0
      */
     @api
-    get scrollLeftOffset() {
-        return this._scrollLeftOffset;
+    get scrollOffset() {
+        return this._scrollOffset;
     }
-    set scrollLeftOffset(value) {
-        this._scrollLeftOffset = !isNaN(Number(value)) ? Number(value) : 0;
+    set scrollOffset(value) {
+        this._scrollOffset = !isNaN(Number(value)) ? Number(value) : 0;
         if (this._connected) this.updateStickyLabels();
     }
 
@@ -419,9 +495,31 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             value instanceof DateTime ? value : dateTimeObjectFrom(value);
 
         if (this._connected) {
-            this.updateWidth();
+            this.updateLength();
             this.updateStickyLabels();
         }
+    }
+
+    /**
+     * Orientation of the scheduler. Valid values include horizontal and vertical.
+     *
+     * @type {string}
+     * @public
+     * @default horizontal
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid
+        });
+
+        classListMutation(this.classList, {
+            'avonni-scheduler__event_horizontal': this._variant === 'horizontal'
+        });
     }
 
     /**
@@ -462,33 +560,85 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Position of the left extremity of the occurrence.
+     * If present, the event is in a zoom-to-fit scheduler.
      *
-     * @type {number}
+     * @type {boolean}
      * @public
-     * @default 0
+     * @default false
      */
     @api
-    get leftPosition() {
-        const left = this.x + this._offsetX - this.leftLabelWidth;
-        return left > 0 ? left : 0;
+    get zoomToFit() {
+        return this._zoomToFit;
+    }
+    set zoomToFit(value) {
+        this._zoomToFit = normalizeBoolean(value);
+        this.updateStickyLabels();
     }
 
     /**
-     * Position of the right extremity of the occurrence.
+     * Deprecated. Use `start-position` instead.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     * @deprecated
+     */
+    @api
+    get leftPosition() {
+        return this.startPosition;
+    }
+
+    /**
+     * Position of the end extremity of the occurrence. Right for horizontal, bottom for vertical.
      *
      * @type {number}
      * @public
      * @default 0
      */
     @api
-    get rightPosition() {
+    get endPosition() {
+        if (this.isVertical) {
+            return (
+                this.startPosition +
+                this.hostElement.getBoundingClientRect().height
+            );
+        }
         return (
             this.x +
-            this._offsetX +
+            this._offsetStart +
             this.hostElement.getBoundingClientRect().width +
             this.rightLabelWidth
         );
+    }
+
+    /**
+     * Deprecated. Use `end-position` instead.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     * @deprecated
+     */
+    @api
+    get rightPosition() {
+        return this.endPosition;
+    }
+
+    /**
+     * Position of the start extremity of the occurrence. Left for horizontal, top for vertical.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     */
+    @api
+    get startPosition() {
+        if (this.isVertical) {
+            const top = this.y + this._offsetStart;
+            return top;
+        }
+        const left = this.x + this._offsetStart - this.leftLabelWidth;
+        return left > 0 ? left : 0;
     }
 
     /**
@@ -515,7 +665,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     get computedClass() {
         const theme = this.theme;
         return classSet(
-            `avonni-scheduler__event slds-p-horizontal_x-small slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate avonni-scheduler__event_${theme}`
+            `avonni-scheduler__event slds-p-horizontal_x-small slds-grid slds-has-flexi-truncate avonni-scheduler__event_${theme}`
         )
             .add({
                 'slds-text-color_inverse slds-current-color':
@@ -523,7 +673,10 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
                     theme === 'rounded' ||
                     (this._focused && theme === 'transparent'),
                 'avonni-scheduler__event-wrapper_focused': this._focused,
-                'slds-p-vertical_xx-small': theme !== 'line',
+                'slds-p-vertical_xx-small':
+                    theme !== 'line' && !this.isVertical,
+                'avonni-scheduler__event_vertical':
+                    theme !== 'line' && this.isVertical,
                 'slds-p-bottom_xx-small': theme === 'line'
             })
             .toString();
@@ -535,7 +688,54 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @type {string}
      */
     get computedColor() {
-        return this.color || this.rowColor;
+        return this.color || this.resourceColor;
+    }
+
+    /**
+     * Computed CSS classes of the disabled occurrences' title.
+     *
+     * @type {string}
+     */
+    get disabledTitleClass() {
+        return classSet(
+            'avonni-scheduler__disabled-date-title slds-text-body_small slds-p-around_xx-small slds-grid slds-grid-vertical-align_center slds-text-color_weak'
+        )
+            .add({
+                'avonni-scheduler__disabled-date-title_vertical':
+                    this.isVertical
+            })
+            .toString();
+    }
+
+    /**
+     * Computed CSS classes of the event occurence center label.
+     *
+     * @type {string}
+     */
+    get eventOccurrenceCenterLabelClass() {
+        return classSet(
+            'slds-truncate slds-grid avonni-scheduler__event-label_center'
+        )
+            .add({
+                'slds-p-horizontal_x-small': !this.isVertical,
+                'slds-m-top_small': this.isVertical && this.theme === 'line'
+            })
+            .toString();
+    }
+
+    /**
+     * Computed CSS classes of the event occurrences.
+     *
+     * @type {string}
+     */
+    get eventOccurrenceClass() {
+        return classSet('slds-grid')
+            .add({
+                'slds-grid_vertical-align-center slds-p-vertical_x-small':
+                    !this.isVertical,
+                'avonni-scheduler__event-wrapper_vertical': this.isVertical
+            })
+            .toString();
     }
 
     /**
@@ -548,13 +748,31 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Space between the top of the occurrence and the top of its row, in pixels.
+     * True if the variant is vertical.
+     *
+     * @type {boolean}
+     */
+    get isVertical() {
+        return this.variant === 'vertical';
+    }
+
+    /**
+     * Total number of events (including this one) that overlap in this time frame.
+     *
+     * @type {number}
+     */
+    get numberOfEventsInThisTimeFrame() {
+        return this.occurrence.numberOfEventsInThisTimeFrame || 0;
+    }
+
+    /**
+     * Offset space between the start of the resource and the start position of the occurrence.
      *
      * @type {number}
      * @default 0
      */
-    get offsetTop() {
-        return this.occurrence.offsetTop || 0;
+    get offsetSide() {
+        return this.occurrence.offsetSide || 0;
     }
 
     /**
@@ -588,15 +806,28 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Default color of the occurrence's row.
+     * Computed CSS classes of the reference line.
      *
      * @type {string}
      */
-    get rowColor() {
-        const row = this.rows.find(
-            (computedRow) => computedRow.key === this.rowKey
+    get referenceLineClass() {
+        return classSet('avonni-scheduler__reference-line slds-is-absolute')
+            .add({
+                'avonni-scheduler__reference-line_vertical': this.isVertical
+            })
+            .toString();
+    }
+
+    /**
+     * Default color of the occurrence's resource.
+     *
+     * @type {string}
+     */
+    get resourceColor() {
+        const resource = this.resources.find(
+            (computedResource) => computedResource.key === this.resourceKey
         );
-        return row && row.color;
+        return resource && resource.color;
     }
 
     /**
@@ -670,7 +901,9 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     @api
     focus() {
-        this.template.querySelector('.avonni-scheduler__event-wrapper').focus();
+        this.template
+            .querySelector('[data-element-id="div-event-occurrence"]')
+            .focus();
     }
 
     /**
@@ -704,105 +937,123 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
+     * Deprecated. Use `updateThickness` instead.
+     * @deprecated
+     */
+    @api
+    updateHeight() {
+        this.updateThickness();
+    }
+
+    /**
      * Update the position of the occurrence in the scheduler grid.
      *
      * @public
      */
     @api
     updatePosition() {
-        const { from, columns, columnWidth } = this;
+        const { from, headerCells, cellHeight, cellWidth } = this;
 
-        // Find the column where the event starts
-        let i = columns.findIndex((column) => {
+        // Find the cell where the event starts
+        let i = headerCells.findIndex((column) => {
             return column.end > from;
         });
 
         if (i < 0) return;
 
-        // Set the horizontal position
-        this._x = i * columnWidth;
+        // Place the event at the right header
+        if (this.isVertical) {
+            this._y = i * cellHeight;
+        } else {
+            this._x = i * cellWidth;
+        }
 
-        // Set the vertical position
-        if (!this.referenceLine) {
-            const rows = this.rows;
+        // Place the event at the right resource,
+        if (!this.referenceLine && !this.isVertical) {
+            const resources = this.resources;
             let y = 0;
-            for (let j = 0; j < rows.length; j++) {
-                const rowKey = rows[j].key;
-                if (rowKey === this.rowKey) break;
+            for (let j = 0; j < resources.length; j++) {
+                const resourceKey = resources[j].key;
+                if (resourceKey === this.resourceKey) break;
 
-                y += rows[j].height;
+                y += resources[j].height;
             }
-            y += this.offsetTop;
+            y += this.offsetSide;
             this._y = y;
+        } else if (!this.referenceLine && this.isVertical) {
+            const resourceIndex = this.resources.findIndex((resource) => {
+                return resource.key === this.resourceKey;
+            });
+            this._x = resourceIndex * cellWidth;
         }
 
         this.updateHostTranslate();
     }
 
     /**
-     * Update the width of the occurrence in the scheduler grid.
+     * Update the length of the occurrence in the scheduler grid.
      *
      * @public
      */
     @api
-    updateWidth() {
-        const { from, to, columns, columnWidth, columnDuration } = this;
-        const element = this.hostElement;
+    updateLength() {
+        const { from, to, headerCells, cellHeight, cellWidth, cellDuration } =
+            this;
+        const cellSize = this.isVertical ? cellHeight : cellWidth;
 
-        // Find the column where the event starts
-        let i = columns.findIndex((column) => {
+        // Find the cell where the event starts
+        let i = headerCells.findIndex((column) => {
             return column.end > from;
         });
 
         if (i < 0) return;
 
-        let width = 0;
+        let length = 0;
 
-        // If the event starts in the middle of a column,
-        // add only the appropriate width in the first column
-        if (columns[i].start < from) {
-            const columnEnd = DateTime.fromMillis(columns[i].end);
-            const eventDuration = columnEnd.diff(from).milliseconds;
-            const emptyDuration = columnDuration - eventDuration;
-            const emptyPercentageOfCol = emptyDuration / columnDuration;
-            this._offsetX = columnWidth * emptyPercentageOfCol;
+        // If the event starts in the middle of a cell,
+        // add only the appropriate length in the first cell
+        if (headerCells[i].start < from) {
+            const cellEnd = DateTime.fromMillis(headerCells[i].end);
+            const eventDuration = cellEnd.diff(from).milliseconds;
+            const emptyDuration = cellDuration - eventDuration;
+            const emptyPercentageOfCell = emptyDuration / cellDuration;
+            this._offsetStart = cellSize * emptyPercentageOfCell;
             this.updateHostTranslate();
             if (this.referenceLine) return;
 
-            const eventPercentageOfCol = eventDuration / columnDuration;
-            const offsetWidth = columnWidth * eventPercentageOfCol;
-            width += offsetWidth;
+            const eventPercentageOfCell = eventDuration / cellDuration;
+            const offsetSize = cellSize * eventPercentageOfCell;
+            length += offsetSize;
 
             // If the event ends before the end of the first column
-            // remove the appropriate width of the first column
-            if (columnEnd > to) {
-                const durationLeft = columnEnd.diff(to).milliseconds;
-                const percentageLeft = durationLeft / columnDuration;
-                width = width - percentageLeft * columnWidth;
-                element.style.width = `${width}px`;
+            // remove the appropriate length of the first column
+            if (cellEnd > to) {
+                const durationLeft = cellEnd.diff(to).milliseconds;
+                const percentageLeft = durationLeft / cellDuration;
+                length = length - percentageLeft * cellSize;
+                this.setLength(length);
                 return;
             }
 
             i += 1;
         } else if (this.referenceLine) return;
 
-        // Add the width of the columns completely filled by the event
-        while (i < columns.length) {
-            if (columns[i].start + columnDuration > to) break;
-            width += columnWidth;
+        // Add the length of the header cells completely filled by the event
+        while (i < headerCells.length) {
+            if (headerCells[i].start + cellDuration > to) break;
+            length += cellSize;
             i += 1;
         }
 
         // If the event ends in the middle of a column,
-        // add the remaining width
-        if (columns[i] && columns[i].start < to) {
-            const columnStart = DateTime.fromMillis(columns[i].start);
-            const eventDurationLeft = to.diff(columnStart).milliseconds;
-            const colPercentEnd = eventDurationLeft / columnDuration;
-            width += columnWidth * colPercentEnd;
+        // add the remaining length
+        if (headerCells[i] && headerCells[i].start < to) {
+            const cellStart = DateTime.fromMillis(headerCells[i].start);
+            const eventDurationLeft = to.diff(cellStart).milliseconds;
+            const colPercentEnd = eventDurationLeft / cellDuration;
+            length += cellSize * colPercentEnd;
         }
-
-        element.style.width = `${width}px`;
+        this.setLength(length);
     }
 
     /**
@@ -811,16 +1062,32 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @public
      */
     @api
-    updateHeight() {
-        if (this.disabled) {
-            const element = this.hostElement;
-            const row = this.rows.find((rw) => rw.key === this.rowKey);
+    updateThickness() {
+        if (!this.disabled) return;
 
-            if (row) {
-                const height = row.height;
+        const element = this.hostElement;
+        if (this.isVertical) {
+            element.style.width = `${this.cellWidth}px`;
+        } else {
+            const resource = this.resources.find(
+                (rw) => rw.key === this.resourceKey
+            );
+
+            if (resource) {
+                const height = resource.height;
                 element.style.height = `${height}px`;
             }
         }
+    }
+
+    /**
+     * Deprecated. Use `updateLength` instead.
+     *
+     * @deprecated
+     */
+    @api
+    updateWidth() {
+        this.updateLength();
     }
 
     /**
@@ -828,30 +1095,41 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     updateStickyLabels() {
         const stickyLabel = this.template.querySelector(
-            '.avonni-scheduler__event-label_center'
+            '[data-element-id="div-center-label-wrapper"]'
         );
-        if (stickyLabel) {
-            stickyLabel.style.left = `${
-                this.scrollLeftOffset - this._x - this._offsetX
-            }px`;
+        if (!stickyLabel) {
+            return;
+        }
+
+        if (this.isVertical) {
+            const top = this.scrollOffset - this.y - this._offsetStart;
+            stickyLabel.style.top = `${top}px`;
+        } else if (!this.zoomToFit) {
+            const left = this.scrollOffset - this.x - this._offsetStart;
+            stickyLabel.style.left = `${left}px`;
         }
     }
 
     /**
      * Initialize the labels values.
-     *
-     * @returns {}
-     * @public
      */
     initLabels() {
-        if (!this.eventData || !this.rows.length || !this.rowKey) return;
+        if (!this.eventData || !this.resources.length || !this.resourceKey)
+            return;
 
         const labels = {};
-        const row = this.rows.find((rw) => rw.key === this.rowKey);
+        const resource = this.resources.find(
+            (res) => res.key === this.resourceKey
+        );
 
-        if (row) {
-            Object.entries(this.labels).forEach((label) => {
+        if (resource) {
+            for (let i = 0; i < Object.entries(this.labels).length; i++) {
+                const label = Object.entries(this.labels)[i];
                 const position = label[0];
+                if (this.isVertical && position !== 'center') {
+                    continue;
+                }
+
                 const { value, fieldName, iconName } = label[1];
 
                 labels[position] = {};
@@ -860,11 +1138,11 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
                     labels[position].value = value;
                 } else if (fieldName) {
                     // Else, search for a field name in the occurrence,
-                    // then the event, then the row
+                    // then the event, then the resource
                     const computedValue =
                         this[fieldName] ||
                         this.eventData[fieldName] ||
-                        row.data[fieldName];
+                        resource.data[fieldName];
 
                     // If the field name is a date, parse it with the date format
                     labels[position].value =
@@ -873,7 +1151,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
                             : computedValue;
                 }
                 labels[position].iconName = iconName;
-            });
+            }
         }
 
         this.computedLabels = labels;
@@ -884,13 +1162,37 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
+     * Set the length of the event through its CSS style.
+     *
+     * @param {number} length Length of the event.
+     */
+    setLength(length) {
+        const style = this.hostElement.style;
+        if (this.isVertical) {
+            style.height = `${length}px`;
+            if (this.cellWidth && this.numberOfEventsInThisTimeFrame) {
+                const width =
+                    this.cellWidth / this.numberOfEventsInThisTimeFrame;
+                style.width = `${width}px`;
+            } else {
+                style.width = null;
+            }
+        } else {
+            style.width = `${length}px`;
+            style.height = null;
+        }
+    }
+
+    /**
      * Add the computed position to the inline style of the component host.
      */
     updateHostTranslate() {
+        const x = this.isVertical
+            ? this.x + this.offsetSide
+            : this.x + this._offsetStart;
+        const y = this.isVertical ? this.y + this._offsetStart : this.y;
         if (this.hostElement) {
-            this.hostElement.style.transform = `translate(${
-                this.x + this._offsetX
-            }px, ${this.y}px)`;
+            this.hostElement.style.transform = `translate(${x}px, ${y}px)`;
         }
     }
 

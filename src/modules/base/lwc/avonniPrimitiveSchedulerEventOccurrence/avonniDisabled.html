@@ -34,15 +34,20 @@
 
 <template>
     <div
-        class="slds-is-absolute avonni-scheduler__disabled-date slds-theme_alert-texture slds-theme_shade"
+        class="
+            slds-is-absolute
+            avonni-scheduler__disabled-date
+            slds-theme_alert-texture slds-theme_shade
+        "
         oncontextmenu={handleDisabledContextMenu}
         ondblclick={handleDisabledDoubleClick}
         onmousedown={handleDisabledMouseDown}
     >
         <div
             if:true={showTitle}
-            class="avonni-scheduler__disabled-date-title slds-text-body_small slds-p-around_xx-small slds-grid slds-grid-vertical-align_center slds-text-color_weak"
+            class={disabledTitleClass}
             title={title}
+            data-element-id="div-disabled-title-wrapper"
         >
             <lightning-icon
                 if:true={iconName}
@@ -50,7 +55,9 @@
                 size="x-small"
                 class="slds-m-right_xx-small slds-current-color"
             ></lightning-icon>
-            <span class="slds-truncate">{title}</span>
+            <span class="slds-truncate" data-element-id="div-disabled-title"
+                >{title}</span
+            >
         </div>
     </div>
 </template>

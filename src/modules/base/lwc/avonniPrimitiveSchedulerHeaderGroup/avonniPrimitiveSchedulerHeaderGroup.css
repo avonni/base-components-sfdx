@@ -34,16 +34,39 @@
     display: block;
 }
 
-.avonni-scheduler__header-cell {
-    width: var(--avonni-scheduler-cell-width);
-    min-width: var(--avonni-scheduler-cell-width);
-    background-color: #f3f3f3;
+.avonni-scheduler-header-group__header_vertical:last-of-type {
+    flex: 1 0 auto;
+}
+
+.avonni-scheduler-header-group__header_vertical
+    .avonni-scheduler-header-group__header-label_sticky {
+    transform: rotate(180deg);
+}
+
+.avonni-scheduler-header-group__header-cell {
+    width: var(--avonni-scheduler-cell-size);
+    min-width: var(--avonni-scheduler-cell-size);
     color: #514f4d;
     font-weight: 700;
 }
 
-.avonni-scheduler__header-label_sticky {
+.avonni-scheduler-header-group__header_vertical
+    .avonni-scheduler-header-group__header-cell {
+    width: auto;
+    min-width: auto;
+    height: var(--avonni-scheduler-cell-size);
+    writing-mode: vertical-rl;
+}
+
+.avonni-scheduler-header-group__header_vertical:last-of-type
+    .avonni-scheduler-header-group__header-cell {
+    height: auto;
+    writing-mode: initial;
+    padding: 0 0.75rem;
+}
+
+.avonni-scheduler-header-group__header-label_sticky {
     position: sticky;
-    position: -webkit-sticky;
     left: 0;
+    top: 10px;
 }

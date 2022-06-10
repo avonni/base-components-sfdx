@@ -143,16 +143,33 @@ export default class AvonniRange extends LightningElement {
     _step = DEFAULT_STEP;
     _type = RANGE_TYPES.default;
     _unit = RANGE_UNITS.default;
-    _valueLower;
-    _valueUpper;
+    _valueLower = DEFAULT_MIN;
+    _valueUpper = DEFAULT_MAX;
     _variant = LABEL_VARIANTS.default;
 
     _helpMessage;
+    _moveEventWait = false;
 
     _rendered = false;
 
+    constructor() {
+        super();
+        this.template.addEventListener('mousemove', (event) => {
+            if (!this._moveEventWait) {
+                this.setClosestOnTop(event);
+                this._moveEventWait = true;
+                // after a fraction of a second, allow events again
+                setTimeout(() => {
+                    this._moveEventWait = false;
+                }, 50);
+            }
+        });
+    }
+
     renderedCallback() {
         if (!this._rendered) {
+            this.updateMinProgressBar(parseInt(this._leftInput.value, 10));
+            this.updateMaxProgressBar(parseInt(this._rightInput.value, 10));
             this.initRange();
             this._rendered = true;
         }
@@ -193,7 +210,10 @@ export default class AvonniRange extends LightningElement {
     }
 
     set min(value) {
-        this._min = Number(value);
+        const intValue = parseInt(value, 10);
+        if (!isNaN(intValue)) {
+            this._min = intValue;
+        }
     }
 
     /**
@@ -209,7 +229,10 @@ export default class AvonniRange extends LightningElement {
     }
 
     set max(value) {
-        this._max = Number(value);
+        const intValue = parseInt(value, 10);
+        if (!isNaN(intValue)) {
+            this._max = intValue;
+        }
     }
 
     /**
@@ -328,11 +351,14 @@ export default class AvonniRange extends LightningElement {
      */
     @api
     get valueLower() {
-        return this._valueLower ? this._valueLower : this.min;
+        return this._valueLower;
     }
 
     set valueLower(value) {
-        this._valueLower = Number(value);
+        const intValue = parseInt(value, 10);
+        if (!isNaN(intValue)) {
+            this._valueLower = intValue;
+        }
     }
 
     /**
@@ -343,17 +369,14 @@ export default class AvonniRange extends LightningElement {
      */
     @api
     get valueUpper() {
-        if (!this._valueUpper) {
-            return this.valueLower > this.min
-                ? Number(this.valueLower) + Number(this.step)
-                : this.min;
-        }
-
         return this._valueUpper;
     }
 
     set valueUpper(value) {
-        this._valueUpper = Number(value);
+        const intValue = parseInt(value, 10);
+        if (!isNaN(intValue)) {
+            this._valueUpper = parseInt(value, 10);
+        }
     }
 
     /**
@@ -386,7 +409,7 @@ export default class AvonniRange extends LightningElement {
      * @type {string}
      */
     get computedLabelClass() {
-        const classes = classSet();
+        const classes = classSet('avonni-slider__label');
 
         classes.add(
             this._variant === 'label-hidden'
@@ -420,9 +443,11 @@ export default class AvonniRange extends LightningElement {
      * @type {string}
      */
     get computedBubbleLeftClass() {
-        return this._type === 'vertical'
-            ? 'avonni-range__bubble-vertical left-bubble'
-            : 'avonni-range__bubble left-bubble';
+        return classSet('left-bubble').add({
+            'avonni-range__bubble-vertical left-bubble':
+                this._type === 'vertical',
+            'avonni-range__bubble': this._type !== 'vertical'
+        });
     }
 
     /**
@@ -437,39 +462,23 @@ export default class AvonniRange extends LightningElement {
     }
 
     /**
+     * Computed progress class styling.
+     *
+     * @type {string}
+     */
+    get computedProgressClass() {
+        return classSet('avonni-range__progress').add({
+            'avonni-range__progress_disabled': this.disabled
+        });
+    }
+
+    /**
      * Verify if range is vertical.
      *
      * @type {boolean}
      */
     get isVertical() {
         return this._type === 'vertical';
-    }
-
-    /**
-     * Calculate the max range from the lower value.
-     *
-     * @type {number}
-     */
-    get calculateMax() {
-        return (
-            Number(this.valueLower) +
-            this.stepsCount('left') * this.step
-        ).toFixed(3);
-    }
-
-    /**
-     * Calculate the max range from the lower value.
-     *
-     * @type {number}
-     */
-    get calculateMin() {
-        let minVaule =
-            Number(this.valueUpper) - this.stepsCount('right') * this.step;
-        if (minVaule === this.calculateMax) {
-            minVaule = minVaule + Number(this.step);
-        }
-
-        return minVaule.toFixed(3);
     }
 
     /**
@@ -520,6 +529,27 @@ export default class AvonniRange extends LightningElement {
         return this._constraintApiRight;
     }
 
+    /**
+     *  Returns the progress bar html element.
+     */
+    get _progress() {
+        return this.template.querySelector('[data-element-id="progress-bar"]');
+    }
+
+    /**
+     *  Returns the left (lowerValue) input html element.
+     */
+    get _leftInput() {
+        return this.template.querySelector('[data-element-id="input-left"]');
+    }
+
+    /**
+     *  Returns the right (higherValue) input html element.
+     */
+    get _rightInput() {
+        return this.template.querySelector('[data-element-id="input-right"]');
+    }
+
     /*
      * ------------------------------------------------------------
      *  PUBIC METHODS
@@ -549,22 +579,21 @@ export default class AvonniRange extends LightningElement {
     @api
     reportValidity() {
         let helpMessage = '';
-
-        let leftInput = this._constraintLeft.reportValidity((message) => {
-            helpMessage = helpMessage + message;
-        });
-
-        let rightInput = this._constraintRight.reportValidity((message) => {
-            if (!leftInput) {
-                helpMessage = helpMessage + ', ';
+        let leftInputValidity = this._constraintLeft.reportValidity(
+            (message) => {
+                helpMessage = helpMessage + message;
             }
-
-            helpMessage = helpMessage + message;
-        });
-
+        );
+        let rightInputValidity = this._constraintRight.reportValidity(
+            (message) => {
+                if (!leftInputValidity) {
+                    helpMessage = helpMessage + ', ';
+                }
+                helpMessage = helpMessage + message;
+            }
+        );
         this._helpMessage = helpMessage;
-
-        return leftInput && rightInput;
+        return leftInputValidity && rightInputValidity;
     }
 
     /**
@@ -601,35 +630,86 @@ export default class AvonniRange extends LightningElement {
      */
     initRange() {
         this.showHelpMessageIfInvalid();
-        this.setInputsWidth();
-        this.addProgressLine();
         this.setBubblesPosition();
     }
 
     /**
-     * Handle left slider point value change.
+     * Handle any slider value change.
      *
      * @param {Event} event
      */
-    handleChangeLeft(event) {
-        this._valueLower = event.target.value;
-        this.setInputsWidth();
-        this.addProgressLine();
-        this.changeRange();
+    handleChange(event) {
+        this.updateInputRange(event);
         this.setBubblesPosition();
+        this.changeRange();
     }
 
     /**
-     * Handle right slider point value change.
+     * If left slider is closer to mouse, adds a class which puts it above the right.
      *
      * @param {Event} event
      */
-    handleChangeRight(event) {
-        this._valueUpper = event.target.value;
-        this.setInputsWidth();
-        this.addProgressLine();
-        this.changeRange();
-        this.setBubblesPosition();
+    setClosestOnTop(event) {
+        let total = this._leftInput.clientWidth;
+        let leftInputPos =
+            total *
+            (parseInt(this._leftInput.value - this.min, 10) /
+                (this.max - this.min));
+        let rightInputPos =
+            total *
+            ((parseInt(this._rightInput.value, 10) - this.min) /
+                (this.max - this.min));
+        if (
+            Math.abs(event.offsetX - leftInputPos + 1) <
+            Math.abs(event.offsetX - rightInputPos - 1)
+        )
+            this._leftInput.classList.add('avonni-range__slider-left_above');
+        else
+            this._leftInput.classList.remove('avonni-range__slider-left_above');
+    }
+
+    /**
+     * Updates the input range values based on its current value. Also handle the collision if two slider are equal.
+     *
+     * @param {Event} event
+     */
+    updateInputRange(event) {
+        let minVal = parseInt(this._leftInput.value, 10);
+        let maxVal = parseInt(this._rightInput.value, 10);
+        if (maxVal - minVal >= 0 && maxVal <= this._rightInput.max) {
+            this.updateMinProgressBar(minVal);
+            this.updateMaxProgressBar(maxVal);
+        } else if (maxVal - minVal < 0) {
+            if (event.target.dataset.elementId === 'input-left') {
+                this.updateMinProgressBar(maxVal);
+            } else {
+                this.updateMaxProgressBar(minVal);
+            }
+        }
+    }
+
+    /**
+     * Updates the lower progress bar position based on value.
+     *
+     * @param {number} value
+     */
+    updateMinProgressBar(value) {
+        this._leftInput.value = value;
+        this._valueLower = value;
+        this._progress.style.left =
+            ((value - this.min) / (this.max - this.min)) * 100 + '%';
+    }
+
+    /**
+     * Updates the higher progress bar position based on value.
+     *
+     * @param {number} value
+     */
+    updateMaxProgressBar(value) {
+        this._rightInput.value = value;
+        this._valueUpper = value;
+        this._progress.style.right =
+            100 - ((value - this.min) / (this.max - this.min)) * 100 + '%';
     }
 
     /**
@@ -659,90 +739,13 @@ export default class AvonniRange extends LightningElement {
     }
 
     /**
-     * Calculate Steps count from position method.
-     *
-     * @param {string} position
-     * @returns {number} stepsForPosition
-     */
-    stepsCount(position) {
-        let stepCount = (this.valueUpper - this.valueLower) / this.step;
-        let stepsForPosition = 0;
-
-        stepsForPosition =
-            position === 'left'
-                ? Math.floor(stepCount / 2)
-                : Math.round(stepCount / 2);
-
-        return stepsForPosition;
-    }
-
-    /**
-     * Calculate inputs width between left and right inputs.
-     */
-    setInputsWidth() {
-        let inputWidth = this.max - this.min;
-        let leftStep = this.stepsCount('left');
-
-        let leftInputWidth =
-            ((Number(this.valueLower - this.min) / this.step + leftStep) /
-                (inputWidth / this.step)) *
-            100;
-
-        let rightInputWidth = 100 - leftInputWidth;
-
-        let leftInput = this.template.querySelector('.inverse-right');
-
-        leftInput.style.width = rightInputWidth + '%';
-
-        let rightInput = this.template.querySelector('.inverse-left');
-
-        rightInput.style.width = leftInputWidth + '%';
-    }
-
-    /**
-     * Progress indicator line.
-     */
-    addProgressLine() {
-        if (!this._disabled) {
-            let leftInput = this.template.querySelector(
-                '.avonni-range__slider-left'
-            );
-            let rightInput = this.template.querySelector(
-                '.avonni-range__slider-right'
-            );
-
-            let leftProgressLine =
-                ((this.calculateMax - this.valueLower) /
-                    (this.calculateMax - this.min)) *
-                100;
-            let rightProgressLine =
-                ((this.valueUpper - this.calculateMin) /
-                    (this.max - this.calculateMin)) *
-                100;
-
-            leftInput.style.background =
-                'linear-gradient(to left, #1a5296 0%, #1a5296 ' +
-                leftProgressLine +
-                '%, #ecebea ' +
-                leftProgressLine +
-                '%, #ecebea 100%)';
-
-            rightInput.style.background =
-                'linear-gradient(to right, #1a5296 0%, #1a5296 ' +
-                rightProgressLine +
-                '%, #ecebea ' +
-                rightProgressLine +
-                '%, #ecebea 100%)';
-        }
-    }
-
-    /**
      * Display left bubble.
      */
     showLeftBubble() {
         if (this._pin) {
-            let bubbleLeft = this.template.querySelector('.left-bubble');
-            bubbleLeft.style.opacity = '1';
+            this.template
+                .querySelector('[data-element-id="left-bubble"]')
+                .classList.add('avonni-range__bubble_visible');
         }
     }
 
@@ -751,8 +754,9 @@ export default class AvonniRange extends LightningElement {
      */
     showRightBubble() {
         if (this._pin) {
-            let bubbleRight = this.template.querySelector('.right-bubble');
-            bubbleRight.style.opacity = '1';
+            this.template
+                .querySelector('[data-element-id="right-bubble"]')
+                .classList.add('avonni-range__bubble_visible');
         }
     }
 
@@ -761,8 +765,9 @@ export default class AvonniRange extends LightningElement {
      */
     hideLeftBubble() {
         if (this._pin) {
-            let bubbleLeft = this.template.querySelector('.left-bubble');
-            bubbleLeft.style.opacity = '0';
+            this.template
+                .querySelector('[data-element-id="left-bubble"]')
+                .classList.remove('avonni-range__bubble_visible');
         }
     }
 
@@ -771,8 +776,9 @@ export default class AvonniRange extends LightningElement {
      */
     hideRightBubble() {
         if (this._pin) {
-            let bubbleRight = this.template.querySelector('.right-bubble');
-            bubbleRight.style.opacity = '0';
+            this.template
+                .querySelector('[data-element-id="right-bubble"]')
+                .classList.remove('avonni-range__bubble_visible');
         }
     }
 
@@ -786,14 +792,13 @@ export default class AvonniRange extends LightningElement {
                 let bubbleRight = this.template.querySelector('.right-bubble');
 
                 let rightProgressBubble =
-                    ((this.valueUpper - this.calculateMin) /
-                        (this.max - this.calculateMin)) *
+                    ((this.valueUpper - this._leftInput.min) /
+                        (this._leftInput.max - this._leftInput.min)) *
                     100;
 
                 let leftProgressBubble =
-                    (1 -
-                        (this.calculateMax - this.valueLower) /
-                            (this.calculateMax - this.min)) *
+                    ((this.valueLower - this._leftInput.min) /
+                        (this._leftInput.max - this._leftInput.min)) *
                     100;
 
                 bubbleLeft.style.left =

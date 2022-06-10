@@ -795,6 +795,16 @@ export default class AvonniCombobox extends LightningElement {
     }
 
     /**
+     * Reset the combobox to the first options level.
+     *
+     * @public
+     */
+    @api
+    resetLevel() {
+        this.mainCombobox.resetLevel();
+    }
+
+    /**
      * Sets a custom error message to be displayed when a form is submitted.
      *
      * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.

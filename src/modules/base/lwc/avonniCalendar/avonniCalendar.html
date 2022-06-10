@@ -35,11 +35,16 @@
 <template>
     <div
         class="avonni-calendar__container"
-        onfocus={handleFocus}
         onblur={handleBlur}
-        tabindex="0"
+        onfocusin={handleFocus}
+        tabindex="-1"
+        onkeydown={handleKeyDown}
+        data-element-id="avonni-calendar__container"
     >
-        <div class="slds-form-element avonni-calendar__background_color">
+        <div
+            class="slds-form-element avonni-calendar__background_color"
+            data-element-id="avonni-calendar__keyboard-handler"
+        >
             <div class="slds-datepicker">
                 <div class="slds-datepicker__filter slds-grid">
                     <div
@@ -58,8 +63,6 @@
                                 onclick={handlerPreviousMonth}
                                 disabled={disabledPrevious}
                                 data-element-id="previous-lightning-button-icon"
-                                onfocus={handleFocus}
-                                onblur={handleBlur}
                             ></lightning-button-icon>
                         </div>
                         <h2
@@ -80,8 +83,6 @@
                                 disabled={disabledNext}
                                 data-element-id="next-lightning-button-icon"
                                 onclick={handlerNextMonth}
-                                onfocus={handleFocus}
-                                onblur={handleBlur}
                             ></lightning-button-icon>
                         </div>
                     </div>
@@ -96,8 +97,6 @@
                         disabled={disabled}
                         data-element-id="lightning-combobox"
                         onchange={handleYearChange}
-                        onfocus={handleFocus}
-                        onblur={handleBlur}
                     >
                     </lightning-combobox>
                 </div>
@@ -140,8 +139,10 @@
                                         aria-current={day.currentDate}
                                         onmouseover={handleMouseOver}
                                         onmouseout={handleMouseOut}
+                                        onfocus={handleDateFocus}
                                         data-cell-day={day.fullDate}
                                         data-day={day.fullDate}
+                                        tabindex={day.tabIndex}
                                     >
                                         <span
                                             class={day.dayClass}

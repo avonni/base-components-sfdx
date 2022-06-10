@@ -10,7 +10,7 @@ function createEvent(event) {
     const computedEvent = { ...event };
     this.updateEventDefaults(computedEvent);
     this.computedEvents.push(new SchedulerEvent(computedEvent));
-    this.initRows();
+    this.initResources();
 }
 
 /**
@@ -26,7 +26,7 @@ function deleteEvent(eventName) {
         return evt.name === name;
     });
     this.computedEvents.splice(index, 1);
-    this.initRows();
+    this.initResources();
 
     /**
      * The event fired when a user deletes an event.
@@ -73,20 +73,23 @@ function focusEvent(eventName) {
  * @param {boolean} showDialog If true, the edit dialog will be opened. Defaults to true.
  */
 function newEvent(x, y, showDialog = true) {
+    const resourceAxisPosition = this.isVertical ? y : x;
+    const headersAxisPosition = this.isVertical ? x : y;
+
     this.hideDetailPopover();
     this.hideEditDialog();
 
     let keyFields, from, to;
-    if (!isNaN(x) && !isNaN(y)) {
-        const row = this.getRowFromPosition(y);
-        const cell = this.getCellFromPosition(row, x);
-        keyFields = [row.dataset.key];
+    if (!isNaN(resourceAxisPosition) && !isNaN(headersAxisPosition)) {
+        const resource = this.getResourceElementFromPosition(headersAxisPosition);
+        const cell = this.getCellFromPosition(resource, resourceAxisPosition);
+        keyFields = [resource.dataset.key];
         from = Number(cell.dataset.start);
         to = Number(cell.dataset.end) + 1;
     } else {
-        keyFields = [this.computedRows[0].key];
-        from = this.smallestHeader.columns[0].start;
-        to = this.smallestHeader.columns[0].end + 1;
+        keyFields = [this.computedResources[0].key];
+        from = this.smallestHeader.cells[0].start;
+        to = this.smallestHeader.cells[0].end + 1;
     }
 
     const event = {
@@ -123,7 +126,7 @@ function saveEvent() {
     Object.entries(draftValues).forEach((entry) => {
         const [key, value] = entry;
 
-        if (value.length) {
+        if (value.length || key === 'allDay') {
             event[key] = value;
         }
     });
@@ -178,16 +181,16 @@ function saveOccurrence() {
     const newOccurrences = [];
 
     occurrences.forEach((occ) => {
-        const rowKey = occ.rowKey;
+        const resourceKey = occ.resourceKey;
 
-        // If the occurrence row key is still included in the key fields
-        const keyField = processedKeyFields.indexOf(rowKey);
+        // If the occurrence resource key is still included in the key fields
+        const keyField = processedKeyFields.indexOf(resourceKey);
         if (keyField > -1) {
             // Update the occurrence with the new values
             Object.entries(draftValues).forEach((entry) => {
                 const [key, value] = entry;
 
-                if (value.length) {
+                if (value.length || key === 'allDay') {
                     if (key === 'from' || key === 'to') {
                         // Convert the ISO dates into DateTime objects
                         occ[key] = dateTimeObjectFrom(value);
@@ -202,7 +205,7 @@ function saveOccurrence() {
             // Remove the processed key field from the list
             processedKeyFields.splice(keyField, 1);
         } else {
-            // If the occurrence row key has been removed,
+            // If the occurrence resource key has been removed,
             // remove it from the event as well
             event.removeOccurrence(occ.key);
         }
@@ -211,7 +214,7 @@ function saveOccurrence() {
     // The key fields left are new ones added by the user
     processedKeyFields.forEach((keyField) => {
         const occ = Object.assign({}, newOccurrences[0] || occurrences[0]);
-        occ.rowKey = keyField;
+        occ.resourceKey = keyField;
         occ.key = `${event.name}-${keyField}-${event.occurrences.length + 1}`;
         occ.keyFields = keyFields;
         event.occurrences.push(occ);

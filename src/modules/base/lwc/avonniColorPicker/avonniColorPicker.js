@@ -204,6 +204,10 @@ export default class AvonniColorPicker extends LightningElement {
     helpMessage;
     newValue;
     showError = false;
+    tabPressed = false;
+    shiftPressed = false;
+    isInsideMenu = false;
+    denyBlurOnMenuButtonClick = false;
 
     _inputValue = '';
     _isConnected = false;
@@ -1040,8 +1044,7 @@ export default class AvonniColorPicker extends LightningElement {
             this.dispatchChange(generateColors(this.value));
         }
 
-        this.handleBlur();
-        this.focus();
+        this.toggleMenuVisibility();
     }
 
     /**
@@ -1053,76 +1056,100 @@ export default class AvonniColorPicker extends LightningElement {
         if (this.colorGradient) {
             this.colorGradient.renderValue(this.value);
         }
-
-        this.handleBlur();
+        this.toggleMenuVisibility();
     }
 
     /**
      * Button click handler.
      */
     handleButtonClick() {
+        this.denyBlurOnMenuButtonClick = false;
         if (!this.readOnly) {
-            this.allowBlur();
             this.toggleMenuVisibility();
-            this.focusOnButton();
         }
     }
 
     /**
-     * Handle mouse down on Button.
-     *
-     * @param {Event} event
+     * Button mousedown handler.
      */
     handleButtonMouseDown(event) {
-        const mainButton = 0;
-        if (event.button === mainButton) {
-            this.cancelBlur();
+        if (this.dropdownOpened) {
+            let clickedElement = event.target;
+            while (
+                clickedElement !== null &&
+                clickedElement.tagName !== 'BUTTON'
+            ) {
+                clickedElement = clickedElement.parentElement;
+            }
+
+            if (
+                clickedElement !== null &&
+                clickedElement.tagName === 'BUTTON'
+            ) {
+                this.denyBlurOnMenuButtonClick = true;
+            }
         }
     }
 
     /**
-     * Dropdown menu mouse down handler.
+     * Handles a mouseenter in the color picker.
      *
      * @param {Event} event
      */
-    handleDropdownMouseDown(event) {
-        const mainButton = 0;
-        if (event.button === mainButton) {
-            this.cancelBlur();
-        }
+    handleMenuMouseEnter() {
+        this.isInsideMenu = true;
     }
 
     /**
-     * Dropdown menu mouse up handler.
+     * Handles a blur of any element in the color picker.
+     *
+     * @param {Event} event
      */
-    handleDropdownMouseUp() {
-        this.allowBlur();
-    }
-
-    /**
-     * Sets blur.
-     */
-    allowBlur() {
-        this._cancelBlur = false;
-    }
-
-    /**
-     * Cancels blur.
-     */
-    cancelBlur() {
-        this._cancelBlur = true;
-    }
-
-    /**
-     * Blur handler.
-     */
-    handleBlur() {
-        if (this._cancelBlur) {
-            return;
-        }
-
-        if (this.dropdownVisible) {
+    handleMenuBlur() {
+        if (
+            !this.isInsideMenu &&
+            this.dropdownVisible &&
+            !this.denyBlurOnMenuButtonClick &&
+            !this.tabPressed
+        ) {
             this.toggleMenuVisibility();
+        }
+    }
+
+    /**
+     * Handles a mouseleave from the color picker.
+     *
+     * @param {Event} event
+     */
+    handleMenuMouseLeave() {
+        this.isInsideMenu = false;
+    }
+
+    /**
+     * Handles a keydown inside the popover.
+     *
+     * @param {Event} event
+     */
+    handleMenuKeydown(event) {
+        if (event.keyCode === 9) {
+            this.tabPressed = true;
+        } else if (event.keyCode === 16) {
+            this.shiftPressed = true;
+        } else if (event.keyCode === 27) {
+            this.handleCancel();
+        }
+    }
+
+    /**
+     * Handles a keyup inside the popover.
+     *
+     * @param {Event} event
+     */
+    handleMenuKeyup(event) {
+        if (event.keyCode === 9) {
+            this.tabPressed = false;
+        } else if (event.keyCode === 16) {
+            this.shiftPressed = false;
         }
     }
 
@@ -1132,7 +1159,15 @@ export default class AvonniColorPicker extends LightningElement {
     toggleMenuVisibility() {
         if (!this.disabled) {
             this.dropdownVisible = !this.dropdownVisible;
+            requestAnimationFrame(() => {
+                const tab = this.template.querySelector(
+                    '[data-element-id="default"]'
+                );
 
+                if (tab) {
+                    tab.focus();
+                }
+            });
             if (!this.dropdownOpened && this.dropdownVisible) {
                 this.dropdownOpened = true;
             }
@@ -1143,17 +1178,8 @@ export default class AvonniColorPicker extends LightningElement {
             }
 
             this.template
-                .querySelector('.slds-dropdown-trigger')
+                .querySelector('[data-element-id="div-dropdown-trigger"]')
                 .classList.toggle('slds-is-open');
-        }
-    }
-
-    /**
-     * Close dropdown menu.
-     */
-    close() {
-        if (this.dropdownVisible) {
-            this.toggleMenuVisibility();
         }
     }
 
@@ -1210,30 +1236,6 @@ export default class AvonniColorPicker extends LightningElement {
             '[data-element-id="avonni-color-palette-default"]'
         );
         if (palette) palette.colors = [...this.computedColors];
-    }
-
-    /**
-     * Private focus handler.
-     *
-     * @param {Event} event
-     */
-    handlePrivateFocus(event) {
-        event.stopPropagation();
-
-        this.allowBlur();
-        this._menuHasFocus = true;
-    }
-
-    /**
-     * Private blur handler.
-     *
-     * @param {Event} event
-     */
-    handlePrivateBlur(event) {
-        event.stopPropagation();
-
-        this.handleBlur();
-        this._menuHasFocus = false;
     }
 
     /**

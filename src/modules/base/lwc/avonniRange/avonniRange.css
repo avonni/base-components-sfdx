@@ -30,17 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.slds-slider-label__label {
+.avonni-slider__label {
     padding-bottom: 0.5rem;
 }
-.slds-slider__range {
+
+.avonni-range__slider-left,
+.avonni-range__slider-right {
     background: #ecebea;
     height: 4px;
     outline: none;
     transition: background 450ms ease-in;
     -webkit-appearance: none;
+    position: relative;
+    background: transparent;
+    height: 0px;
+    top: 1.5px;
 }
-.slds-slider__range::-webkit-slider-runnable-track {
+.avonni-range__slider-left::-webkit-slider-runnable-track,
+.avonni-range__slider-right::-webkit-slider-runnable-track {
     background: none;
     border-radius: 0px;
 }
@@ -173,4 +180,39 @@
     font-size: var(--avonni-range-header-font-size, 0.75rem);
     font-style: var(--avonni-range-header-font-style, normal);
     font-weight: var(--avonni-range-header-font-weight, 400);
+}
+
+.avonni-range__slider-left {
+    z-index: 1;
+}
+
+.avonni-range__slider-left_above {
+    z-index: 3;
+}
+
+.avonni-range__slider-right {
+    z-index: 2;
+}
+
+.avonni-range__progress-container {
+    height: 4px;
+    position: relative;
+    background: #ecebea;
+    border-radius: 5px;
+    top: 0px;
+}
+
+.avonni-range__progress {
+    height: 100%;
+    position: absolute;
+    border-radius: 5px;
+    background: #0176d3;
+}
+
+.avonni-range__progress_disabled {
+    background: #919191;
+}
+
+.avonni-range__bubble_visible {
+    opacity: 1;
 }

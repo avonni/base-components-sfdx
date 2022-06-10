@@ -36,6 +36,7 @@
     <div class={computedContainerClass} data-element-id="div-wrapper">
         <template if:true={label}>
             <label class={computedLegendClass} data-element-id="label">
+                <abbr if:true={required} title="required" class="slds-required" data-element-id="required-indicator">*</abbr>
                 {label}
             </label>
             <lightning-helptext
@@ -85,4 +86,15 @@
             >
         </div>
     </div>
+    <template if:true={helpMessage}>
+        <div
+            id="help-message"
+            class="slds-form-element__help"
+            data-help-message
+            data-element-id="form-element__help"
+            role="alert"
+        >
+            {helpMessage}
+        </div>
+    </template>
 </template>

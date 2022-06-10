@@ -151,10 +151,6 @@
     transform: rotate(90deg);
 }
 
-.avonni-primitive-tree-item__child-item {
-    z-index: 1;
-}
-
 .avonni-primitive-tree-item__edit-label-button {
     --sds-c-icon-color-foreground: #969492;
 }

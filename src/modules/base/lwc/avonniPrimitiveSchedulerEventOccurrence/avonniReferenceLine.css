@@ -32,7 +32,7 @@
 
 @import './avonniShared.css';
 
-:host {
+:host.avonni-scheduler__event_horizontal {
     height: 100%;
 }
 
@@ -48,5 +48,14 @@
     --avonni-reference-line-badge-position-right: auto;
     --avonni-reference-line-badge-transform: none;
     --avonni-reference-line-badge-height: 1.2rem;
-    --avonni-reference-line-height: 100%;
+    --avonni-reference-line-length: var(
+        --avonni-primitive-scheduler-event-reference-line-length,
+        100%
+    );
+}
+
+.avonni-scheduler__reference-line_vertical {
+    transform: rotate(-90deg);
+    bottom: auto;
+    left: 0;
 }

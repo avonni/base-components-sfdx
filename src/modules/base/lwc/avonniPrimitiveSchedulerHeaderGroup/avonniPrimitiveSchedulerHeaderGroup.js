@@ -37,10 +37,13 @@ import {
     dateTimeObjectFrom,
     numberOfUnitsBetweenDates,
     normalizeArray,
+    normalizeString,
+    normalizeBoolean,
     removeFromDate,
     equal
 } from 'c/utilsPrivate';
 import SchedulerHeader from './avonniSchedulerHeader';
+import { classSet } from 'c/utils';
 
 const UNITS = ['minute', 'hour', 'day', 'week', 'month', 'year'];
 const DEFAULT_START_DATE = dateTimeObjectFrom(new Date());
@@ -70,6 +73,11 @@ const DEFAULT_HEADERS = [
     }
 ];
 
+const VARIANTS = {
+    valid: ['horizontal', 'vertical'],
+    default: 'horizontal'
+};
+
 /**
  * @class
  * @descriptor avonni-primitive-scheduler-header-group
@@ -83,8 +91,9 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     _scrollLeftOffset = 0;
     _start = DEFAULT_START_DATE;
     _timeSpan = DEFAULT_TIME_SPAN;
+    _variant = VARIANTS.default;
+    _zoomToFit = false;
 
-    _cellWidth = 0;
     _connected = false;
     _initHeadersTimeout;
     computedHeaders = [];
@@ -93,6 +102,12 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         this.initHeaders();
         this._connected = true;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Array of available days of the week. The days are represented by a number, starting from 0 for Sunday, and ending with 6 for Saturday.
@@ -214,9 +229,14 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     set scrollLeftOffset(value) {
         this._scrollLeftOffset = !isNaN(Number(value)) ? Number(value) : 0;
 
-        requestAnimationFrame(() => {
-            this.updateStickyLabels();
-        });
+        if (!this.isVertical) {
+            if (this.zoomToFit) {
+                this.computeCellSize();
+            }
+            requestAnimationFrame(() => {
+                this.updateStickyLabels();
+            });
+        }
     }
 
     /**
@@ -273,6 +293,49 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     }
 
     /**
+     * Orientation of the headers. Valid values include horizontal or vertical.
+     *
+     * @type {string}
+     * @default horizontal
+     * @public
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            validValues: VARIANTS.valid,
+            fallbackValue: VARIANTS.default
+        });
+
+        if (this.isVertical) {
+            requestAnimationFrame(() => {
+                this.updateStickyLabels();
+            });
+        }
+    }
+
+    /**
+     * If present, horizontal scrolling will be prevented.
+     *
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get zoomToFit() {
+        return this._zoomToFit;
+    }
+    set zoomToFit(value) {
+        this._zoomToFit = normalizeBoolean(value);
+
+        if (this._connected) {
+            this.computeCellSize();
+        }
+    }
+
+    /**
      * Interval of time between the current start and end.
      *
      * @type {Interval}
@@ -284,12 +347,18 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
             return undefined;
         }
 
-        const columns = this.smallestHeader.columns;
-        const lastIndex = columns.length - 1;
-        const start = dateTimeObjectFrom(columns[0].start);
-        const end = dateTimeObjectFrom(columns[lastIndex].end);
+        const cells = this.smallestHeader.cells;
+        const lastIndex = cells.length - 1;
+        const start = dateTimeObjectFrom(cells[0].start);
+        const end = dateTimeObjectFrom(cells[lastIndex].end);
         return Interval.fromDateTimes(start, end);
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
 
     /**
      * Computed end date of the headers.
@@ -324,6 +393,38 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     }
 
     /**
+     * True if the headers must stop at the end of the time span unit. If false, the headers can end in the middle of the time span unit.
+     *
+     * @type {boolean}
+     */
+    get endOnTimeSpanUnit() {
+        return this.availableTimeSpans.find((timeSpan) => {
+            return (
+                timeSpan.unit === this.timeSpan.unit &&
+                timeSpan.span === this.timeSpan.span
+            );
+        });
+    }
+
+    /**
+     * Computed CSS class of each header cell.
+     *
+     * @type {string}
+     */
+    get headerClass() {
+        return classSet('slds-grid slds-is-relative')
+            .add({
+                'slds-grid_vertical avonni-scheduler-header-group__header_vertical':
+                    this.isVertical
+            })
+            .toString();
+    }
+
+    get isVertical() {
+        return this.variant === 'vertical';
+    }
+
+    /**
      * Header with the smallest unit.
      *
      * @type {SchedulerHeader}
@@ -338,18 +439,23 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     }
 
     /**
-     * True if the headers must stop at the end of the time span unit. If false, the headers can end in the middle of the time span unit.
+     * Computed CSS classes of the wrapper div.
      *
-     * @type {boolean}
+     * @type {string}
      */
-    get endOnTimeSpanUnit() {
-        return this.availableTimeSpans.find((timeSpan) => {
-            return (
-                timeSpan.unit === this.timeSpan.unit &&
-                timeSpan.span === this.timeSpan.span
-            );
-        });
+    get wrapperClass() {
+        return classSet()
+            .add({
+                'slds-grid': this.isVertical
+            })
+            .toString();
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Create the headers.
@@ -381,7 +487,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 (header) => header.unit === referenceUnit
             );
 
-            const referenceColumns = numberOfUnitsBetweenDates(
+            const referenceCells = numberOfUnitsBetweenDates(
                 referenceUnit,
                 this.start,
                 this.end
@@ -401,7 +507,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 availableTimeFrames: this.availableTimeFrames,
                 availableDaysOfTheWeek: this.availableDaysOfTheWeek,
                 availableMonths: this.availableMonths,
-                numberOfColumns: referenceColumns / referenceSpan,
+                numberOfCells: referenceCells / referenceSpan,
                 isReference: true,
                 canExpandOverEndOfUnit: !this.endOnTimeSpanUnit,
                 // If there is no header using the timeSpan unit,
@@ -430,7 +536,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 ) {
                     headerObject = reference;
                 } else {
-                    const columns = numberOfUnitsBetweenDates(
+                    const cells = numberOfUnitsBetweenDates(
                         unit,
                         this.start,
                         this.end
@@ -445,7 +551,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                         availableTimeFrames: this.availableTimeFrames,
                         availableDaysOfTheWeek: this.availableDaysOfTheWeek,
                         availableMonths: this.availableMonths,
-                        numberOfColumns: columns / header.span
+                        numberOfCells: cells / header.span
                     });
                 }
 
@@ -475,47 +581,59 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
             );
 
             requestAnimationFrame(() => {
-                this.computeCellWidth();
+                this.computeCellSize();
             });
         }, 0);
     }
 
-    computeCellWidth() {
-        const cellText = this.template.querySelector(
-            '[data-element-id="div-row"]:last-of-type [data-element-id^="span-label"]'
-        );
-        if (!cellText) {
+    computeCellSize() {
+        if (!this.smallestHeader) {
             return;
         }
-
-        const cellTextWidth = cellText.getBoundingClientRect().width;
-        // We add 20 pixels for padding
-        let cellWidth = Math.ceil(cellTextWidth) + 20;
-
         const totalWidth = this.template.host.getBoundingClientRect().width;
-        const numberOfVisibleCells = Math.ceil(totalWidth / cellWidth);
-        const totalNumberOfCells = this.smallestHeader.numberOfColumns;
+        const totalNumberOfCells = this.smallestHeader.numberOfCells;
+        let cellSize = 0;
 
-        // If the maximum number of visible cells on the screen is bigger
-        // than the actual number of cells, recompute the cell width so the
-        // schedule takes the full screen
-        if (totalNumberOfCells < numberOfVisibleCells) {
-            cellWidth = totalWidth / totalNumberOfCells;
+        if (this.zoomToFit && !this.isVertical) {
+            cellSize = totalWidth / totalNumberOfCells;
+        } else {
+            const cellText = this.template.querySelector(
+                '[data-element-id="div-row"]:last-of-type [data-element-id^="span-label"]'
+            );
+            if (!cellText) {
+                return;
+            }
+
+            const cellDimensions = cellText.getBoundingClientRect();
+            const cellTextSize = this.isVertical
+                ? cellDimensions.height
+                : cellDimensions.width;
+            // We add 20 pixels for padding
+            cellSize = Math.ceil(cellTextSize) + 20;
+
+            const numberOfVisibleCells = Math.ceil(totalWidth / cellSize);
+
+            // If the maximum number of visible cells on the screen is bigger
+            // than the actual number of cells, recompute the cell width so the
+            // schedule takes the full screen
+            if (totalNumberOfCells < numberOfVisibleCells) {
+                cellSize = totalWidth / totalNumberOfCells;
+            }
         }
         this.computedHeaders.forEach((header) => {
-            header.computeColumnWidths(cellWidth, this.smallestHeader.columns);
+            header.computeCellWidths(cellSize, this.smallestHeader.cells);
         });
-        this.dispatchCellWidth(cellWidth);
-        this.updateCellsWidths();
+        this.dispatchCellSizeChange(cellSize);
+        this.updateCellsSize();
     }
 
     /**
      * Update the header cells style with their computed width.
      */
-    updateCellsWidths() {
+    updateCellsSize() {
         // Get rows and sort them from the shortest unit to the longest
         const rows = Array.from(
-            this.template.querySelectorAll('.avonni-scheduler__header-row')
+            this.template.querySelectorAll('[data-element-id="div-row"]')
         ).reverse();
 
         rows.forEach((row) => {
@@ -523,12 +641,10 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 return computedHeader.key === row.dataset.key;
             });
 
-            // Give cells their width
-            const cells = row.querySelectorAll(
-                '.avonni-scheduler__header-cell'
-            );
+            // Give cells their width/height
+            const cells = row.querySelectorAll('[data-element-id="div-cell"]');
             cells.forEach((cell, index) => {
-                cell.style = `--avonni-scheduler-cell-width: ${header.columnWidths[index]}px`;
+                cell.style = `--avonni-scheduler-cell-size: ${header.cellWidths[index]}px`;
             });
         });
     }
@@ -537,31 +653,35 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
      * Set the left position of the sticky labels.
      */
     updateStickyLabels() {
-        const stickyLabel = this.template.querySelectorAll(
-            '.avonni-scheduler__header-label_sticky'
+        const stickyLabels = this.template.querySelectorAll(
+            '[data-element-id="span-label-sticky"]'
         );
-        if (stickyLabel.length) {
-            stickyLabel.forEach((label) => {
+        if (stickyLabels.length && this.zoomToFit) {
+            stickyLabels.forEach((stickyLabel) => {
+                stickyLabel.style.left = 'auto';
+            });
+        } else if (stickyLabels.length) {
+            stickyLabels.forEach((label) => {
                 label.style.left = `${this.scrollLeftOffset}px`;
             });
         }
     }
 
     /**
-     * Dispatch the privatecellwidthchange event.
+     * Dispatch the privatecellsizechange event.
      */
-    dispatchCellWidth(width) {
+    dispatchCellSizeChange(size) {
         /**
-         * The event fired when the cell width variable is changed.
+         * The event fired when the cell size is changed.
          *
          * @event
-         * @name privatecellwidthchange
-         * @param {number} cellWidth The new cell width value, in pixels.
+         * @name privatecellsizechange
+         * @param {number} cellSize The new cell size value, in pixels.
          */
         this.dispatchEvent(
-            new CustomEvent('privatecellwidthchange', {
+            new CustomEvent('privatecellsizechange', {
                 detail: {
-                    cellWidth: width
+                    cellSize: size
                 }
             })
         );

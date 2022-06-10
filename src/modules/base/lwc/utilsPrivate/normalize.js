@@ -73,7 +73,7 @@ export function normalizeArray(value, entryType) {
             case 'object':
                 return value.filter((entry) => {
                     const object = normalizeObject(entry);
-                    return Object.keys(object).length;
+                    return Object.keys(object).length || entry === object;
                 });
             default:
                 break;

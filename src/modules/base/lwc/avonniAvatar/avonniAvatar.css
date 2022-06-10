@@ -58,3 +58,10 @@
 .avonni-avatar__chip {
     margin: 0 0.25rem;
 }
+
+.avonni-avatar__truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

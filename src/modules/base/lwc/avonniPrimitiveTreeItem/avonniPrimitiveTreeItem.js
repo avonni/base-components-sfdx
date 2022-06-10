@@ -951,8 +951,11 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
      * Update the visual level offset of the item.
      */
     updateLevel() {
-        if (this.itemElement)
-            this.itemElement.style = `--avonni-tree-item-spacing-inline-left: ${this.level}rem;`;
+        const wrapper = this.template.querySelector(
+            '[data-element-id="div-wrapper"]'
+        );
+        if (wrapper)
+            wrapper.style = `--avonni-tree-item-spacing-inline-left: ${this.level}rem;`;
     }
 
     /**
@@ -1011,6 +1014,17 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
 
         if (name === 'edit' && !actionClickEvent.defaultPrevented) {
             this.togglePopoverVisibility();
+        }
+    }
+
+    /**
+     * Handle a key pressed on the action menu. Prevent the scroll if the space bar is pressed.
+     *
+     * @param {Event} event
+     */
+    handleActionMenuKeyDown(event) {
+        if (event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault();
         }
     }
 
@@ -1172,7 +1186,7 @@ export default class AvonniPrimitiveTreeItem extends LightningElement {
      *
      * @param {Event} event
      */
-    handleLabelInlineKeyDown(event) {
+    handleLabelInlineKeyUp(event) {
         event.stopPropagation();
         this.draftValues.label = event.currentTarget.value;
 

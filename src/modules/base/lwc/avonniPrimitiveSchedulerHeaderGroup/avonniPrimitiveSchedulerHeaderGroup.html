@@ -33,55 +33,59 @@
 -->
 
 <template>
-    <template iterator:header={computedHeaders}>
-        <div
-            if:false={header.value.isHidden}
-            key={header.value.key}
-            class="slds-grid slds-is-relative avonni-scheduler__header-row"
-            data-element-id="div-row"
-            data-key={header.value.key}
-        >
-            <template
-                for:each={header.value.columns}
-                for:item="column"
-                for:index="index"
+    <div class={wrapperClass} data-element-id="div-wrapper">
+        <template iterator:header={computedHeaders}>
+            <div
+                if:false={header.value.isHidden}
+                key={header.value.key}
+                class={headerClass}
+                data-element-id="div-row"
+                data-key={header.value.key}
             >
-                <div
-                    key={column.start}
-                    class="
-                        slds-border_right slds-border_bottom
-                        slds-col slds-grid
-                        slds-theme_shade
-                        slds-grid_vertical-align-center slds-grid_align-center
-                        avonni-scheduler__header-cell
-                    "
-                    data-element-id="div-cell"
-                    data-end={column.end}
-                    data-start={column.start}
+                <template
+                    for:each={header.value.cells}
+                    for:item="cell"
+                    for:index="index"
                 >
-                    <template if:false={header.last}>
-                        <span
-                            class="
-                                slds-truncate
-                                slds-text-body_small
-                                slds-p-horizontal_x-small
-                                avonni-scheduler__header-label_sticky
-                            "
-                            title={column.label}
-                            data-element-id="span-label-sticky"
-                            >{column.label}
-                        </span>
-                    </template>
-                    <template if:true={header.last}>
-                        <span
-                            class="slds-truncate slds-text-body_small"
-                            title={column.label}
-                            data-element-id="span-label-non-sticky"
-                            >{column.label}
-                        </span>
-                    </template>
-                </div>
-            </template>
-        </div>
-    </template>
+                    <div
+                        key={cell.start}
+                        class="
+                            slds-border_right slds-border_bottom
+                            slds-col slds-grid
+                            slds-theme_shade
+                            slds-grid_vertical-align-center
+                            slds-grid_align-center
+                            slds-grow
+                            avonni-scheduler-header-group__header-cell
+                        "
+                        data-element-id="div-cell"
+                        data-end={cell.end}
+                        data-start={cell.start}
+                    >
+                        <template if:false={header.last}>
+                            <span
+                                class="
+                                    slds-truncate
+                                    slds-text-body_small
+                                    slds-p-horizontal_x-small
+                                    avonni-scheduler-header-group__header-label_sticky
+                                "
+                                title={cell.label}
+                                data-element-id="span-label-sticky"
+                                >{cell.label}
+                            </span>
+                        </template>
+                        <template if:true={header.last}>
+                            <span
+                                class="slds-truncate slds-text-body_small"
+                                title={cell.label}
+                                data-element-id="span-label-non-sticky"
+                                >{cell.label}
+                            </span>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
 </template>

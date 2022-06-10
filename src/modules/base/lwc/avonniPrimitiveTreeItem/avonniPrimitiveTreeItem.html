@@ -33,7 +33,7 @@
 -->
 
 <template>
-    <div class={wrapperClass}>
+    <div class={wrapperClass} data-element-id="div-wrapper">
         <div
             class="avonni-primitive-tree-item__item slds-is-relative slds-grid"
             data-element-id="div-item"
@@ -138,7 +138,7 @@
                         value={label}
                         data-element-id="lightning-input-inline-label"
                         onchange={stopPropagation}
-                        onkeydown={handleLabelInlineKeyDown}
+                        onkeyup={handleLabelInlineKeyUp}
                     ></lightning-input>
 
                     <lightning-button-icon
@@ -190,6 +190,7 @@
                             onfocusout={stopPropagation}
                             onopen={handleActionMenuOpen}
                             onselect={handleActionClick}
+                            onkeydown={handleActionMenuKeyDown}
                         >
                             <template for:each={menuActions} for:item="action">
                                 <lightning-menu-item
@@ -325,10 +326,7 @@
             <!-- Child items -->
             <template for:each={childItems} for:item="item">
                 <c-avonni-primitive-tree-item
-                    class="
-                        avonni-primitive-tree-item__child-item
-                        slds-is-relative
-                    "
+                    class="slds-is-relative"
                     key={item.key}
                     actions={actions}
                     actions-when-disabled={actionsWhenDisabled}

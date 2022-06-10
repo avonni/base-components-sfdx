@@ -32,17 +32,18 @@
 
 import { normalizeArray } from 'c/utilsPrivate';
 
-export default class AvonniSchedulerRow {
+export default class AvonniSchedulerResource {
     constructor(props) {
         this.color = props.color;
         this.data = props.data;
         this.key = props.key && props.key.toString();
-        this.columns = [];
+        this.cells = [];
         this.minHeight = 0;
-        this.referenceColumns = normalizeArray(props.referenceColumns);
+        this.referenceCells = normalizeArray(props.referenceCells);
+        this.resourceName = props.resourceName;
         this.events = normalizeArray(props.events);
         this._height = 0;
-        this.initColumns();
+        this.initCells();
     }
 
     get height() {
@@ -52,10 +53,34 @@ export default class AvonniSchedulerRow {
         this._height = value;
     }
 
-    initColumns() {
-        this.columns = [];
-        this.referenceColumns.forEach((element) => {
-            this.columns.push({
+    get avatar() {
+        const {
+            resourceAvatarSrc,
+            resourceAvatarFallbackIconName,
+            resourceAvatarInitials
+        } = this.data;
+        if (
+            resourceAvatarFallbackIconName ||
+            resourceAvatarInitials ||
+            resourceAvatarSrc
+        ) {
+            return {
+                src: resourceAvatarSrc,
+                fallbackIconName: resourceAvatarFallbackIconName,
+                initials: resourceAvatarInitials
+            };
+        }
+        return null;
+    }
+
+    get label() {
+        return this.resourceName || this.key;
+    }
+
+    initCells() {
+        this.cells = [];
+        this.referenceCells.forEach((element) => {
+            this.cells.push({
                 start: element.start,
                 end: element.end,
                 events: []
@@ -64,24 +89,24 @@ export default class AvonniSchedulerRow {
 
         const events = this.events;
         events.forEach((event) => {
-            this.addEventToColumns(event);
+            this.addEventToCells(event);
         });
     }
 
-    addEventToColumns(event) {
-        const columns = this.columns;
+    addEventToCells(event) {
+        const cells = this.cells;
         event.offsetTop = 0;
 
-        // Find the column where the event starts
-        let i = columns.findIndex((column) => {
-            return column.end >= event.from;
+        // Find the cell where the event starts
+        let i = cells.findIndex((cell) => {
+            return cell.end >= event.from;
         });
 
         if (i > -1) {
-            // Add the event to every column it crosses
-            while (i < columns.length && event.to > columns[i].start) {
-                columns[i].events.push(event);
-                columns[i].events = columns[i].events.sort(
+            // Add the event to every cell it crosses
+            while (i < cells.length && event.to > cells[i].start) {
+                cells[i].events.push(event);
+                cells[i].events = cells[i].events.sort(
                     (a, b) => a.from - b.from
                 );
                 i += 1;
@@ -90,16 +115,16 @@ export default class AvonniSchedulerRow {
     }
 
     removeEvent(event) {
-        const { columns, events } = this;
+        const { cells, events } = this;
 
-        // Remove the event from the columns
-        let i = columns.findIndex((column) => column.end >= event.from);
+        // Remove the event from the cells
+        let i = cells.findIndex((cell) => cell.end >= event.from);
         if (i > -1) {
-            while (i < columns.length && event.to > columns[i].start) {
-                const eventIndex = columns[i].events.findIndex(
+            while (i < cells.length && event.to > cells[i].start) {
+                const eventIndex = cells[i].events.findIndex(
                     (evt) => evt.key === event.key
                 );
-                columns[i].events.splice(eventIndex, 1);
+                cells[i].events.splice(eventIndex, 1);
                 i += 1;
             }
         }
@@ -109,7 +134,7 @@ export default class AvonniSchedulerRow {
         events.splice(eventIndex, 1);
     }
 
-    getColumnFromStart(start) {
-        return this.columns.find((column) => column.start === start);
+    getCellFromStart(start) {
+        return this.cells.find((cell) => cell.start === start);
     }
 }

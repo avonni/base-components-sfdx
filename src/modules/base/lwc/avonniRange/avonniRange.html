@@ -44,7 +44,11 @@
             >
         </span>
     </label>
-    <div if:true={isVertical} class="avonni-range__unit-container">
+    <div
+        if:true={isVertical}
+        class="avonni-range__unit-container"
+        data-element-id="vertical-max-unit-container"
+    >
         <lightning-formatted-number
             value={max}
             format-style={unit}
@@ -59,89 +63,97 @@
         ></lightning-formatted-number>
     </div>
     <div class={computedContainerClass} data-element-id="div-wrapper">
-        <div class="avonni-range__container">
-            <div class="inverse-left">
-                <div class="slds-form-element">
-                    <div class="slds-form-element__control">
-                        <div class="slds-slider">
-                            <input
-                                type="range"
-                                min={min}
-                                max={calculateMax}
-                                step={step}
+        <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <div class="slds-slider">
+                    <input
+                        type="range"
+                        min={min}
+                        max={max}
+                        step={step}
+                        value={valueLower}
+                        class="slds-slider__range avonni-range__slider-left"
+                        disabled={disabled}
+                        data-element-id="input-left"
+                        data-group-name="input"
+                        oninput={handleChange}
+                        onmousedown={showLeftBubble}
+                        onmouseup={hideLeftBubble}
+                    />
+                    <div
+                        if:true={pin}
+                        class={computedBubbleLeftClass}
+                        data-element-id="left-bubble"
+                        data-group-name="bubble"
+                    >
+                        <p>
+                            <lightning-formatted-number
                                 value={valueLower}
-                                class="
-                                    slds-slider__range
-                                    avonni-range__slider-left
-                                "
-                                disabled={disabled}
-                                data-element-id="input-left"
-                                oninput={handleChangeLeft}
-                                onmousedown={showLeftBubble}
-                                onmouseup={hideLeftBubble}
-                            />
-                            <div if:true={pin} class={computedBubbleLeftClass}>
-                                <p>
-                                    <lightning-formatted-number
-                                        value={valueLower}
-                                        format-style={unit}
-                                        currency-code={unitAttributes.currencyCode}
-                                        currency-display-as={unitAttributes.currencyDisplayAs}
-                                        maximum-fraction-digits={unitAttributes.maximumFractionDigits}
-                                        maximum-significant-digits={unitAttributes.maximumSignificantDigits}
-                                        minimum-fraction-digits={unitAttributes.minimumFractionDigits}
-                                        minimum-integer-digits={unitAttributes.minimumIntegerDigits}
-                                        minimum-significant-digits={unitAttributes.minimumSignificantDigits}
-                                        data-element-id="lightning-formatted-number-left"
-                                    ></lightning-formatted-number>
-                                </p>
-                            </div>
-                        </div>
+                                format-style={unit}
+                                currency-code={unitAttributes.currencyCode}
+                                currency-display-as={unitAttributes.currencyDisplayAs}
+                                maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                                maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                                minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                                minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                                minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                data-element-id="lightning-formatted-number-left"
+                            ></lightning-formatted-number>
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="inverse-right">
-                <div class="slds-form-element">
-                    <div class="slds-form-element__control">
-                        <div class="slds-slider">
-                            <input
-                                type="range"
-                                min={calculateMin}
-                                max={max}
-                                step={step}
+            <div class="slds-form-element__control">
+                <div class="slds-slider">
+                    <input
+                        type="range"
+                        min={min}
+                        max={max}
+                        step={step}
+                        value={valueUpper}
+                        class="slds-slider__range avonni-range__slider-right"
+                        disabled={disabled}
+                        data-element-id="input-right"
+                        data-group-name="input"
+                        oninput={handleChange}
+                        onmousedown={showRightBubble}
+                        onmouseup={hideRightBubble}
+                    />
+                    <div
+                        if:true={pin}
+                        class={computedBubbleRightClass}
+                        data-element-id="right-bubble"
+                        data-group-name="bubble"
+                    >
+                        <p>
+                            <lightning-formatted-number
                                 value={valueUpper}
-                                class="
-                                    slds-slider__range
-                                    avonni-range__slider-right
-                                "
-                                disabled={disabled}
-                                data-element-id="input-right"
-                                oninput={handleChangeRight}
-                                onmousedown={showRightBubble}
-                                onmouseup={hideRightBubble}
-                            />
-                            <div if:true={pin} class={computedBubbleRightClass}>
-                                <p>
-                                    <lightning-formatted-number
-                                        value={valueUpper}
-                                        format-style={unit}
-                                        currency-code={unitAttributes.currencyCode}
-                                        currency-display-as={unitAttributes.currencyDisplayAs}
-                                        maximum-fraction-digits={unitAttributes.maximumFractionDigits}
-                                        maximum-significant-digits={unitAttributes.maximumSignificantDigits}
-                                        minimum-fraction-digits={unitAttributes.minimumFractionDigits}
-                                        minimum-integer-digits={unitAttributes.minimumIntegerDigits}
-                                        minimum-significant-digits={unitAttributes.minimumSignificantDigits}
-                                        data-element-id="lightning-formatted-number-right"
-                                    ></lightning-formatted-number>
-                                </p>
-                            </div>
-                        </div>
+                                format-style={unit}
+                                currency-code={unitAttributes.currencyCode}
+                                currency-display-as={unitAttributes.currencyDisplayAs}
+                                maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                                maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                                minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                                minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                                minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                data-element-id="lightning-formatted-number-right"
+                            ></lightning-formatted-number>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-        <div if:false={isVertical} class="avonni-range__unit-container">
+        <div class="avonni-range__progress-container">
+            <div
+                class={computedProgressClass}
+                data-element-id="progress-bar"
+            ></div>
+        </div>
+        <div
+            if:false={isVertical}
+            class="avonni-range__unit-container"
+            data-element-id="horizontal-unit-container"
+        >
             <lightning-formatted-number
                 value={min}
                 format-style={unit}
@@ -168,7 +180,11 @@
             ></lightning-formatted-number>
         </div>
     </div>
-    <div if:true={isVertical} class="avonni-range__unit-container">
+    <div
+        if:true={isVertical}
+        class="avonni-range__unit-container"
+        data-element-id="vertical-min-unit-container"
+    >
         <lightning-formatted-number
             value={min}
             format-style={unit}

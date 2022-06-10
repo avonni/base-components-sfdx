@@ -38,7 +38,7 @@
 }
 
 .reference-line__line {
-    height: var(--avonni-reference-line-height, 20px);
+    height: var(--avonni-reference-line-length, 20px);
     position: absolute;
     top: 0;
 }
@@ -124,12 +124,7 @@
 
 .reference-line__line-vertical {
     position: absolute;
-    width: 20px;
-}
-
-.reference-line__line-vertical {
-    position: absolute;
-    width: 20px;
+    width: var(--avonni-reference-line-length, 20px);
     left: -8px;
 }
 

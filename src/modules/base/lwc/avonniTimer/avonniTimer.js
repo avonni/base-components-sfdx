@@ -50,14 +50,24 @@ const BUTTON_VARIANTS = {
 const COUNT_TYPES = { valid: ['count-up', 'count-down'], default: 'count-up' };
 const ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
 const TIME_FORMATS = {
-    valid: ['hh:mm:ss', 'mm:ss', 'hh:mm', 'hh', 'mm', 'ss'],
+    valid: [
+        'hh:mm:ss',
+        'mm:ss',
+        'hh:mm',
+        'mm:ss.ms',
+        'ss.ms',
+        'hh',
+        'mm',
+        'ss'
+    ],
     default: 'hh:mm:ss'
 };
 
-const DEFAULT_VALUE = 0;
-const DEFAULT_DURATION = 1;
+const DEFAULT_START_TIME = 0;
+const DEFAULT_DURATION = 10000;
 const DEFAULT_AUTO_START = false;
 const DEFAULT_REPEAT = false;
+const MAX_TIMER_VALUE = 86400000;
 
 /**
  * @class
@@ -80,12 +90,14 @@ export default class AvonniTimer extends LightningElement {
     _iconPosition = ICON_POSITIONS.default;
     _repeat = DEFAULT_REPEAT;
     _type = COUNT_TYPES.default;
-    _value = DEFAULT_VALUE;
     _variant = BUTTON_VARIANTS.default;
+    _startTime = DEFAULT_START_TIME;
+    _value = DEFAULT_START_TIME;
 
-    step;
+    startDate = null;
     play = false;
     interval = null;
+    pauseBuffer = 0;
 
     disconnectedCallback() {
         clearInterval(this.interval);
@@ -113,16 +125,20 @@ export default class AvonniTimer extends LightningElement {
         this._autoStart = normalizeBoolean(value);
 
         if (this._autoStart) {
-            this.start();
+            this.startDate = Date.now();
+            // start after short delay to account for properties initialization
+            requestAnimationFrame(() => {
+                this.start();
+            });
         }
     }
 
     /**
-     * How long a timer runs in milliseconds. There is no maximum value.
+     * How long a timer runs in milliseconds. Duration caps at 24 hours.
      *
      * @type {number}
      * @public
-     * @default 1000
+     * @default 10000
      */
     @api
     get duration() {
@@ -130,19 +146,15 @@ export default class AvonniTimer extends LightningElement {
     }
 
     set duration(value) {
-        if (!isNaN(parseInt(value, 10))) {
-            if (parseInt(value, 10) > 86400000) {
-                this._duration = 86400;
-            } else {
-                this._duration = parseInt(value, 10) / 1000;
-            }
+        if (!isNaN(parseInt(value, 10)) && parseInt(value, 10) >= 0) {
+            this._duration = Math.min(parseInt(value, 10), MAX_TIMER_VALUE);
         } else {
             this._duration = DEFAULT_DURATION;
         }
     }
 
     /**
-     * Format of the timer. Valid values include "hh:mm:ss", "mm:ss", "hh:mm", “hh”, “mm”, “ss”.
+     * Format of the timer. Valid values include "hh:mm:ss", "mm:ss", "hh:mm", "mm:ss.ms", "ss.ms", "hh", "mm", "ss".
      *
      * @type {string}
      * @public
@@ -215,7 +227,7 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
-     * Default value of the timer.
+     * Starting value of the timer in milliseconds. Getting this attribute will provide the current timer value in milliseconds.
      *
      * @type {number}
      * @public
@@ -227,9 +239,15 @@ export default class AvonniTimer extends LightningElement {
     }
 
     set value(value) {
-        this._value = isNaN(parseInt(value, 10))
-            ? DEFAULT_VALUE
-            : Number(value / 1000);
+        if (isNaN(parseInt(value, 10))) {
+            this._startTime = DEFAULT_START_TIME;
+        } else {
+            this._startTime =
+                parseInt(value, 10) > 0
+                    ? Math.min(parseInt(value, 10), MAX_TIMER_VALUE)
+                    : Math.max(parseInt(value, 10), -MAX_TIMER_VALUE);
+        }
+        this._value = this._startTime;
     }
 
     /**
@@ -258,96 +276,32 @@ export default class AvonniTimer extends LightningElement {
      */
 
     /**
-     * Return the time format to display based on inputted format ( hh, mm, ss ).
-     *
-     * @type {string|number}
-     */
-    get time() {
-        if (this.format === 'hh:mm:ss') {
-            return (
-                this.formatTime(
-                    this.hours,
-                    String(this.hours).length > 2
-                        ? String(this.hours).length
-                        : 2
-                ) +
-                ':' +
-                this.formatTime(
-                    this.minutes,
-                    String(this.minutes).length > 2
-                        ? String(this.minutes).length
-                        : 2
-                ) +
-                ':' +
-                this.formatTime(this.seconds, 2)
-            );
-        }
-        if (this.format === 'mm:ss') {
-            let minutes = this.hours * 60 + this.minutes;
-            return (
-                this.formatTime(
-                    minutes,
-                    String(minutes).length > 2 ? String(minutes).length : 2
-                ) +
-                ':' +
-                this.formatTime(this.seconds, 2)
-            );
-        }
-        if (this.format === 'hh:mm') {
-            return (
-                this.formatTime(
-                    this.hours,
-                    String(this.hours).length > 2
-                        ? String(this.hours).length
-                        : 2
-                ) +
-                ':' +
-                this.formatTime(
-                    this.minutes,
-                    String(this.minutes).length > 2
-                        ? String(this.minutes).length
-                        : 2
-                )
-            );
-        }
-        if (this.format === 'hh') {
-            return this.formatTime(
-                this.hours,
-                String(this.hours).length > 2 ? String(this.hours).length : 2
-            );
-        }
-        if (this.format === 'mm') {
-            let minutes = this.hours * 60 + this.minutes;
-            return this.formatTime(
-                this.hours * 60 + this.minutes,
-                String(minutes).length > 2 ? String(minutes).length : 2
-            );
-        }
-
-        return this.value;
-    }
-
-    /**
-     * Retrieve the timer value.
-     *
-     * @type {number}
-     */
-    get timerValue() {
-        if (this.type === 'count-up') {
-            return this.value;
-        }
-
-        return this.duration - this.value;
-    }
-
-    /**
      * Compute the hours based on the timer value.
      *
      * @type {number}
      */
     get hours() {
-        let time = parseFloat(this.timerValue).toFixed(3);
-        return Math.floor(time / 60 / 60);
+        const hours = Math.floor(this._value / 60 / 60 / 1000);
+        return hours >= 0 ? Math.abs(hours) : Math.abs(hours) - 1;
+    }
+
+    /**
+     * Boolean, is true if _value is negative.
+     *
+     * @type {number}
+     */
+    get isNegative() {
+        return this._value < 0;
+    }
+
+    /**
+     * Compute the milliseconds based on the timer value.
+     *
+     * @type {number}
+     */
+    get milliseconds() {
+        const milliseconds = Math.abs(Math.floor(this._value % 1000));
+        return milliseconds >= 0 ? milliseconds : Math.abs(milliseconds) - 1;
     }
 
     /**
@@ -356,8 +310,8 @@ export default class AvonniTimer extends LightningElement {
      * @type {number}
      */
     get minutes() {
-        let time = parseFloat(this.timerValue).toFixed(3);
-        return Math.floor(time / 60) % 60;
+        const minutes = Math.floor(this._value / 60 / 1000) % 60;
+        return minutes >= 0 ? Math.abs(minutes) : Math.abs(minutes) - 1;
     }
 
     /**
@@ -366,8 +320,29 @@ export default class AvonniTimer extends LightningElement {
      * @type {number}
      */
     get seconds() {
-        let time = parseFloat(this.timerValue).toFixed(3);
-        return Math.floor(time - this.minutes * 60);
+        const seconds = Math.floor(this._value / 1000) % 60;
+        return seconds >= 0 ? Math.abs(seconds) : Math.abs(seconds) - 1;
+    }
+
+    /**
+     * Return the time format to display based on inputted format ( hh, mm, ss ).
+     *
+     * @type {string|number}
+     */
+    get time() {
+        let timeFormats = this.format.split(new RegExp('[.:]')); // splits string at ":" and "." into array character
+        timeFormats[0] = this.formatToString(timeFormats[0], true);
+        for (let i = 1; i < timeFormats.length; i++) {
+            timeFormats[i] = this.formatToString(timeFormats[i], false);
+        }
+        let formattedTime = timeFormats.join(':');
+        if (this.format.includes('ms')) {
+            formattedTime = formattedTime.replace(
+                new RegExp('(:)(?!.*:)'),
+                '.'
+            ); // replaces last ":" character with "."
+        }
+        return !this.isNegative ? formattedTime : '-'.concat(formattedTime);
     }
 
     /*
@@ -375,20 +350,6 @@ export default class AvonniTimer extends LightningElement {
      *  PUBLIC METHODS
      * -------------------------------------------------------------
      */
-
-    /**
-     * Start the timer.
-     *
-     * @public
-     */
-    @api
-    start() {
-        if (this.interval === null) {
-            this.createInterval();
-        }
-        this.play = true;
-        this.dispatchTimerStart();
-    }
 
     /**
      * Pause the timer.
@@ -402,6 +363,38 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
+     * Reset the timer. Will keep on going if is still playing.
+     *
+     * @public
+     */
+    @api
+    reset() {
+        this.startDate = null;
+        this.pauseBuffer = 0;
+        this.stop();
+        this._value = this._startTime;
+        if (this.autoStart) {
+            this.start();
+        }
+        this.dispatchTimerReset();
+    }
+
+    /**
+     * Start the timer.
+     *
+     * @public
+     */
+    @api
+    start() {
+        if (this.interval === null) {
+            this.createInterval();
+        }
+        this.consumePauseBuffer();
+        this.play = true;
+        this.dispatchTimerStart();
+    }
+
+    /**
      * Stop the timer.
      *
      * @public
@@ -409,19 +402,9 @@ export default class AvonniTimer extends LightningElement {
     @api
     stop() {
         this.play = false;
-        this._value = 0;
-        this.dispatchTimerStop();
-    }
-
-    /**
-     * Reset the timer.
-     *
-     * @public
-     */
-    @api
-    reset() {
-        this._value = 0;
-        this.dispatchTimerReset();
+        this.startDate = null;
+        this.pauseBuffer = 0;
+        this.clearCurrentInterval();
     }
 
     /*
@@ -431,35 +414,78 @@ export default class AvonniTimer extends LightningElement {
      */
 
     /**
-     * Timer start event dispatcher.
+     * Clear the current interval.
      */
-    dispatchTimerStart() {
-        /**
-         * The event fired when the timer start.
-         *
-         * @event
-         * @name timerstart
-         * @param {string} time the time value.
-         * @param {string} hours the hours value.
-         * @param {string} minutes the minutes value.
-         * @param {string} seconds the seconds value.
-         * @param {string} duration the duration value.
-         * @param {string} format the format value.
-         * @param {string} type the type value.
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('timerstart', {
-                detail: {
-                    time: this.time,
-                    hours: this.hours,
-                    minutes: this.minutes,
-                    seconds: this.seconds,
-                    duration: this.duration,
-                    format: this.format,
-                    type: this.type
+    clearCurrentInterval() {
+        clearInterval(this.interval);
+        this.interval = null;
+        this.consumePauseBuffer();
+        this.dispatchTimerStop();
+    }
+
+    /**
+     *  Consumes pause buffer.
+     */
+    consumePauseBuffer() {
+        if (this.startDate !== null) {
+            this.startDate += this.pauseBuffer;
+        }
+        this.pauseBuffer = 0;
+    }
+
+    /**
+     * Create timer interval.
+     */
+    createInterval() {
+        if (this.startDate === null) {
+            this.startDate = Date.now();
+        }
+        this.interval = setInterval(
+            () => {
+                const isCountUp = this.type === 'count-up';
+
+                const maxDuration = isCountUp
+                    ? this._startTime + this.duration
+                    : this._startTime - this.duration;
+
+                if (this.play && isCountUp) {
+                    this._value =
+                        this._startTime + (Date.now() - this.startDate);
                 }
-            })
+                if (this.play && !isCountUp) {
+                    this._value =
+                        this._startTime - (Date.now() - this.startDate);
+                }
+
+                const isTimerOverflow =
+                    Math.abs(this._value) >= MAX_TIMER_VALUE;
+                const hasEndedCountUp = isCountUp && this._value >= maxDuration;
+                const hasEndedCountDown =
+                    !isCountUp && this._value <= maxDuration;
+
+                let state;
+                if (isTimerOverflow) {
+                    state = 'TIMER_OVERFLOW';
+                } else if (this.play && hasEndedCountUp) {
+                    state = 'COUNT_UP_ENDED';
+                } else if (this.play && hasEndedCountDown) {
+                    state = 'COUNT_DOWN_ENDED';
+                } else if (!this.play && isCountUp) {
+                    state = 'COUNT_UP_PAUSE';
+                } else if (!this.play && !isCountUp) {
+                    state = 'COUNT_DOWN_PAUSE';
+                }
+
+                let hasEnded = this.handleTimerState(state, maxDuration);
+
+                if (hasEnded) {
+                    if (this.repeat) {
+                        this.reset();
+                        this.start();
+                    } else this.stop();
+                }
+            },
+            this.format.includes('ms') ? 50 : 200
         );
     }
 
@@ -483,39 +509,6 @@ export default class AvonniTimer extends LightningElement {
          */
         this.dispatchEvent(
             new CustomEvent('timerpause', {
-                detail: {
-                    time: this.time,
-                    hours: this.hours,
-                    minutes: this.minutes,
-                    seconds: this.seconds,
-                    duration: this.duration,
-                    format: this.format,
-                    type: this.type
-                }
-            })
-        );
-    }
-
-    /**
-     * Timer stop event dispatcher.
-     */
-    dispatchTimerStop() {
-        /**
-         * The event fired when the timer stop.
-         *
-         * @event
-         * @name timerstop
-         * @param {string} time the time value.
-         * @param {string} hours the hours value.
-         * @param {string} minutes the minutes value.
-         * @param {string} seconds the seconds value.
-         * @param {string} duration the duration value.
-         * @param {string} format the format value.
-         * @param {string} type the type value.
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('timerstop', {
                 detail: {
                     time: this.time,
                     hours: this.hours,
@@ -563,55 +556,148 @@ export default class AvonniTimer extends LightningElement {
     }
 
     /**
-     * Create timer interval.
+     * Timer start event dispatcher.
      */
-    createInterval() {
-        // eslint-disable-next-line @lwc/lwc/no-async-operation
-        this.interval = setInterval(() => {
-            if (this.play) {
-                this._value = this.value + 1;
-            }
-
-            if (this.type === 'count-up') {
-                if (this.timerValue >= this.duration) {
-                    if (this.repeat) {
-                        this._value = 0;
-                        this.dispatchTimerReset();
-                    } else {
-                        this.clearCurrentInterval();
-                    }
+    dispatchTimerStart() {
+        /**
+         * The event fired when the timer start.
+         *
+         * @event
+         * @name timerstart
+         * @param {string} time the time value.
+         * @param {string} hours the hours value.
+         * @param {string} minutes the minutes value.
+         * @param {string} seconds the seconds value.
+         * @param {string} duration the duration value.
+         * @param {string} format the format value.
+         * @param {string} type the type value.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('timerstart', {
+                detail: {
+                    time: this.time,
+                    hours: this.hours,
+                    minutes: this.minutes,
+                    seconds: this.seconds,
+                    duration: this.duration,
+                    format: this.format,
+                    type: this.type
                 }
-            } else {
-                if (this.timerValue === 0) {
-                    if (this.repeat) {
-                        this._value = 0;
-                        this.dispatchTimerReset();
-                    } else {
-                        this.clearCurrentInterval();
-                    }
-                }
-            }
-        }, 1000);
+            })
+        );
     }
 
     /**
-     * Clear the current interval.
+     * Timer stop event dispatcher.
      */
-    clearCurrentInterval() {
-        clearInterval(this.interval);
-        this.interval = null;
-        this._value = 0;
-        this.dispatchTimerStop();
+    dispatchTimerStop() {
+        /**
+         * The event fired when the timer stop.
+         *
+         * @event
+         * @name timerstop
+         * @param {string} time the time value.
+         * @param {string} hours the hours value.
+         * @param {string} minutes the minutes value.
+         * @param {string} seconds the seconds value.
+         * @param {string} duration the duration value.
+         * @param {string} format the format value.
+         * @param {string} type the type value.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('timerstop', {
+                detail: {
+                    time: this.time,
+                    hours: this.hours,
+                    minutes: this.minutes,
+                    seconds: this.seconds,
+                    duration: this.duration,
+                    format: this.format,
+                    type: this.type
+                }
+            })
+        );
     }
 
     /**
-     * Compute format time.
-     *
-     * @param {number} num
-     * @param {number} size
-     * @returns {string} formatTime
+     *  Transforms format string to _value equivalent.
+     *  @param format the string to transform.
+     *  @param isFirst is the first element in the timer.
      */
-    formatTime(num, size) {
-        return ('000' + num).slice(-size);
+    formatToString(format, isFirst) {
+        if (isFirst) {
+            switch (format) {
+                case 'hh':
+                    return `${this.hours}`.padStart(2, '0');
+                case 'mm':
+                    return `${this.minutes + this.hours * 60}`.padStart(2, '0');
+                case 'ss':
+                    return `${
+                        this.seconds + this.minutes * 60 + this.hours * 3600
+                    }`;
+                default:
+                    return '??';
+            }
+        } else {
+            switch (format) {
+                case 'hh':
+                    return `${this.hours}`.padStart(2, '0');
+                case 'mm':
+                    return `${this.minutes}`.padStart(2, '0');
+                case 'ss':
+                    return `${this.seconds}`.padStart(2, '0');
+                case 'ms':
+                    return `${this.milliseconds}`.padStart(3, '0');
+                default:
+                    return '??';
+            }
+        }
+    }
+
+    /**
+     *  Handles the state of the timer after an increment/decrement
+     *  @param state the state the timer is currently in
+     *  @param state the maximum duration for which the timer should run
+     *  @returns {boolean} if the timer has ended after state handling
+     */
+    handleTimerState(state, maxDuration) {
+        let hasEnded = false;
+
+        switch (state) {
+            case 'TIMER_OVERFLOW':
+                this._value =
+                    this._value < 0 ? MAX_TIMER_VALUE : -MAX_TIMER_VALUE;
+                hasEnded = true;
+                break;
+            case 'COUNT_UP_ENDED':
+                this._value = maxDuration;
+                hasEnded = true;
+                break;
+            case 'COUNT_DOWN_ENDED':
+                if (maxDuration < 0) {
+                    this._value = maxDuration - 1000;
+                } else {
+                    this._value = maxDuration;
+                }
+                hasEnded = true;
+                break;
+            case 'COUNT_UP_PAUSE':
+                this.pauseBuffer =
+                    Date.now() -
+                    this.startDate -
+                    (this._value - this._startTime);
+                break;
+            case 'COUNT_DOWN_PAUSE':
+                this.pauseBuffer =
+                    Date.now() -
+                    this.startDate +
+                    (this._value - this._startTime);
+                break;
+            default:
+                break;
+        }
+        return hasEnded;
     }
 }

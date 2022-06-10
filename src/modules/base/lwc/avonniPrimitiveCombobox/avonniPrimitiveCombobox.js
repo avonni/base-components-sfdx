@@ -898,11 +898,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.stopDropdownPositioning();
 
             if (this.isMultiSelect) {
-                // Reset options
-                this.visibleOptions = [...this.options];
-                this.parentOptionsValues = [];
-                this.backLink = undefined;
-                this.showLoader = this.isLoading;
+                this.resetLevel();
             } else {
                 // Reset to current visible level and erase the search
                 this.visibleOptions =
@@ -969,6 +965,19 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return this._constraint.reportValidity((message) => {
             this.helpMessage = this.messageWhenValueMissing || message;
         });
+    }
+
+    /**
+     * Reset the combobox to the first options level.
+     *
+     * @public
+     */
+    @api
+    resetLevel() {
+        this.visibleOptions = [...this.options];
+        this.parentOptionsValues = [];
+        this.backLink = undefined;
+        this.showLoader = this.isLoading;
     }
 
     /**
@@ -1696,11 +1705,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.dispatchChange('unselect', levelPath);
         }
 
-        // Reset the visible options
-        this.visibleOptions = this.options;
-        this.parentOptionsValues = [];
-        this.backLink = undefined;
-
+        this.resetLevel();
         this.focus();
     }
 
@@ -1761,6 +1766,7 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         const selectedOption = this.visibleOptions.find((option) => {
             return option.value === this._highlightedOption.dataset.value;
         });
+        if (this.name === 'boubou') console.log(selectedOption);
 
         // If the option has children options, change the visible options
         if (selectedOption.hasChildren) {

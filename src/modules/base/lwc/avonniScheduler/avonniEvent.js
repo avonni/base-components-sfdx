@@ -70,7 +70,7 @@ import {
  *
  * @param {string} iconName The Lightning Design System name of the icon used if the event is disabled. Names are written in the format utility:user. The icon is appended to the left of the title.
  *
- * @param {string[]} keyFields Required. Array of unique row IDs. The event will be shown in the scheduler for each of these rows.
+ * @param {string[]} keyFields Required. Array of unique resource IDs. The event will be shown in the scheduler for each of these resources.
  *
  * @param {object} labels Labels of the events. See Scheduler for more details on the structure.
  *
@@ -410,7 +410,7 @@ export default class AvonniSchedulerEvent {
                         key: `${this.name}-${keyField}-${from.ts}`,
                         keyFields: keyFields,
                         offsetTop: 0,
-                        rowKey: keyField,
+                        resourceKey: keyField,
                         title: this.title,
                         to: computedTo
                     };

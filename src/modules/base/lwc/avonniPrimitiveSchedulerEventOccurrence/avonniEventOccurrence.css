@@ -77,7 +77,20 @@
 
 .avonni-scheduler__event-label_center {
     position: sticky;
-    position: -webkit-sticky;
+    transition: transform ease-in 100ms;
+}
+
+.avonni-scheduler__event-wrapper_vertical {
+    padding: 0 1px 1px 0;
+}
+.avonni-scheduler__event-wrapper_vertical
+    .avonni-scheduler__event-label_center {
+    height: 1.3rem;
+}
+
+.avonni-scheduler__event-wrapper_vertical,
+.avonni-scheduler__event-wrapper_vertical .avonni-scheduler__event {
+    height: 100%;
 }
 
 /* Themes --------- */
@@ -101,6 +114,15 @@
     border-top-style: solid;
     margin-top: 5px;
 }
+
+.avonni-scheduler__event-wrapper_vertical .avonni-scheduler__event_line {
+    border: none;
+    border-left-width: 5px;
+    border-left-style: solid;
+    margin-left: 5px;
+    margin-top: 0;
+}
+
 .avonni-scheduler__event_line::before,
 .avonni-scheduler__event_line::after {
     content: '';
@@ -112,16 +134,33 @@
     top: -9px;
     height: 13px;
 }
+.avonni-scheduler__event-wrapper_vertical .avonni-scheduler__event_line::before,
+.avonni-scheduler__event-wrapper_vertical .avonni-scheduler__event_line::after {
+    height: 0;
+    left: -9px;
+    width: 13px;
+}
 .avonni-scheduler__event_line::before {
     left: 0;
 }
+.avonni-scheduler__event-wrapper_vertical
+    .avonni-scheduler__event_line::before {
+    top: 0;
+}
 .avonni-scheduler__event_line::after {
     right: 0;
+}
+.avonni-scheduler__event-wrapper_vertical .avonni-scheduler__event_line::after {
+    bottom: 0;
+    top: auto;
 }
 
 /* Resize icon --------- */
 .avonni-scheduler__event:hover .avonni-scheduler__event-resize-icon {
     visibility: visible;
+}
+.avonni-scheduler__event_vertical:hover .avonni-scheduler__event-label_center {
+    transform: translateY(0.75rem);
 }
 
 .avonni-scheduler__event-resize-icon {
@@ -131,12 +170,33 @@
     top: 50%;
     transform: translateY(-50%);
     cursor: col-resize;
+    z-index: 1;
 }
 
-.avonni-scheduler__event-resize-icon_left {
+.avonni-scheduler__event-wrapper_vertical .avonni-scheduler__event-resize-icon {
+    cursor: row-resize;
+}
+
+.avonni-scheduler__event-resize-icon_start {
     left: 0;
 }
+.avonni-scheduler__event-wrapper_vertical
+    .avonni-scheduler__event-resize-icon_start {
+    height: initial;
+    top: 0;
+    left: 50%;
+    transform: rotate(90deg) translateY(50%);
+}
 
-.avonni-scheduler__event-resize-icon_right {
+.avonni-scheduler__event-resize-icon_end {
     right: 0;
+}
+
+.avonni-scheduler__event-wrapper_vertical
+    .avonni-scheduler__event-resize-icon_end {
+    height: initial;
+    right: 50%;
+    bottom: 0;
+    top: auto;
+    transform: rotate(90deg) translateY(-50%);
 }

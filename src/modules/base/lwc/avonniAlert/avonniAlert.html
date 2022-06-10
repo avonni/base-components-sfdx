@@ -42,7 +42,7 @@
                 data-element-id="lightning-icon"
             ></lightning-icon>
             <slot></slot>
-            <template if:false={isDismissible}>
+            <template if:true={isDismissible}>
                 <button
                     data-element-id="lightning-button-icon"
                     class="slds-button slds-button_icon slds-notify__close"

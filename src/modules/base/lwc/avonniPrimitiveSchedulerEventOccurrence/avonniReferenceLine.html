@@ -34,10 +34,11 @@
 
 <template>
     <c-avonni-primitive-reference-line
-        class="avonni-scheduler__reference-line slds-is-absolute"
+        class={referenceLineClass}
         label={title}
         value="0"
         variant={theme}
+        data-element-id="avonni-primitive-reference-line"
         oncontextmenu={handleDisabledContextMenu}
         ondblclick={handleDisabledDoubleClick}
         onmousedown={handleDisabledMouseDown}

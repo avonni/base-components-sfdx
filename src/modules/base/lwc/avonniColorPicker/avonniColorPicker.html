@@ -60,7 +60,6 @@
                     type="button"
                     data-element-id="button"
                     onclick={handleButtonClick}
-                    onblur={handleBlur}
                     onmousedown={handleButtonMouseDown}
                 >
                     <template if:false={readOnly}>
@@ -93,163 +92,181 @@
                     </template>
                 </button>
                 <template if:true={dropdownOpened}>
-                    <div
-                        class={computedDropdownClass}
-                        onmousedown={handleDropdownMouseDown}
-                        onmouseup={handleDropdownMouseUp}
-                        onblur={handleBlur}
-                        data-element-id="div-dropdown"
-                        tabindex="0"
-                    >
-                        <!-- Loading spinner -->
-                        <template if:true={isLoading}>
-                            <div class="avonni-color-picker__spinner-container">
-                                <lightning-spinner
-                                    size="small"
-                                    data-element-id="lightning-spinner"
-                                ></lightning-spinner>
-                            </div>
-                        </template>
-
-                        <template if:false={isLoading}>
-                            <div
-                                class="
-                                    slds-popover__body
-                                    avonni-color-picker__popover-body
-                                    slds-tabs_default
-                                "
-                                onprivateblur={handlePrivateBlur}
-                                onprivatefocus={handlePrivateFocus}
-                                onmouseover={cancelBlur}
-                                onmouseout={allowBlur}
-                                onchange={handleDefaultAndTokenChange}
-                            >
-                                <!-- Tabs -->
-                                <ul
-                                    if:true={isBase}
-                                    class="slds-tabs_default__nav"
-                                    role="tablist"
-                                    data-element-id="ul-tabs"
+                    <lightning-focus-trap>
+                        <div
+                            class={computedDropdownClass}
+                            data-element-id="div-dropdown"
+                            tabindex="-1"
+                            onmouseenter={handleMenuMouseEnter}
+                            onmouseleave={handleMenuMouseLeave}
+                            onkeydown={handleMenuKeydown}
+                            onkeyup={handleMenuKeyup}
+                            onblur={handleMenuBlur}
+                        >
+                            <!-- Loading spinner -->
+                            <template if:true={isLoading}>
+                                <div
+                                    class="
+                                        avonni-color-picker__spinner-container
+                                    "
                                 >
-                                    <li
-                                        class="
-                                            slds-tabs_default__item
-                                            slds-is-active
-                                        "
-                                        title="Default"
-                                        role="presentation"
-                                    >
-                                        <a
-                                            class="slds-tabs_default__link"
-                                            href="javascript:void(0);"
-                                            role="tab"
-                                            data-group-name="tabs"
-                                            data-tab-name="default"
-                                            onclick={handleTabClick}
-                                            onblur={handlePrivateBlur}
-                                            onfocus={handlePrivateFocus}
-                                            >Default</a
-                                        >
-                                    </li>
-                                    <li
-                                        if:true={tokens.length}
-                                        class="slds-tabs_default__item"
-                                        title="Tokens"
-                                        role="presentation"
-                                        data-element-id="li-tokens-tab"
-                                    >
-                                        <a
-                                            class="slds-tabs_default__link"
-                                            href="javascript:void(0);"
-                                            role="tab"
-                                            data-element-id="a-tokens-tab"
-                                            data-group-name="tabs"
-                                            data-tab-name="tokens"
-                                            onclick={handleTabClick}
-                                            onblur={handlePrivateBlur}
-                                            onfocus={handlePrivateFocus}
-                                            >Tokens</a
-                                        >
-                                    </li>
-                                    <li
-                                        class="slds-tabs_default__item"
-                                        title="Custom"
-                                        role="presentation"
-                                    >
-                                        <a
-                                            class="slds-tabs_default__link"
-                                            href="javascript:void(0);"
-                                            role="tab"
-                                            data-group-name="tabs"
-                                            data-tab-name="custom"
-                                            onclick={handleTabClick}
-                                            onblur={handlePrivateBlur}
-                                            onfocus={handlePrivateFocus}
-                                            >Custom</a
-                                        >
-                                    </li>
-                                </ul>
-
-                                <div class={computedTabBodyClass}>
-                                    <!-- Color palette -->
-                                    <c-avonni-color-palette
-                                        if:false={showColorGradient}
-                                        class="
-                                            slds-show
-                                            slds-scrollable_y
-                                            avonni-color-picker__default-palette
-                                        "
-                                        colors={computedColors}
-                                        columns={columns}
-                                        groups={groups}
-                                        read-only={readOnly}
-                                        variant={colorPaletteVariant}
-                                        data-element-id="avonni-color-palette"
-                                    ></c-avonni-color-palette>
-
-                                    <!-- Color Gradient -->
-                                    <c-avonni-color-gradient
-                                        if:true={showColorGradient}
-                                        message-when-bad-input={messageWhenBadInput}
-                                        opacity={opacity}
-                                        value={computedGradientValue}
-                                        read-only={readOnly}
-                                        data-element-id="avonni-color-gradient"
-                                        onchange={handleChange}
-                                    ></c-avonni-color-gradient>
+                                    <lightning-spinner
+                                        size="small"
+                                        data-element-id="lightning-spinner"
+                                    ></lightning-spinner>
                                 </div>
-                            </div>
+                            </template>
 
-                            <!-- Footer -->
-                            <footer
-                                if:true={showColorGradient}
-                                class="slds-popover__footer"
-                            >
-                                <div class="slds-color-picker__selector-footer">
-                                    <lightning-button
-                                        class="
-                                            avonni-color-picker__popover-button
-                                        "
-                                        label="Cancel"
-                                        title="Cancel"
-                                        data-element-id="lightning-button-cancel"
-                                        onclick={handleCancel}
-                                    ></lightning-button>
-                                    <lightning-button
-                                        variant="brand"
-                                        class="
-                                            slds-m-left_x-small
-                                            avonni-color-picker__popover-button
-                                        "
-                                        label="Done"
-                                        title="Done"
-                                        data-element-id="lightning-button-done"
-                                        onclick={handleDone}
-                                    ></lightning-button>
+                            <template if:false={isLoading}>
+                                <div
+                                    class="
+                                        slds-popover__body
+                                        avonni-color-picker__popover-body
+                                        slds-tabs_default
+                                    "
+                                    onblur={handleMenuBlur}
+                                    onchange={handleDefaultAndTokenChange}
+                                >
+                                    <!-- Tabs -->
+                                    <ul
+                                        if:true={isBase}
+                                        class="slds-tabs_default__nav"
+                                        role="tablist"
+                                        data-element-id="ul-tabs"
+                                    >
+                                        <li
+                                            class="
+                                                slds-tabs_default__item
+                                                slds-is-active
+                                            "
+                                            title="Default"
+                                            role="presentation"
+                                        >
+                                            <a
+                                                class="
+                                                    slds-tabs_default__link
+                                                    avonni-color-picker__tab
+                                                "
+                                                href="javascript:void(0);"
+                                                role="tab"
+                                                data-group-name="tabs"
+                                                data-element-id="default"
+                                                data-tab-name="default"
+                                                onclick={handleTabClick}
+                                                onblur={handleMenuBlur}
+                                                >Default</a
+                                            >
+                                        </li>
+                                        <li
+                                            if:true={tokens.length}
+                                            class="slds-tabs_default__item"
+                                            title="Tokens"
+                                            role="presentation"
+                                            data-element-id="li-tokens-tab"
+                                        >
+                                            <a
+                                                class="
+                                                    slds-tabs_default__link
+                                                    avonni-color-picker__tab
+                                                "
+                                                href="javascript:void(0);"
+                                                role="tab"
+                                                data-element-id="a-tokens-tab"
+                                                data-group-name="tabs"
+                                                data-tab-name="tokens"
+                                                onclick={handleTabClick}
+                                                onblur={handleMenuBlur}
+                                                >Tokens</a
+                                            >
+                                        </li>
+                                        <li
+                                            class="slds-tabs_default__item"
+                                            title="Custom"
+                                            role="presentation"
+                                        >
+                                            <a
+                                                class="
+                                                    slds-tabs_default__link
+                                                    avonni-color-picker__tab
+                                                "
+                                                href="javascript:void(0);"
+                                                role="tab"
+                                                data-group-name="tabs"
+                                                data-element-id="custom"
+                                                data-tab-name="custom"
+                                                onclick={handleTabClick}
+                                                onblur={handleMenuBlur}
+                                                >Custom</a
+                                            >
+                                        </li>
+                                    </ul>
+
+                                    <div class={computedTabBodyClass}>
+                                        <!-- Color palette -->
+                                        <c-avonni-color-palette
+                                            if:false={showColorGradient}
+                                            class="
+                                                slds-show
+                                                slds-scrollable_y
+                                                avonni-color-picker__default-palette
+                                            "
+                                            colors={computedColors}
+                                            columns={columns}
+                                            groups={groups}
+                                            read-only={readOnly}
+                                            variant={colorPaletteVariant}
+                                            data-element-id="avonni-color-palette"
+                                            onblur={handleMenuBlur}
+                                        ></c-avonni-color-palette>
+
+                                        <!-- Color Gradient -->
+                                        <c-avonni-color-gradient
+                                            if:true={showColorGradient}
+                                            message-when-bad-input={messageWhenBadInput}
+                                            opacity={opacity}
+                                            value={computedGradientValue}
+                                            read-only={readOnly}
+                                            data-element-id="avonni-color-gradient"
+                                            onchange={handleChange}
+                                            onblur={handleMenuBlur}
+                                        ></c-avonni-color-gradient>
+                                    </div>
                                 </div>
-                            </footer>
-                        </template>
-                    </div>
+                                <!-- Footer -->
+                                <footer
+                                    if:true={showColorGradient}
+                                    class="slds-popover__footer"
+                                >
+                                    <div
+                                        class="
+                                            slds-color-picker__selector-footer
+                                        "
+                                    >
+                                        <lightning-button
+                                            class="
+                                                avonni-color-picker__popover-button
+                                            "
+                                            label="Cancel"
+                                            title="Cancel"
+                                            data-element-id="lightning-button-cancel"
+                                            onclick={handleCancel}
+                                        ></lightning-button>
+                                        <lightning-button
+                                            variant="brand"
+                                            class="
+                                                slds-m-left_x-small
+                                                avonni-color-picker__popover-button
+                                            "
+                                            label="Done"
+                                            title="Done"
+                                            data-element-id="lightning-button-done"
+                                            onclick={handleDone}
+                                        ></lightning-button>
+                                    </div>
+                                </footer>
+                            </template>
+                        </div>
+                    </lightning-focus-trap>
                 </template>
             </div>
 
@@ -276,8 +293,7 @@
                             value={inputValue}
                             name={name}
                             onchange={handleInputColor}
-                            onfocus={handleInputFocus}
-                            onblur={handleInputBlur}
+                            onblur={handleMenuBlur}
                             disabled={disabled}
                             data-element-id="input"
                             required={required}

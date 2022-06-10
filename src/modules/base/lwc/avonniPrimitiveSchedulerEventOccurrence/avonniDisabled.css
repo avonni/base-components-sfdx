@@ -48,3 +48,7 @@
     max-width: 100%;
     z-index: 1;
 }
+.avonni-scheduler__disabled-date-title_vertical {
+    bottom: auto;
+    top: 0;
+}

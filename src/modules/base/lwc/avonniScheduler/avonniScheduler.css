@@ -32,22 +32,32 @@
 
 .avonni-scheduler__wrapper {
     height: 100%;
+    min-height: 5rem;
     max-height: 100vh;
     overflow: auto;
 }
 
-.avonni-scheduler__datatable-col {
+.avonni-scheduler__first-col {
     background-color: #f3f3f3;
-    width: var(--avonni-scheduler-datatable-column-width, 300px);
     position: sticky;
     left: 0;
     z-index: 4;
     height: 100%;
 }
-.avonni-scheduler__datatable-col.avonni-scheduler__datatable-col_hidden {
+.avonni-scheduler__first-col_horizontal {
+    width: var(--avonni-scheduler-datatable-column-width, 300px);
+}
+.avonni-scheduler__grid_align-end {
+    /* We can't use slds-grid_align-end because it will prevent the smallest header cells from growing */
+    justify-content: right;
+}
+.avonni-scheduler__first-col.avonni-scheduler__first-col_hidden {
     width: auto;
 }
-.avonni-scheduler__datatable-col.avonni-scheduler__datatable-col_open {
+.avonni-scheduler__first-col.avonni-scheduler__first-col_hidden.avonni-scheduler__first-col_vertical {
+    width: 0;
+}
+.avonni-scheduler__first-col.avonni-scheduler__first-col_open {
     width: 100%;
 }
 .avonni-scheduler__datatable {
@@ -57,7 +67,6 @@
 
 .avonni-scheduler__header {
     position: sticky;
-    position: -webkit-sticky;
     top: 0;
     z-index: 3;
 }
@@ -68,6 +77,11 @@
 
 .avonni-scheduler__schedule-col {
     height: 100%;
+}
+
+.avonni-scheduler__schedule-col_zoom-to-fit {
+    /* Prevent the flex column from allowing overflow */
+    min-width: 0;
 }
 
 .avonni-scheduler__events {
@@ -82,6 +96,40 @@
 .avonni-scheduler__cell {
     width: var(--avonni-scheduler-cell-width);
     min-width: var(--avonni-scheduler-cell-width);
+}
+
+.avonni-scheduler__cell_vertical:not(.avonni-scheduler__cell_zoom-to-fit) {
+    min-width: 75px;
+}
+
+.avonni-scheduler__schedule-body_vertical .avonni-scheduler__cell {
+    height: var(--avonni-scheduler-cell-height);
+    min-height: var(--avonni-scheduler-cell-height);
+}
+
+.avonni-scheduler__vertical-header-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.avonni-scheduler__vertical-resource-header-cell {
+    overflow: hidden;
+    flex: 1 1 0;
+    min-width: 75px;
+}
+.avonni-scheduler__vertical-resource-header-cell_zoom-to-fit {
+    min-width: auto;
+}
+
+.avonni-scheduler__vertical-resource-header-cell,
+.avonni-scheduler__vertical-resource-header-first-cell {
+    color: #514f4d;
+    font-weight: 700;
+    min-height: 3rem;
+    height: 3rem;
+    position: sticky;
+    top: 0;
+    z-index: 4;
 }
 
 .avonni-scheduler__infinite-load-spinner_right {
@@ -104,11 +152,12 @@
     left: -5px;
     width: 20px;
 }
-.avonni-scheduler__datatable-col_hidden .avonni-scheduler__splitter {
+.avonni-scheduler__first-col_hidden .avonni-scheduler__splitter {
     left: 0;
 }
-.avonni-scheduler__datatable-col_open .avonni-scheduler__splitter {
-    left: -20px;
+.avonni-scheduler__first-col_open
+    .avonni-scheduler__splitter.avonni-scheduler__splitter_vertical {
+    left: -12px;
 }
 .avonni-scheduler__splitter:hover > div,
 .avonni-scheduler__splitter:focus-within > div {
@@ -121,7 +170,7 @@
 .avonni-scheduler__splitter > div {
     height: 100%;
     overflow: hidden;
-    width: 5px;
+    width: 4px;
     transition: width 300ms;
 }
 .avonni-scheduler__splitter:not(.avonni-scheduler__splitter_disabled) > div {
@@ -129,5 +178,8 @@
 }
 .avonni-scheduler__splitter-icon {
     left: 30px;
+}
+.avonni-scheduler__splitter.avonni-scheduler__splitter_vertical {
+    left: 0;
 }
 /* ---------- */
