@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import * as d3 from 'd3';
+import d3Js from '@salesforce/resourceUrl/D3Js';
 import { dateTimeObjectFrom } from 'c/utilsPrivate';
 
 const AXIS_LABEL_WIDTH = 50.05;
@@ -116,6 +116,22 @@ export class HorizontalActivityTimeline {
         this._sortedItems = sortedItems;
         this._activityTimeline = activityTimeline;
         this.setDefaultIntervalDates();
+    }
+
+    connectedCallback() {
+        Promise.all([loadScript(this, d3Js)])
+            .then(() => {
+                this.d3Loaded = true;
+            })
+            .catch((error) => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error loading D3',
+                        message: error.message,
+                        variant: 'error'
+                    })
+                );
+            });
     }
 
     /**
