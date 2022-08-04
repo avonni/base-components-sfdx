@@ -563,13 +563,15 @@ export default class AvonniPillContainer extends LightningElement {
          * @name actionclick
          * @param {number} index Index of the item clicked.
          * @param {string} name Name of the action.
+         * @param {string} targetName Name of the item the action belongs to.
          * @public
          */
         this.dispatchEvent(
             new CustomEvent('actionclick', {
                 detail: {
                     name: event.detail.name,
-                    index: Number(event.target.dataset.index)
+                    index: Number(event.target.dataset.index),
+                    targetName: event.detail.targetName
                 }
             })
         );

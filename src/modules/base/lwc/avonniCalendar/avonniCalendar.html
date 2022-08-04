@@ -46,60 +46,65 @@
             data-element-id="avonni-calendar__keyboard-handler"
         >
             <div class="slds-datepicker">
-                <div class="slds-datepicker__filter slds-grid">
+                <template if:false={hideNavigation}>
                     <div
-                        class="
-                            slds-datepicker__filter_month
-                            slds-grid slds-grid_align-spread
-                            slds-grow
-                        "
+                        class="slds-datepicker__filter slds-grid"
+                        data-element-id="avonni-calendar__header"
                     >
-                        <div class="slds-align-middle">
-                            <lightning-button-icon
-                                icon-name="utility:left"
-                                variant="container"
-                                alternative-text="Previous Month"
-                                title="Previous Month"
-                                onclick={handlerPreviousMonth}
-                                disabled={disabledPrevious}
-                                data-element-id="previous-lightning-button-icon"
-                            ></lightning-button-icon>
-                        </div>
-                        <h2
+                        <div
                             class="
-                                slds-align-middle
-                                avonni-calendar__month_color
+                                slds-datepicker__filter_month
+                                slds-grid slds-grid_align-spread
+                                slds-grow
                             "
-                            data-element-id="h2"
                         >
-                            {month}
-                        </h2>
-                        <div class="slds-align-middle">
-                            <lightning-button-icon
-                                icon-name="utility:right"
-                                variant="container"
-                                alternative-text="Next Month"
-                                title="Next Month"
-                                disabled={disabledNext}
-                                data-element-id="next-lightning-button-icon"
-                                onclick={handlerNextMonth}
-                            ></lightning-button-icon>
+                            <div class="slds-align-middle">
+                                <lightning-button-icon
+                                    icon-name="utility:left"
+                                    variant="container"
+                                    alternative-text="Previous Month"
+                                    title="Previous Month"
+                                    onclick={handlerPreviousMonth}
+                                    disabled={disabledPrevious}
+                                    data-element-id="previous-lightning-button-icon"
+                                ></lightning-button-icon>
+                            </div>
+                            <h2
+                                class="
+                                    slds-align-middle
+                                    avonni-calendar__month_color
+                                "
+                                data-element-id="h2"
+                            >
+                                {month}
+                            </h2>
+                            <div class="slds-align-middle">
+                                <lightning-button-icon
+                                    icon-name="utility:right"
+                                    variant="container"
+                                    alternative-text="Next Month"
+                                    title="Next Month"
+                                    disabled={disabledNext}
+                                    data-element-id="next-lightning-button-icon"
+                                    onclick={handlerNextMonth}
+                                ></lightning-button-icon>
+                            </div>
                         </div>
+                        <lightning-combobox
+                            name="years"
+                            label="Years"
+                            variant="label-hidden"
+                            dropdown-alignment="right"
+                            value={year}
+                            placeholder={year}
+                            options={yearsList}
+                            disabled={disabled}
+                            data-element-id="lightning-combobox"
+                            onchange={handleYearChange}
+                        >
+                        </lightning-combobox>
                     </div>
-                    <lightning-combobox
-                        name="years"
-                        label="Years"
-                        variant="label-hidden"
-                        dropdown-alignment="right"
-                        value={year}
-                        placeholder={year}
-                        options={yearsList}
-                        disabled={disabled}
-                        data-element-id="lightning-combobox"
-                        onchange={handleYearChange}
-                    >
-                    </lightning-combobox>
-                </div>
+                </template>
                 <table
                     aria-labelledby="month"
                     aria-multiselectable="true"

@@ -85,6 +85,9 @@ export {
     nextAllowedMonth,
     nextAllowedTime,
     numberOfUnitsBetweenDates,
+    previousAllowedDay,
+    previousAllowedMonth,
+    previousAllowedTime,
     removeFromDate
 } from './dateTimeUtils';
 import { smartSetAttribute } from './smartSetAttribute';

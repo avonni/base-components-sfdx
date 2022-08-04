@@ -266,98 +266,156 @@ export default class AvonniProgressIndicator extends LightningElement {
     /**
      * Click on step dispatcher.
      */
-    dispatchStepClick() {
+    dispatchStepClick(event) {
+        const value = event.detail.value;
         /**
          * The event fired when a step is clicked.
          *
          * @event
          * @name stepclick
+         * @param {string} value Unique value of the clicked step.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('stepclick'));
+        this.dispatchEvent(
+            new CustomEvent('stepclick', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 
     /**
      * Blur step dispatcher.
      */
-    dispatchStepBlur() {
+    dispatchStepBlur(event) {
+        const value = event.detail.value;
+
         /**
          * The event fired when a step looses focus.
          *
          * @event
          * @name stepblur
+         * @param {string} value Unique value of the blurred step.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('stepblur'));
+        this.dispatchEvent(
+            new CustomEvent('stepblur', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 
     /**
      * Focus on step dispatcher.
      */
-    dispatchStepFocus() {
+    dispatchStepFocus(event) {
+        const value = event.detail.value;
         /**
          * The event fired when a step receives focus.
          *
          * @event
          * @name stepfocus
+         * @param {string} value Unique value of the focused step.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('stepfocus'));
+        this.dispatchEvent(
+            new CustomEvent('stepfocus', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 
     /**
      * Mouse Enter step dispatcher.
      */
-    dispatchStepMouseEnter() {
+    dispatchStepMouseEnter(event) {
+        const value = event.detail.value;
+
         /**
          * The event fired when the mouse enters a step.
          *
          * @event
          * @name stepmouseenter
+         * @param {string} value Unique value of the step entered by the mouse.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('stepmouseenter'));
+        this.dispatchEvent(
+            new CustomEvent('stepmouseenter', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 
     /**
      * Mouse Leave step dispatcher.
      */
-    dispatchStepMouseLeave() {
+    dispatchStepMouseLeave(event) {
+        const value = event.detail.value;
         /**
          * Event that fires when mouse leaves step.
          *
          * @event
          * @name stepmouseleave
+         * @param {string} value Unique value of the step left by the mouse.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('stepmouseleave'));
+        this.dispatchEvent(
+            new CustomEvent('stepmouseleave', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 
     /**
      * Click on step button dispatcher.
      */
-    dispatchStepButtonClick() {
+    dispatchStepButtonClick(event) {
+        const value = event.detail.value;
         /**
          * The event fired when a step button is clicked.
          *
          * @event
          * @name stepbuttonclick
+         * @param {string} value Unique value of the step the clicked button belongs to.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('stepbuttonclick'));
+        this.dispatchEvent(
+            new CustomEvent('stepbuttonclick', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 
     /**
      * Click on step popover dispatcher.
      */
-    dispatchStepPopoverClick() {
+    dispatchStepPopoverClick(event) {
+        const value = event.detail.value;
         /**
          * The event fired when a step popover is clicked.
          *
          * @event
          * @name steppopoverclick
+         * @param {string} value Unique value of the step the clicked popover belongs to.
          * @public
          */
-        this.dispatchEvent(new CustomEvent('steppopoverclick'));
+        this.dispatchEvent(
+            new CustomEvent('steppopoverclick', {
+                detail: {
+                    value: value
+                }
+            })
+        );
     }
 }

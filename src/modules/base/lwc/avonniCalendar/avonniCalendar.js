@@ -86,6 +86,8 @@ export default class AvonniCalendar extends LightningElement {
     _disabled = false;
     _disabledDates = [];
     _focusDate;
+    _hideNavigation = false;
+    _isConnected = false;
     _markedDates = [];
     _max = DEFAULT_MAX;
     _min = DEFAULT_MIN;
@@ -112,7 +114,8 @@ export default class AvonniCalendar extends LightningElement {
         }
 
         this.displayDate = new Date(setDate);
-
+        this._isConnected = true;
+        this.validateCurrentDayValue();
         this.updateDateParameters();
         this.computeFocus(false);
     }
@@ -194,6 +197,21 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
+     * Specifies if the calendar header should be hidden.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideNavigation() {
+        return this._hideNavigation;
+    }
+    set hideNavigation(value) {
+        this._hideNavigation = normalizeBoolean(value);
+    }
+
+    /**
      * Array of marked date objects.
      *
      * @public
@@ -231,6 +249,9 @@ export default class AvonniCalendar extends LightningElement {
     set max(max) {
         this._max = this.formattedWithTimezoneOffset(new Date(max));
         this._max.setHours(0, 0, 0, 0);
+        if (this._isConnected) {
+            this.validateCurrentDayValue();
+        }
         if (this.displayDate > this.max) {
             this.displayDate = new Date(this.max);
             this.updateDateParameters();
@@ -252,6 +273,9 @@ export default class AvonniCalendar extends LightningElement {
     set min(min) {
         this._min = this.formattedWithTimezoneOffset(new Date(min));
         this._min.setHours(0, 0, 0, 0);
+        if (this._isConnected) {
+            this.validateCurrentDayValue();
+        }
         if (this.displayDate < this.min) {
             this.displayDate = new Date(this.min);
             this.updateDateParameters();
@@ -303,14 +327,11 @@ export default class AvonniCalendar extends LightningElement {
                               )
                           )
                       ];
-
-            this._value = this._value.filter((x) => {
-                return x.setHours(0, 0, 0, 0) !== NULL_DATE;
-            });
-
-            this.displayDate = new Date(this._value[0]);
+            if (this._isConnected) {
+                this.validateCurrentDayValue();
+            }
         }
-        this.updateDateParameters();
+        this.updateDate();
     }
 
     /**
@@ -334,6 +355,18 @@ export default class AvonniCalendar extends LightningElement {
      *  PRIVATE PROPERTIES
      * -------------------------------------------------------------
      */
+
+    /**
+     * Check if all values are outside the min-max interval.
+     *
+     * @return {boolean}
+     */
+    get allValuesOutsideMinAndMax() {
+        return this._value.every(
+            (value) => this.isBeforeMin(value) || this.isAfterMax(value)
+        );
+    }
+
     /**
      * Compute days from week.
      */
@@ -401,6 +434,16 @@ export default class AvonniCalendar extends LightningElement {
      */
     get generateKey() {
         return generateUUID();
+    }
+
+    /**
+     * Check if current date is between the min-max interval.
+     */
+    get isCurrentDateBetweenMinAndMax() {
+        return (
+            this.min.getTime() <= new Date().getTime() &&
+            new Date().getTime() <= this.max.getTime()
+        );
     }
 
     /**
@@ -482,11 +525,77 @@ export default class AvonniCalendar extends LightningElement {
         }
     }
 
+    /**
+     * Move the position of the calendar so the specified date is visible.
+     *
+     * @param {string | number | Date} date Date the calendar should be positioned on.
+     * @public
+     */
+    @api
+    goToDate(date) {
+        const selectedDate = this.formattedWithTimezoneOffset(new Date(date));
+        if (this.isInvalidDate(selectedDate)) {
+            console.warn(`The date ${date} is not valid.`);
+            return;
+        }
+        this.displayDate = selectedDate;
+        this.updateDateParameters();
+    }
+
+    /**
+     * Simulates a click on the next month button
+     *
+     * @public
+     */
+    @api
+    nextMonth() {
+        this.handlerNextMonth();
+    }
+
+    /**
+     * Simulates a click on the previous month button
+     *
+     * @public
+     */
+    @api
+    previousMonth() {
+        this.handlerPreviousMonth();
+    }
+
     /*
      * ------------------------------------------------------------
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
+    /**
+     * Returns the first day of the current month.
+     */
+    getFirstDayOfMonth(date) {
+        let dateValue = new Date(date.getTime());
+        dateValue.setDate(1);
+        return dateValue.toISOString();
+    }
+
+    /**
+     * Check if value is after max date.
+     */
+    isAfterMax(value) {
+        return value.getTime() > this.max.getTime();
+    }
+
+    /**
+     * Check if value is before min date.
+     */
+    isBeforeMin(value) {
+        return value.getTime() < this.min.getTime();
+    }
+
+    /**
+     * Check if value is an invalid date.
+     */
+    isInvalidDate(value) {
+        return value.toString() === 'Invalid Date';
+    }
 
     /**
      * Create Dates array.
@@ -504,6 +613,17 @@ export default class AvonniCalendar extends LightningElement {
         });
 
         return dates;
+    }
+
+    /**
+     * Check if both dates have the same month.
+     *
+     * @param {Date} dateA A value to be focused, which can be a Date object, timestamp, or an ISO8601 formatted string.
+     * @param {Date} dateB A value to be focused, which can be a Date object, timestamp, or an ISO8601 formatted string.
+     * @returns {boolean}
+     */
+    haveSameMonth(dateA, dateB) {
+        return new Date(dateA).getMonth() === new Date(dateB).getMonth();
     }
 
     /**
@@ -540,6 +660,19 @@ export default class AvonniCalendar extends LightningElement {
         });
 
         return dates;
+    }
+
+    /**
+     * Update value, date and refresh calendar.
+     */
+    updateDate() {
+        this._value = this._value.filter(
+            (x) => x.setHours(0, 0, 0, 0) !== NULL_DATE
+        );
+        if (this._value[0]) {
+            this.displayDate = new Date(this._value[0]);
+        }
+        this.updateDateParameters();
     }
 
     /**
@@ -821,6 +954,151 @@ export default class AvonniCalendar extends LightningElement {
     }
 
     /**
+     * Remove all values outside of min-max interval. If the array of values is empty, set the display date to current day or min.
+     */
+    removeValuesOutsideRange() {
+        // Remove all out of range values
+        this._value = this._value.filter((date) => {
+            return (
+                !this.isInvalidDate(date) &&
+                !this.isAfterMax(date) &&
+                !this.isBeforeMin(date)
+            );
+        });
+    }
+
+    /**
+     * Set interval when only one value is valid (in min-max range) and the other one is outside range.
+     */
+    setIntervalWithOneValidValue(minValue, maxValue) {
+        if (
+            this.isBeforeMin(minValue) &&
+            minValue.getTime() < this._value[0].getTime()
+        ) {
+            this._value[1] = this._value[0];
+            this._value[0] = this.min;
+        } else if (
+            this.isAfterMax(maxValue) &&
+            maxValue.getTime() > this._value[0].getTime()
+        ) {
+            this._value[1] = this.max;
+        }
+    }
+
+    /**
+     * Returns current date if it is between the min-max interval. If not, returns the min.
+     * @return {Date}
+     */
+    setValueToCurrentDayOrMin() {
+        if (this.isCurrentDateBetweenMinAndMax) {
+            return new Date();
+        }
+        return new Date(this.min);
+    }
+
+    /**
+     * Sort all values from min to max
+     */
+    sortValuesFromMinToMax() {
+        this._value = this._value.sort((dateA, dateB) => {
+            return dateA - dateB;
+        });
+    }
+
+    /**
+     * If invalid current day, center calendar's current day to closest date in min-max interval
+     */
+    validateCurrentDayValue() {
+        if (!Array.isArray(this._value) || !this._value[0]) {
+            return;
+        }
+
+        switch (this._selectionMode) {
+            case 'interval':
+                this.validateValueIntervalMode();
+                break;
+            case 'single':
+                this.validateValueSingleMode();
+                break;
+            case 'multiple':
+                this.validateValueMultipleMode();
+                break;
+            default:
+        }
+    }
+
+    /**
+     * Validate values for interval selection mode.
+     */
+    validateValueIntervalMode() {
+        this.sortValuesFromMinToMax();
+        const minValue = this._value[0];
+        const maxValue = this._value[this._value.length - 1];
+
+        if (this.allValuesOutsideMinAndMax) {
+            if (this.isBeforeMin(minValue) && this.isAfterMax(maxValue)) {
+                this._value[0] = this.min;
+                this._value[1] = this.max;
+            } else {
+                this._value = [];
+                this.displayDate = this.setValueToCurrentDayOrMin();
+            }
+            this.updateDate();
+        } else {
+            this.removeValuesOutsideRange();
+            if (this._value.length) {
+                // Check if previous min-max values saved were outside of range to create interval
+                if (this._value.length === 1) {
+                    this.setIntervalWithOneValidValue(minValue, maxValue);
+                }
+                this.updateDate();
+            }
+        }
+    }
+
+    /**
+     * Validate value for multiple selection mode.
+     */
+    validateValueMultipleMode() {
+        this.removeValuesOutsideRange();
+        // Find valid date to re-center calendar
+        if (this.value.length && !this.allValuesOutsideMinAndMax) {
+            this.displayDate = this.value.find((date) => {
+                return (
+                    !this.isInvalidDate(date) &&
+                    !this.isAfterMax(date) &&
+                    !this.isBeforeMin(date)
+                );
+            });
+            this.updateDate();
+        }
+    }
+
+    /**
+     * Validate value for single selection mode.
+     */
+    validateValueSingleMode() {
+        // If multiple values are selected, we remove those outside range
+        if (this._value && this._value.length > 1) {
+            this.removeValuesOutsideRange();
+        }
+        // If one single value, we check if it's in interval and set to closest value if not
+        else {
+            if (this.isInvalidDate(this._value[0])) {
+                this._value = [];
+                this.displayDate = this.setValueToCurrentDayOrMin();
+            } else if (this.isAfterMax(this._value[0])) {
+                this._value = [];
+                this.displayDate = new Date(this.max);
+            } else if (this.isBeforeMin(this._value[0])) {
+                this._value = [];
+                this.displayDate = new Date(this.min);
+            }
+            this.updateDateParameters();
+        }
+    }
+
+    /**
      * Year change handler.
      *
      * @param {object} event
@@ -836,6 +1114,7 @@ export default class AvonniCalendar extends LightningElement {
             this.displayDate.setMonth(this.max.getMonth());
         }
 
+        this.dispatchNavigateEvent(new Date(this.displayDate).toISOString());
         this.updateDateParameters();
         event.stopPropagation();
         this.computeFocus(true);
@@ -848,6 +1127,7 @@ export default class AvonniCalendar extends LightningElement {
         this.displayDate.setMonth(this.displayDate.getMonth() - 1);
         this.updateDateParameters();
         this.computeFocus(false);
+        this.dispatchNavigateEvent(this.displayDate);
     }
 
     /**
@@ -857,6 +1137,7 @@ export default class AvonniCalendar extends LightningElement {
         this.displayDate.setMonth(this.displayDate.getMonth() + 1);
         this.updateDateParameters();
         this.computeFocus(false);
+        this.dispatchNavigateEvent(this.displayDate);
     }
 
     /**
@@ -980,6 +1261,25 @@ export default class AvonniCalendar extends LightningElement {
                 detail: {
                     value: this.normalizedValue,
                     clickedDate: this._clickedDate
+                }
+            })
+        );
+    }
+
+    /**
+     * The event fired when the month is changed.
+     *
+     * @event
+     * @public
+     * @name navigate
+     * @param {string} date First day of the new visible month, as an ISO8601 formatted string.
+     */
+    dispatchNavigateEvent(date) {
+        const firstDayOfMonth = this.getFirstDayOfMonth(new Date(date));
+        this.dispatchEvent(
+            new CustomEvent('navigate', {
+                detail: {
+                    date: firstDayOfMonth
                 }
             })
         );
@@ -1139,66 +1439,110 @@ export default class AvonniCalendar extends LightningElement {
         const initialFocusDate = new Date(
             parseInt(event.target.dataset.cellDay, 10)
         );
+        const initialFocusDateCopy = new Date(initialFocusDate);
         let nextDate;
 
         if (event.altKey) {
             if (event.keyCode === keyCodes.pageup) {
+                event.preventDefault();
                 nextDate = new Date(
                     initialFocusDate.setFullYear(
                         initialFocusDate.getFullYear() - 1
                     )
                 );
+                this.dispatchNavigateEvent(new Date(nextDate).toISOString());
             }
             if (event.keyCode === keyCodes.pagedown) {
+                event.preventDefault();
                 nextDate = initialFocusDate.setFullYear(
                     initialFocusDate.getFullYear() + 1
                 );
+                this.dispatchNavigateEvent(new Date(nextDate).toISOString());
             }
         } else {
             switch (event.keyCode) {
                 case keyCodes.left:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setDate(
                         initialFocusDate.getDate() - 1
                     );
+                    if (!this.haveSameMonth(initialFocusDateCopy, nextDate))
+                        this.dispatchNavigateEvent(
+                            new Date(nextDate).toISOString()
+                        );
                     break;
                 case keyCodes.right:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setDate(
                         initialFocusDate.getDate() + 1
                     );
+                    if (!this.haveSameMonth(initialFocusDateCopy, nextDate))
+                        this.dispatchNavigateEvent(
+                            new Date(nextDate).toISOString()
+                        );
                     break;
                 case keyCodes.up:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setDate(
                         initialFocusDate.getDate() - 7
                     );
+                    if (!this.haveSameMonth(initialFocusDateCopy, nextDate))
+                        this.dispatchNavigateEvent(
+                            new Date(nextDate).toISOString()
+                        );
                     break;
                 case keyCodes.down:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setDate(
                         initialFocusDate.getDate() + 7
                     );
+                    if (!this.haveSameMonth(initialFocusDateCopy, nextDate))
+                        this.dispatchNavigateEvent(
+                            new Date(nextDate).toISOString()
+                        );
                     break;
                 case keyCodes.home:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setDate(
                         initialFocusDate.getDate() - initialFocusDate.getDay()
                     );
+                    if (!this.haveSameMonth(initialFocusDateCopy, nextDate))
+                        this.dispatchNavigateEvent(
+                            new Date(nextDate).toISOString()
+                        );
                     break;
                 case keyCodes.end:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setDate(
                         initialFocusDate.getDate() +
                             (6 - initialFocusDate.getDay())
                     );
+                    if (!this.haveSameMonth(initialFocusDateCopy, nextDate))
+                        this.dispatchNavigateEvent(
+                            new Date(nextDate).toISOString()
+                        );
                     break;
                 case keyCodes.pagedown:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setMonth(
                         initialFocusDate.getMonth() - 1
                     );
+                    this.dispatchNavigateEvent(
+                        new Date(nextDate).toISOString()
+                    );
                     break;
                 case keyCodes.pageup:
+                    event.preventDefault();
                     nextDate = initialFocusDate.setMonth(
                         initialFocusDate.getMonth() + 1
+                    );
+                    this.dispatchNavigateEvent(
+                        new Date(nextDate).toISOString()
                     );
                     break;
                 case keyCodes.space:
                 case keyCodes.enter:
+                    event.preventDefault();
                     {
                         const selectedDay = event.target.querySelector(
                             '[data-element-id="span-day-label"]'

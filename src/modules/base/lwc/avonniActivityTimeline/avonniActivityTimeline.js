@@ -31,6 +31,10 @@
  */
 
 import { LightningElement, api, track } from 'lwc';
+import { AvonniResizeObserver } from 'c/resizeObserver';
+import { HorizontalActivityTimeline } from './avonniHorizontalActivityTimeline';
+import horizontalTimeline from './avonniHorizontalActivityTimeline.html';
+import verticalTimeline from './avonniVerticalActivityTimeline.html';
 import {
     normalizeBoolean,
     normalizeString,
@@ -55,8 +59,9 @@ const BUTTON_VARIANTS = {
 
 const DEFAULT_BUTTON_SHOW_MORE_LABEL = 'Show more';
 const DEFAULT_BUTTON_SHOW_LESS_LABEL = 'Show less';
+const DEFAULT_ITEM_DATE_FORMAT = 'LLLL dd, yyyy, t';
 const DEFAULT_ITEM_ICON_SIZE = 'small';
-
+const DEFAULT_MAX_VISIBLE_ITEMS_HORIZONTAL = 10;
 const GROUP_BY_OPTIONS = {
     valid: ['week', 'month', 'year'],
     default: undefined
@@ -65,6 +70,11 @@ const GROUP_BY_OPTIONS = {
 const ICON_SIZES = {
     valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
     default: 'medium'
+};
+
+const ORIENTATIONS = {
+    valid: ['vertical', 'horizontal'],
+    default: 'vertical'
 };
 
 const SORTED_DIRECTIONS = {
@@ -97,7 +107,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     @api title;
 
     /**
-     * Label of the button that appears when the number of item exceeds the max-visible-items number.
+     * Label of the button that appears when the number of item exceeds the max-visible-items number. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @default Show more
      * @public
@@ -105,7 +115,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     @api buttonShowMoreLabel = DEFAULT_BUTTON_SHOW_MORE_LABEL;
 
     /**
-     * Label of the button that appears when all items are displayed and max-visible-items value is set.
+     * Label of the button that appears when all items are displayed and max-visible-items value is set. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @default Show less
      * @public
@@ -113,14 +123,14 @@ export default class AvonniActivityTimeline extends LightningElement {
     @api buttonShowLessLabel = DEFAULT_BUTTON_SHOW_LESS_LABEL;
 
     /**
-     * The Lightning Design System name of the show more button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     * The Lightning Design System name of the show more button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @public
      */
     @api buttonShowMoreIconName;
 
     /**
-     * The Lightning Design System name of the show less button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed.
+     * The Lightning Design System name of the show less button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @public
      */
@@ -132,12 +142,24 @@ export default class AvonniActivityTimeline extends LightningElement {
     _buttonVariant = BUTTON_VARIANTS.default;
     _closed = false;
     _collapsible = false;
+    _itemDateFormat = DEFAULT_ITEM_DATE_FORMAT;
     _groupBy = GROUP_BY_OPTIONS.default;
     _items = [];
+    _hideItemDate = false;
     _maxVisibleItems;
     _iconSize = ICON_SIZES.default;
     _itemIconSize = DEFAULT_ITEM_ICON_SIZE;
+    _orientation = ORIENTATIONS.default;
     _sortedDirection = SORTED_DIRECTIONS.default;
+
+    // Horizontal Activity Timeline
+    _resizeObserver;
+    intervalDaysLength;
+    intervalMaxDate;
+    intervalMinDate;
+    showItemPopOver = false;
+    selectedItem;
+    horizontalTimeline;
 
     _key;
     _isConnected = false;
@@ -152,6 +174,40 @@ export default class AvonniActivityTimeline extends LightningElement {
     connectedCallback() {
         this._isConnected = true;
         this.initActivityTimeline();
+
+        if (this.isTimelineHorizontal) {
+            this.initializeHorizontalTimeline();
+        }
+    }
+
+    renderedCallback() {
+        if (this.isTimelineHorizontal && !this.showItemPopOver) {
+            if (!this._resizeObserver) {
+                this._resizeObserver = this.initResizeObserver();
+            }
+
+            if (!this.horizontalTimeline) {
+                this.initializeHorizontalTimeline();
+            }
+
+            this.horizontalTimeline.createHorizontalActivityTimeline(
+                this.sortedItems,
+                this._maxVisibleItems,
+                this.divHorizontalTimeline.clientWidth
+            );
+            this.updateHorizontalTimelineHeader();
+        }
+
+        if (this.showItemPopOver) {
+            this.horizontalTimeline.initializeItemPopover(this.selectedItem);
+        }
+    }
+
+    render() {
+        if (this.isTimelineHorizontal) {
+            return horizontalTimeline;
+        }
+        return verticalTimeline;
     }
 
     /*
@@ -161,7 +217,7 @@ export default class AvonniActivityTimeline extends LightningElement {
      */
 
     /**
-     * Array of action objects. The actions are displayed at the top right of each item.
+     * Array of action objects. The actions are displayed at the top right of each item. This attribute is supported only for the vertical orientation.
      *
      * @public
      * @type {object[]}
@@ -176,7 +232,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Position of the show less button’s icon. Valid values include left and right.
+     * Position of the show less button’s icon. Valid values include left and right. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @default left
      * @public
@@ -194,7 +250,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Position of the show more button’s icon. Valid values include left and right.
+     * Position of the show more button’s icon. Valid values include left and right. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @default left
      * @public
@@ -212,7 +268,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Variant of the button that appears when the number of items exceeds the max-visible-items number.
+     * Variant of the button that appears when the number of items exceeds the max-visible-items number. This attribute is supported only for the vertical orientation.
      * @type {string}
      * @default neutral
      * @public
@@ -230,7 +286,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * If present, the group sections are closed by default.
+     * If present, the group sections are closed by default. This attribute is supported only for the vertical orientation.
      *
      * @public
      * @type {boolean}
@@ -246,7 +302,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * If present, the section is collapsible and the collapse icon is visible.
+     * If present, the section is collapsible and the collapse icon is visible. This attribute is supported only for the vertical orientation.
      *
      * @public
      * @type {boolean}
@@ -262,7 +318,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * If present, the value will define how the items will be grouped. Valid values include week, month or year.
+     * If present, the value will define how the items will be grouped. Valid values include week, month or year. This attribute is supported only for the vertical orientation.
      *
      * @public
      * @type {string}
@@ -279,6 +335,42 @@ export default class AvonniActivityTimeline extends LightningElement {
         });
 
         if (this._isConnected) this.initActivityTimeline();
+    }
+
+    /**
+     * If true, the date of each item is hidden.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideItemDate() {
+        return this._hideItemDate;
+    }
+
+    set hideItemDate(value) {
+        this._hideItemDate = normalizeBoolean(value);
+    }
+
+    /**
+     * The date format to use for each item. See [Luxon’s documentation](https://moment.github.io/luxon/#/formatting?id=table-of-tokens) for accepted format.
+     * If you want to insert text in the label, you need to escape it using single quote.
+     * For example, the format of "Jan 14 day shift" would be <code>"LLL dd 'day shift'"</code>.
+     *
+     * @type {string}
+     * @default 'LLLL dd, yyyy, t'
+     * @public
+     */
+    @api
+    get itemDateFormat() {
+        return this._itemDateFormat;
+    }
+    set itemDateFormat(value) {
+        this._itemDateFormat =
+            value && typeof value === 'string'
+                ? value
+                : DEFAULT_ITEM_DATE_FORMAT;
     }
 
     /**
@@ -335,7 +427,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * The size of all the items' icon. Valid values are xx-small, x-small, small, medium and large.
+     * The size of all the items' icon. Valid values are xx-small, x-small, small, medium and large. This attribute is supported only for the vertical orientation.
      *
      * @public
      * @type {string}
@@ -354,7 +446,26 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * If present, the value will define how the items will be grouped. Valid values include week, month or year.
+     * Orientation of the activity timeline. Valid values include vertical and horizontal.
+     *
+     * @public
+     * @type {string}
+     * @default vertical
+     */
+    @api
+    get orientation() {
+        return this._orientation;
+    }
+
+    set orientation(value) {
+        this._orientation = normalizeString(value, {
+            fallbackValue: ORIENTATIONS.default,
+            validValues: ORIENTATIONS.valid
+        });
+    }
+
+    /**
+     * If present, the value will define how the items will be grouped. Valid values include week, month or year. This attribute is supported only for the vertical orientation.
      *
      * @public
      * @type {string}
@@ -376,6 +487,39 @@ export default class AvonniActivityTimeline extends LightningElement {
      *  PRIVATE PROPERTIES
      * -------------------------------------------------------------
      */
+
+    /**
+     * Select only items in min-max interval for horizontal view of the timeline
+     *
+     * @type {array}
+     */
+    get displayedItemsLength() {
+        return this.horizontalTimeline && this.horizontalTimeline.displayedItems
+            ? this.horizontalTimeline.displayedItems.length
+            : 0;
+    }
+
+    /**
+     * Get the div container of horizontal activity timeline
+     *
+     * @type {object}
+     */
+    get divHorizontalTimeline() {
+        return this.template.querySelector(
+            '[data-element-id="avonni-activity-timeline__horizontal-timeline"]'
+        );
+    }
+
+    /*
+     * Computed item date format.
+     * @type {string}
+     */
+    get computedItemDateFormat() {
+        if (this._hideItemDate) {
+            return '';
+        }
+        return this._itemDateFormat;
+    }
 
     /**
      * Current label of the show button (show more or show less)
@@ -425,7 +569,7 @@ export default class AvonniActivityTimeline extends LightningElement {
         return this.title || this.iconName;
     }
 
-    /**
+    /*
      * Verify if show button should be hidden or not
      *
      * @type {boolean}
@@ -434,6 +578,15 @@ export default class AvonniActivityTimeline extends LightningElement {
         return (
             !this.maxVisibleItems || this.maxVisibleItems >= this.items.length
         );
+    }
+
+    /**
+     * Check if timeline's orientation is horizontal
+     *
+     * @type {boolean}
+     */
+    get isTimelineHorizontal() {
+        return this.orientation === 'horizontal';
     }
 
     /**
@@ -459,9 +612,24 @@ export default class AvonniActivityTimeline extends LightningElement {
                       (a, b) =>
                           new Date(a.datetimeValue) - new Date(b.datetimeValue)
                   );
-        return this.showMore && !this.isShowButtonHidden && this.maxVisibleItems
+        return this.showMore &&
+            !this.isShowButtonHidden &&
+            this.maxVisibleItems &&
+            !this.isTimelineHorizontal
             ? items.splice(0, this.maxVisibleItems)
             : items;
+    }
+
+    /**
+     * Get the size of the popover's icon.
+     *
+     * @return {string}
+     */
+    get popoverIconSize() {
+        if (this.selectedItem.iconName.includes('action:')) {
+            return 'x-small';
+        }
+        return 'small';
     }
 
     /*
@@ -469,6 +637,37 @@ export default class AvonniActivityTimeline extends LightningElement {
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
+
+    /**
+     * Create section's label for each group.
+     */
+    displayDates(array, isUpcoming) {
+        return array.reduce((prev, cur) => {
+            if (!isUpcoming) {
+                const date = new Date(cur.datetimeValue);
+                if (this._groupBy === 'month') {
+                    this._key = `${date.toLocaleString('en-EN', {
+                        month: 'long'
+                    })} ${date.getFullYear()}`;
+                } else if (this._groupBy === 'week') {
+                    this._key = `Week: ${this.getNumberOfWeek(
+                        date
+                    )}, ${date.getFullYear()}`;
+                } else if (this._groupBy === 'year') {
+                    this._key = `${date.getFullYear()}`;
+                }
+            } else {
+                this._key = 'Upcoming';
+            }
+
+            if (!prev[this._key]) {
+                prev[this._key] = [cur];
+            } else {
+                prev[this._key].push(cur);
+            }
+            return prev;
+        }, []);
+    }
 
     /**
      * Compute Number of the week in the year.
@@ -482,6 +681,55 @@ export default class AvonniActivityTimeline extends LightningElement {
         const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
         const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
         return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
+
+    /**
+     * Group upcomingDates presentDates and beforeDates by year, month or week.
+     */
+    groupDates() {
+        this.orderedDates = [];
+        this._upcomingDates = this.displayDates(this._upcomingDates, true);
+        this._presentDates = this.displayDates(this._presentDates, false);
+        this._pastDates = this.displayDates(this._pastDates, false);
+
+        this.regroupDates(this._upcomingDates);
+        this.regroupDates(this._presentDates);
+        this.regroupDates(this._pastDates);
+    }
+
+    /**
+     * Component initialized states.
+     */
+    initActivityTimeline() {
+        this.sortDates();
+        this.groupDates();
+    }
+
+    /**
+     * Initialize horizontal activity timeline.
+     */
+    initializeHorizontalTimeline() {
+        if (!this._maxVisibleItems) {
+            this._maxVisibleItems = DEFAULT_MAX_VISIBLE_ITEMS_HORIZONTAL;
+        }
+        this.horizontalTimeline = new HorizontalActivityTimeline(
+            this,
+            this.sortedItems
+        );
+    }
+
+    /**
+     * Initialize the screen resize observer.
+     *
+     * @returns {AvonniResizeObserver} Resize observer.
+     */
+    initResizeObserver() {
+        const resizeObserver = new AvonniResizeObserver(() => {
+            this.renderedCallback();
+        });
+
+        resizeObserver.observe(this.divHorizontalTimeline);
+        return resizeObserver;
     }
 
     /**
@@ -542,37 +790,6 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Create section's label for each group.
-     */
-    displayDates(array, isUpcoming) {
-        return array.reduce((prev, cur) => {
-            if (!isUpcoming) {
-                const date = new Date(cur.datetimeValue);
-                if (this._groupBy === 'month') {
-                    this._key = `${date.toLocaleString('en-EN', {
-                        month: 'long'
-                    })} ${date.getFullYear()}`;
-                } else if (this._groupBy === 'week') {
-                    this._key = `Week: ${this.getNumberOfWeek(
-                        date
-                    )}, ${date.getFullYear()}`;
-                } else if (this._groupBy === 'year') {
-                    this._key = `${date.getFullYear()}`;
-                }
-            } else {
-                this._key = 'Upcoming';
-            }
-
-            if (!prev[this._key]) {
-                prev[this._key] = [cur];
-            } else {
-                prev[this._key].push(cur);
-            }
-            return prev;
-        }, []);
-    }
-
-    /**
      * Regroup each groups in order.
      */
     regroupDates(array) {
@@ -585,25 +802,12 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Group upcomingDates presentDates and beforeDates by year, month or week.
+     * Update horizontal timeline header's value.
      */
-    groupDates() {
-        this.orderedDates = [];
-        this._upcomingDates = this.displayDates(this._upcomingDates, true);
-        this._presentDates = this.displayDates(this._presentDates, false);
-        this._pastDates = this.displayDates(this._pastDates, false);
-
-        this.regroupDates(this._upcomingDates);
-        this.regroupDates(this._presentDates);
-        this.regroupDates(this._pastDates);
-    }
-
-    /**
-     * Component initialized states.
-     */
-    initActivityTimeline() {
-        this.sortDates();
-        this.groupDates();
+    updateHorizontalTimelineHeader() {
+        this.intervalDaysLength = this.horizontalTimeline.intervalDaysLength;
+        this.intervalMaxDate = this.horizontalTimeline.intervalMaxDate;
+        this.intervalMinDate = this.horizontalTimeline.intervalMinDate;
     }
 
     /**
@@ -673,6 +877,53 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
+     * Handle the click on an item. Dispatch the itemclick event.
+     *
+     * @param {Event} event
+     */
+    handleItemClick(event) {
+        /**
+         * The event fired when a user clicks on an item.
+         *
+         * @event
+         * @name itemclick
+         * @param {string} name Name of the item clicked.
+         * @public
+         */
+
+        this.dispatchEvent(
+            new CustomEvent('itemclick', {
+                detail: {
+                    ...event.detail,
+                    name: event.currentTarget.dataset.name
+                }
+            })
+        );
+    }
+
+    /**
+     * Handle close of item's tooltip for horizontal view timeline.
+     *
+     */
+    handleTooltipClose(event) {
+        // To prevent item click event to be dispatch when closing tooltip
+        if (event) {
+            event.stopPropagation();
+        }
+        this.showItemPopOver = false;
+        this.selectedItem = null;
+    }
+
+    /**
+     * Handle the mouse over on item for horizontal view timeline.
+     *
+     */
+    handleItemMouseOver(item) {
+        this.showItemPopOver = true;
+        this.selectedItem = item;
+    }
+
+    /*
      * Toggle the show more button
      */
     handleToggleShowMoreButton() {

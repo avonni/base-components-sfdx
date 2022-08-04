@@ -1,0 +1,159 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="avonni-activity-timeline__container">
+        <template if:true={hasHeader}>
+            <div class="slds-card__header">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure" if:true={iconName}>
+                        <lightning-icon
+                            data-element-id="avonni-activity-timeline-icon"
+                            icon-name={iconName}
+                            size={iconSize}
+                        ></lightning-icon>
+                    </div>
+                    <div class="slds-media__body" if:true={title}>
+                        <h2 class="slds-section__title">{title}</h2>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <!-- Vertical timeline -->
+        <template if:true={noGroupBy}>
+            <ul class="slds-timeline">
+                <template for:each={sortedItems} for:item="item">
+                    <li key={item.name}>
+                        <c-avonni-primitive-activity-timeline-item
+                            title={item.title}
+                            description={item.description}
+                            datetime-value={item.datetimeValue}
+                            date-format={computedItemDateFormat}
+                            href={item.href}
+                            icon-name={item.iconName}
+                            icon-size={itemIconSize}
+                            icons={item.icons}
+                            fields={item.fields}
+                            has-checkbox={item.hasCheckbox}
+                            has-error={item.hasError}
+                            closed={item.closed}
+                            button-label={item.buttonLabel}
+                            button-icon-name={item.buttonIconName}
+                            button-variant={item.buttonVariant}
+                            button-icon-position={item.buttonIconPosition}
+                            button-disabled={item.buttonDisabled}
+                            is-loading={item.isLoading}
+                            is-active={item.isActive}
+                            loading-state-alternative-text={item.loadingStateAlternativeText}
+                            actions={actions}
+                            name={item.name}
+                            data-element-id="avonni-primitive-activity-timeline-item"
+                            data-name={item.name}
+                            onactionclick={handleActionClick}
+                            onbuttonclick={handleButtonClick}
+                            oncheck={handleCheck}
+                        >
+                        </c-avonni-primitive-activity-timeline-item>
+                    </li>
+                </template>
+            </ul>
+        </template>
+        <template if:true={hasDates}>
+            <template for:each={orderedDates} for:item="date">
+                <template if:false={noGroupBy}>
+                    <c-avonni-expandable-section
+                        key={date.label}
+                        title={date.label}
+                        collapsible={collapsible}
+                        closed={closed}
+                        data-element-id="avonni-expandable-section"
+                    >
+                        <ul class="slds-timeline">
+                            <template for:each={date.items} for:item="item">
+                                <li key={item.name}>
+                                    <c-avonni-primitive-activity-timeline-item
+                                        title={item.title}
+                                        description={item.description}
+                                        datetime-value={item.datetimeValue}
+                                        date-format={computedItemDateFormat}
+                                        href={item.href}
+                                        icon-name={item.iconName}
+                                        icon-size={itemIconSize}
+                                        icons={item.icons}
+                                        fields={item.fields}
+                                        has-checkbox={item.hasCheckbox}
+                                        has-error={item.hasError}
+                                        closed={item.closed}
+                                        button-label={item.buttonLabel}
+                                        button-icon-name={item.buttonIconName}
+                                        button-variant={item.buttonVariant}
+                                        button-icon-position={item.buttonIconPosition}
+                                        button-disabled={item.buttonDisabled}
+                                        is-loading={item.isLoading}
+                                        is-active={item.isActive}
+                                        loading-state-alternative-text={item.loadingStateAlternativeText}
+                                        actions={actions}
+                                        name={item.name}
+                                        data-element-id="avonni-primitive-activity-timeline-item"
+                                        data-name={item.name}
+                                        onactionclick={handleActionClick}
+                                        onbuttonclick={handleButtonClick}
+                                        oncheck={handleCheck}
+                                    >
+                                    </c-avonni-primitive-activity-timeline-item>
+                                </li>
+                            </template>
+                        </ul>
+                    </c-avonni-expandable-section>
+                </template>
+            </template>
+        </template>
+        <template if:false={isShowButtonHidden}>
+            <lightning-button
+                variant={buttonVariant}
+                label={currentShowButtonLabel}
+                icon-name={currentShowButtonIcon}
+                icon-position={currentShowButtonPosition}
+                data-element-id="lightning-button"
+                class="
+                    slds-m-top_small
+                    slds-m-bottom_small
+                    slds-m-left_small
+                    slds-show
+                "
+                onclick={handleToggleShowMoreButton}
+            ></lightning-button>
+        </template>
+    </div>
+</template>

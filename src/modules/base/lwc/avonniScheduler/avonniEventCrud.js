@@ -79,21 +79,22 @@ function newEvent(x, y, showDialog = true) {
     this.hideDetailPopover();
     this.hideEditDialog();
 
-    let keyFields, from, to;
+    let resourceNames, from, to;
     if (!isNaN(resourceAxisPosition) && !isNaN(headersAxisPosition)) {
-        const resource = this.getResourceElementFromPosition(headersAxisPosition);
+        const resource =
+            this.getResourceElementFromPosition(headersAxisPosition);
         const cell = this.getCellFromPosition(resource, resourceAxisPosition);
-        keyFields = [resource.dataset.key];
+        resourceNames = [resource.dataset.name];
         from = Number(cell.dataset.start);
         to = Number(cell.dataset.end) + 1;
     } else {
-        keyFields = [this.computedResources[0].key];
+        resourceNames = [this.computedResources[0].name];
         from = this.smallestHeader.cells[0].start;
         to = this.smallestHeader.cells[0].end + 1;
     }
 
     const event = {
-        keyFields,
+        resourceNames,
         title: this.dialogLabels.newEventTitle,
         from,
         to
@@ -150,7 +151,7 @@ function saveEvent() {
                 detail: {
                     event: {
                         from: event.from.toUTC().toISO(),
-                        keyFields: event.keyFields,
+                        resourceNames: event.resourceNames,
                         name: event.name,
                         title: event.title,
                         to: event.to.toUTC().toISO()
@@ -173,20 +174,18 @@ function saveEvent() {
  */
 function saveOccurrence() {
     const { event, occurrences, occurrence, draftValues } = this.selection;
-    const draftKeyFields = normalizeArray(draftValues.keyFields);
-    const keyFields = draftKeyFields.length
-        ? draftKeyFields
-        : occurrence.keyFields;
-    const processedKeyFields = [...keyFields];
+    const draftResourceNames = normalizeArray(draftValues.resourceNames);
+    const resourceNames = draftResourceNames.length
+        ? draftResourceNames
+        : occurrence.resourceNames;
+    const processedResourceNames = [...resourceNames];
     const newOccurrences = [];
 
     occurrences.forEach((occ) => {
-        const resourceKey = occ.resourceKey;
-
-        // If the occurrence resource key is still included in the key fields
-        const keyField = processedKeyFields.indexOf(resourceKey);
-        if (keyField > -1) {
-            // Update the occurrence with the new values
+        const resourceName = processedResourceNames.indexOf(occ.resourceName);
+        if (resourceName > -1) {
+            // If the occurrence resource name is still included in the resource names,
+            // update the occurrence with the new values
             Object.entries(draftValues).forEach((entry) => {
                 const [key, value] = entry;
 
@@ -199,11 +198,11 @@ function saveOccurrence() {
                     }
                 }
             });
-            occ.keyFields = keyFields;
+            occ.resourceNames = resourceNames;
             newOccurrences.push(occ);
 
             // Remove the processed key field from the list
-            processedKeyFields.splice(keyField, 1);
+            processedResourceNames.splice(resourceName, 1);
         } else {
             // If the occurrence resource key has been removed,
             // remove it from the event as well
@@ -211,12 +210,14 @@ function saveOccurrence() {
         }
     });
 
-    // The key fields left are new ones added by the user
-    processedKeyFields.forEach((keyField) => {
+    // The resource names left are new ones added by the user
+    processedResourceNames.forEach((resourceName) => {
         const occ = Object.assign({}, newOccurrences[0] || occurrences[0]);
-        occ.resourceKey = keyField;
-        occ.key = `${event.name}-${keyField}-${event.occurrences.length + 1}`;
-        occ.keyFields = keyFields;
+        occ.resourceName = resourceName;
+        occ.key = `${event.name}-${resourceName}-${
+            event.occurrences.length + 1
+        }`;
+        occ.resourceNames = resourceNames;
         event.occurrences.push(occ);
     });
 

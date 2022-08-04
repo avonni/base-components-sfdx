@@ -41,7 +41,10 @@
         <div class={mainColClass}>
             <!-- Header -->
             <header>
-                <div class="slds-p-horizontal_medium slds-p-top_medium">
+                <div
+                    class="slds-p-horizontal_medium slds-p-top_medium"
+                    if:true={showHeader}
+                >
                     <c-avonni-media-object vertical-align="center">
                         <template if:true={iconName}>
                             <div slot="figure">
@@ -54,7 +57,7 @@
                         <template if:true={title}>
                             <h1
                                 class="slds-text-heading_small"
-                                data-element-id="h1"
+                                data-element-id="title"
                             >
                                 {title}
                             </h1>

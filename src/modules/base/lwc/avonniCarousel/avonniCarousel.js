@@ -379,8 +379,8 @@ export default class AvonniCarousel extends LightningElement {
      * Sets the width of each item, depending on the number of items per panel
      */
     get carouselItemStyle() {
-        const flexBasis = 100 / this.itemsPerPanel;
-        return `flex-basis: ${flexBasis}%;`;
+        const itemWidth = 100 / this.itemsPerPanel;
+        return `flex-basis: ${itemWidth}%; width: ${itemWidth}%`;
     }
 
     /**

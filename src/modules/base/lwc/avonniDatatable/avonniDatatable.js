@@ -975,7 +975,6 @@ export default class AvonniDatatable extends LightningDatatable {
             isMassEditChecked
         } = event.detail;
         processInlineEditFinishCustom(
-            this,
             this.state,
             reason,
             rowKeyValue,

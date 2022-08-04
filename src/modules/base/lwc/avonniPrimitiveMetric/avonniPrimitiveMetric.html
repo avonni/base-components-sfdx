@@ -1,0 +1,104 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="slds-grid slds-grid_vertical-align-end avonni-metric__wrapper">
+        <!-- Trend icon -->
+        <lightning-dynamic-icon
+            if:true={showDynamicIcon}
+            class={dynamicIconClass}
+            alternative-text={trendDirection}
+            option={trendDirection}
+            type="trend"
+            data-element-id="lightning-dynamic-icon-sign"
+        ></lightning-dynamic-icon>
+
+        <template if:true={showIcon}>
+            <c-avonni-primitive-icon
+                class="
+                    avonni-metric__icon
+                    slds-current-color slds-align-middle
+                    slds-m-right_xx-small
+                "
+                icon-name={iconName}
+                data-element-id="avonni-primitive-icon-sign"
+            ></c-avonni-primitive-icon>
+            <span
+                class="slds-assistive-text"
+                data-element-id="span-icon-assistive-text"
+                >Trend direction: {trendDirection}</span
+            >
+        </template>
+
+        <!-- Prefix -->
+        <span
+            if:true={prefix}
+            class="avonni-metric__prefix avonni-metric__primary-text"
+            data-element-id="span-prefix"
+            >{prefix}&nbsp;</span
+        >
+
+        <!-- Value -->
+        <span
+            if:true={mathSign}
+            class="
+                slds-align-middle
+                avonni-metric__value avonni-metric__primary-text
+            "
+            data-element-id="span-math-sign"
+            >{mathSign}&nbsp;</span
+        >
+        <lightning-formatted-number
+            class="avonni-metric__value avonni-metric__primary-text"
+            currency-code={currencyCode}
+            currency-display-as={currencyDisplayAs}
+            format-style={formatStyle}
+            maximum-fraction-digits={maximumFractionDigits}
+            maximum-significant-digits={maximumSignificantDigits}
+            minimum-fraction-digits={minimumFractionDigits}
+            minimum-integer-digits={minimumIntegerDigits}
+            minimum-significant-digits={minimumSignificantDigits}
+            value={positiveValue}
+            data-element-id="lightning-formatted-number"
+        ></lightning-formatted-number>
+
+        <!-- Suffix -->
+        <span
+            if:true={suffix}
+            class="avonni-metric__suffix avonni-metric__primary-text"
+            data-element-id="span-suffix"
+            >&nbsp;{suffix}</span
+        >
+    </div>
+</template>

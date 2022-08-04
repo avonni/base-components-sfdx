@@ -41,17 +41,15 @@
     >
         <!-- Toolbar time spans -->
         <lightning-button-group
-            if:true={toolbarTimeSpans.length}
+            if:true={showToolbarTimeSpans}
             onclick={handleToolbarTimeSpanClick}
         >
             <template for:each={toolbarTimeSpanButtons} for:item="button">
                 <lightning-button
-                    key={button.label}
+                    key={button.name}
                     label={button.label}
                     variant={button.variant}
-                    data-headers={button.headers}
-                    data-span={button.span}
-                    data-unit={button.unit}
+                    value={button.name}
                     data-element-id="lightning-button-toolbar-time-span"
                 ></lightning-button>
             </template>
@@ -65,26 +63,19 @@
                     for:item="menuItem"
                 >
                     <lightning-menu-item
-                        key={menuItem.label}
+                        key={menuItem.name}
                         checked={menuItem.checked}
                         label={menuItem.label}
-                        data-headers={menuItem.headers}
-                        data-span={menuItem.span}
-                        data-unit={menuItem.unit}
+                        value={menuItem.name}
                         data-element-id="lightning-menu-item-toolbar-time-span"
                     ></lightning-menu-item>
                 </template>
             </c-avonni-button-menu>
         </lightning-button-group>
 
-        <!-- Toolbar middle calendar selector -->
+        <!-- Toolbar calendar selector -->
         <div
-            class="
-                slds-col
-                slds-text-align_center
-                slds-p-horizontal_small
-                slds-has-flexi-truncate
-            "
+            class={toolbarCalendarWrapperClass}
             onfocusin={handleToolbarCalendarFocusin}
             onfocusout={handleToolbarCalendarFocusout}
         >
@@ -167,7 +158,7 @@
         >
             <template for:each={computedResources} for:item="resource">
                 <div
-                    key={resource.key}
+                    key={resource.name}
                     class={verticalResourceHeaderCellClass}
                     data-element-id="div-vertical-resource-header"
                 >
@@ -212,7 +203,7 @@
                 columns={columns}
                 records={resources}
                 hide-checkbox-column
-                key-field={resourcesKeyField}
+                key-field="name"
                 resize-column-disabled={resizeColumnDisabled}
                 data-element-id="avonni-datatable"
                 onresize={handleDatatableResize}
@@ -227,11 +218,11 @@
                     available-days-of-the-week={availableDaysOfTheWeek}
                     available-months={availableMonths}
                     available-time-frames={availableTimeFrames}
-                    available-time-spans={availableToolbarTimeSpans}
+                    available-time-spans={timeSpans}
                     headers={computedHeaders}
                     scroll-left-offset={firstColWidth}
                     start={start}
-                    time-span={timeSpan}
+                    time-span={currentTimeSpan}
                     variant="vertical"
                     zoom-to-fit={zoomToFit}
                     data-element-id="avonni-primitive-scheduler-header-group"
@@ -288,11 +279,12 @@
                     available-days-of-the-week={availableDaysOfTheWeek}
                     available-months={availableMonths}
                     available-time-frames={availableTimeFrames}
-                    available-time-spans={availableToolbarTimeSpans}
+                    available-time-spans={timeSpans}
                     headers={computedHeaders}
                     scroll-left-offset={firstColWidth}
                     start={start}
-                    time-span={timeSpan}
+                    time-span={currentTimeSpan}
+                    visible-width={scheduleColWidth}
                     zoom-to-fit={zoomToFit}
                     data-element-id="avonni-primitive-scheduler-header-group"
                     onprivatecellsizechange={handleHeaderCellSizeChange}
@@ -310,11 +302,11 @@
                         for:index="index"
                     >
                         <div
-                            key={resource.key}
+                            key={resource.name}
                             class={resourceClass}
                             data-element-id="div-resource"
                             data-index={index}
-                            data-key={resource.key}
+                            data-name={resource.name}
                         >
                             <!-- Cells -->
                             <template for:each={resource.cells} for:item="cell">
@@ -357,7 +349,7 @@
                                         occurrence-key={occurrence.key}
                                         read-only={readOnly}
                                         reference-line={event.referenceLine}
-                                        resource-key={occurrence.resourceKey}
+                                        resource-key={occurrence.resourceName}
                                         resources={computedResources}
                                         scroll-offset={scrollOffset}
                                         title={occurrence.title}
@@ -368,7 +360,7 @@
                                         data-element-id="avonni-primitive-scheduler-event-occurrence"
                                         data-event-name={event.name}
                                         data-key={occurrence.key}
-                                        data-resource-key={occurrence.resourceKey}
+                                        data-resource-name={occurrence.resourceName}
                                         onprivatefocus={handleEventFocus}
                                         onprivateblur={hideDetailPopover}
                                         onprivatecontextmenu={handleEventContextMenu}
@@ -560,13 +552,13 @@
                 allow-search
                 is-multi-select
                 label={dialogLabels.resources}
-                value={selection.occurrence.keyFields}
+                value={selection.occurrence.resourceNames}
                 options={resourcesComboboxOptions}
                 remove-selected-options
                 dropdown-length="5-items"
                 required
                 data-element-id="avonni-combobox-event-resources"
-                onchange={handleEventKeyFieldsChange}
+                onchange={handleEventResourceNamesChange}
             ></c-avonni-combobox>
         </div>
         <div slot="footer" class="slds-text-align_right">

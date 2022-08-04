@@ -72,3 +72,6 @@
         --avonni-page-header-record-home-icon-color-foreground
     );
 }
+.avonni-page-header__title-and-actions-row {
+    row-gap: 0.5rem;
+}

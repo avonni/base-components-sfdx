@@ -33,16 +33,12 @@
 const DEFAULT_AVAILABLE_TIME_FRAMES = ['00:00-23:59'];
 const DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK = [0, 1, 2, 3, 4, 5, 6];
 const DEFAULT_AVAILABLE_MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-const DEFAULT_START_DATE = new Date();
-const DEFAULT_TIME_SPAN = {
-    unit: 'day',
-    span: 1
-};
-const DEFAULT_TOOLBAR_TIME_SPANS = [
-    { unit: 'day', span: 1, label: 'Day', headers: 'hourAndDay' },
-    { unit: 'week', span: 1, label: 'Week', headers: 'hourAndDay' },
-    { unit: 'month', span: 1, label: 'Month', headers: 'dayAndMonth' },
-    { unit: 'year', span: 1, label: 'Year', headers: 'dayAndMonth' }
+const DEFAULT_CONTEXT_MENU_EMPTY_SPOT_ACTIONS = [
+    {
+        name: 'add-event',
+        label: 'Add event',
+        iconName: 'utility:add'
+    }
 ];
 const DEFAULT_CONTEXT_MENU_EVENT_ACTIONS = [
     {
@@ -56,14 +52,6 @@ const DEFAULT_CONTEXT_MENU_EVENT_ACTIONS = [
         iconName: 'utility:delete'
     }
 ];
-const DEFAULT_CONTEXT_MENU_EMPTY_SPOT_ACTIONS = [
-    {
-        name: 'add-event',
-        label: 'Add event',
-        iconName: 'utility:add'
-    }
-];
-
 const DEFAULT_DIALOG_LABELS = {
     title: 'Title',
     from: 'From',
@@ -79,18 +67,71 @@ const DEFAULT_DIALOG_LABELS = {
     deleteMessage: 'Are you sure you want to delete this event?',
     newEventTitle: 'New event'
 };
-
 const DEFAULT_EVENTS_LABELS = {
     center: {
         fieldName: 'title'
     }
 };
-
 const DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT = 'Loading';
+const DEFAULT_SELECTED_TIME_SPAN = 'Standard.Scheduler.DayTimeSpan';
+const DEFAULT_START_DATE = new Date();
+const TIME_SPANS = {
+    default: [
+        {
+            headers: 'hourAndDay',
+            label: 'Day',
+            name: 'Standard.Scheduler.DayTimeSpan',
+            span: 1,
+            unit: 'day'
+        },
+        {
+            headers: 'hourAndDay',
+            label: 'Week',
+            name: 'Standard.Scheduler.WeekTimeSpan',
+            span: 1,
+            unit: 'week'
+        },
+        {
+            headers: 'dayAndMonth',
+            label: 'Month',
+            name: 'Standard.Scheduler.MonthTimeSpan',
+            span: 1,
+            unit: 'month'
+        },
+        {
+            headers: 'dayAndMonth',
+            label: 'Year',
+            name: 'Standard.Scheduler.YearTimeSpan',
+            span: 1,
+            unit: 'year'
+        }
+    ],
+    defaultHeaders: 'hourAndDay',
+    defaultUnit: 'day',
+    defaultSpan: 1
+};
 
-const EDIT_MODES = ['all', 'one'];
+const DISPLAYS = {
+    default: [
+        {
+            label: 'Agenda',
+            name: 'agenda'
+        },
+        {
+            label: 'Calendar',
+            name: 'calendar'
+        },
+        {
+            label: 'Timeline',
+            name: 'timeline'
+        }
+    ],
+    valid: ['agenda', 'calendar', 'timeline']
+};
 
 const DEFAULT_DATE_FORMAT = 'ff';
+
+const EDIT_MODES = ['all', 'one'];
 
 const EVENTS_THEMES = {
     valid: ['default', 'transparent', 'line', 'hollow', 'rounded'],
@@ -378,6 +419,8 @@ const REFERENCE_LINE_VARIANTS = {
     default: 'default'
 };
 
+const UNITS = ['minute', 'hour', 'day', 'week', 'month', 'year'];
+
 const VARIANTS = {
     valid: ['horizontal', 'vertical'],
     default: 'horizontal'
@@ -393,9 +436,9 @@ export {
     DEFAULT_DIALOG_LABELS,
     DEFAULT_EVENTS_LABELS,
     DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT,
+    DEFAULT_SELECTED_TIME_SPAN,
     DEFAULT_START_DATE,
-    DEFAULT_TIME_SPAN,
-    DEFAULT_TOOLBAR_TIME_SPANS,
+    DISPLAYS,
     EDIT_MODES,
     EVENTS_THEMES,
     EVENTS_PALETTES,
@@ -404,5 +447,7 @@ export {
     PRESET_HEADERS,
     RECURRENCES,
     REFERENCE_LINE_VARIANTS,
+    TIME_SPANS,
+    UNITS,
     VARIANTS
 };

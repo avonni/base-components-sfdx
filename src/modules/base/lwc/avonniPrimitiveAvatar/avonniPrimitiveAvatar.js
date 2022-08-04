@@ -453,9 +453,11 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
                 'avonni-avatar_xx-large': size === 'xx-large'
             });
 
-        const avatarClass = classSet('slds-avatar').add({
-            'slds-avatar_circle': variant === 'circle'
-        });
+        const avatarClass = classSet('slds-avatar')
+            .add({
+                'slds-avatar_circle': variant === 'circle'
+            })
+            .add(computeSldsClass(this.fallbackIconName));
 
         const fallbackIconClass = classSet('avonni-avatar__icon').add({
             'slds-avatar-grouped__icon': groupedAvatar

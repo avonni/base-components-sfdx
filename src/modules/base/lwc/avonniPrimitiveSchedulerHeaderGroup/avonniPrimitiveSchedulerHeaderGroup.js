@@ -92,6 +92,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     _start = DEFAULT_START_DATE;
     _timeSpan = DEFAULT_TIME_SPAN;
     _variant = VARIANTS.default;
+    _visibleWidth = 0;
     _zoomToFit = false;
 
     _connected = false;
@@ -354,6 +355,28 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return Interval.fromDateTimes(start, end);
     }
 
+    /**
+     * Maximum visible width of the headers.
+     *
+     * @type {number}
+     * @public
+     */
+    @api
+    get visibleWidth() {
+        return this._visibleWidth;
+    }
+    set visibleWidth(value) {
+        const width = parseInt(value, 10);
+        if (width === this._visibleWidth) {
+            return;
+        }
+        this._visibleWidth = width;
+
+        if (this._connected) {
+            this.computeCellSize();
+        }
+    }
+
     /*
      * ------------------------------------------------------------
      *  PRIVATE PROPERTIES
@@ -590,7 +613,9 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         if (!this.smallestHeader) {
             return;
         }
-        const totalWidth = this.template.host.getBoundingClientRect().width;
+        const totalWidth =
+            this.visibleWidth ||
+            this.template.host.getBoundingClientRect().width;
         const totalNumberOfCells = this.smallestHeader.numberOfCells;
         let cellSize = 0;
 

@@ -35,7 +35,7 @@
 <template>
     <article if:true={showWizard} data-element-id="article-quick-action-panel">
         <!-- Header -->
-        <header class="slds-modal__header">
+        <header class="slds-modal__header" if:true={showHeader}>
             <div
                 class="
                     slds-p-horizontal_medium

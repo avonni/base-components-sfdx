@@ -113,7 +113,6 @@ export function updateDirtyValues(state, rowColKeyValues) {
  * @param {boolean} massEdit -  boolean value that indicates if the edition it's more than one row edited
  */
 export function processInlineEditFinishCustom(
-    dt,
     dtState,
     reason,
     rowKeyValue,

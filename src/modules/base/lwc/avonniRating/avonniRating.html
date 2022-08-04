@@ -36,7 +36,13 @@
     <div class={computedContainerClass} data-element-id="div-wrapper">
         <template if:true={label}>
             <label class={computedLegendClass} data-element-id="label">
-                <abbr if:true={required} title="required" class="slds-required" data-element-id="required-indicator">*</abbr>
+                <abbr
+                    if:true={required}
+                    title="required"
+                    class="slds-required"
+                    data-element-id="required-indicator"
+                    >*</abbr
+                >
                 {label}
             </label>
             <lightning-helptext

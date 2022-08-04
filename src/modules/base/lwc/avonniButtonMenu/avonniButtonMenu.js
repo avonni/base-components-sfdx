@@ -138,6 +138,8 @@ export default class AvonniButtonMenu extends LightningElement {
 
     _accessKey;
     _disabled = false;
+    _hideDownArrow = false;
+    _iconName = DEFAULT_ICON_NAME;
     _iconSize = ICON_SIZES.default;
     _isDraft = false;
     _isLoading = false;
@@ -147,8 +149,6 @@ export default class AvonniButtonMenu extends LightningElement {
     _tooltip;
     _variant = BUTTON_VARIANTS.default;
 
-    _iconName = DEFAULT_ICON_NAME;
-    _hideDownArrow = false;
     _order = null;
 
     _boundingRect = {};
@@ -247,6 +247,22 @@ export default class AvonniButtonMenu extends LightningElement {
 
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the small down arrow normaly displayed to the right of a custom icon is hidden. Without a custom icon-name this does nothing.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideDownArrow() {
+        return this._hideDownArrow;
+    }
+
+    set hideDownArrow(value) {
+        this._hideDownArrow = normalizeBoolean(value);
     }
 
     /**
@@ -354,22 +370,6 @@ export default class AvonniButtonMenu extends LightningElement {
 
     set nubbin(value) {
         this._nubbin = normalizeBoolean(value);
-    }
-
-    /**
-     * If present, the small down arrow normaly displayed to the right of a custom icon is hidden. Without a custom icon-name this does nothing.
-     *
-     * @public
-     * @type {boolean}
-     * @default false
-     */
-    @api
-    get hideDownArrow() {
-        return this._hideDownArrow;
-    }
-
-    set hideDownArrow(value) {
-        this._hideDownArrow = normalizeBoolean(value);
     }
 
     /**
@@ -539,13 +539,14 @@ export default class AvonniButtonMenu extends LightningElement {
      * @type {boolean}
      */
     get computedShowDownIcon() {
-        if (this.hideDownArrow) {
-            return false;
-        }
-        return !(
+        if (
+            this.hideDownArrow ||
             this.iconName === 'utility:down' ||
             this.iconName === 'utility:chevrondown'
-        );
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**

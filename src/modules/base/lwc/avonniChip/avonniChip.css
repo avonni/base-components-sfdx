@@ -50,7 +50,9 @@
     -ms-flex-align: center;
     align-items: center;
     overflow: hidden;
+    vertical-align: middle;
 }
+
 .avonni-chip_outline {
     background-color: #ffffff !important;
 }

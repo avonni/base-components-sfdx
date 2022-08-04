@@ -34,13 +34,20 @@
 
 <template>
     <span class={chipClass} data-element-id="span-wrapper">
-        <span class="slds-truncate">
+        <span class="slds-truncate slds-grid">
             <template if:true={showLeft}>
                 <span class="slds-badge__icon slds-badge__icon_left">
                     <slot name="left"></slot>
                 </span>
             </template>
-            {label}
+            <span
+                class="
+                    avonni-chip__chip-label
+                    slds-grid slds-grid_vertical slds-grid_align-center
+                "
+            >
+                {label}
+            </span>
             <template if:true={showRight}>
                 <span class="slds-badge__icon slds-badge__icon_right">
                     <slot name="right"></slot>

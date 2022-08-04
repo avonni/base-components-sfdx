@@ -1,0 +1,215 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/* outer card */
+
+article.avonni-card {
+    background-color: var(--avonni-card-color-background, white);
+    color: var(--avonni-card-text-color);
+
+    padding-top: var(--avonni-card-spacing-block-start, 0px);
+    padding-left: var(--avonni-card-spacing-inline-start, 0px);
+    padding-right: var(--avonni-card-spacing-inline-end, 0px);
+    padding-bottom: var(--avonni-card-spacing-block-end, 0px);
+
+    border-width: var(--avonni-card-sizing-border, 1px);
+    border-style: solid;
+    border-color: var(--avonni-card-color-border, #c9c9c9);
+    border-radius: var(--avonni-card-radius-border, 0.25rem);
+
+    box-shadow: var(--avonni-card-shadow, 0 2px 2px 0 rgba(0, 0, 0, 0.1));
+}
+
+.avonni-card__content-container {
+    flex: 1 1 auto;
+}
+.avonni-card__media-container {
+    flex: 0 1 auto;
+}
+.avonni-card__media-center .avonni-card__content-container {
+    order: -1;
+}
+
+.avonni-card__media-right {
+    flex-direction: row-reverse;
+}
+
+/* card media */
+.avonni-card__media-background .avonni-card__content-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: var(--avonni-card-background-media-text-color, white);
+    background-image: var(
+        --avonni-card-background-media-overlay-background,
+        linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.25) 75%,
+            rgba(0, 0, 0, 0) 100%
+        )
+    );
+}
+
+.avonni-card__media-overlay .avonni-card__content-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    color: var(--avonni-card-overlay-media-text-color, white);
+    background-image: var(
+        --avonni-card-overlay-media-overlay-background,
+        linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.25) 75%,
+            rgba(0, 0, 0, 0) 100%
+        )
+    );
+}
+
+.avonni-card__media-overlay:hover .avonni-card__content-container,
+.avonni-card__media-overlay:focus-within .avonni-card__content-container {
+    opacity: 1;
+}
+
+/* In chrome, the image corner radius is not applied to the image properly when there is a border.
+    The overflow: hidden lets the image pass over the border in certain conditions.  */
+.avonni-card__media-top-left-radius {
+    border-top-left-radius: calc(
+        var(--avonni-card-radius-border, 0.25rem) -
+            var(--avonni-card-sizing-border, 1px)
+    );
+}
+.avonni-card__media-top-right-radius {
+    border-top-right-radius: calc(
+        var(--avonni-card-radius-border, 0.25rem) -
+            var(--avonni-card-sizing-border, 1px)
+    );
+}
+.avonni-card__media-bottom-right-radius {
+    border-bottom-right-radius: calc(
+        var(--avonni-card-radius-border, 0.25rem) -
+            var(--avonni-card-sizing-border, 1px)
+    );
+}
+.avonni-card__media-bottom-left-radius {
+    border-bottom-left-radius: calc(
+        var(--avonni-card-radius-border, 0.25rem) -
+            var(--avonni-card-sizing-border, 1px)
+    );
+}
+
+.avonni-card__media-border-top {
+    border-top-width: var(--avonni-card-media-sizing-border, 1px);
+    border-top-style: solid;
+    border-top-color: var(--avonni-card-media-color-border, #e5e5e5);
+}
+.avonni-card__media-border-bottom {
+    border-bottom-width: var(--avonni-card-media-sizing-border, 1px);
+    border-bottom-style: solid;
+    border-bottom-color: var(--avonni-card-media-color-border, #e5e5e5);
+}
+.avonni-card__media-border-left {
+    border-left-width: var(--avonni-card-media-sizing-border, 1px);
+    border-left-style: solid;
+    border-left-color: var(--avonni-card-media-color-border, #e5e5e5);
+}
+.avonni-card__media-border-right {
+    border-right-width: var(--avonni-card-media-sizing-border, 1px);
+    border-right-style: solid;
+    border-right-color: var(--avonni-card-media-color-border, #e5e5e5);
+}
+
+.avonni-card__media-left .avonni-card__media-container {
+    min-width: var(--avonni-card-left-media-width);
+    max-width: var(--avonni-card-left-media-width);
+}
+
+.avonni-card__media-right .avonni-card__media-container {
+    min-width: var(--avonni-card-right-media-width);
+    max-width: var(--avonni-card-right-media-width);
+}
+
+.avonni-card__body-container:not(.avonni-card__media-left, .avonni-card__media-right)
+    .avonni-card__media-container {
+    width: 100%;
+}
+
+.avonni-card__media {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.avonni-card__media-action {
+    position: absolute;
+    top: var(--lwc-spacingSmall, 0.75rem);
+    right: var(--lwc-spacingMedium, 1rem);
+}
+
+/* card header */
+.avonni-card__header {
+    padding-top: var(--avonni-card-header-spacing-block-start, 0.75rem);
+    margin-bottom: var(--avonni-card-header-spacing-block-end, 0.75rem);
+    padding-left: var(--avonni-card-header-spacing-inline-start, 1rem);
+    padding-right: var(--avonni-card-header-spacing-inline-end, 1rem);
+}
+
+.avonni-card__title-text {
+    font-weight: var(--avonni-card-header-font-weight, 700);
+    font-size: var(--avonni-card-header-font-size, 1rem);
+    line-height: var(--lwc-lineHeightHeading, 1.25);
+}
+
+/* card body */
+.avonni-card__default-slot {
+    margin-top: var(--avonni-card-body-spacing-block-start, 0.75rem);
+    margin-bottom: var(--avonni-card-body-spacing-block-end, 0.75rem);
+}
+
+/* card footer */
+.avonni-card__footer {
+    padding-top: var(--avonni-card-footer-spacing-block-start, 0.75rem);
+    padding-bottom: var(--avonni-card-footer-spacing-block-end, 0.75rem);
+    padding-left: var(--avonni-card-footer-spacing-inline-start, 1rem);
+    padding-right: var(--avonni-card-footer-padding-right, 1rem);
+
+    text-align: var(--avonni-card-footer-text-align, center);
+
+    border-top-width: var(--avonni-card-footer-sizing-border, 1px);
+    border-top-style: solid;
+    border-top-color: var(--avonni-card-footer-color-border, #c9c9c9);
+}

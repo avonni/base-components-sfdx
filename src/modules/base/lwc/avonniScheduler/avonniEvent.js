@@ -70,7 +70,7 @@ import {
  *
  * @param {string} iconName The Lightning Design System name of the icon used if the event is disabled. Names are written in the format utility:user. The icon is appended to the left of the title.
  *
- * @param {string[]} keyFields Required. Array of unique resource IDs. The event will be shown in the scheduler for each of these resources.
+ * @param {string[]} resourceNames Required. Array of unique resource IDs. The event will be shown in the scheduler for each of these resources.
  *
  * @param {object} labels Labels of the events. See Scheduler for more details on the structure.
  *
@@ -118,7 +118,7 @@ export default class AvonniSchedulerEvent {
         this.from = props.from;
         this.to = props.to;
         this.iconName = props.iconName;
-        this.keyFields = props.keyFields;
+        this.resourceNames = props.resourceNames;
         this.labels = props.labels || DEFAULT_EVENTS_LABELS;
         this.referenceLine = props.referenceLine;
         this.recurrence = props.recurrence;
@@ -192,11 +192,11 @@ export default class AvonniSchedulerEvent {
         if (this._isCreated) this.initOccurrences();
     }
 
-    get keyFields() {
-        return this._keyFields;
+    get resourceNames() {
+        return this._resourceNames;
     }
-    set keyFields(value) {
-        this._keyFields = JSON.parse(JSON.stringify(normalizeArray(value)));
+    set resourceNames(value) {
+        this._resourceNames = JSON.parse(JSON.stringify(normalizeArray(value)));
 
         if (this._isCreated) this.initOccurrences();
     }
@@ -373,7 +373,7 @@ export default class AvonniSchedulerEvent {
      * @param {DateTime} to Ending date of the occurrence.
      */
     addOccurrence(from, to) {
-        const { schedulerEnd, schedulerStart, keyFields } = this;
+        const { schedulerEnd, schedulerStart, resourceNames } = this;
         const computedTo = to || this.computeOccurenceEnd(from);
 
         if (
@@ -404,13 +404,13 @@ export default class AvonniSchedulerEvent {
                 };
                 this.occurrences.push(occurrence);
             } else {
-                keyFields.forEach((keyField) => {
+                resourceNames.forEach((name) => {
                     const occurrence = {
                         from,
-                        key: `${this.name}-${keyField}-${from.ts}`,
-                        keyFields: keyFields,
+                        key: `${this.name}-${name}-${from.ts}`,
+                        resourceNames: resourceNames,
                         offsetTop: 0,
-                        resourceKey: keyField,
+                        resourceName: name,
                         title: this.title,
                         to: computedTo
                     };

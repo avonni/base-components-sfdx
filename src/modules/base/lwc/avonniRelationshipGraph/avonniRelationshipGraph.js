@@ -377,7 +377,9 @@ export default class AvonniRelationshipGraph extends LightningElement {
      * @type {string}
      */
     updateLine() {
-        const line = this.template.querySelector('[data-element-id="div-line"]');
+        const line = this.template.querySelector(
+            '[data-element-id="div-line"]'
+        );
         const currentLevel = this.childLevel;
 
         if (this.variant === 'vertical') {

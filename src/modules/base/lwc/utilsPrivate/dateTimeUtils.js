@@ -102,6 +102,20 @@ const addToDate = (date, unit, span) => {
 };
 
 /**
+ * Remove unit * span from the date.
+ *
+ * @param {DateTime} date The date we want to remove time from.
+ * @param {string} unit The time unit (minute, hour, day, week, month or year).
+ * @param {number} span The number of unit to remove.
+ * @returns {DateTime} DateTime object with the removed time.
+ */
+const removeFromDate = (date, unit, span) => {
+    const options = {};
+    options[unit] = -span;
+    return date.plus(options);
+};
+
+/**
  * Calculate the number of units between two dates, including partial units.
  *
  * @param {string} unit The time unit (minute, hour, day, week, month or year).
@@ -263,6 +277,114 @@ const nextAllowedTime = (
 };
 
 /**
+ * Find the previous allowed month, based on a starting date. If the date month is already allowed, returns the original date.
+ *
+ * @param {DateTime} startDate The date we start from.
+ * @param {number[]} allowedMonths Array of allowed months. The months are represented by a number, starting from 0 for January, and ending with 11 for December.
+ * @param {boolean} startNewMonthOnFirstDay If false, the original day of the date will be kept, even if the original date month is not allowed. Defaults to true.
+ * @returns {DateTime} Date of the previous allowed month.
+ */
+const previousAllowedMonth = (
+    startDate,
+    allowedMonths,
+    startNewMonthOnFirstDay = true
+) => {
+    let date = DateTime.fromMillis(startDate.ts);
+    if (!isAllowedMonth(date, allowedMonths)) {
+        // Remove a month
+        date = removeFromDate(date, 'months', 1);
+        if (startNewMonthOnFirstDay) {
+            date = date.set({ day: 1 });
+        }
+        date = previousAllowedMonth(
+            date,
+            allowedMonths,
+            startNewMonthOnFirstDay
+        );
+    }
+    return date;
+};
+
+/**
+ * Find the previous allowed day of the week, based on a starting date. If the date day is already allowed, returns the original date.
+ *
+ * @param {DateTime} startDate The date we start from.
+ * @param {number[]} allowedMonths Array of allowed months. The months are represented by a number, starting from 0 for January, and ending with 11 for December.
+ * @param {number[]} allowedDays Array of allowed days of the week. The days are represented by a number, starting from 0 for Sunday, and ending with 6 for Saturday.
+ * @returns {DateTime} Date of the previous allowed day of the week.
+ */
+const previousAllowedDay = (startDate, allowedMonths, allowedDays) => {
+    let date = DateTime.fromMillis(startDate.ts);
+    if (!isAllowedDay(date, allowedDays)) {
+        // Remove a day
+        date = removeFromDate(date, 'days', 1).set({
+            hour: 0,
+            minute: 0,
+            second: 0,
+            millisecond: 0
+        });
+        date = previousAllowedDay(date, allowedMonths, allowedDays);
+
+        // If the previous day available is another month, make sure the month is allowed
+        if (date.diff(startDate, 'months') < 0) {
+            date = previousAllowedMonth(date, allowedMonths);
+            date = previousAllowedDay(date, allowedMonths, allowedDays);
+        }
+    }
+    return date;
+};
+
+/**
+ * Find the previous allowed time, based on a starting date. If the date time is already allowed, returns the original date.
+ *
+ * @param {DateTime} startDate The date we start from.
+ * @param {number[]} allowedMonths Array of allowed months. The months are represented by a number, starting from 0 for January, and ending with 11 for December.
+ * @param {number[]} allowedDays Array of allowed days of the week. The days are represented by a number, starting from 0 for Sunday, and ending with 6 for Saturday.
+ * @param {string[]} allowedTimeFrames Array of allowed time frames. Each time frame string must follow the pattern 'start-end', with start and end being ISO8601 formatted time strings.
+ * @param {string} unit The time unit (hour or minute).
+ * @param {number} span Duration of each unit span. For example, the value would be 30 if the time spans are 30 minutes long.
+ * @returns {DateTime} Date of the previous allowed time.
+ */
+const previousAllowedTime = (
+    startDate,
+    allowedMonths,
+    allowedDays,
+    allowedTimeFrames,
+    unit,
+    span
+) => {
+    let date = DateTime.fromMillis(startDate.ts);
+
+    if (!isAllowedTime(date, allowedTimeFrames)) {
+        // Go to previous time slot
+        date = removeFromDate(date, unit, span);
+        date = previousAllowedTime(
+            date,
+            allowedMonths,
+            allowedDays,
+            allowedTimeFrames,
+            unit,
+            span
+        );
+
+        // If the previous time available is in another day, make sure the day is allowed
+        if (date.diff(startDate, 'day') < 0) {
+            date = previousAllowedDay(date, allowedMonths, allowedDays);
+            date = previousAllowedTime(
+                date,
+                allowedMonths,
+                allowedDays,
+                allowedTimeFrames,
+                unit,
+                span
+            );
+        }
+    }
+
+    return date;
+};
+
+/**
  * Check if an interval of time contains allowed dates/times.
  *
  * @param {DateTime} start The starting date of the interval.
@@ -309,20 +431,6 @@ const containsAllowedDateTimes = (
     return true;
 };
 
-/**
- * Remove unit * span from the date.
- *
- * @param {DateTime} date The date we want to remove time from.
- * @param {string} unit The time unit (minute, hour, day, week, month or year).
- * @param {number} span The number of unit to remove.
- * @returns {DateTime} DateTime object with the removed time.
- */
-const removeFromDate = (date, unit, span) => {
-    const options = {};
-    options[unit] = -span;
-    return date.plus(options);
-};
-
 export {
     addToDate,
     containsAllowedDateTimes,
@@ -331,5 +439,8 @@ export {
     nextAllowedMonth,
     nextAllowedTime,
     numberOfUnitsBetweenDates,
+    previousAllowedDay,
+    previousAllowedMonth,
+    previousAllowedTime,
     removeFromDate
 };

@@ -34,9 +34,17 @@
 
 <template>
     <div class={computedOuterClass}>
-        <div class="slds-page-header__row">
-            <div class="slds-page-header__col-title">
+        <div
+            class="
+                slds-page-header__row
+                slds-wrap
+                avonni-page-header__title-and-actions-row
+            "
+        >
+            <!-- Title and icon -->
+            <div class="slds-page-header__col-title slds-col">
                 <div class="slds-media">
+                    <!-- Icon -->
                     <template if:true={iconName}>
                         <div class="slds-media__figure">
                             <div class={computedIconClass}>
@@ -121,9 +129,11 @@
                 </div>
             </div>
             <template if:true={showActions}>
-                <div class="slds-page-header__col-actions slds-show_small">
+                <div class="slds-page-header__col-actions slds-col_bump-left">
                     <div class="slds-page-header__controls">
-                        <div class="slds-page-header__control">
+                        <div
+                            class="slds-page-header__control slds-m-around_none"
+                        >
                             <slot name="actions"></slot>
                         </div>
                     </div>
@@ -149,23 +159,6 @@
                 </div>
             </template>
         </div>
-        <template if:true={showActions}>
-            <div
-                class="
-                    slds-page-header__col-actions
-                    slds-hide_small
-                    slds-p-top_x-small
-                "
-            >
-                <div class="slds-page-header__col-controls">
-                    <div class="slds-page-header__controls">
-                        <div class="slds-page-header__control">
-                            <slot name="actions"></slot>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </template>
         <template if:true={isRecordHomeVariant}>
             <template if:true={showDetails}>
                 <div

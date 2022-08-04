@@ -100,7 +100,7 @@
             ></c-avonni-primitive-avatar>
         </span>
     </template>
-    <template if:false={isClassic}>
+    <div if:false={isClassic} class={avatarFlexWrapperClass}>
         <template for:each={listItems} for:item="item" for:index="index">
             <template if:false={item.showMore}>
                 <template if:true={item.key}>
@@ -144,7 +144,61 @@
                     </span>
                 </template>
             </template>
-            <template if:true={item.showMore}>
+
+            <div
+                if:true={item.showMore}
+                key={item.key}
+                class={showMoreSectionClass}
+            >
+                <div
+                    class="
+                        slds-dropdown-trigger slds-dropdown-trigger_click
+                        slds-is-open
+                    "
+                    key={item.key}
+                    onblur={handleBlur}
+                    tabindex="-1"
+                >
+                    <template if:true={isNotList}>
+                        <span class={avatarWrapperClass}>
+                            <c-avonni-primitive-avatar
+                                initials={item.initials}
+                                variant={variant}
+                                fallback-icon-name="standard:macros"
+                                size={size}
+                                data-element-id="avonni-primitive-avatar-show-more-dropdown"
+                                data-item-id={index}
+                                data-type="show"
+                                class={avatarInlinePlusClass}
+                                onclick={handleAvatarClick}
+                                tabindex="0"
+                                role="button"
+                                onkeyup={handleAvatarClick}
+                            ></c-avonni-primitive-avatar>
+                        </span>
+                    </template>
+                    <template if:false={isNotList}>
+                        <lightning-button
+                            variant={listButtonVariant}
+                            label={currentlistButtonLabel}
+                            icon-name={currentListButtonIcon}
+                            icon-position={currentListButtonPosition}
+                            data-element-id="lightning-button"
+                            data-item-id={index}
+                            data-type="show"
+                            onclick={toggleShowHiddenList}
+                            tabindex="0"
+                            class="
+                                slds-m-top_small
+                                slds-m-bottom_small
+                                slds-m-left_small
+                                slds-show
+                                avonni-avatar-group__list-button
+                            "
+                        ></lightning-button>
+                    </template>
+                </div>
+
                 <template if:true={showPopover}>
                     <div
                         key={item.key}
@@ -207,55 +261,7 @@
                         </template>
                     </div>
                 </template>
-                <div
-                    class="
-                        slds-dropdown-trigger slds-dropdown-trigger_click
-                        slds-is-open
-                    "
-                    key={item.key}
-                    onblur={handleBlur}
-                    tabindex="-1"
-                >
-                    <template if:true={isNotList}>
-                        <span class={avatarWrapperClass}>
-                            <c-avonni-primitive-avatar
-                                initials={item.initials}
-                                variant={variant}
-                                fallback-icon-name="standard:macros"
-                                size={size}
-                                data-element-id="avonni-primitive-avatar-show-more-dropdown"
-                                data-item-id={index}
-                                data-type="show"
-                                class={avatarInlinePlusClass}
-                                onclick={handleAvatarClick}
-                                tabindex="0"
-                                role="button"
-                                onkeyup={handleAvatarClick}
-                            ></c-avonni-primitive-avatar>
-                        </span>
-                    </template>
-                    <template if:false={isNotList}>
-                        <lightning-button
-                            variant={listButtonVariant}
-                            label={currentlistButtonLabel}
-                            icon-name={currentListButtonIcon}
-                            icon-position={currentListButtonPosition}
-                            data-element-id="lightning-button"
-                            data-item-id={index}
-                            data-type="show"
-                            onclick={toggleShowHiddenList}
-                            tabindex="0"
-                            class="
-                                slds-m-top_small
-                                slds-m-bottom_small
-                                slds-m-left_small
-                                slds-show
-                                avonni-avatar-group__list-button
-                            "
-                        ></lightning-button>
-                    </template>
-                </div>
-            </template>
+            </div>
         </template>
         <template if:true={actionIconName}>
             <div class={actionButtonWrapperClass}>
@@ -278,5 +284,5 @@
                 </button>
             </div>
         </template>
-    </template>
+    </div>
 </template>

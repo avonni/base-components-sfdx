@@ -35,13 +35,13 @@ import {
     normalizeBoolean,
     normalizeArray,
     normalizeString,
-    deepCopy
+    deepCopy,
+    dateTimeObjectFrom
 } from 'c/utilsPrivate';
 
 import { classSet } from 'c/utils';
 
 const BUTTON_ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
-
 const BUTTON_VARIANTS = {
     valid: [
         'neutral',
@@ -55,7 +55,6 @@ const BUTTON_VARIANTS = {
     ],
     default: 'neutral'
 };
-
 const DEFAULT_LOADING_TEXT = 'Loading';
 
 const ICON_SIZES = {
@@ -159,6 +158,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     _buttonIconPosition = BUTTON_ICON_POSITIONS.default;
     _buttonVariant = BUTTON_VARIANTS.default;
     _closed = false;
+    _dateFormat;
     _fields = [];
     _hasCheckbox = false;
     _hasError = false;
@@ -244,6 +244,23 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
 
     set closed(value) {
         this._closed = normalizeBoolean(value);
+    }
+
+    /**
+     * The date format to use for the item. See {@link https://moment.github.io/luxon/#/formatting?id=table-of-tokens Luxon’s documentation} for accepted format.
+     * If you want to insert text in the label, you need to escape it using single quote.
+     * For example, the format of "Jan 14 day shift" would be <code>"LLL dd 'day shift'"</code>.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get dateFormat() {
+        return this._dateFormat;
+    }
+
+    set dateFormat(value) {
+        if (value && typeof value === 'string') this._dateFormat = value;
     }
 
     /**
@@ -424,6 +441,19 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
         return new Date(this.datetimeValue).getTime();
     }
 
+    /**
+     * Formatted date to display
+     *
+     * @type {string}
+     */
+    get formattedDate() {
+        return this.computedDatetimeValue && this.dateFormat
+            ? dateTimeObjectFrom(this.computedDatetimeValue).toFormat(
+                  this.dateFormat
+              )
+            : '';
+    }
+  
     /**
      * Check if the type of the icon is action
      */

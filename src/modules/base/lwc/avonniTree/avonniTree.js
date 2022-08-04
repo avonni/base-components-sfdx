@@ -87,7 +87,7 @@ export default class AvonniTree extends LightningElement {
     _dragState;
     _editedItemKey;
     _focusedItem;
-    _isConnected = false;
+    _connected = false;
     _mouseDownTimeout;
     _mouseOverItemTimeout;
     _selectTimeout;
@@ -98,7 +98,7 @@ export default class AvonniTree extends LightningElement {
 
         window.addEventListener('mouseup', this.handleMouseUp);
         window.addEventListener('mousemove', this.handleMouseMove);
-        this._isConnected = true;
+        this._connected = true;
     }
 
     renderedCallback() {
@@ -229,7 +229,7 @@ export default class AvonniTree extends LightningElement {
 
     set isMultiSelect(value) {
         this._isMultiSelect = value;
-        if (this._isConnected) this.resetSelection();
+        if (this._connected) this.resetSelection();
     }
 
     /**
@@ -249,7 +249,7 @@ export default class AvonniTree extends LightningElement {
             return this.treedata.cloneItems(item);
         });
 
-        if (this._isConnected) this.initItems();
+        if (this._connected) this.initItems();
     }
 
     /**
@@ -290,7 +290,7 @@ export default class AvonniTree extends LightningElement {
             typeof value === 'string'
                 ? [value]
                 : deepCopy(normalizeArray(value));
-        if (this._isConnected) this.resetSelection();
+        if (this._connected) this.resetSelection();
     }
 
     /**
@@ -908,6 +908,11 @@ export default class AvonniTree extends LightningElement {
             if (selectedItem) {
                 this.treedata.expandTo(selectedItem);
                 this.setFocusToItem(selectedItem);
+            } else if (this._focusedItem) {
+                const callbacks = this.callbackMap[this._focusedItem.key];
+                callbacks.setSelected(false);
+                callbacks.unfocus();
+                this._focusedItem = null;
             }
             this.forceChildrenSelectionUpdate();
         }

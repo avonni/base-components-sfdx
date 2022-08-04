@@ -91,6 +91,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
     @api fieldLevelHelp;
 
     /**
+     * Deprecated. The selected options are in the combobox component's DOM.
+     *
+     * @type {boolean}
+     * @deprecated
+     */
+    @api hideSelectedOptions;
+
+    /**
      * Text label for the primitive combobox.
      *
      * @type {string}
@@ -121,6 +129,14 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @public
      */
     @api name;
+
+    /**
+     * Deprecated. The selected options are in the combobox component's DOM.
+     *
+     * @type {string}
+     * @deprecated
+     */
+    @api selectedOptionsAriaLabel;
 
     _actions = [];
     _allowSearch = false;
@@ -1766,7 +1782,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         const selectedOption = this.visibleOptions.find((option) => {
             return option.value === this._highlightedOption.dataset.value;
         });
-        if (this.name === 'boubou') console.log(selectedOption);
 
         // If the option has children options, change the visible options
         if (selectedOption.hasChildren) {

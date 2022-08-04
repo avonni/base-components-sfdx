@@ -1,0 +1,116 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="slds-grid slds-wrap avonni-metric__wrapper">
+        <c-avonni-avatar
+            if:true={avatar}
+            class={avatarClass}
+            alternative-text={avatar.alternativeText}
+            fallback-icon-name={avatar.fallbackIconName}
+            hide-avatar-details
+            initials={avatar.initials}
+            size={avatar.size}
+            src={avatar.src}
+            variant={avatar.variant}
+            data-element-id="avonni-avatar"
+        ></c-avonni-avatar>
+
+        <div class="slds-col">
+            <!-- Label -->
+            <div
+                if:true={label}
+                class="avonni-metric__label"
+                data-element-id="div-label"
+            >
+                {label}
+            </div>
+            <div
+                class="
+                    slds-grid slds-grid_vertical-align-end
+                    avonni-metric__primary-and-secondary-wrapper
+                "
+            >
+                <!-- Primary -->
+                <c-avonni-primitive-metric
+                    class={primaryClass}
+                    currency-code={currencyCode}
+                    currency-display-as={currencyDisplayAs}
+                    format-style={formatStyle}
+                    maximum-fraction-digits={maximumFractionDigits}
+                    maximum-significant-digits={maximumSignificantDigits}
+                    minimum-fraction-digits={minimumFractionDigits}
+                    minimum-integer-digits={minimumIntegerDigits}
+                    minimum-significant-digits={minimumSignificantDigits}
+                    prefix={prefix}
+                    suffix={suffix}
+                    trend-breakpoint-value={trendBreakpointValue}
+                    trend-icon={trendIcon}
+                    value={value}
+                    value-sign={valueSign}
+                    data-element-id="avonni-primitive-metric-primary"
+                ></c-avonni-primitive-metric>
+
+                <!-- Secondary -->
+                <c-avonni-primitive-metric
+                    if:true={showSecondaryMetric}
+                    class={secondaryClass}
+                    currency-code={secondaryCurrencyCode}
+                    currency-display-as={secondaryCurrencyDisplayAs}
+                    format-style={secondaryFormatStyle}
+                    maximum-fraction-digits={secondaryMaximumFractionDigits}
+                    maximum-significant-digits={secondaryMaximumSignificantDigits}
+                    minimum-fraction-digits={secondaryMinimumFractionDigits}
+                    minimum-integer-digits={secondaryMinimumIntegerDigits}
+                    minimum-significant-digits={secondaryMinimumSignificantDigits}
+                    prefix={secondaryPrefix}
+                    suffix={secondarySuffix}
+                    trend-breakpoint-value={secondaryTrendBreakpointValue}
+                    trend-icon={secondaryTrendIcon}
+                    value={secondaryValue}
+                    value-sign={secondaryValueSign}
+                    data-element-id="avonni-primitive-metric-secondary"
+                ></c-avonni-primitive-metric>
+            </div>
+            <!-- Description -->
+            <div
+                if:true={description}
+                class="avonni-metric__description"
+                data-element-id="div-description"
+            >
+                {description}
+            </div>
+        </div>
+    </div>
+</template>

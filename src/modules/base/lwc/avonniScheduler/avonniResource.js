@@ -34,13 +34,16 @@ import { normalizeArray } from 'c/utilsPrivate';
 
 export default class AvonniSchedulerResource {
     constructor(props) {
+        this.avatarSrc = props.avatarSrc;
+        this.avatarFallbackIconName = props.avatarFallbackIconName;
+        this.avatarInitials = props.avatarInitials;
         this.color = props.color;
+        this.label = props.label;
         this.data = props.data;
-        this.key = props.key && props.key.toString();
         this.cells = [];
         this.minHeight = 0;
         this.referenceCells = normalizeArray(props.referenceCells);
-        this.resourceName = props.resourceName;
+        this.name = props.name;
         this.events = normalizeArray(props.events);
         this._height = 0;
         this.initCells();
@@ -54,27 +57,18 @@ export default class AvonniSchedulerResource {
     }
 
     get avatar() {
-        const {
-            resourceAvatarSrc,
-            resourceAvatarFallbackIconName,
-            resourceAvatarInitials
-        } = this.data;
         if (
-            resourceAvatarFallbackIconName ||
-            resourceAvatarInitials ||
-            resourceAvatarSrc
+            this.avatarFallbackIconName ||
+            this.avatarInitials ||
+            this.avatarSrc
         ) {
             return {
-                src: resourceAvatarSrc,
-                fallbackIconName: resourceAvatarFallbackIconName,
-                initials: resourceAvatarInitials
+                src: this.avatarSrc,
+                fallbackIconName: this.avatarFallbackIconName,
+                initials: this.avatarInitials
             };
         }
         return null;
-    }
-
-    get label() {
-        return this.resourceName || this.key;
     }
 
     initCells() {

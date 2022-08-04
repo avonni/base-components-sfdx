@@ -38,6 +38,9 @@ import {
     dateTimeObjectFrom,
     addToDate,
     deepCopy,
+    previousAllowedDay,
+    previousAllowedMonth,
+    previousAllowedTime,
     removeFromDate
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
@@ -56,11 +59,13 @@ import {
     DEFAULT_CONTEXT_MENU_EVENT_ACTIONS,
     DEFAULT_LOADING_STATE_ALTERNATIVE_TEXT,
     DEFAULT_START_DATE,
-    DEFAULT_TIME_SPAN,
-    DEFAULT_TOOLBAR_TIME_SPANS,
+    DEFAULT_SELECTED_TIME_SPAN,
+    DISPLAYS,
     HEADERS,
     PALETTES,
     PRESET_HEADERS,
+    TIME_SPANS,
+    UNITS,
     VARIANTS
 } from './avonniDefaults';
 import SchedulerResource from './avonniResource';
@@ -75,6 +80,7 @@ import { AvonniResizeObserver } from 'c/resizeObserver';
  */
 export default class AvonniScheduler extends LightningElement {
     _dialogLabels = DEFAULT_DIALOG_LABELS;
+    _displays = DISPLAYS.default;
     _availableDaysOfTheWeek = DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK;
     _availableMonths = DEFAULT_AVAILABLE_MONTHS;
     _availableTimeFrames = DEFAULT_AVAILABLE_TIME_FRAMES;
@@ -99,15 +105,14 @@ export default class AvonniScheduler extends LightningElement {
     _referenceLines = [];
     _resizeColumnDisabled = false;
     _resources = [];
-    _resourcesKeyField;
+    _selectedTimeSpan = DEFAULT_SELECTED_TIME_SPAN;
     _start = dateTimeObjectFrom(DEFAULT_START_DATE);
-    _timeSpan = DEFAULT_TIME_SPAN;
-    _toolbarTimeSpans = DEFAULT_TOOLBAR_TIME_SPANS;
+    _timeSpans = TIME_SPANS.default;
     _variant = VARIANTS.default;
     _zoomToFit = false;
 
     _allEvents = [];
-    _rowsHeight = [];
+    _connected = false;
     _draggedEvent;
     _draggedSplitter = false;
     _headersAreLoading = false;
@@ -117,6 +122,7 @@ export default class AvonniScheduler extends LightningElement {
     _numberOfVisibleCells = 0;
     _resizedEvent;
     _resizeObserver;
+    _rowsHeight = [];
     _toolbarCalendarIsFocused = false;
     cellHeight = 0;
     cellWidth = 0;
@@ -126,6 +132,7 @@ export default class AvonniScheduler extends LightningElement {
     computedResources = [];
     @track computedEvents = [];
     contextMenuActions = [];
+    currentTimeSpan = {};
     firstColumnIsHidden = false;
     firstColumnIsOpen = false;
     firstColumnWidth = 0;
@@ -140,6 +147,7 @@ export default class AvonniScheduler extends LightningElement {
     smallestHeader;
 
     connectedCallback() {
+        this.initCurrentTimeSpan();
         this.crud = eventCrudMethods(this);
         this.initHeaders();
         this.initEvents();
@@ -338,21 +346,19 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Array of header objects. If present, it will overwrite the predefined headers.
+     * Deprecated. Set the custom headers in each time span instead.
      *
      * @type {object[]}
-     * @public
+     * @deprecated
      */
     @api
     get customHeaders() {
-        return this._customHeaders;
+        return null;
     }
     set customHeaders(value) {
-        this._customHeaders = normalizeArray(value);
-
-        if (this._connected) {
-            this.initHeaders();
-        }
+        console.warn(
+            'The "custom-headers" attribute is deprecated. Set the custom headers in each time span instead.'
+        );
     }
 
     /**
@@ -571,39 +577,19 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Name of the header preset to use. The headers are displayed in columns (horizontal variant) or in rows (vertical variant). Valid values include:
-     * * minuteAndHour
-     * * minuteHourAndDay
-     * * hourAndDay
-     * * hourDayAndWeek
-     * * dayAndMonth
-     * * dayAndWeek
-     * * dayLetterAndWeek
-     * * dayWeekAndMonth
-     * * weekAndMonth
-     * * weekMonthAndYear
-     * * monthAndYear
-     * * quartersAndYear
-     * * fiveYears
+     * Deprecated. Set the headers in each time span instead.
      *
      * @type {string}
-     * @public
-     * @default hourAndDay
+     * @deprecated
      */
     @api
     get headers() {
-        return this._headers;
+        return null;
     }
     set headers(value) {
-        this._headers = normalizeString(value, {
-            fallbackValue: HEADERS.default,
-            validValues: HEADERS.valid,
-            toLowerCase: false
-        });
-
-        if (this._connected) {
-            this.initHeaders();
-        }
+        console.warn(
+            'The "headers" attribute is deprecated. Set the headers in each time span instead.'
+        );
     }
 
     /**
@@ -747,10 +733,7 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Array of datatable data objects (see [Data Table](/components/datatable/) for allowed keys). Each object represents a row (horizontal variant) or a column (vertical variant) of the scheduler.
-     * Some reserved keys are used by the scheduler outside of the data table columns:
-     * * `resourceName`: Displayed in the event edit dialog, and in the column header (vertical variant). Otherwise, the resources key field is used.
-     * * `resourceAvatarSrc`, `resourceAvatarFallbackIconName` and `resourceAvatarInitials`: If present, an avatar will be displayed to the left of the resource name, in the column header (vertical variant).
+     * Array of resource objects. The resources can be bound to events.
      *
      * @type {object[]}
      * @public
@@ -769,22 +752,19 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Name of a key of the resource objects. This key needs to be present in all resource objects. Its value needs to be unique to a resource, as it will be used as its identifier.
+     * Deprecated. The `name` field of the resource objects is used by default.
      *
      * @type {string}
-     * @public
-     * @required
+     * @deprecated
      */
     @api
     get resourcesKeyField() {
-        return this._resourcesKeyField;
+        return 'name';
     }
     set resourcesKeyField(value) {
-        this._resourcesKeyField = value ? value.toString() : undefined;
-
-        if (this._connected) {
-            this.initResources();
-        }
+        console.warn(
+            'The "resources-key-field" attribute is deprecated. The "name" field of the resource objects is used by default.'
+        );
     }
 
     /**
@@ -795,37 +775,50 @@ export default class AvonniScheduler extends LightningElement {
      */
     @api
     get rows() {
-        return this._resources;
+        return this.resources;
     }
     set rows(value) {
-        this._resources = normalizeArray(value, 'object');
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
+        this.resources = value;
         console.warn(
             'The "rows" attribute is deprecated. Use "resources" instead.'
         );
-
-        if (this._connected) {
-            this.initResources();
-        }
     }
 
     /**
-     * Deprecated. Use `resourcesKeyField` instead.
+     * Deprecated. The `name` field of the resource objects is used by default.
      *
      * @type {string}
      * @deprecated
      */
     @api
     get rowsKeyField() {
-        return this._resourcesKeyField;
+        return 'name';
     }
     set rowsKeyField(value) {
-        this._resourcesKeyField = value ? value.toString() : undefined;
         console.warn(
-            'The "rows-key-field" attribute is deprecated. Use "resources-key-field" instead.'
+            'The "rows-key-field" attribute is deprecated. The "name" field of the resource objects is used by default.'
         );
+    }
+
+    /**
+     * Unique name of the selected time span. The selected time span will determine the visible duration of the scheduler.
+     *
+     * @type {string}
+     * @default Standard.Scheduler.DayTimeSpan
+     * @public
+     */
+    @api
+    get selectedTimeSpan() {
+        return this._selectedTimeSpan;
+    }
+    set selectedTimeSpan(value) {
+        this._selectedTimeSpan =
+            typeof value === 'string' ? value : DEFAULT_SELECTED_TIME_SPAN;
 
         if (this._connected) {
-            this.initResources();
+            this.initCurrentTimeSpan();
+            this.initHeaders();
         }
     }
 
@@ -844,46 +837,110 @@ export default class AvonniScheduler extends LightningElement {
         const computedDate = dateTimeObjectFrom(value);
         this._start = computedDate || dateTimeObjectFrom(DEFAULT_START_DATE);
         this.selectedDate = dateTimeObjectFrom(this._start);
-
-        if (this._connected) {
-            this.initHeaders();
-        }
     }
 
     /**
-     * Object used to set the duration of the scheduler. It has two keys:
-     * * `unit`. Valid values include minute, hour, day, week, month and year.
-     * * `span`. The number of unit the scheduler will show.
-     * For example, if the scheduler should be four-day long, the value would be: `{ unit: 'day', span: 4 }`
+     * Deprecated. Use the `time-spans` and the `selected-time-spans` instead.
      *
      * @type {object}
-     * @public
-     * @default { unit: 'day', span: 1 }
+     * @deprecated
      */
     @api
     get timeSpan() {
-        return this._timeSpan;
+        return this.currentTimeSpan;
     }
     set timeSpan(value) {
-        this._timeSpan = typeof value === 'object' ? value : DEFAULT_TIME_SPAN;
+        console.warn(
+            'The "time-span" attribute is deprecated. Use the "time-spans" and the "selected-time-span" instead.'
+        );
+    }
+
+    /**
+    * Array of time span objects.
+    * The time spans will be displayed in the toolbar. Only three options can be visible, the others will be listed in a button menu.
+    *
+    * @type {object[]}
+    * @public
+    * @required
+    * @default [
+        {
+            headers: 'hourAndDay',
+            label: 'Day',
+            name: 'Standard.Scheduler.DayTimeSpan',
+            span: 1,
+            unit: 'day'
+        },
+        {
+            headers: 'hourAndDay',
+            label: 'Week',
+            name: 'Standard.Scheduler.WeekTimeSpan',
+            span: 1,
+            unit: 'week'
+        },
+        {
+            headers: 'dayAndMonth',
+            label: 'Month',
+            name: 'Standard.Scheduler.MonthTimeSpan',
+            span: 1,
+            unit: 'month'
+        },
+        {
+            headers: 'dayAndMonth',
+            label: 'Year',
+            name: 'Standard.Scheduler.YearTimeSpan',
+            span: 1,
+            unit: 'year'
+        }
+    ]
+    */
+    @api
+    get timeSpans() {
+        return this._timeSpans;
+    }
+    set timeSpans(value) {
+        const normalizedTimeSpans = deepCopy(normalizeArray(value, 'object'));
+        let timeSpans = normalizedTimeSpans.filter((tsp) => {
+            return tsp.name;
+        });
+        if (!timeSpans.length) {
+            timeSpans = TIME_SPANS.default;
+        }
+        timeSpans.forEach((tsp) => {
+            if (!tsp.unit) {
+                tsp.unit = TIME_SPANS.defaultUnit;
+            }
+            if (!tsp.headers) {
+                tsp.headers = TIME_SPANS.defaultHeaders;
+            }
+            if (!tsp.span) {
+                tsp.span = TIME_SPANS.defaultSpan;
+            }
+        });
+        this._timeSpans = timeSpans;
 
         if (this._connected) {
+            this.initCurrentTimeSpan();
             this.initHeaders();
         }
     }
 
     /**
-     * Time spans, to display as buttons in the toolbar. On click on the button, the scheduler time span will be updated. Only three options can be visible, the others will be listed in a button menu.
+     * Deprecated. Use the `time-spans` instead.
      *
      * @type {object[]}
-     * @public
+     * @deprecated
      */
     @api
     get toolbarTimeSpans() {
-        return this._toolbarTimeSpans;
+        return this.timeSpans;
     }
     set toolbarTimeSpans(value) {
-        this._toolbarTimeSpans = normalizeArray(value, 'object');
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
+        this.timeSpans = value;
+
+        console.warn(
+            'The "toolbar-time-spans" attribute is deprecated. Use "time-spans" instead.'
+        );
     }
 
     /**
@@ -928,18 +985,6 @@ export default class AvonniScheduler extends LightningElement {
      */
 
     /**
-     * Toolbar time spans available to the headers. If the toolbar is hidden, return an empty array.
-     *
-     * @type {object[]}
-     */
-    get availableToolbarTimeSpans() {
-        if (this.hideToolbar) {
-            return [];
-        }
-        return this.toolbarTimeSpans;
-    }
-
-    /**
      * Computed CSS classes of the cells.
      *
      * @type {string}
@@ -965,7 +1010,7 @@ export default class AvonniScheduler extends LightningElement {
         return this.computedResources.map((resource) => {
             return {
                 label: resource.label,
-                value: resource.key
+                value: resource.name
             };
         });
     }
@@ -1150,6 +1195,25 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
+     * Width of the schedule column, in pixels.
+     *
+     * @type {number}
+     */
+    get scheduleColWidth() {
+        const wrapper = this.template.querySelector(
+            '[data-element-id="div-schedule-wrapper"]'
+        );
+        const firstCol = this.firstCol;
+
+        if (wrapper && firstCol) {
+            const wrapperWidth = wrapper.getBoundingClientRect().width;
+            const firstColWidth = firstCol.getBoundingClientRect().width;
+            return wrapperWidth - firstColWidth;
+        }
+        return 0;
+    }
+
+    /**
      * Computed CSS class for the nested schedule column.
      *
      * @type {string}
@@ -1235,6 +1299,15 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
+     * True if the toolbar time span buttons should be visible.
+     *
+     * @type {boolean}
+     */
+    get showToolbarTimeSpans() {
+        return this.timeSpans.length > 1;
+    }
+
+    /**
      * Duration of one cell of the smallest unit header, in milliseconds.
      *
      * @type {number}
@@ -1270,15 +1343,28 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
+     * Computed CSS classes for the calendar selector of the toolbar.
+     *
+     * @type {string}
+     */
+    get toolbarCalendarWrapperClass() {
+        return classSet('slds-col slds-has-flexi-truncate')
+            .add({
+                'slds-text-align_center slds-p-horizontal_small':
+                    this.showToolbarTimeSpans
+            })
+            .toString();
+    }
+
+    /**
      * Array of toolbar time spans that should be displayed as buttons in the toolbar.
      *
      * @type {object[]}
      */
     get toolbarTimeSpanButtons() {
-        const buttons = deepCopy(this.toolbarTimeSpans.slice(0, 3));
-        const { span, unit } = this.timeSpan;
+        const buttons = deepCopy(this.timeSpans.slice(0, 3));
         buttons.forEach((button) => {
-            if (button.span === span && button.unit === unit) {
+            if (button.name === this.currentTimeSpan.name) {
                 button.variant = 'brand';
             } else {
                 button.variant = 'neutral';
@@ -1293,10 +1379,9 @@ export default class AvonniScheduler extends LightningElement {
      * @type {object[]}
      */
     get toolbarTimeSpanMenuItems() {
-        const items = deepCopy(this.toolbarTimeSpans.slice(3));
-        const { span, unit } = this.timeSpan;
+        const items = deepCopy(this.timeSpans.slice(3));
         items.forEach((item) => {
-            if (item.span === span && item.unit === unit) {
+            if (item.name === this.currentTimeSpan.name) {
                 item.checked = true;
             }
         });
@@ -1313,7 +1398,7 @@ export default class AvonniScheduler extends LightningElement {
             return null;
         }
 
-        const unit = this.timeSpan.unit;
+        const unit = this.currentTimeSpan.unit;
         let format;
         switch (unit) {
             case 'day':
@@ -1425,7 +1510,7 @@ export default class AvonniScheduler extends LightningElement {
             return;
         }
         this.selectedDate = selectedDate;
-        const unit = this.timeSpan.unit;
+        const unit = this.currentTimeSpan.unit;
         let start;
 
         // Compensate the fact that Luxon weeks start on Monday
@@ -1474,16 +1559,56 @@ export default class AvonniScheduler extends LightningElement {
      */
 
     /**
+     * Set the current time span value.
+     */
+    initCurrentTimeSpan() {
+        this.currentTimeSpan = this.timeSpans.find((tsp) => {
+            return tsp.name === this.selectedTimeSpan;
+        });
+
+        if (
+            !this.currentTimeSpan &&
+            this.selectedTimeSpan !== DEFAULT_SELECTED_TIME_SPAN
+        ) {
+            // Set the current time span to the default time span, if it exists
+            this.currentTimeSpan = this.timeSpans.find((tsp) => {
+                return tsp.name === DEFAULT_SELECTED_TIME_SPAN;
+            });
+        }
+        if (!this.currentTimeSpan) {
+            // Set the selected time span to the first time span
+            this.currentTimeSpan = this.timeSpans[0];
+        }
+    }
+
+    /**
      * Create the computed headers.
      */
     initHeaders() {
         this._headersAreLoading = true;
+        const { customHeaders, headers } = this.currentTimeSpan;
 
-        // Use the custom headers or a preset
-        const headers = this.customHeaders.length
-            ? this.customHeaders
-            : PRESET_HEADERS[this.headers];
-        this.computedHeaders = deepCopy(headers);
+        if (customHeaders) {
+            const normalizedHeaders = customHeaders.filter((hd) => {
+                const validUnit = UNITS.includes(hd.unit);
+                const validSpan = hd.span > 0;
+                const validLabel = typeof hd.label === 'string';
+                return validUnit && validSpan && validLabel;
+            });
+
+            if (normalizedHeaders.length) {
+                this.computedHeaders = deepCopy(normalizedHeaders);
+                return;
+            }
+        }
+
+        const normalizedHeadersName = normalizeString(headers, {
+            validValues: HEADERS.valid,
+            fallbackValue: HEADERS.default,
+            toLowerCase: false
+        });
+
+        this.computedHeaders = deepCopy(PRESET_HEADERS[normalizedHeadersName]);
     }
 
     /**
@@ -1530,18 +1655,14 @@ export default class AvonniScheduler extends LightningElement {
      * Create the computed resources.
      */
     initResources() {
-        if (
-            !this.smallestHeader ||
-            !this.resources ||
-            !this.resourcesKeyField
-        ) {
+        if (!this.smallestHeader || !this.resources.length) {
             this.computedResources = [];
             return;
         }
 
         let colorIndex = 0;
         this.computedResources = this.resources.map((resource) => {
-            const resourceKey = resource[this.resourcesKeyField];
+            const name = resource.name;
 
             // If there is no color left in the palette,
             // restart from the beginning
@@ -1549,13 +1670,16 @@ export default class AvonniScheduler extends LightningElement {
                 colorIndex = 0;
             }
 
-            const occurrences = this.getOccurrencesFromResourceKey(resourceKey);
+            const occurrences = this.getOccurrencesFromResourceName(name);
 
             const computedResource = new SchedulerResource({
+                avatarFallbackIconName: resource.avatarFallbackIconName,
+                avatarInitials: resource.avatarInitials,
+                avatarSrc: resource.avatarSrc,
                 color: this.palette[colorIndex],
-                key: resourceKey,
+                label: resource.label,
+                name,
                 referenceCells: this.smallestHeader.cells,
-                resourceName: resource.resourceName,
                 events: occurrences,
                 // We store the initial resource object in a variable,
                 // in case one of its fields is used by an event's label
@@ -1565,7 +1689,7 @@ export default class AvonniScheduler extends LightningElement {
             // Set the min-height to the datatable rows height
             if (this._rowsHeight.length && !this.isVertical) {
                 const dataRowHeight = this._rowsHeight.find(
-                    (dataRow) => dataRow.resourceKey === resourceKey
+                    (dataRow) => dataRow.resourceName === name
                 ).height;
                 computedResource.minHeight = dataRowHeight;
             }
@@ -1650,12 +1774,12 @@ export default class AvonniScheduler extends LightningElement {
             );
 
             resourceElements.forEach((resourceElement, index) => {
-                const key = resourceElement.dataset.key;
-                const computedResource = this.getResourceFromKey(key);
+                const name = resourceElement.dataset.name;
+                const computedResource = this.getResourceFromName(name);
                 const rowHeight = computedResource.height;
 
                 const dataRow = this._rowsHeight.find((row) => {
-                    return row.resourceKey === key;
+                    return row.resourceName === name;
                 });
                 const dataRowHeight = dataRow.height;
 
@@ -1669,7 +1793,7 @@ export default class AvonniScheduler extends LightningElement {
                 const normalizedHeight =
                     index === 0 ? rowHeight - 1 : rowHeight;
                 // Reset the datatable row height, in case the height was set by events
-                this.datatable.setRowHeight(key, normalizedHeight);
+                this.datatable.setRowHeight(name, normalizedHeight);
 
                 resourceElement.style = style;
             });
@@ -1786,7 +1910,7 @@ export default class AvonniScheduler extends LightningElement {
             // Get all the event occurrences of the resource
             const occurrenceElements = Array.from(
                 this.template.querySelectorAll(
-                    `.avonni-scheduler__primitive-event[data-resource-key="${resource.key}"]`
+                    `.avonni-scheduler__primitive-event[data-resource-name="${resource.name}"]`
                 )
             );
 
@@ -1882,11 +2006,11 @@ export default class AvonniScheduler extends LightningElement {
             '[data-element-id="avonni-primitive-scheduler-event-occurrence"]'
         );
         eventOccurrences.forEach((occurrence) => {
-            if (occurrence.disabled) {
-                occurrence.updateThickness();
-            }
             if (this._updateOccurrencesLength) {
                 occurrence.updateLength();
+            }
+            if (occurrence.disabled) {
+                occurrence.updateThickness();
             }
             occurrence.updatePosition();
         });
@@ -1914,10 +2038,10 @@ export default class AvonniScheduler extends LightningElement {
 
         this._rowsHeight = [];
         this.computedResources.forEach((resource) => {
-            const resourceKey = resource.key;
-            const height = this.datatable.getRowHeight(resourceKey);
+            const resourceName = resource.name;
+            const height = this.datatable.getRowHeight(resourceName);
             resource.minHeight = height;
-            this._rowsHeight.push({ resourceKey, height });
+            this._rowsHeight.push({ resourceName, height });
         });
     }
 
@@ -1926,7 +2050,9 @@ export default class AvonniScheduler extends LightningElement {
      */
     updateVisibleResources() {
         this.computedResources.forEach((resource) => {
-            resource.events = this.getOccurrencesFromResourceKey(resource.key);
+            resource.events = this.getOccurrencesFromResourceName(
+                resource.name
+            );
             resource.referenceCells = this.smallestHeader.cells;
             resource.initCells();
         });
@@ -2015,17 +2141,17 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Find the event occurrences for a given resource key field.
+     * Find the event occurrences for a given resource name.
      *
-     * @param {string} key The unique key of the resource.
+     * @param {string} name The unique name of the resource.
      * @returns {object[]} Array of occurrence objects.
      */
-    getOccurrencesFromResourceKey(key) {
+    getOccurrencesFromResourceName(name) {
         const occurrences = [];
         this.computedEvents.forEach((event) => {
             if (!event.disabled) {
                 const occ = event.occurrences.filter((occurrence) => {
-                    return occurrence.resourceKey === key;
+                    return occurrence.resourceName === name;
                 });
                 occurrences.push(occ);
             }
@@ -2035,13 +2161,15 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     /**
-     * Find a computed resource from its key field value.
+     * Find a computed resource from its name.
      *
-     * @param {string} key The unique key of the resource.
+     * @param {string} name The unique name of the resource.
      * @returns {SchedulerResource} The computed resource object.
      */
-    getResourceFromKey(key) {
-        return this.computedResources.find((resource) => resource.key === key);
+    getResourceFromName(name) {
+        return this.computedResources.find(
+            (resource) => resource.name === name
+        );
     }
 
     /**
@@ -2319,7 +2447,9 @@ export default class AvonniScheduler extends LightningElement {
             resource,
             computedPosition
         );
-        const computedResource = this.getResourceFromKey(resource.dataset.key);
+        const computedResource = this.getResourceFromName(
+            resource.dataset.name
+        );
         const computedCell = computedResource.getCellFromStart(
             Number(hoveredCell.dataset.start)
         );
@@ -2363,8 +2493,8 @@ export default class AvonniScheduler extends LightningElement {
         const occurrence = this.selection.occurrence;
 
         // Remove the occurrence from the resource
-        const resourceKey = occurrence.resourceKey;
-        const resource = this.getResourceFromKey(resourceKey);
+        const resourceName = occurrence.resourceName;
+        const resource = this.getResourceFromName(resourceName);
         resource.removeEvent(occurrence);
 
         if (side === 'end') {
@@ -2401,18 +2531,18 @@ export default class AvonniScheduler extends LightningElement {
             .toISO();
 
         // Update the resources
-        const resourceKey = resource.dataset.key;
-        const previousResourceKey = occurrence.resourceKey;
+        const resourceName = resource.dataset.name;
+        const previousResourceName = occurrence.resourceName;
 
-        if (previousResourceKey !== resourceKey) {
-            const keyFieldIndex = occurrence.keyFields.findIndex(
-                (key) => key === previousResourceKey
+        if (previousResourceName !== resourceName) {
+            const resourceIndex = occurrence.resourceNames.findIndex(
+                (name) => name === previousResourceName
             );
-            draftValues.keyFields = [...occurrence.keyFields];
-            draftValues.keyFields.splice(keyFieldIndex, 1);
+            draftValues.resourceNames = [...occurrence.resourceNames];
+            draftValues.resourceNames.splice(resourceIndex, 1);
 
-            if (!draftValues.keyFields.includes(resourceKey)) {
-                draftValues.keyFields.push(resourceKey);
+            if (!draftValues.resourceNames.includes(resourceName)) {
+                draftValues.resourceNames.push(resourceName);
             }
         }
     }
@@ -2508,7 +2638,6 @@ export default class AvonniScheduler extends LightningElement {
         } else {
             this.cellWidth = cellSize;
         }
-        this.updateResourcesStyle();
     }
 
     /**
@@ -2926,9 +3055,9 @@ export default class AvonniScheduler extends LightningElement {
     /**
      * Handle the change event fired by the edit dialog key fields combobox. Save the new resource keys to the draft values.
      */
-    handleEventKeyFieldsChange(event) {
-        const keyFields = event.detail.value;
-        this.selection.draftValues.keyFields = keyFields;
+    handleEventResourceNamesChange(event) {
+        const resourceNames = event.detail.value;
+        this.selection.draftValues.resourceNames = resourceNames;
     }
 
     /**
@@ -2986,8 +3115,8 @@ export default class AvonniScheduler extends LightningElement {
             if (occurrence.title !== event.title) {
                 event.title = occurrence.title;
             }
-            if (occurrence.keyFields !== event.keyFields) {
-                event.keyFields = occurrence.keyFields;
+            if (occurrence.resourceNames !== event.resourceNames) {
+                event.resourceNames = occurrence.resourceNames;
             }
 
             // Update the event with the draft values from the edit form
@@ -3161,14 +3290,36 @@ export default class AvonniScheduler extends LightningElement {
     }
 
     handleToolbarNextClick() {
-        const { unit, span } = this.timeSpan;
+        const { unit, span } = this.currentTimeSpan;
         const date = addToDate(this.start, unit, span);
         this.goToDate(date);
     }
 
     handleToolbarPrevClick() {
-        const { unit, span } = this.timeSpan;
-        const date = removeFromDate(this.start, unit, span);
+        const { unit, span } = this.currentTimeSpan;
+
+        // If the date is set to one that is not available,
+        // the headers will automatically go to the next available date,
+        // preventing the schedule from going in the past
+        let date = removeFromDate(this.start, unit, span);
+        if (unit === 'year' || unit === 'month') {
+            date = previousAllowedMonth(date, this.availableMonths);
+        } else if (unit === 'week' || unit === 'day') {
+            date = previousAllowedDay(
+                date,
+                this.availableMonths,
+                this.availableDaysOfTheWeek
+            );
+        } else {
+            date = previousAllowedTime(
+                date,
+                this.availableMonths,
+                this.availableDaysOfTheWeek,
+                this.availableTimeFrames,
+                unit,
+                span
+            );
+        }
         this.goToDate(date);
     }
 
@@ -3178,29 +3329,37 @@ export default class AvonniScheduler extends LightningElement {
      * @param {Event} event
      */
     handleToolbarTimeSpanClick(event) {
-        const span = Number(event.target.dataset.span);
-        const { unit, headers } = event.target.dataset;
-        if (!unit) {
+        const name = event.target.value;
+        if (!name || name === this._selectedTimeSpan) {
             return;
         }
-
+        this._rowsHeight = [];
+        this._selectedTimeSpan = name;
+        const timeSpan = this.timeSpans.find((ts) => ts.name === name);
+        this.currentTimeSpan = timeSpan;
         const selectedDate = this.selectedDate || this.start;
-        this._start = selectedDate.startOf(unit);
-        this._timeSpan = { unit, span };
+        this._start = selectedDate.startOf(timeSpan.unit);
 
-        if (unit === 'week') {
+        if (timeSpan.unit === 'week') {
             // Compensate the fact that luxon weeks start on Monday
             this._start = removeFromDate(this.start, 'day', 1);
         }
 
-        const normalizedHeaders = normalizeString(headers, {
-            validValues: HEADERS.valid,
-            fallbackValue: HEADERS.default,
-            toLowerCase: false
-        });
+        this.initHeaders();
 
-        this.computedHeaders = deepCopy(PRESET_HEADERS[normalizedHeaders]);
-        this._rowsHeight = [];
+        /**
+         * The event fired when the selected time span changes.
+         *
+         * @event
+         * @name timespanselect
+         * @param {string} name New selected time span name.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('timespanselect', {
+                detail: { name }
+            })
+        );
     }
 
     /**

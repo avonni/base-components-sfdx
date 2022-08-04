@@ -642,9 +642,8 @@ export default class AvonniInputChoiceSet extends LightningElement {
         if (this.isMultiSelect) {
             this._value = this.handleValueChange(checkboxes);
         } else {
-            if (this.required && this.value === value) {
-                // Prevent unselecting the current option when the input is required
-                // (make sure the radio behaviour works when the type is 'button')
+            if (this.value === value) {
+                // Prevent unselecting the current option when the type is 'button'
                 event.currentTarget.checked = true;
                 return;
             }

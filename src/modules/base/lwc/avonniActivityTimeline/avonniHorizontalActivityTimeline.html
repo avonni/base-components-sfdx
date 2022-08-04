@@ -1,0 +1,196 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="avonni-activity-timeline__container">
+        <template if:true={hasHeader}>
+            <div
+                class="
+                    slds-card__header
+                    slds-m-bottom_x-small
+                    slds-p-around_none
+                "
+            >
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure" if:true={iconName}>
+                        <lightning-icon
+                            data-element-id="avonni-activity-timeline-icon"
+                            icon-name={iconName}
+                            size={iconSize}
+                        ></lightning-icon>
+                    </div>
+                    <div class="slds-media__body" if:true={title}>
+                        <h2 class="slds-section__title">{title}</h2>
+                    </div>
+                    <div
+                        class="
+                            slds-media__body
+                            slds-text-align_right
+                            slds-text-body_small
+                        "
+                        data-element-id="avonni-activity-horizontal-timeline-title"
+                    >
+                        Showing : {intervalMinDate} - {intervalMaxDate}
+                        <span>&#8226;</span> {intervalDaysLength} day(s)
+                        <span>&#8226;</span> {displayedItemsLength} item(s)
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Horizontal timeline with D3 -->
+        <div
+            class="
+                avonni-activity-timeline__horizontal-timeline
+                slds-box slds-box_xx-small
+                slds-p-around_none
+            "
+            data-element-id="avonni-activity-timeline__horizontal-timeline"
+        >
+            <div
+                class="
+                    slds-is-relative
+                    avonni-activity-timeline__horizontal-timeline-scrolling-container
+                "
+                data-element-id="avonni-activity-timeline__horizontal-timeline-scrolling-container"
+            >
+                <div
+                    class="avonni-activity-timeline__horizontal-timeline-items"
+                    data-element-id="avonni-activity-timeline__horizontal-timeline-items"
+                    lwc:dom="manual"
+                ></div>
+                <!-- Popover item -->
+                <div
+                    if:true={showItemPopOver}
+                    class="slds-popover slds-popover_panel slds-is-absolute"
+                    name={selectedItem.name}
+                    data-element-id="avonni-horizontal-activity-timeline__item-popover"
+                    data-name={selectedItem.name}
+                    onclick={handleItemClick}
+                >
+                    <!-- Close button -->
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        size="small"
+                        variant="bare"
+                        onclick={handleTooltipClose}
+                        class="
+                            slds-popover__close
+                            slds-p-top_xxx-small
+                            slds-float_right
+                        "
+                    ></lightning-button-icon>
+
+                    <header
+                        class="slds-media slds-media_center slds-p-top_x-small"
+                    >
+                        <!-- item's icon -->
+                        <lightning-icon
+                            if:true={selectedItem.iconName}
+                            icon-name={selectedItem.iconName}
+                            size={popoverIconSize}
+                            class="slds-media__figure"
+                        ></lightning-icon>
+                        <!-- item's title -->
+                        <div
+                            class="
+                                slds-text-heading_small
+                                slds-has-flexi-truncate
+                            "
+                        >
+                            <a
+                                if:true={selectedItem.href}
+                                href={selectedItem.href}
+                            >
+                                <h3 class="slds-truncate">
+                                    {selectedItem.title}
+                                </h3>
+                            </a>
+                            <h3
+                                if:false={selectedItem.href}
+                                class="slds-truncate"
+                            >
+                                {selectedItem.title}
+                            </h3>
+                        </div>
+                    </header>
+                    <!-- Table (2 columns) for fields -->
+                    <footer
+                        class="slds-grid slds-wrap slds-media__body"
+                        if:true={selectedItem.fields}
+                    >
+                        <div class="slds-has-flexi-truncate">
+                            <lightning-layout
+                                horizontal-align="spread"
+                                multiple-rows="true"
+                            >
+                                <template
+                                    for:each={selectedItem.fields}
+                                    for:item="field"
+                                    for:index="index"
+                                >
+                                    <lightning-layout-item
+                                        class="
+                                            slds-size_1-of-2
+                                            slds-p-top_x-small
+                                            slds-p-right_small
+                                            slds-line-clamp_x-small
+                                        "
+                                        key={field.value}
+                                    >
+                                        <c-avonni-output-data
+                                            label={field.label}
+                                            value={field.value}
+                                            type={field.type}
+                                            type-attributes={field.typeAttributes}
+                                            data-element-id="avonni-output-data"
+                                        ></c-avonni-output-data>
+                                    </lightning-layout-item>
+                                </template>
+                            </lightning-layout>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+            <div
+                data-element-id="avonni-activity-timeline__horizontal-timeline-axis"
+                lwc:dom="manual"
+            ></div>
+            <div
+                data-element-id="avonni-activity-timeline__horizontal-timeline-scroll-axis"
+                lwc:dom="manual"
+            ></div>
+        </div>
+    </div>
+</template>

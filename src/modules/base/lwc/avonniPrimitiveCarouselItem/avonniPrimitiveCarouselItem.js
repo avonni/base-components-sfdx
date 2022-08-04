@@ -32,7 +32,9 @@
 
 import { LightningElement, api } from 'lwc';
 import { classSet } from 'c/utils';
-import { normalizeString } from 'c/utilsPrivate';
+import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
+import tag from './avonniTag.html';
+import noTag from './avonniNoTag.html';
 
 const ACTIONS_POSITIONS = {
     valid: [
@@ -69,6 +71,10 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
     _actionsPosition = ACTIONS_POSITIONS.default;
     _actionsVariant = ACTIONS_VARIANTS.default;
     _carouselContentHeight = DEFAULT_CAROUSEL_HEIGHT;
+
+    render() {
+        return normalizeBoolean(this.href) ? tag : noTag;
+    }
 
     /*
      * ------------------------------------------------------------
@@ -193,9 +199,22 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
             .add({
                 'slds-m-horizontal_xx-small': this._actionsVariant === 'border',
                 'slds-m-right_x-small slds-m-top_xx-small':
-                    this._actionsVariant === 'bare'
+                    this._actionsVariant === 'bare',
+                'avonni-carousel__button-icon-top':
+                    this._actionsPosition === 'top-right' ||
+                    this._actionsPosition === 'top-left',
+                'avonni-carousel__button-icon-bottom':
+                    this._actionsPosition === 'bottom-right' ||
+                    this._actionsPosition === 'bottom-left' ||
+                    this._actionsPosition === 'bottom-center'
             })
             .toString();
+    }
+
+    get computedLightningButtonMenuActionClass() {
+        return classSet('').add({
+            'slds-hide_small': this.isMenuVariant === false
+        });
     }
 
     /**
@@ -314,6 +333,20 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
     handleActionClick(event) {
         event.preventDefault();
         const actionName = event.currentTarget.name;
+        this.actionDispatcher(actionName);
+    }
+
+    /**
+     * Menu select event handler
+     *
+     * @param {Event}
+     */
+    handleMenuSelect(event) {
+        const actionName = event.currentTarget.name;
+        this.actionDispatcher(actionName);
+    }
+
+    actionDispatcher(actionName) {
         const {
             title,
             description,
@@ -349,5 +382,14 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
                 }
             })
         );
+    }
+
+    /**
+     * Prevent the default event browser behavior
+     *
+     * @param {Event}
+     */
+    preventDefault(event) {
+        event.preventDefault();
     }
 }

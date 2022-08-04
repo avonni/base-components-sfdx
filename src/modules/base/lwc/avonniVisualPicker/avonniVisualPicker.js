@@ -97,6 +97,7 @@ export default class AvonniVisualPicker extends LightningElement {
     @api name = generateUUID();
 
     _disabled = DEFAULT_DISABLED;
+    _hideBorder;
     _hideCheckMark = DEFAULT_HIDE_CHECK_MARK;
     _items = [];
     _ratio = VISUAL_PICKER_RATIOS.default;
@@ -149,6 +150,24 @@ export default class AvonniVisualPicker extends LightningElement {
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
     }
+
+    /**
+     * Deprecated. Use the styling hooks instead.
+     *
+     * @type {boolean}
+     * @deprecated
+     */
+    @api
+    get hideBorder() {
+        return this._hideBorder;
+    }
+    set hideBorder(value) {
+        this._hideBorder = value;
+        console.warn(
+            'The "hide-border" attribute is deprecated. Use the styling hooks instead.'
+        );
+    }
+
     /**
      * If present, hide the check mark when selected.
      *

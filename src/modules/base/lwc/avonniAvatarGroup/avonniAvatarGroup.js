@@ -430,9 +430,20 @@ export default class AvonniAvatarGroup extends LightningElement {
                 'slds-avatar-group_large': this.size === 'large',
                 'avonni-avatar-group_x-large': this.size === 'x-large',
                 'avonni-avatar-group_xx-large': this.size === 'xx-large',
-                'avonni-avatar-group_circle': this.variant === 'circle'
+                'avonni-avatar-group_circle': this.variant === 'circle',
+                'avonni-avatar-group_in-line': this.layout === 'stack'
             })
             .toString();
+    }
+
+    /**
+     * Class to add a flex row gap to grid and stack layouts
+     * @type {string}
+     */
+    get avatarFlexWrapperClass() {
+        return classSet({
+            'avonni-avatar-group__avatar-wrapper': this.layout !== 'list'
+        }).toString();
     }
 
     /**
@@ -443,10 +454,9 @@ export default class AvonniAvatarGroup extends LightningElement {
         return classSet('avonni-avatar-group__avatar')
             .add({
                 'avonni-avatar-group_in-line': this.layout === 'stack',
-                'avonni-avatar-group__avatar_color-border-circle':
-                    this.layout === 'stack' && this.variant === 'circle',
-                'avonni-avatar-group__avatar_color-border-square':
-                    this.layout === 'stack' && this.variant === 'square'
+                'avonni-avatar-group__avatar_radius-border-square':
+                    (this.layout === 'stack' || this.layout === 'grid') &&
+                    this.variant === 'square'
             })
             .add(`avonni-avatar-${this.size}`)
             .toString();
@@ -460,10 +470,9 @@ export default class AvonniAvatarGroup extends LightningElement {
         return classSet('avonni-avatar-group__avatar avonni-avatar-group__plus')
             .add({
                 'avonni-avatar-group_in-line ': this.layout === 'stack',
-                'avonni-avatar-group__avatar_color-border-circle':
-                    this.layout === 'stack' && this.variant === 'circle',
-                'avonni-avatar-group__avatar_color-border-square':
-                    this.layout === 'stack' && this.variant === 'square'
+                'avonni-avatar-group__avatar_radius-border-square':
+                    (this.layout === 'stack' || this.layout === 'grid') &&
+                    this.variant === 'square'
             })
             .add(`avonni-avatar-${this.size}`)
             .toString();
@@ -474,11 +483,13 @@ export default class AvonniAvatarGroup extends LightningElement {
      * @type {string}
      */
     get avatarWrapperClass() {
-        return classSet('avonni-avatar-group__avatar-container').add({
-            'slds-show': this.layout === 'list',
-            'avonni-avatar-group_circle': this.variant === 'circle',
-            'slds-p-right_x-small': this.layout === 'grid'
-        });
+        return classSet('avonni-avatar-group__avatar-container')
+            .add({
+                'slds-show': this.layout === 'list',
+                'avonni-avatar-group_circle': this.variant === 'circle',
+                'slds-p-right_x-small': this.layout === 'grid'
+            })
+            .toString();
     }
 
     /**
@@ -488,13 +499,13 @@ export default class AvonniAvatarGroup extends LightningElement {
     get actionButtonClass() {
         return classSet('avonni-avatar-group__action-button')
             .add({
-                'avonni-avatar-group_action-button-in-line':
+                'avonni-avatar-group__avatar-in-line-button':
                     this.layout === 'stack'
             })
             .add({
-                'avonni-avatar-group__action-button_circle avonni-avatar-group__avatar_color-border-circle':
+                'avonni-avatar-group__action-button_circle':
                     this.variant === 'circle',
-                'avonni-avatar-group__action-button_square avonni-avatar-group__avatar_color-border-square':
+                'avonni-avatar-group__action-button_square':
                     this.variant === 'square',
                 'avonni-avatar-group__action-button_x-large':
                     this.size === 'x-large',
@@ -517,18 +528,27 @@ export default class AvonniAvatarGroup extends LightningElement {
      * @type {string}
      */
     get actionButtonWrapperClass() {
-        let classes = classSet(`avonni-action-button-${this.size}`)
+        return classSet(`avonni-action-button-${this.size}`)
             .add({
                 'avonni-avatar-group__action-button-base-layout':
                     this.layout !== 'list',
                 'avonni-avatar-group__action-button-list slds-show':
                     this.layout === 'list',
-                'avonni-avatar-group_action-button-in-line':
+                'avonni-avatar-group__avatar-button-in-line':
                     this.layout === 'stack'
             })
             .toString();
+    }
 
-        return classes;
+    /**
+     * Class to reorder show more section
+     * @type {string}
+     */
+    get showMoreSectionClass() {
+        return classSet({
+            'slds-grid slds-grid_vertical-reverse': this.layout === 'list',
+            'slds-show_inline': this.layout !== 'list'
+        }).toString();
     }
 
     /**
@@ -536,9 +556,9 @@ export default class AvonniAvatarGroup extends LightningElement {
      * @type {string}
      */
     get hiddenListClass() {
-        return classSet().add({
+        return classSet({
             'slds-dropdown slds-dropdown_left': this.layout !== 'list'
-        });
+        }).toString();
     }
 
     /**
@@ -613,7 +633,9 @@ export default class AvonniAvatarGroup extends LightningElement {
      * If another avatar was clicked, dispatch the avatarclick event.
      */
     handleAvatarClick(event) {
-        if (event.type === 'keyup' && event.key !== 'Enter') return;
+        if (event.type === 'keyup' && event.key !== 'Enter') {
+            return;
+        }
 
         const itemId = event.target.dataset.itemId;
         const type = event.target.dataset.type;
@@ -636,6 +658,7 @@ export default class AvonniAvatarGroup extends LightningElement {
              * @event
              * @name avatarclick
              * @param {object} item The avatar detail.
+             * @param {string} name Name of the avatar.
              * @bubbles
              * @cancelable
              * @public
@@ -645,12 +668,15 @@ export default class AvonniAvatarGroup extends LightningElement {
                     bubbles: true,
                     cancelable: true,
                     detail: {
-                        item
+                        item,
+                        name: item.name
                     }
                 })
             );
 
-            this.showPopover = false;
+            if (this.layout !== 'list') {
+                this.showPopover = false;
+            }
             this.cancelBlur();
         }
     }
@@ -700,13 +726,15 @@ export default class AvonniAvatarGroup extends LightningElement {
          * @name avataractionclick
          * @param {object} item The avatar detail.
          * @param {string} name The action name.
+         * @param {string} targetName Name of the avatar.
          * @public
          */
         this.dispatchEvent(
             new CustomEvent('avataractionclick', {
                 detail: {
                     item,
-                    name
+                    name,
+                    targetName: item.name
                 }
             })
         );

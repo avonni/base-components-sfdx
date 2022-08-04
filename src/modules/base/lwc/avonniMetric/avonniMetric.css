@@ -1,0 +1,230 @@
+.avonni-metric__wrapper {
+    text-align: var(--avonni-metric-alignment, left);
+}
+.avonni-metric__primary-and-secondary-wrapper {
+    justify-content: var(--avonni-metric-alignment, left);
+}
+
+.avonni-metric__avatar_after-text {
+    order: 1;
+}
+
+/* Texts and value */
+.avonni-metric__description {
+    font-size: var(--avonni-metric-description-font-size, 0.75rem);
+    font-weight: var(--avonni-metric-description-font-weight, normal);
+    color: var(--avonni-metric-description-text-color, #747474);
+}
+
+.avonni-metric__label {
+    font-size: var(--avonni-metric-label-font-size, 0.875rem);
+    font-weight: var(--avonni-metric-label-font-weight, normal);
+    color: var(--avonni-metric-label-text-color, #444444);
+}
+
+.avonni-metric__primary {
+    --avonni-primitive-metric-prefix-font-size: var(
+        --avonni-metric-prefix-font-size,
+        1rem
+    );
+    --avonni-primitive-metric-prefix-font-weight: var(
+        --avonni-metric-prefix-font-weight,
+        bold
+    );
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-prefix-text-color,
+        #181818
+    );
+
+    --avonni-primitive-metric-suffix-font-size: var(
+        --avonni-metric-suffix-font-size,
+        1rem
+    );
+    --avonni-primitive-metric-suffix-font-weight: var(
+        --avonni-metric-suffix-font-weight,
+        bold
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-suffix-text-color,
+        #181818
+    );
+
+    --avonni-primitive-metric-value-font-size: var(
+        --avonni-metric-value-font-size,
+        1.5rem
+    );
+    --avonni-primitive-metric-value-font-weight: var(
+        --avonni-metric-value-font-weight,
+        bold
+    );
+    --avonni-primitive-metric-value-line-height: var(
+        --avonni-metric-value-line-height,
+        1.25
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-value-text-color,
+        #181818
+    );
+}
+
+.avonni-metric__primary_neutral-trend {
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-neutral-trend-text-color,
+        #444444
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-neutral-trend-text-color,
+        #444444
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-neutral-trend-text-color,
+        #444444
+    );
+}
+
+.avonni-metric__primary_positive-trend {
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-positive-trend-text-color,
+        #2e844a
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-positive-trend-text-color,
+        #2e844a
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-positive-trend-text-color,
+        #2e844a
+    );
+}
+
+.avonni-metric__primary_negative-trend {
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-negative-trend-text-color,
+        #ba0517
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-negative-trend-text-color,
+        #ba0517
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-negative-trend-text-color,
+        #ba0517
+    );
+}
+
+.avonni-metric__secondary {
+    --avonni-primitive-metric-prefix-font-size: var(
+        --avonni-metric-secondary-prefix-font-size,
+        0.8125rem
+    );
+
+    --avonni-primitive-metric-prefix-font-weight: var(
+        --avonni-metric-secondary-prefix-font-weight,
+        bold
+    );
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-secondary-prefix-text-color,
+        #444444
+    );
+
+    --avonni-primitive-metric-suffix-font-size: var(
+        --avonni-metric-secondary-suffix-font-size,
+        0.8125rem
+    );
+    --avonni-primitive-metric-suffix-font-weight: var(
+        --avonni-metric-secondary-suffix-font-weight,
+        bold
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-secondary-suffix-text-color,
+        #444444
+    );
+
+    --avonni-primitive-metric-value-font-size: var(
+        --avonni-metric-secondary-value-font-size,
+        0.8125rem
+    );
+    --avonni-primitive-metric-value-font-weight: var(
+        --avonni-metric-secondary-value-font-weight,
+        bold
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-secondary-value-text-color,
+        #444444
+    );
+}
+
+.avonni-metric__secondary_neutral-trend {
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-secondary-neutral-trend-text-color,
+        #181818
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-secondary-neutral-trend-text-color,
+        #181818
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-secondary-neutral-trend-text-color,
+        #181818
+    );
+    --avonni-primitive-metric-color-background: var(
+        --avonni-metric-secondary-neutral-trend-color-background,
+        #f3f3f3
+    );
+    --avonni-primitive-metric-radius: var(
+        --avonni-metric-secondary-neutral-trend-radius,
+        0.25rem
+    );
+    --avonni-primitive-metric-spacing-block: 0.25rem;
+    --avonni-primitive-metric-spacing-inline: 0.25rem;
+}
+
+.avonni-metric__secondary_positive-trend {
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-secondary-positive-trend-text-color,
+        #2e844a
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-secondary-positive-trend-text-color,
+        #2e844a
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-secondary-positive-trend-text-color,
+        #2e844a
+    );
+    --avonni-primitive-metric-color-background: var(
+        --avonni-metric-secondary-positive-trend-color-background,
+        #cdefc4
+    );
+    --avonni-primitive-metric-radius: var(
+        --avonni-metric-secondary-positive-trend-radius,
+        0.25rem
+    );
+    --avonni-primitive-metric-spacing-block: 0.25rem;
+    --avonni-primitive-metric-spacing-inline: 0.25rem;
+}
+
+.avonni-metric__secondary_negative-trend {
+    --avonni-primitive-metric-prefix-text-color: var(
+        --avonni-metric-secondary-negative-trend-text-color,
+        #ba0517
+    );
+    --avonni-primitive-metric-suffix-text-color: var(
+        --avonni-metric-secondary-negative-trend-text-color,
+        #ba0517
+    );
+    --avonni-primitive-metric-value-text-color: var(
+        --avonni-metric-secondary-negative-trend-text-color,
+        #ba0517
+    );
+    --avonni-primitive-metric-color-background: var(
+        --avonni-metric-secondary-negative-trend-color-background,
+        #feded8
+    );
+    --avonni-primitive-metric-radius: var(
+        --avonni-metric-secondary-negative-trend-radius,
+        0.25rem
+    );
+    --avonni-primitive-metric-spacing-block: 0.25rem;
+    --avonni-primitive-metric-spacing-inline: 0.25rem;
+}

@@ -1,0 +1,135 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <article class="avonni-card">
+        <div
+            class={computedCardClasses}
+            data-element-id="avonni-card-body-container"
+        >
+            <!-- media -->
+            <div
+                if:true={showMedia}
+                class={computedMediaClasses}
+                data-element-id="avonni-card-media-container"
+            >
+                <img
+                    if:true={mediaSrc}
+                    src={mediaSrc}
+                    class="avonni-card__media"
+                    alt="card media"
+                    data-element-id="avonni-card-media-image"
+                />
+
+                <div if:true={showMediaSlot}>
+                    <slot name="media"></slot>
+                </div>
+
+                <div class="avonni-card__media-action">
+                    <slot name="media-actions"></slot>
+                </div>
+            </div>
+
+            <!-- title and actions -->
+            <div class="slds-has-flexi-truncate avonni-card__content-container">
+                <header
+                    class="
+                        slds-has-flexi-truncate
+                        avonni-card__header
+                        slds-grid
+                    "
+                >
+                    <div
+                        class="
+                            slds-has-flexi-truncate
+                            slds-grid
+                            slds-grid_vertical-align-center
+                        "
+                    >
+                        <lightning-icon
+                            if:true={iconName}
+                            icon-name={iconName}
+                            class="slds-m-right_small"
+                            size="small"
+                            data-element-id="avonni-card-header-icon"
+                        ></lightning-icon>
+
+                        <h2
+                            if:true={title}
+                            title={title}
+                            class="avonni-card__title-text slds-truncate"
+                            data-element-id="avonni-card-title"
+                        >
+                            {title}
+                        </h2>
+
+                        <template if:true={showTitleSlot}>
+                            <slot
+                                name="title"
+                                class="avonni-card__title-text slds-truncate"
+                                data-element-id="avonni-card-title-slot"
+                            ></slot>
+                        </template>
+                    </div>
+
+                    <slot
+                        class="avonni-card__action-slot slds-no-flex"
+                        name="actions"
+                    ></slot>
+                </header>
+
+                <!-- default content -->
+                <div
+                    if:false={cardHasCenterMedia}
+                    class="avonni-card__default-slot"
+                >
+                    <slot data-element-id="avonni-card-default-slot"></slot>
+                </div>
+            </div>
+
+            <!-- default content for center media only -->
+            <div
+                if:true={showCenterMediaContent}
+                class="avonni-card__default-slot"
+            >
+                <slot data-element-id="avonni-card-center-default-slot"></slot>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer if:true={showFooterSlot} class="avonni-card__footer">
+            <slot name="footer"></slot>
+        </footer>
+    </article>
+</template>

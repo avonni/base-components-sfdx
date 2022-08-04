@@ -246,7 +246,7 @@ export default class AvonniDynamicMenu extends LightningElement {
      */
 
     /**
-     * If present, display search box.
+     * If present, display a search box.
      *
      * @type {boolean}
      * @public
@@ -493,6 +493,24 @@ export default class AvonniDynamicMenu extends LightningElement {
             fallbackValue: BUTTON_VARIANTS.default,
             validValues: BUTTON_VARIANTS.valid
         });
+    }
+
+    /**
+     * Deprecated. Use `allow-search` instead.
+     *
+     * @type {boolean}
+     * @default false
+     * @deprecated
+     */
+    @api
+    get withSearch() {
+        return this._allowSearch;
+    }
+    set withSearch(value) {
+        this._allowSearch = normalizeBoolean(value);
+        console.warn(
+            'The "with-search" attribute is deprecated. Use "allow-search" instead.'
+        );
     }
 
     /*

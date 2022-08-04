@@ -108,7 +108,6 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     _disabled = false;
     _event;
     _from;
-    _keyFields = [];
     _labels = {};
     _occurrence = {};
     _readOnly = false;
@@ -825,7 +824,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     get resourceColor() {
         const resource = this.resources.find(
-            (computedResource) => computedResource.key === this.resourceKey
+            (res) => res.name === this.resourceKey
         );
         return resource && resource.color;
     }
@@ -973,7 +972,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             const resources = this.resources;
             let y = 0;
             for (let j = 0; j < resources.length; j++) {
-                const resourceKey = resources[j].key;
+                const resourceKey = resources[j].name;
                 if (resourceKey === this.resourceKey) break;
 
                 y += resources[j].height;
@@ -982,7 +981,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             this._y = y;
         } else if (!this.referenceLine && this.isVertical) {
             const resourceIndex = this.resources.findIndex((resource) => {
-                return resource.key === this.resourceKey;
+                return resource.name === this.resourceKey;
             });
             this._x = resourceIndex * cellWidth;
         }
@@ -1070,7 +1069,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             element.style.width = `${this.cellWidth}px`;
         } else {
             const resource = this.resources.find(
-                (rw) => rw.key === this.resourceKey
+                (res) => res.name === this.resourceKey
             );
 
             if (resource) {
@@ -1119,7 +1118,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
 
         const labels = {};
         const resource = this.resources.find(
-            (res) => res.key === this.resourceKey
+            (res) => res.name === this.resourceKey
         );
 
         if (resource) {

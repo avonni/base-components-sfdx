@@ -219,27 +219,42 @@ export default class AvonniPrimitiveDatatableIeditPanelCustom extends LightningE
         }
     }
 
-    editedFormattedValue(value) {
-        return this.isTypeDateRange
-            ? {
-                  startDate: value.startDate,
-                  endDate: value.endDate
-              }
-            : value;
+    dateRangeFormattedValue(value) {
+        return {
+            startDate: value.startDate,
+            endDate: value.endDate
+        };
+    }
+
+    comboboxFormattedValue(value) {
+        if (value.length > 2) {
+            return value;
+        } else if (value.length === 1) {
+            return value[0];
+        } else if (value.length === 0) {
+            return undefined;
+        }
+        return value;
     }
 
     triggerEditFinished(detail) {
-        // for combobox we need to make sure that the value is only set if the there is a change, a submit or a valid value.
-        if (
-            !this.isTypeCombobox ||
-            (this.isTypeCombobox && this.value.length !== 0)
-        ) {
+        if (!this.isTypeCombobox) {
             detail.rowKeyValue = detail.rowKeyValue || this.rowKeyValue;
             detail.colKeyValue = detail.colKeyValue || this.colKeyValue;
             detail.valid = this.isTypeRichText ? true : this.validity.valid;
             detail.isMassEditChecked = this.isMassEditChecked;
-            detail.value = this.editedFormattedValue(this.value);
+            detail.value = this.isTypeDateRange
+                ? this.dateRangeFormattedValue(this.value)
+                : this.value;
+        } else if (this.isTypeCombobox) {
+            // for combobox we need to make sure that the value is only set if the there is a change, a submit or a valid value.
+            detail.rowKeyValue = detail.rowKeyValue || this.rowKeyValue;
+            detail.colKeyValue = detail.colKeyValue || this.colKeyValue;
+            detail.valid = this.isTypeRichText ? true : this.validity.valid;
+            detail.isMassEditChecked = this.isMassEditChecked;
+            detail.value = this.comboboxFormattedValue(this.value);
         }
+
         this.dispatchEvent(
             new CustomEvent('ieditfinishedcustom', {
                 detail: detail,
@@ -388,7 +403,9 @@ export default class AvonniPrimitiveDatatableIeditPanelCustom extends LightningE
                     detail: {
                         rowKeyValue: this.rowKeyValue,
                         colKeyValue: this.colKeyValue,
-                        value: this.editedFormattedValue(this.value)
+                        value: this.isTypeDateRange
+                            ? this.dateRangeFormattedValue(this.value)
+                            : this.value
                     },
                     bubbles: true,
                     composed: true
