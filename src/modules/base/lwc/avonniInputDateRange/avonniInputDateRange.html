@@ -75,7 +75,7 @@
                         value={startDateString}
                         disabled={disabled}
                         required={required}
-                        onblur={handleBlurDateInput}
+                        onblur={handleBlurStartInput}
                         onclick={handleClickDateInput}
                         data-element-id="input-start-date"
                         onkeydown={handleInputKeyDown}
@@ -87,7 +87,7 @@
                         size="medium"
                         class="slds-input__icon slds-input__icon_right"
                         onclick={handleClickDateInput}
-                        onblur={handleBlurDateInput}
+                        onblur={handleBlurStartButtonIcon}
                         onkeydown={handleInputKeyDown}
                         data-element-id="lightning-icon-start-date"
                     ></lightning-button-icon>
@@ -173,7 +173,7 @@
                         class="slds-input end-date"
                         value={endDateString}
                         disabled={disabled}
-                        onblur={handleBlurDateInput}
+                        onblur={handleBlurEndInput}
                         onclick={handleClickDateInput}
                         data-element-id="input-end-date"
                         onkeydown={handleInputKeyDown}
@@ -185,7 +185,7 @@
                         size="medium"
                         class="slds-input__icon slds-input__icon_right"
                         onclick={handleClickDateInput}
-                        onblur={handleBlurDateInput}
+                        onblur={handleBlurEndButtonIcon}
                         onkeydown={handleInputKeyDown}
                         data-element-id="lightning-icon-end-date"
                     ></lightning-button-icon>

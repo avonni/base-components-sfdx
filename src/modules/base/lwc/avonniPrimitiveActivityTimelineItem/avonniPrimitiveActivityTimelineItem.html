@@ -98,8 +98,11 @@
                         >
                         </lightning-input>
 
-                        <!-- this div.slds-has-flexi-truncate does the magic -->
-                        <div class="slds-has-flexi-truncate">
+                        <div
+                            class="slds-has-flexi-truncate"
+                            data-element-id="div-title"
+                            onclick={handleTitleClick}
+                        >
                             <a if:true={href} href={href}>
                                 <h3 class="slds-truncate">{title}</h3>
                             </a>
@@ -133,22 +136,24 @@
                         >
                             {formattedDate}
                         </div>
-                        <div slot="figure-inverse" if:true={hasActions}>
+                        <div slot="figure-inverse" if:true={actions.length}>
                             <lightning-button-menu
                                 alternative-text="Show menu"
                                 icon-size="x-small"
                                 menu-alignment="right"
                                 variant={buttonMenuVariant}
+                                data-element-id="lightning-button-menu-actions"
+                                onselect={handleActionClick}
                             >
                                 <template for:each={actions} for:item="action">
                                     <lightning-menu-item
                                         key={action.name}
-                                        value={action.name}
-                                        label={action.label}
-                                        onclick={handleActionClick}
-                                        disabled={action.disabled}
-                                        prefix-icon-name={action.iconName}
                                         class="slds-text-color_default"
+                                        disabled={action.disabled}
+                                        label={action.label}
+                                        prefix-icon-name={action.iconName}
+                                        value={action.name}
+                                        data-element-id="lightning-menu-item-action"
                                     ></lightning-menu-item>
                                 </template>
                             </lightning-button-menu>

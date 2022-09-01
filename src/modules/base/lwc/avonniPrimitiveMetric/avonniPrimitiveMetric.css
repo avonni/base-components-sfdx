@@ -16,18 +16,21 @@
 
 .avonni-metric__prefix {
     font-size: var(--avonni-primitive-metric-prefix-font-size);
+    font-style: var(--avonni-primitive-metric-prefix-font-style);
     font-weight: var(--avonni-primitive-metric-prefix-font-weight);
     color: var(--avonni-primitive-metric-prefix-text-color);
 }
 
 .avonni-metric__suffix {
     font-size: var(--avonni-primitive-metric-suffix-font-size);
+    font-style: var(--avonni-primitive-metric-suffix-font-style);
     font-weight: var(--avonni-primitive-metric-suffix-font-weight);
     color: var(--avonni-primitive-metric-suffix-text-color);
 }
 
 .avonni-metric__value {
     font-size: var(--avonni-primitive-metric-value-font-size);
+    font-style: var(--avonni-primitive-metric-value-font-style);
     font-weight: var(--avonni-primitive-metric-value-font-weight);
     line-height: var(--avonni-primitive-metric-value-line-height);
     color: var(--avonni-primitive-metric-value-text-color);

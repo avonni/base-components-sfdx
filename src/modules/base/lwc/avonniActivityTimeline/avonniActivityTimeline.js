@@ -107,12 +107,11 @@ export default class AvonniActivityTimeline extends LightningElement {
     @api title;
 
     /**
-     * Label of the button that appears when the number of item exceeds the max-visible-items number. This attribute is supported only for the vertical orientation.
+     * The Lightning Design System name of the show less button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. This attribute is supported only for the vertical orientation.
      * @type {string}
-     * @default Show more
      * @public
      */
-    @api buttonShowMoreLabel = DEFAULT_BUTTON_SHOW_MORE_LABEL;
+    @api buttonShowLessIconName;
 
     /**
      * Label of the button that appears when all items are displayed and max-visible-items value is set. This attribute is supported only for the vertical orientation.
@@ -130,27 +129,30 @@ export default class AvonniActivityTimeline extends LightningElement {
     @api buttonShowMoreIconName;
 
     /**
-     * The Lightning Design System name of the show less button icon. Specify the name in the format 'utility:down' where 'utility' is the category, and 'down' is the specific icon to be displayed. This attribute is supported only for the vertical orientation.
+     * Label of the button that appears when the number of item exceeds the max-visible-items number. This attribute is supported only for the vertical orientation.
      * @type {string}
+     * @default Show more
      * @public
      */
-    @api buttonShowLessIconName;
+    @api buttonShowMoreLabel = DEFAULT_BUTTON_SHOW_MORE_LABEL;
 
     _actions = [];
-    _buttonShowMoreIconPosition = BUTTON_ICON_POSITIONS.default;
     _buttonShowLessIconPosition = BUTTON_ICON_POSITIONS.default;
+    _buttonShowMoreIconPosition = BUTTON_ICON_POSITIONS.default;
     _buttonVariant = BUTTON_VARIANTS.default;
     _closed = false;
     _collapsible = false;
-    _itemDateFormat = DEFAULT_ITEM_DATE_FORMAT;
     _groupBy = GROUP_BY_OPTIONS.default;
-    _items = [];
     _hideItemDate = false;
-    _maxVisibleItems;
     _iconSize = ICON_SIZES.default;
+    _itemDateFormat = DEFAULT_ITEM_DATE_FORMAT;
     _itemIconSize = DEFAULT_ITEM_ICON_SIZE;
+    _items = [];
+    _maxVisibleItems;
     _orientation = ORIENTATIONS.default;
     _sortedDirection = SORTED_DIRECTIONS.default;
+
+    _redrawHorizontalTimeline = true;
 
     // Horizontal Activity Timeline
     _resizeObserver;
@@ -181,24 +183,32 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     renderedCallback() {
-        if (this.isTimelineHorizontal && !this.showItemPopOver) {
-            if (!this._resizeObserver) {
-                this._resizeObserver = this.initResizeObserver();
-            }
+        if(this.isTimelineHorizontal){
+            this.renderedCallbackHorizontalTimeline();
+        }
+    }
 
-            if (!this.horizontalTimeline) {
-                this.initializeHorizontalTimeline();
-            }
+    renderedCallbackHorizontalTimeline(){
+        if (!this._resizeObserver) {
+            this._resizeObserver = this.initResizeObserver();
+        }
 
+        if (!this.horizontalTimeline) {
+            this.initializeHorizontalTimeline();
+        }
+
+        if(this._redrawHorizontalTimeline) {
             this.horizontalTimeline.createHorizontalActivityTimeline(
                 this.sortedItems,
                 this._maxVisibleItems,
                 this.divHorizontalTimeline.clientWidth
             );
-            this.updateHorizontalTimelineHeader();
+            this._redrawHorizontalTimeline = false;
         }
+        
+        this.updateHorizontalTimelineHeader();
 
-        if (this.showItemPopOver) {
+        if (this.showItemPopOver && !this.horizontalTimeline._isTimelineMoving) {
             this.horizontalTimeline.initializeItemPopover(this.selectedItem);
         }
     }
@@ -354,6 +364,25 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
+     * The size of the title's icon. Valid values are xx-small, x-small, small, medium and large.
+     *
+     * @public
+     * @type {string}
+     * @default medium
+     */
+    @api
+    get iconSize() {
+        return this._iconSize;
+    }
+
+    set iconSize(value) {
+        this._iconSize = normalizeString(value, {
+            fallbackValue: ICON_SIZES.default,
+            validValues: ICON_SIZES.valid
+        });
+    }
+
+    /**
      * The date format to use for each item. See [Luxon’s documentation](https://moment.github.io/luxon/#/formatting?id=table-of-tokens) for accepted format.
      * If you want to insert text in the label, you need to escape it using single quote.
      * For example, the format of "Jan 14 day shift" would be <code>"LLL dd 'day shift'"</code>.
@@ -371,6 +400,25 @@ export default class AvonniActivityTimeline extends LightningElement {
             value && typeof value === 'string'
                 ? value
                 : DEFAULT_ITEM_DATE_FORMAT;
+    }
+
+    /**
+     * The size of all the items' icon. Valid values are xx-small, x-small, small, medium and large. This attribute is supported only for the vertical orientation.
+     *
+     * @public
+     * @type {string}
+     * @default small
+     */
+    @api
+    get itemIconSize() {
+        return this._itemIconSize;
+    }
+
+    set itemIconSize(value) {
+        this._itemIconSize = normalizeString(value, {
+            fallbackValue: DEFAULT_ITEM_ICON_SIZE,
+            validValues: ICON_SIZES.valid
+        });
     }
 
     /**
@@ -404,45 +452,11 @@ export default class AvonniActivityTimeline extends LightningElement {
     set maxVisibleItems(value) {
         if (value && value > 0) {
             this._maxVisibleItems = value;
+
+            if(this.isTimelineHorizontal) {
+                this.requestRedrawTimeline();
+            }
         }
-    }
-
-    /**
-     * The size of the title's icon. Valid values are xx-small, x-small, small, medium and large.
-     *
-     * @public
-     * @type {string}
-     * @default medium
-     */
-    @api
-    get iconSize() {
-        return this._iconSize;
-    }
-
-    set iconSize(value) {
-        this._iconSize = normalizeString(value, {
-            fallbackValue: ICON_SIZES.default,
-            validValues: ICON_SIZES.valid
-        });
-    }
-
-    /**
-     * The size of all the items' icon. Valid values are xx-small, x-small, small, medium and large. This attribute is supported only for the vertical orientation.
-     *
-     * @public
-     * @type {string}
-     * @default small
-     */
-    @api
-    get itemIconSize() {
-        return this._itemIconSize;
-    }
-
-    set itemIconSize(value) {
-        this._itemIconSize = normalizeString(value, {
-            fallbackValue: DEFAULT_ITEM_ICON_SIZE,
-            validValues: ICON_SIZES.valid
-        });
     }
 
     /**
@@ -462,6 +476,10 @@ export default class AvonniActivityTimeline extends LightningElement {
             fallbackValue: ORIENTATIONS.default,
             validValues: ORIENTATIONS.valid
         });
+
+        if(this.isTimelineHorizontal) {
+            this.requestRedrawTimeline();
+        }
     }
 
     /**
@@ -725,6 +743,7 @@ export default class AvonniActivityTimeline extends LightningElement {
      */
     initResizeObserver() {
         const resizeObserver = new AvonniResizeObserver(() => {
+            this.requestRedrawTimeline();
             this.renderedCallback();
         });
 
@@ -802,6 +821,13 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
+     * Triggers a redraw of horizontal activity timeline.
+     */
+    requestRedrawTimeline(){
+        this._redrawHorizontalTimeline = true;
+    }
+
+    /**
      * Update horizontal timeline header's value.
      */
     updateHorizontalTimelineHeader() {
@@ -816,6 +842,8 @@ export default class AvonniActivityTimeline extends LightningElement {
      * @param {Event} event
      */
     handleActionClick(event) {
+        event.stopPropagation();
+
         /**
          * The event fired when a user clicks on an action.
          *
@@ -828,15 +856,14 @@ export default class AvonniActivityTimeline extends LightningElement {
          */
         this.dispatchEvent(
             new CustomEvent('actionclick', {
-                detail: {
-                    ...event.detail,
-                    targetName: event.currentTarget.dataset.name
-                }
+                detail: event.detail
             })
         );
     }
 
     handleButtonClick(event) {
+        event.stopPropagation();
+
         /**
          * The event fired when the button in the details section is clicked.
          *
@@ -848,7 +875,7 @@ export default class AvonniActivityTimeline extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('buttonclick', {
                 detail: {
-                    targetName: event.currentTarget.dataset.name
+                    targetName: event.detail.name
                 }
             })
         );
@@ -856,6 +883,7 @@ export default class AvonniActivityTimeline extends LightningElement {
 
     handleCheck(event) {
         event.stopPropagation();
+        const { checked, name } = event.detail;
 
         /**
          * The event fired when an item is checked or unchecked.
@@ -869,8 +897,8 @@ export default class AvonniActivityTimeline extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('check', {
                 detail: {
-                    checked: event.detail.checked,
-                    targetName: event.currentTarget.dataset.name
+                    checked,
+                    targetName: name
                 }
             })
         );
@@ -882,6 +910,9 @@ export default class AvonniActivityTimeline extends LightningElement {
      * @param {Event} event
      */
     handleItemClick(event) {
+        event.stopPropagation();
+        const name = event.detail.name || event.currentTarget.dataset.name;
+
         /**
          * The event fired when a user clicks on an item.
          *
@@ -890,13 +921,9 @@ export default class AvonniActivityTimeline extends LightningElement {
          * @param {string} name Name of the item clicked.
          * @public
          */
-
         this.dispatchEvent(
             new CustomEvent('itemclick', {
-                detail: {
-                    ...event.detail,
-                    name: event.currentTarget.dataset.name
-                }
+                detail: { name }
             })
         );
     }

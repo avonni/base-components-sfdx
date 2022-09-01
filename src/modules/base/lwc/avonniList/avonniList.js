@@ -379,6 +379,25 @@ export default class AvonniList extends LightningElement {
      */
 
     /**
+     * Get the size and position of a list item in the viewport.
+     *
+     * @param {string} name Name of the item we want the position of.
+     * @returns {DOMRect} Size and position of the item in the viewport.
+     * @public
+     */
+    @api
+    getItemPosition(name) {
+        const item = this.template.querySelector(
+            `[data-element-id="li-main"][data-name="${name}"]`
+        );
+        if (item) {
+            return item.getBoundingClientRect();
+        }
+        console.warn(`No item with the name ${name} was found.`);
+        return null;
+    }
+
+    /**
      * If the items have been sorted by the user, reset the items to their original order.
      *
      * @public

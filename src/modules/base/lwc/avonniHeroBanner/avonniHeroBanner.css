@@ -111,7 +111,7 @@
         --avonni-hero-banner-secondary-button-color-background,
         #0070d2
     );
-    color: var(--avonni-hero-banner-secondary-buttont-text-color, #ffffff);
+    color: var(--avonni-hero-banner-secondary-button-text-color, #ffffff);
 }
 
 .avonni-hero-banner__secondary-button:hover {

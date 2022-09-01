@@ -30,33 +30,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-:host(.avonni-reverse) .slds-rich-text-editor {
-    flex-direction: column-reverse;
-}
-
-:host(.avonni-reverse) .slds-rich-text-editor__toolbar {
-    border-bottom-left-radius: var(--lwc-borderRadiusMedium, 0.25rem);
-    border-bottom-right-radius: var(--lwc-borderRadiusMedium, 0.25rem);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top: var(--lwc-borderWidthThin, 1px) solid
-        var(--lwc-colorBorder, rgb(221, 219, 218));
-    border-bottom: none;
-}
-
-:host(.avonni-disabled) .slds-rich-text-editor__textarea {
-    cursor: auto;
-}
-
-.slds-rich-text-editor__textarea {
+.avonni-input-pen__text-area {
     position: relative;
     overflow: hidden;
     cursor: none;
     background-color: #ffffff;
     border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
 }
+.avonni-input-pen__text-area_cursor {
+    cursor: auto;
+}
+
+.avonni-input-pen__text-area_visible-cursor {
+    cursor: pointer;
+}
 
 .avonni-input-pen__cursor {
+    overflow: auto;
     height: calc(var(--size) * 1px);
     width: calc(var(--size) * 1px);
     border-radius: calc(var(--size) * 1px);
@@ -65,14 +55,11 @@
     border: 2px solid var(--color);
     position: absolute;
     opacity: 0;
+    z-index: 2;
 }
 
 .avonni-input-pen__combobox {
     width: 80px;
-}
-
-.avonni-input-pen__label-container {
-    padding: 0 0.25rem 0.25rem 0.25rem;
 }
 
 .avonni-input-pen__label-container label {
@@ -80,4 +67,70 @@
     font-size: var(--avonni-input-pen-header-font-size, 0.75rem);
     font-weight: var(--avonni-input-pen-header-font-weight, 400);
     font-style: var(--avonni-input-pen-header-font-style, normal);
+}
+
+.avonni-input-pen__refresh-button {
+    position: absolute;
+    z-index: 4;
+    right: 1rem;
+    top: 1rem;
+    transform: scaleX(-1);
+}
+
+.avonni-input-pen__x-icon {
+    --slds-c-icon-color-foreground-default: #d3d3d3;
+    position: absolute;
+    bottom: 2rem;
+    left: 0.8rem;
+}
+
+.avonni-input-pen__underline {
+    position: absolute;
+    width: auto;
+    margin: 0 auto;
+    height: 3px;
+    border-radius: none;
+    bottom: 2rem;
+    right: 2rem;
+    left: 3rem;
+    background-color: #e1e1e1;
+}
+
+.avonni-input-pen__rich-text_border-radius-bottom {
+    border-radius: 0 0 var(--lwc-borderRadiusMedium, 0.25rem)
+        var(--lwc-borderRadiusMedium, 0.25rem);
+}
+
+.avonni-input-pen__rich-text_border-radius-top {
+    border-radius: var(--lwc-borderRadiusMedium, 0.25rem)
+        var(--lwc-borderRadiusMedium, 0.25rem) 0px 0px;
+}
+
+.avonni-input-pen__toolbar_border-bottom {
+    border-radius: 0 0 var(--lwc-borderRadiusMedium, 0.25rem)
+        var(--lwc-borderRadiusMedium, 0.25rem);
+    border-top: var(--lwc-borderWidthThin, 1px) solid
+        var(--lwc-colorBorder, rgb(221, 219, 218));
+    border-bottom: none;
+}
+
+.avonni-input-pen__toolbar_border-top-reverse {
+    border-radius: var(--lwc-borderRadiusMedium, 0.25rem)
+        var(--lwc-borderRadiusMedium, 0.25rem) 0 0;
+    border-top: none;
+    border-bottom: var(--lwc-borderWidthThin, 1px) solid
+        var(--lwc-colorBorder, rgb(221, 219, 218));
+}
+
+.avonni-input-pen__canvas {
+    height: 100%;
+    width: 100%;
+}
+
+.avonni-input-pen__canvas_disabled {
+    filter: saturate(50%);
+}
+
+.avonni-input-pen__text-area {
+    min-height: var(--avonni-input-pen-body-sizing-height, 350px);
 }

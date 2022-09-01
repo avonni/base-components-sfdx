@@ -30,38 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-separator__container {
-    width: 100%;
-    height: 100%;
-}
+import { LightningElement, api } from 'lwc';
+import { normalizeString } from 'c/utilsPrivate';
+import eraser from './avonniEraser.html';
+import inkPen from './avonniInkPen.html';
 
-.avonni-separator__label {
-    color: var(--avonni-separator-label-text-color, #080707);
-    font-size: var(--avonni-separator-label-font-size, 1em);
-    font-style: var(--avonni-separator-label-font-style, normal);
-    font-weight: var(--avonni-separator-label-font-weight, 400);
-}
+const NAMES = {
+    default: 'eraser',
+    valid: ['eraser', 'inkPen']
+};
 
-.avonni-separator__lines_styling {
-    border-color: var(--avonni-separator-color-border, #dddbda);
-    border-width: var(--avonni-separator-sizing-border, 1px);
-    border-style: var(--avonni-separator-styling-border, solid);
-}
+/**
+ * Primitive component used to display SVG icons. Contains one HTML template per SVG icon.
+ *
+ * @class
+ * @descriptor c-primitive-svg-icon
+ */
+export default class AvonniPrimitiveSvgIcon extends LightningElement {
+    /**
+     * CSS classes to apply to the SVG tag.
+     *
+     * @type {string}
+     * @public
+     */
+    @api svgClass;
 
-.avonni-separator__line-one.slds-border_left,
-.avonni-separator__line-two.slds-border_left {
-    height: 100%;
-}
+    _name = NAMES.default;
 
-.avonni-separator__icon {
-    --sds-c-icon-radius-border: var(--avonni-separator-icon-radius-border);
-    --sds-c-icon-color-foreground: var(
-        --avonni-separator-icon-color-foreground
-    );
-    --sds-c-icon-color-foreground-default: var(
-        --avonni-separator-icon-color-foreground-default
-    );
-    --sds-c-icon-color-background: var(
-        --avonni-separator-icon-color-background
-    );
+    render() {
+        switch (this.name) {
+            case 'eraser':
+                return eraser;
+            case 'inkPen':
+                return inkPen;
+            default:
+                return eraser;
+        }
+    }
+
+    /**
+     * Name of the icon. Valid values include eraser and inkPen.
+     *
+     * @type {string}
+     * @default eraser
+     * @public
+     */
+    @api
+    get name() {
+        return this._name;
+    }
+    set name(value) {
+        this._name = normalizeString(value, {
+            fallbackValue: NAMES.default,
+            validValues: NAMES.valid,
+            toLowerCase: false
+        });
+    }
 }

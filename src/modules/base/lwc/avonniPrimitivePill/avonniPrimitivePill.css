@@ -44,6 +44,10 @@
     --slds-c-pill-shadow: var(--avonni-pill-shadow-focus, 0 0 3px #0176d3);
 }
 
+:host:hover {
+    background-color: var(--avonni-pill-color-background-hover, #f3f3f3);
+}
+
 .avonni-primitive-pill__label-link {
     color: var(--avonni-pill-action-text-color, #0176d3);
 }

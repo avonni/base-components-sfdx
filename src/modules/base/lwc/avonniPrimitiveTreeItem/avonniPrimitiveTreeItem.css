@@ -40,11 +40,11 @@
 }
 
 :host[aria-disabled='true'] .avonni-primitive-tree-item__header {
-    color: var(--avonni-tree-item-text-color-header-disabled, #dddbda);
+    color: var(--avonni-tree-item-header-text-color-disabled, #dddbda);
 }
 
 :host[aria-disabled='true'] .avonni-primitive-tree-item__metatext {
-    color: var(--avonni-tree-item-text-color-metatext-disabled, #dddbda);
+    color: var(--avonni-tree-item-metatext-text-color-disabled, #dddbda);
 }
 
 :host[aria-disabled='true'] .avonni-primitive-tree-item__item.slds-is-hovered,
@@ -68,12 +68,15 @@
 }
 
 .avonni-primitive-tree-item__header .avonni-primitive-item__link {
-    color: var(--avonni-tree-item-text-color-header, #080707);
+    color: var(--avonni-tree-item-header-text-color, #080707);
+    font-size: var(--avonni-tree-item-header-text-font-size, 0.8125rem);
+    font-style: var(--avonni-tree-item-header-text-font-style, normal);
+    font-weight: var(--avonni-tree-item-header-text-font-weight, 400);
 }
 
 .avonni-primitive-tree-item__metatext,
 .avonni-primitive-tree-item__metatext .avonni-primitive-item__link {
-    color: var(--avonni-tree-item-text-color-metatext, #3e3e3c);
+    color: var(--avonni-tree-item-metatext-text-color, #3e3e3c);
 }
 
 .avonni-primitive-item__link:hover {

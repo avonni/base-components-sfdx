@@ -421,7 +421,6 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         const options = normalizeArray(value);
         const optionObjects = this.initOptionObjects(options);
         this._options = optionObjects;
-        this.visibleOptions = optionObjects;
 
         if (this._connected) {
             this.initValue();
@@ -431,6 +430,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             this.showLoader = this.currentParent
                 ? this.currentParent.isLoading
                 : this.isLoading;
+        } else {
+            this.visibleOptions = optionObjects;
         }
     }
 
@@ -949,7 +950,9 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
             (hasItems || this.isLoading)
         ) {
             this.dropdownVisible = true;
-            this.startDropdownAutoPositioning();
+            requestAnimationFrame(() => {
+                this.startDropdownAutoPositioning();
+            });
         }
     }
 
@@ -1808,6 +1811,16 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
                     }
                 })
             );
+
+            requestAnimationFrame(() => {
+                // Scroll back to top when opening a child option
+                const scrollableList = this.template.querySelector(
+                    '[data-element-id="ul-listbox"]'
+                );
+                if (scrollableList) {
+                    scrollableList.scrollTop = 0;
+                }
+            });
             return;
         }
 

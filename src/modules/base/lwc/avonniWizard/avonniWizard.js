@@ -440,6 +440,7 @@ export default class AvonniWizard extends LightningElement {
 
     /**
      * Changes the visual pattern of the indicator. Valid values are base, base-shaded, path, bullet, fractions and bar.
+     * NB: If the available space is smaller than 480px, the indicator type will always be `bar`.
      *
      * @type {string}
      * @public

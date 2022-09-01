@@ -31,7 +31,11 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
+import {
+    normalizeBoolean,
+    normalizeString,
+    normalizeArray
+} from 'c/utilsPrivate';
 import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
 import { classSet } from 'c/utils';
 import TIME_ZONES from './avonniTimeZones.js';
@@ -76,13 +80,6 @@ const DEFAULT_DAY_CLASS = 'avonni-date-time-picker__day';
  */
 export default class AvonniDateTimePicker extends LightningElement {
     /**
-     * Array of disabled dates. The dates must be Date objects or valid ISO8601 strings.
-     *
-     * @type {object[]}
-     * @public
-     */
-    @api disabledDateTimes = [];
-    /**
      * Help text detailing the purpose and function of the input.
      *
      * @type {string}
@@ -117,6 +114,7 @@ export default class AvonniDateTimePicker extends LightningElement {
     _dateFormatWeekday = WEEKDAY_FORMATS.default;
     _dateFormatMonth = MONTH_FORMATS.default;
     _dateFormatYear;
+    _disabledDateTimes = [];
     _endTime = DEFAULT_END_TIME;
     _hideDatePicker = false;
     _hideLabel;
@@ -149,7 +147,6 @@ export default class AvonniDateTimePicker extends LightningElement {
     helpMessage;
     datePickerValue;
     dayClass = DEFAULT_DAY_CLASS;
-    calendarDisabledDates = [];
 
     _connected = false;
     _selectedDayTime;
@@ -170,10 +167,6 @@ export default class AvonniDateTimePicker extends LightningElement {
         // If no time format is provided, defaults to hour:minutes (0:00)
         // The default is set here so it is possible to have only the hour, minutes:seconds, etc.
         this._initTimeFormat();
-
-        if (this.isMonthly) {
-            this._disableMonthlyCalendarDates();
-        }
 
         this._generateTable();
         this.interactingState = new InteractingState();
@@ -283,6 +276,21 @@ export default class AvonniDateTimePicker extends LightningElement {
             this._initTimeFormat();
             this._generateTable();
         }
+    }
+
+    /**
+     * Array of disabled dates. The dates must be Date objects or valid ISO8601 strings.
+     *
+     * @type {object[]}
+     * @public
+     */
+    @api
+    get disabledDateTimes() {
+        return this._disabledDateTimes;
+    }
+
+    set disabledDateTimes(value) {
+        this._disabledDateTimes = normalizeArray(value);
     }
 
     /**
@@ -703,10 +711,6 @@ export default class AvonniDateTimePicker extends LightningElement {
         });
 
         if (this._connected) {
-            if (this._variant === 'monthly') {
-                this._disableMonthlyCalendarDates();
-            }
-
             const firstDay = this.today < this.min ? this.min : this.today;
             this._setFirstWeekDay(firstDay);
             this._generateTable();
@@ -743,8 +747,9 @@ export default class AvonniDateTimePicker extends LightningElement {
         let dateTimes = [];
 
         this.disabledDateTimes.forEach((dateTime) => {
-            if (typeof dateTime === 'object') {
-                dateTimes.push(dateTime.getTime());
+            const date = new Date(dateTime);
+            if (!isNaN(date)) {
+                dateTimes.push(date.getTime());
             }
         });
 
@@ -946,23 +951,6 @@ export default class AvonniDateTimePicker extends LightningElement {
      */
 
     /**
-     * Pushes all dates included in disabled-date-times to calendar-disabled-dates to be disabled on the calendar.
-     */
-    _disableMonthlyCalendarDates() {
-        if (this.disabledDateTimes) {
-            this.disabledDateTimes.forEach((disabledDateTime) => {
-                const type = typeof disabledDateTime;
-                const isNumber = type === 'number';
-                const isWeekDay =
-                    type === 'string' && DAYS.indexOf(disabledDateTime) > -1;
-                if (isNumber || isWeekDay) {
-                    this.calendarDisabledDates.push(disabledDateTime);
-                }
-            });
-        }
-    }
-
-    /**
      * Transform the given value into a Date object, or return null.
      *
      * @param {string} value The value of the date selected.
@@ -1066,9 +1054,7 @@ export default class AvonniDateTimePicker extends LightningElement {
                 )
             );
 
-            const disabled =
-                this.disabled ||
-                (this.disabledDateTimes && this._isDisabled(day));
+            const disabled = this.disabled || this._isDisabled(day);
 
             // Create dayTime object
             const dayTime = {
@@ -1103,6 +1089,8 @@ export default class AvonniDateTimePicker extends LightningElement {
 
     //  /!\ Changes the dayTime object passed as argument.
     _createTimeSlots(dayTime) {
+        const disabledDates = this._disabledFullDateTimes;
+
         this._timeSlots.forEach((timeSlot) => {
             // Add time to day
             const hour = parseInt(timeSlot.slice(0, 2), 10);
@@ -1119,9 +1107,7 @@ export default class AvonniDateTimePicker extends LightningElement {
             if (selected) dayTime.selected = true;
 
             const disabled =
-                dayTime.disabled ||
-                (this.disabledDateTimes &&
-                    this._disabledFullDateTimes.indexOf(timestamp) > -1);
+                dayTime.disabled || disabledDates.indexOf(timestamp) > -1;
 
             const time = {
                 startTimeISO: day.toISOString(),

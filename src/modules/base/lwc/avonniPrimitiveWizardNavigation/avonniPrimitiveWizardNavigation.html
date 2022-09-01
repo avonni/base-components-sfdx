@@ -35,9 +35,10 @@
 <template>
     <lightning-layout
         vertical-align="center"
-        multiple-rows="true"
+        multiple-rows
         pull-to-boundary="small"
         class="avonni-height_full"
+        data-element-id="lightning-layout-wrapper"
     >
         <!-- Previous button -->
         <lightning-layout-item
@@ -58,97 +59,100 @@
 
         <!-- Indicator -->
         <lightning-layout-item
+            if:true={showIndicator}
             flexibility="auto"
             class={progressColClass}
             padding="horizontal-small"
+            data-element-id="lightning-layout-item-indicator"
         >
-            <template if:true={showIndicator}>
-                <!-- Progress indicator -->
-                <template if:true={showProgressIndicator}>
-                    <template if:false={sideNavigation}>
-                        <lightning-progress-indicator
-                            current-step={currentStep}
-                            has-error={currentStepHasError}
-                            type={progressIndicatorType}
-                            variant={progressIndicatorVariant}
-                            data-element-id="lightning-progress-indicator"
-                        >
-                            <template for:each={steps} for:item="step">
-                                <lightning-progress-step
-                                    key={step.name}
-                                    label={step.label}
-                                    value={step.name}
-                                ></lightning-progress-step>
-                            </template>
-                        </lightning-progress-indicator>
+            <!-- Progress indicator -->
+            <template if:true={showProgressIndicator}>
+                <lightning-progress-indicator
+                    if:false={sideNavigation}
+                    current-step={currentStep}
+                    has-error={currentStepHasError}
+                    type={progressIndicatorType}
+                    variant={progressIndicatorVariant}
+                    data-element-id="lightning-progress-indicator"
+                >
+                    <template for:each={steps} for:item="step">
+                        <lightning-progress-step
+                            key={step.name}
+                            label={step.label}
+                            value={step.name}
+                        ></lightning-progress-step>
                     </template>
-                    <template if:true={sideNavigation}>
-                        <c-avonni-vertical-progress-indicator
-                            current-step={currentStep}
-                            has-error={currentStepHasError}
-                            variant={progressIndicatorVariant}
-                            data-element-id="avonni-vertical-progress-indicator"
-                        >
-                            <template for:each={steps} for:item="step">
-                                <c-avonni-vertical-progress-step
-                                    key={step.name}
-                                    label={step.label}
-                                    value={step.name}
-                                ></c-avonni-vertical-progress-step>
-                            </template>
-                        </c-avonni-vertical-progress-indicator>
+                </lightning-progress-indicator>
+
+                <c-avonni-vertical-progress-indicator
+                    if:true={sideNavigation}
+                    current-step={currentStep}
+                    has-error={currentStepHasError}
+                    variant={progressIndicatorVariant}
+                    data-element-id="avonni-vertical-progress-indicator"
+                >
+                    <template for:each={steps} for:item="step">
+                        <c-avonni-vertical-progress-step
+                            key={step.name}
+                            label={step.label}
+                            value={step.name}
+                        ></c-avonni-vertical-progress-step>
                     </template>
-                </template>
-
-                <!-- Bullets -->
-                <template if:true={showBulletIndicator}>
-                    <ul
-                        class="slds-carousel__indicators slds-text-align_center slds-m-top_small"
-                        aria-label="Progress indicator"
-                    >
-                        <template for:each={_steps} for:item="step">
-                            <li key={step.name} class={carouselIndicatorClass}>
-                                <span
-                                    class={step.bulletClass}
-                                    title={step.label}
-                                    aria-selected={step.selected}
-                                    data-element-id="span-bullet"
-                                >
-                                    <span class="slds-assistive-text"
-                                        >{step.label}</span
-                                    >
-                                </span>
-                            </li>
-                        </template>
-                    </ul>
-                </template>
-
-                <!-- Fraction indicator -->
-                <template if:true={showFractionIndicator}>
-                    <p class="fractions-indicator">
-                        {fractionPrefixLabel} {fractionCurrentStep}
-                        {fractionLabel} {fractionTotalSteps}
-                    </p>
-                </template>
-
-                <!-- Bar indicator -->
-                <template if:true={showBarIndicator}>
-                    <c-avonni-progress-bar
-                        value={progressBarValue}
-                        orientation={progressBarOrientation}
-                        thickness="large"
-                        data-element-id="avonni-progress-bar"
-                    ></c-avonni-progress-bar>
-                </template>
+                </c-avonni-vertical-progress-indicator>
             </template>
+
+            <!-- Bullets -->
+            <ul
+                if:true={showBulletIndicator}
+                class="
+                    slds-carousel__indicators
+                    slds-text-align_center
+                    slds-m-top_small
+                "
+                aria-label="Progress indicator"
+            >
+                <template for:each={_steps} for:item="step">
+                    <li key={step.name} class={carouselIndicatorClass}>
+                        <span
+                            class={step.bulletClass}
+                            title={step.label}
+                            aria-selected={step.selected}
+                            data-element-id="span-bullet"
+                        >
+                            <span class="slds-assistive-text"
+                                >{step.label}</span
+                            >
+                        </span>
+                    </li>
+                </template>
+            </ul>
+
+            <!-- Fraction indicator -->
+            <p if:true={showFractionIndicator} class="fractions-indicator">
+                {fractionPrefixLabel} {fractionCurrentStep} {fractionLabel}
+                {fractionTotalSteps}
+            </p>
+
+            <!-- Bar indicator -->
+            <c-avonni-progress-bar
+                if:true={showBarIndicator}
+                value={progressBarValue}
+                orientation={progressBarOrientation}
+                thickness="large"
+                data-element-id="avonni-progress-bar"
+            ></c-avonni-progress-bar>
         </lightning-layout-item>
         <!-- Actions slot and Next/Finish buttons -->
         <lightning-layout-item
-            class={actionsNextFinishButtonColClass}
             if:false={sideNavigation}
+            class={actionsNextFinishButtonColClass}
+            alignment-bump="left"
         >
-            <lightning-layout class="slds-m-right_small">
-                <lightning-layout-item class={actionsSlotColClass}>
+            <lightning-layout class="slds-m-right_small" multiple-rows>
+                <lightning-layout-item
+                    class={actionsSlotColClass}
+                    flexibility="auto"
+                >
                     <slot></slot>
                 </lightning-layout-item>
                 <lightning-layout-item

@@ -53,6 +53,10 @@ span .avonni-avatar-group_in-line {
         --avonni-avatar-group-avatar-stack-sizing-border,
         1px
     );
+    --avonni-avatar-styling-border: var(
+        --avonni-avatar-group-avatar-stack-styling-border,
+        solid
+    );
     background-color: var(
         --avonni-avatar-group-avatar-stack-color-border,
         #ffffff

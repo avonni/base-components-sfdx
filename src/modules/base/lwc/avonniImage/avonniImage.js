@@ -317,6 +317,7 @@ export default class AvonniImage extends LightningElement {
      *
      * @public
      * @type {boolean}
+     * @default false
      */
     @api
     get staticImages() {

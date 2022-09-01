@@ -69,7 +69,6 @@ div:focus {
 
 .avonni-calendar__container {
     width: fit-content;
-    opacity: 0.99;
 }
 
 lightning-combobox {
@@ -177,7 +176,7 @@ lightning-combobox {
     position: absolute;
     height: 100%;
     width: var(--avonni-calendar-cell-sizing-width);
-    transform: translateX(calc(-var(--avonni-calendar-cell-sizing-width) / 2));
+    transform: translateX(-0.5rem);
     z-index: -1;
     background: var(--avonni-calendar-selected-date-color-background, #0176d3);
 }

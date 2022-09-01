@@ -30,19 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import d3Js from '@salesforce/resourceUrl/D3Js';
+import D3Js from '@salesforce/resourceUrl/D3Js';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { loadScript } from 'lightning/platformResourceLoader';
 import { dateTimeObjectFrom } from 'c/utilsPrivate';
+import { createSVGIcon } from 'c/iconUtils'
 
 const AXIS_LABEL_WIDTH = 50.05;
 const AXIS_TYPE = { timelineAxis: 'timeline-axis', scrollAxis: 'scroll-axis' };
 const BORDER_OFFSET = 0.5;
+const DEFAULT_ICON_NAME = 'empty';
+const DEFAULT_ICON_CATEGORY = 'standard';
 const DEFAULT_DATE_FORMAT = 'dd/MM/yyyy';
 const DEFAULT_INTERVAL_DAYS_LENGTH = 15;
 const DEFAULT_POPOVER_CLASSES =
     'slds-popover slds-popover_panel slds-is-absolute slds-p-bottom_x-small slds-p-top_xx-small slds-popover_medium slds-p-left_medium slds-p-right_x-small';
 const DEFAULT_TIMELINE_AXIS_OFFSET = 16.5;
 const DEFAULT_TIMELINE_AXIS_HEIGHT = 30;
-const DEFAULT_SCROLL_AXIS_TICKS_NUMBER = 10;
+const DEFAULT_SCROLL_AXIS_TICKS_NUMBER = 12;
 const DEFAULT_TIMELINE_AXIS_TICKS_NUMBER = 9;
 const DEFAULT_TIMELINE_HEIGHT = 350;
 const DEFAULT_TIMELINE_WIDTH = 1300;
@@ -54,6 +59,7 @@ const MIN_INTERVAL_WIDTH = 2;
 const NUBBIN_TOP_POSITION_PX = 36;
 const RESIZE_CURSOR_CLASS =
     'avonni-activity-timeline__horizontal-timeline-resize-cursor';
+const SCROLL_AXIS_RECTANGLES_G_ID = 'avonni-horizontal-activity-timeline__scroll-axis-rectangles';
 const SCROLL_ITEM_RECTANGLE_WIDTH = 4;
 const SPACE_BETWEEN_ICON_AND_TEXT = 5;
 const SVG_ICON_SIZE = 25;
@@ -79,6 +85,7 @@ const Y_START_POSITION_SCROLL_ITEM = 4;
 const Y_GAP_BETWEEN_ITEMS_SCROLL = 4;
 
 export class HorizontalActivityTimeline {
+	 _d3Loaded = false;
     // Horizontal view properties
     _changeIntervalSizeMode = false;
     _dateFormat = DEFAULT_DATE_FORMAT;
@@ -90,18 +97,16 @@ export class HorizontalActivityTimeline {
     _isMouseOverOnPopover = false;
     _isResizingInterval = false;
     _maxYPositionOfItem = 0;
-    _numberOfScrollAxisTicks = DEFAULT_SCROLL_AXIS_TICKS_NUMBER;
     _numberOfTimelineAxisTicks = DEFAULT_TIMELINE_AXIS_TICKS_NUMBER;
     _offsetAxis = DEFAULT_TIMELINE_AXIS_OFFSET;
     _timelineWidth = DEFAULT_TIMELINE_WIDTH;
     _timelineHeight = DEFAULT_TIMELINE_HEIGHT;
     _timelineAxisHeight = DEFAULT_TIMELINE_AXIS_HEIGHT;
+    _tooltipClosingTimeout = null;
+    _isTimelineMoving = false;
 
     // To change visible height of timeline
-    _maxDisplayedItems;
     _maxVisibleItems;
-    _previousMaxYPosition;
-    _requestHeightChange = false;
     _timelineHeightDisplayed;
 
     // D3 selector DOM elements
@@ -113,44 +118,43 @@ export class HorizontalActivityTimeline {
     _scrollAxisSVG;
 
     constructor(activityTimeline, sortedItems) {
-        this._sortedItems = sortedItems;
+        this.addValidItemsToData(sortedItems);
         this._activityTimeline = activityTimeline;
-        this.setDefaultIntervalDates();
-    }
-
-    connectedCallback() {
-        Promise.all([loadScript(this, d3Js)])
-            .then(() => {
-                this.d3Loaded = true;
-            })
-            .catch((error) => {
-                this.dispatchEvent(
-                    new ShowToastEvent({
-                        title: 'Error loading D3',
-                        message: error.message,
-                        variant: 'error'
-                    })
-                );
-            });
+        Promise.all([loadScript(this, D3Js)])
+		.then(() => {
+			this._d3Loaded = true; 
+			this.setDefaultIntervalDates(); 
+		})
+		 .catch((error) => { 
+			this.dispatchEvent( 
+				new ShowToastEvent({ 
+					 title: 'Error loading D3',
+					 message: error.message,
+					 variant: 'error' 
+				 }) 
+			); 
+		});
     }
 
     /**
      * Create horizontal view timeline
      */
     createHorizontalActivityTimeline(sortedItems, maxVisibleItems, width) {
-        this.resetHorizontalTimeline();
-        this._sortedItems = sortedItems;
-
-        if (this.isHeightDifferent(sortedItems, maxVisibleItems)) {
-            this._requestHeightChange = true;
-            this._maxVisibleItems = maxVisibleItems;
-        }
+        
+		 if (this._d3Loaded) {
+			this.resetHorizontalTimeline();
+        this.addValidItemsToData(sortedItems);
+        this._maxVisibleItems = maxVisibleItems;
 
         this.setTimelineWidth(width);
         this.createTimelineScrollAxis();
         this.createTimelineAxis();
         this.createTimeline();
-        this.initializeIntervalHorizontalScroll();
+        
+		this.initializeIntervalHorizontalScroll();  
+		} else {
+			 this._timer = setTimeout(this.createHorizontalActivityTimeline.bind(this), 1);
+		}  
     }
 
     /*
@@ -275,11 +279,24 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Check if there is no data to display. 
+     *
+     * @type {boolean}
+     */
+    get isTimelineEmpty(){
+        return !this._sortedItems.length;
+    }
+
+    /**
      * Find the max date in items
      *
      * @type {Date}
      */
     get maxDate() {
+        if(this.isTimelineEmpty) {
+            return this.findNextDate(new Date(), 2 * DEFAULT_INTERVAL_DAYS_LENGTH);
+        }
+
         const maxIndex =
             this._activityTimeline._sortedDirection === 'desc'
                 ? 0
@@ -293,11 +310,35 @@ export class HorizontalActivityTimeline {
      * @type {Date}
      */
     get minDate() {
+        if(this.isTimelineEmpty) {
+            return new Date();
+        }
+
         const minIndex =
             this._activityTimeline._sortedDirection === 'desc'
                 ? this._sortedItems.length - 1
                 : 0;
         return new Date(this._sortedItems[minIndex].datetimeValue);
+    }
+
+    /**
+     * Calculate the minimum interval width. If the distance for one day is bigger than minimum width, we take this distance.
+     * If not, we calculate to find the number of days necessary to obtain the minimum.
+     * 
+     * @type {number}
+     */
+    get minimumIntervalWidth() {
+        const beginningOfDayPosition = this.findBeginningOfDayPosition(this.scrollTimeScale(this._intervalMinDate));
+        const endOfDayPosition = this.findEndOfDayPosition(this.scrollTimeScale(this._intervalMinDate));
+        const distanceForOneDay = Math.abs(endOfDayPosition - beginningOfDayPosition);
+
+        // To make sure there is minimum distance respected
+        if(distanceForOneDay < MIN_INTERVAL_WIDTH) {
+            const numberOfDays = Math.floor( MIN_INTERVAL_WIDTH / distanceForOneDay );
+            return numberOfDays * distanceForOneDay;
+        }
+
+        return distanceForOneDay;
     }
 
     /**
@@ -311,14 +352,14 @@ export class HorizontalActivityTimeline {
      * Find the max date displayed in the scroll axis
      */
     get scrollAxisMaxDate() {
-        return this.findNextDate(this.maxDate, 15);
+        return this.findNextDate(this.maxDate, 15).setHours(23, 59, 59, 999);
     }
 
     /**
      * Find the min date displayed in the scroll axis
      */
     get scrollAxisMinDate() {
-        return this.findNextDate(this.minDate, -15);
+        return this.findNextDate(this.minDate, -15).setHours(0, 0, 0, 0);
     }
 
     /**
@@ -377,9 +418,14 @@ export class HorizontalActivityTimeline {
             (item) => item.yPosition < DEFAULT_TIMELINE_AXIS_HEIGHT
         );
 
+        // Select or create rectangles container
+        let rectanglesContainer = this._scrollAxisSVG.select('#' + SCROLL_AXIS_RECTANGLES_G_ID);
+        if(!rectanglesContainer.node()) {
+            rectanglesContainer = this._scrollAxisSVG.append('g').attr('id', SCROLL_AXIS_RECTANGLES_G_ID);
+        }
+
         // Draw rectangle for each item
-        this._scrollAxisSVG
-            .append('g')
+        rectanglesContainer
             .selectAll('rect')
             .data(itemsToDisplay)
             .enter()
@@ -445,10 +491,26 @@ export class HorizontalActivityTimeline {
                     .drag()
                     .on('start', this.handleTimeIntervalDragStart.bind(this))
                     .on('drag', this.handleTimeIntervalDrag.bind(this))
+                    .on('end', () => {
+                        this._isTimelineMoving = false
+                    })
             );
 
         // Create left and right lines to change width of interval
         this.createIntervalBounds(intervalGroup);
+    }
+
+    /**
+     * Add only items with valid date to sortedItems. 
+     */
+    addValidItemsToData(sortedItems){
+        this._sortedItems = [];
+
+        sortedItems.forEach((item)=> {
+            if(!this.isDateInvalid(item.datetimeValue)) {
+                this._sortedItems.push(item);
+            } 
+        })
     }
 
     /**
@@ -538,13 +600,38 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Get all specific and common classes of popover.
+     *
+     * @return {string}
+     */
+    computedPopoverClasses(element, direction) {
+        return (
+            this.getPopoverNubbinClass(element, direction) +
+            ' ' +
+            DEFAULT_POPOVER_CLASSES
+        );
+    }
+
+    /**
      * Convert a date to the correct format
      *
      * @param {Date} date
      * @returns string
      */
     convertDateToFormat(date) {
+        if(this.isDateInvalid(date)) {
+            return '';
+        }
         return dateTimeObjectFrom(date).toFormat(this._dateFormat);
+    }
+
+    /**
+     * Convert a valid xPosition to a date (timestamp format) based on specific scale.
+     * 
+     * @return {number}
+     */
+    convertPositionToScaleDate(scale, xPosition){
+        return scale.invert(xPosition).setHours(0, 0, 0, 0);
     }
 
     /**
@@ -566,10 +653,20 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Clear active timeout to close item's tooltip.
+     */
+     clearPreviousTooltipClosingTimeout(){
+        if(this._tooltipClosingTimeout){
+            clearTimeout(this._tooltipClosingTimeout);
+            this._tooltipClosingTimeout = null;
+        }
+    }
+
+    /**
      *  Create item on horizontal timeline to display lightning icon and item's title
      */
     createItem(itemGroup, item) {
-        this.createSVGIcon(
+        this.createIcon(
             itemGroup,
             item.iconName,
             this.viewTimeScale(new Date(item.datetimeValue)),
@@ -594,8 +691,7 @@ export class HorizontalActivityTimeline {
     /**
      *  Create svg to display lightning icon.
      */
-    createSVGIcon(destinationSVG, iconName, xPosition, yPosition, svgSize) {
-        const iconInformation = this.setIconInformation(iconName);
+    createIcon(destinationSVG, iconName, xPosition, yPosition, svgSize) {
         const foreignObjectForIcon = destinationSVG.append('foreignObject');
         foreignObjectForIcon
             .attr('width', svgSize)
@@ -603,18 +699,12 @@ export class HorizontalActivityTimeline {
             .attr('x', xPosition)
             .attr('y', yPosition);
 
-        foreignObjectForIcon
-            .append('xhtml:span')
-            .attr(
-                'class',
-                'slds-icon slds-icon_container slds-icon_small slds-grid slds-grid_vertical-align-center ' +
-                    iconInformation.categoryIconClass
-            )
-            .html(
-                '<svg class="slds-icon"><use xlink:href=' +
-                    iconInformation.xLinkHref +
-                    '></use></svg>'
-            );
+        const iconInformation = this.setIconInformation(iconName);
+        const iconSVG = createSVGIcon(iconInformation, foreignObjectForIcon, this.resetAndRedrawTimeline.bind(this));
+      
+        if (iconInformation.category === 'action') {
+            this.setActionIconPosition(iconSVG);
+        }
     }
 
     /**
@@ -673,9 +763,7 @@ export class HorizontalActivityTimeline {
             Y_GAP_BETWEEN_ITEMS_TIMELINE
         );
 
-        if (this._requestHeightChange) {
-            this.setVisibleTimelineHeight();
-        }
+        this.setVisibleTimelineHeight();
 
         this._timelineHeight = Math.max(
             this._maxYPositionOfItem + 30,
@@ -754,9 +842,6 @@ export class HorizontalActivityTimeline {
             this._numberOfTimelineAxisTicks,
             axisSVG
         );
-
-        // Remove all ticks marks
-        axisSVG.selectAll('.tick').selectAll('line').remove();
     }
 
     /**
@@ -811,6 +896,7 @@ export class HorizontalActivityTimeline {
             .ticks(numberOfTicks)
             .tickSizeOuter(0);
 
+        // TIMELINE AXIS
         if (axisId === AXIS_TYPE.timelineAxis) {
             destinationSVG
                 .append('g')
@@ -820,7 +906,11 @@ export class HorizontalActivityTimeline {
                 .call(timeAxis);
 
             this._numberOfTimelineAxisTicks = numberOfTicks;
-        } else {
+            // Remove all ticks marks
+            destinationSVG.selectAll('.tick').selectAll('line').remove();
+        } 
+        // TIMELINE SCROLL AXIS
+        else {
             const yPosition = this._timelineAxisHeight + 1.5 * BORDER_OFFSET;
             destinationSVG
                 .append('g')
@@ -854,7 +944,7 @@ export class HorizontalActivityTimeline {
         this.createTimeAxis(
             this.scrollTimeScale,
             AXIS_TYPE.scrollAxis,
-            12,
+            DEFAULT_SCROLL_AXIS_TICKS_NUMBER,
             this._scrollAxisSVG
         );
 
@@ -874,7 +964,7 @@ export class HorizontalActivityTimeline {
             .attr('stroke', TIMELINE_COLORS.timelineBorder)
             .attr('fill', 'transparent')
             .on('click', this.handleClickOnScrollAxis.bind(this));
-
+        
         this.addTimeIntervalToScrollAxis();
     }
 
@@ -882,9 +972,30 @@ export class HorizontalActivityTimeline {
      * End the interval resizing mode.
      */
     endIntervalResizing() {
+        this._isTimelineMoving = false;
         this._isResizingInterval = false;
         this._changeIntervalSizeMode = false;
         this.setIntervalBoundsState();
+    }
+
+    /**
+     * Find the position of the beginning of the day based on scrollTimeScale. 
+     * 
+     * @return {number}
+     */
+    findBeginningOfDayPosition(position){
+        const beginningOfDay = this.convertPositionToScaleDate(this.scrollTimeScale, position);
+        return this.scrollTimeScale(beginningOfDay);
+    }
+
+    /**
+     * Find the position of the end of the day based on scrollTimeScale. 
+     * 
+     * @return {number}
+     */
+    findEndOfDayPosition(position){
+        const endOfDay = this.scrollTimeScale.invert(position).setHours(23, 59, 59, 999);      
+        return this.scrollTimeScale(endOfDay);
     }
 
     /**
@@ -975,16 +1086,42 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     *  Determine if timeline height is different than last render
-     *
-     * @return {Boolean}
+     * Initialize item's popover with correct position and classes.
      */
-    isHeightDifferent(sortedItems, maxVisibleItems) {
-        return (
-            maxVisibleItems !== this._maxVisibleItems ||
-            this._sortedItems.length !== sortedItems.length
+    initializeItemPopover(element) {
+        let tooltipElement = d3.select(this.itemPopoverSelector);
+        
+        if (!tooltipElement._groups[0][0]) {
+            return;
+        }
+
+        // Set popover position
+        const popoverPosition = this.setPopoverPosition(
+            tooltipElement,
+            element
         );
+
+        tooltipElement
+            .style('opacity', 1)
+            .style('top', popoverPosition.y + 'px')
+            .style('left', popoverPosition.x + 'px')
+            .style('background', TIMELINE_COLORS.popoverBackground)
+            .attr(
+                'class',
+                this.computedPopoverClasses(element, popoverPosition.direction)
+            )
+            .on('mouseenter', this.handleMouseOverOnPopover.bind(this))
+            .on('mouseleave', this.handleMouseOutOfPopover.bind(this));
     }
+
+    /**
+     * Check if date is invalid.
+     * 
+     * @return {boolean} 
+     */
+    isDateInvalid(date) {
+        return new Date(date).toString() === 'Invalid Date' || !date;
+    } 
 
     /**
      * Check if user is scrolling vertically.
@@ -999,15 +1136,37 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     * Move interval on timeline's scroll axis to new valid position.
+     * Move interval (drag or scroll) on timeline's scroll axis to new valid position.
      */
     moveIntervalToPosition(position) {
-        this._intervalMinDate = this.scrollTimeScale
-            .invert(position)
-            .setHours(0, 0, 0, 0);
+        this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, position);
+
+        this._timeIntervalSelector
+            .attr('x',  position)
+            .attr('width', this.intervalWidth)
+            .attr('y', INTERVAL_RECTANGLE_OFFSET_Y);
 
         this.setIntervalMaxDate();
-        this._activityTimeline.renderedCallback();
+        this.moveTimelineDisplay();
+    }
+
+    /**
+     * Move timeline display with the new interval min and max date. The following elements will be updated : timeline (with items), 
+     * timeline axis (only scale), top header and interval rectangle (on scroll axis) position and bounds (blue lines).
+     */
+    moveTimelineDisplay(){
+        // Set position of interval bounds (blue lines)
+        this._leftIntervalLine
+            .attr('x1', this.scrollTimeScale(new Date(this._intervalMinDate)))
+            .attr('x2', this.scrollTimeScale(new Date(this._intervalMinDate)));
+
+        this._rightIntervalLine
+            .attr('x1', this.scrollTimeScale(new Date(this._intervalMaxDate)))
+            .attr('x2', this.scrollTimeScale(new Date(this._intervalMaxDate)));
+
+        this.resetAndRedrawTimelineAxis();
+        this.resetAndRedrawTimeline();
+        this._activityTimeline.updateHorizontalTimelineHeader();
     }
 
     /**
@@ -1029,6 +1188,45 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Remove timeline (section with items) and re-draw it. This method is used to refresh it's not on salesforce and 
+     * iconLibraries are ready after initial draw.
+     */
+    resetAndRedrawTimeline() {
+        this._maxYPositionOfItem = 0;
+        this._timelineItemsDiv = d3.select(this.divTimelineItemsSelector);
+        this._timelineItemsDiv.selectAll('*').remove();
+        this.createTimeline();
+    }
+
+    /**
+     * Remove all scroll axis rectangles and redraw them with new positions.
+     */
+    resetAndRedrawScrollAxisRectangle(){
+        // Remove all rectangles of scroll axis
+        this._scrollAxisSVG.select('#' + SCROLL_AXIS_RECTANGLES_G_ID).selectAll('*').remove();
+
+        // Redraw rectangles with new positions
+        this.addItemsToScrollAxis();
+    }
+
+    /**
+     * Remove timeline axis and redraw it with new scale. 
+     */
+    resetAndRedrawTimelineAxis(){
+        // Select and remove previous timeline axis
+        const timelineAxisSVG = d3.select(this.divTimelineAxisSelector).select('svg');
+        timelineAxisSVG.selectChild('#timeline-axis').remove();
+
+        // Redraw timeline axis
+        this.createTimeAxis(
+            this.viewTimeScale,
+            AXIS_TYPE.timelineAxis,
+            this._numberOfTimelineAxisTicks,
+            timelineAxisSVG
+        );
+    }
+
+    /**
      * Select and remove all elements inside the horizontal timeline to build a new one
      *
      */
@@ -1046,13 +1244,36 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * For action icon, set position of icon to center it in container.
+     */
+    setActionIconPosition(iconSVG) {
+        const svgElement = iconSVG.node();
+        const parentSpanElement = iconSVG.node().parentElement;
+
+        if (svgElement && parentSpanElement) {
+            const iconWidth = svgElement.getBoundingClientRect().width;
+            const iconHeight = svgElement.getBoundingClientRect().height;
+
+            const offsetX =
+                (parentSpanElement.getBoundingClientRect().width - iconWidth) /
+                2;
+            const offsetY =
+                (parentSpanElement.getBoundingClientRect().height -
+                    iconHeight) /
+                2;
+
+            iconSVG.attr('transform', `translate(-${offsetX}, -${offsetY})`);
+        }
+    }
+
+    /**
      * Set the icon's information (name of the icon, x link href and CSS classes) to default (standard:empty)
      */
     setDefaultIconInformation() {
         return {
-            iconName: 'empty',
-            xLinkHref: '/assets/icons/standard-sprite/svg/symbols.svg#empty',
-            categoryIconClass: 'slds-icon-standard-empty'
+            iconName: DEFAULT_ICON_NAME,
+            category: DEFAULT_ICON_CATEGORY,
+            categoryIconClass: `slds-icon-${DEFAULT_ICON_CATEGORY}-${DEFAULT_ICON_NAME} slds-icon_small`
         };
     }
 
@@ -1060,10 +1281,13 @@ export class HorizontalActivityTimeline {
      * Set the interval's min date to the middle datetime value of all items
      */
     setDefaultIntervalDates() {
-        const middleIndex = Math.ceil(this._sortedItems.length / 2 - 1);
-        this._intervalMinDate = new Date(
-            this._sortedItems[middleIndex].datetimeValue
-        );
+        if(this.isTimelineEmpty) {
+            this._intervalMinDate = this.findNextDate(new Date(), Math.floor(DEFAULT_INTERVAL_DAYS_LENGTH));
+        } else {
+            const middleIndex = Math.ceil(this._sortedItems.length / 2 - 1);
+            this._intervalMinDate = new Date(this._sortedItems[middleIndex].datetimeValue);
+        }
+
         this._intervalMinDate.setHours(0, 0, 0, 0);
         this.setIntervalMaxDate();
     }
@@ -1126,6 +1350,7 @@ export class HorizontalActivityTimeline {
             iconClass = ' slds-icon-text-default ';
         }
         iconClass += 'slds-icon-' + iconCategory + '-';
+
         const nameOfIcon = iconName.slice(
             iconName.indexOf(':') + 1,
             iconName.length
@@ -1133,12 +1358,11 @@ export class HorizontalActivityTimeline {
 
         return {
             iconName: nameOfIcon,
-            xLinkHref:
-                '/assets/icons/' +
-                iconCategory +
-                '-sprite/svg/symbols.svg#' +
-                nameOfIcon,
-            categoryIconClass: iconClass + nameOfIcon.replace(/_/g, '-')
+            category: iconCategory,
+            categoryIconClass: `slds-icon_small ${iconClass}${nameOfIcon.replace(
+                /_/g,
+                '-'
+            )}`
         };
     }
 
@@ -1171,6 +1395,11 @@ export class HorizontalActivityTimeline {
         this._intervalMaxDate.setDate(
             this._intervalMaxDate.getDate() + this._intervalDaysLength
         );
+        this._intervalMaxDate.setHours(23, 59, 59, 999);
+
+        if(this._intervalMaxDate > this.scrollAxisMaxDate) {
+            this._intervalMaxDate = this.scrollAxisMaxDate;
+        }
     }
 
     /**
@@ -1233,32 +1462,19 @@ export class HorizontalActivityTimeline {
      * Set the visible height of the timeline according to the max visible items number
      */
     setVisibleTimelineHeight() {
-        if (
-            !this._previousMaxYPosition ||
-            this._maxYPositionOfItem >= this._previousMaxYPosition
-        ) {
-            this._previousMaxYPosition = this._maxYPositionOfItem;
-            this._maxDisplayedItems =
-                (this._maxYPositionOfItem - Y_START_POSITION_TIMELINE_ITEM) /
-                    Y_GAP_BETWEEN_ITEMS_TIMELINE +
-                1;
+        // To limit height to number of items in timeline
+        if (this._maxVisibleItems > this._sortedItems.length){
+            this._maxVisibleItems = this._sortedItems.length;
         }
+
         this._timelineHeightDisplayed =
             this._maxVisibleItems * Y_GAP_BETWEEN_ITEMS_TIMELINE +
             Y_START_POSITION_TIMELINE_ITEM * 1.5;
-
-        // To prevent timeline height to be bigger than the max number of items displayed
-        if (this._maxVisibleItems > this._maxDisplayedItems) {
-            this._timelineHeightDisplayed =
-                this._maxDisplayedItems * Y_GAP_BETWEEN_ITEMS_TIMELINE +
-                Y_START_POSITION_TIMELINE_ITEM * 1.5;
-        }
 
         d3.select(this.divTimelineScroll).style(
             'height',
             this._timelineHeightDisplayed + 'px'
         );
-        this._requestHeightChange = false;
     }
 
     /**
@@ -1343,11 +1559,11 @@ export class HorizontalActivityTimeline {
      * Handle click on scroll axis to change interval values. Timeline is re-render.
      */
     handleClickOnScrollAxis(event) {
+        this.handleMouseOutOfPopover();
+        
         if (!this._changeIntervalSizeMode) {
-            let xPosition = event.offsetX - this.intervalWidth / 2;
-            const maxPosition =
-                this.scrollTimeScale(this.scrollAxisMaxDate) -
-                this.intervalWidth;
+            let xPosition = this.findBeginningOfDayPosition(event.offsetX - this.intervalWidth / 2);
+            const maxPosition = this.scrollTimeScale(this.scrollAxisMaxDate) - this.intervalWidth;
             const minPosition = this.scrollTimeScale(this.scrollAxisMinDate);
 
             if (xPosition < minPosition) {
@@ -1356,15 +1572,16 @@ export class HorizontalActivityTimeline {
                 xPosition = maxPosition;
             }
 
-            this._timeIntervalSelector
-                .attr('x', xPosition)
-                .attr('y', INTERVAL_RECTANGLE_OFFSET_Y);
-            this._intervalMinDate = this.scrollTimeScale
-                .invert(xPosition)
-                .setHours(0, 0, 0, 0);
-
+            this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, xPosition);
             this.setIntervalMaxDate();
-            this._activityTimeline.renderedCallback();
+
+            // The width is set again because of setHours that can add small offset if scale is on short period of time
+            this._timeIntervalSelector
+                .attr('x', this.scrollTimeScale(this._intervalMinDate))
+                .attr('width', this.intervalWidth)
+                .attr('y', INTERVAL_RECTANGLE_OFFSET_Y);
+
+            this.moveTimelineDisplay();
         }
     }
 
@@ -1374,39 +1591,41 @@ export class HorizontalActivityTimeline {
     handleLowerBoundIntervalChange() {
         this._isResizingInterval = true;
         const xDateMinPosition = this._timeIntervalSelector.attr('x');
-        this._intervalMinDate = this.scrollTimeScale
-            .invert(xDateMinPosition)
-            .setHours(0, 0, 0, 0);
+        this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, xDateMinPosition);
         this._intervalDaysLength = this.calculateDaysBetweenDates(
             this._intervalMinDate,
             this._intervalMaxDate
         );
 
-        this._requestHeightChange = true;
-        this._activityTimeline.renderedCallback();
+        this.resetAndRedrawScrollAxisRectangle();
+        this.moveTimelineDisplay();
     }
 
     /**
      * Handle the drag of the lower bound of interval to expand or reduce interval size.
      */
     handleLowerBoundIntervalDrag(event) {
+        // Keep popover close while resizing
+        this.handleMouseOutOfPopover();
+        this._isTimelineMoving = true;
+
         const minXPosition = this.scrollTimeScale(this.scrollAxisMinDate);
         const maxXPosition =
-            this.scrollTimeScale(this._intervalMaxDate) - MIN_INTERVAL_WIDTH;
-        let xPosition = event.x - this.scrollAxisLeftPosition;
+            this.scrollTimeScale(this._intervalMaxDate) - this.minimumIntervalWidth;
+    
 
-        if (xPosition < minXPosition) {
+        let xPosition = this.findBeginningOfDayPosition(event.sourceEvent.offsetX);
+        if (event.sourceEvent.pageX < this.scrollAxisLeftPosition || xPosition < minXPosition) {
             xPosition = minXPosition;
         } else if (xPosition > maxXPosition) {
             xPosition = maxXPosition;
         }
 
-        const newRectangleWidth =
-            this.scrollTimeScale(this._intervalMaxDate) - xPosition;
+        const newRectangleWidth = this.scrollTimeScale(this._intervalMaxDate) - xPosition;
         this._timeIntervalSelector
             .attr('x', xPosition)
             .attr('width', newRectangleWidth);
-
+        
         this.handleLowerBoundIntervalChange();
     }
 
@@ -1414,7 +1633,8 @@ export class HorizontalActivityTimeline {
      * Handle mouse out of item to hide popover
      */
     handleMouseOutOnItem() {
-        setTimeout(() => {
+        this.clearPreviousTooltipClosingTimeout();
+        this._tooltipClosingTimeout = setTimeout(() => {
             if (!this._isMouseOverOnPopover) {
                 this._activityTimeline.handleTooltipClose();
             }
@@ -1425,6 +1645,10 @@ export class HorizontalActivityTimeline {
      * Handle mouse over on popover.
      */
     handleMouseOverOnPopover() {
+        if(this._isTimelineMoving){
+            return;
+        }
+        this.clearPreviousTooltipClosingTimeout();
         this._isMouseOverOnPopover = true;
     }
 
@@ -1432,8 +1656,11 @@ export class HorizontalActivityTimeline {
      * Handle mouse out of popover.
      */
     handleMouseOutOfPopover() {
-        this._isMouseOverOnPopover = false;
-        this._activityTimeline.handleTooltipClose();
+        if(this._activityTimeline.showItemPopOver) {
+            this.clearPreviousTooltipClosingTimeout();
+            this._isMouseOverOnPopover = false;
+            this._activityTimeline.handleTooltipClose();
+        }
     }
 
     /**
@@ -1448,72 +1675,28 @@ export class HorizontalActivityTimeline {
      * Handle mouse over on item to display a popover
      */
     handleMouseOverOnItem(element) {
-        this._isMouseOverOnPopover = false;
-        this._activityTimeline.handleItemMouseOver(element);
-    }
-
-    /**
-     * Initialize item's popover with correct position and classes.
-     */
-    initializeItemPopover(element) {
-        let tooltipElement = d3.select(this.itemPopoverSelector);
-
-        if (
-            !tooltipElement._groups[0][0] ||
-            tooltipElement._groups[0][0] === null
-        ) {
+        if(this._isTimelineMoving) {
             return;
         }
-
-        // Set popover position
-        const popoverPosition = this.setPopoverPosition(
-            tooltipElement,
-            element
-        );
-
-        tooltipElement
-            .style('opacity', 1)
-            .style('top', popoverPosition.y + 'px')
-            .style('left', popoverPosition.x + 'px')
-            .style('background', TIMELINE_COLORS.popoverBackground)
-            .attr(
-                'class',
-                this.computedPopoverClasses(element, popoverPosition.direction)
-            )
-            .on('mouseenter', this.handleMouseOverOnPopover.bind(this))
-            .on('mouseleave', this.handleMouseOutOfPopover.bind(this));
-    }
-
-    /**
-     * Get all specific and common classes of popover.
-     *
-     * @return {string}
-     */
-    computedPopoverClasses(element, direction) {
-        return (
-            this.getPopoverNubbinClass(element, direction) +
-            ' ' +
-            DEFAULT_POPOVER_CLASSES
-        );
+        this.clearPreviousTooltipClosingTimeout();
+        this._isMouseOverOnPopover = false;
+        this._activityTimeline.handleItemMouseOver(element);
     }
 
     /**
      * Handle the drag of interval on scroll axis to change dates displayed on main timeline. Timeline is re-render.
      */
     handleTimeIntervalDrag(event) {
+        let xPosition = this.findBeginningOfDayPosition(event.sourceEvent.offsetX - this._distanceBetweenDragAndMin);
+
         // To allow only horizontal drag
-        let xPosition = this.validateXMousePosition(
-            event.sourceEvent.offsetX - this._distanceBetweenDragAndMin
-        );
+        xPosition = this.validateXMousePosition(xPosition);
 
         if (event.sourceEvent.pageX < this.scrollAxisLeftPosition) {
             xPosition = this.scrollTimeScale(this.scrollAxisMinDate);
         }
 
-        this._timeIntervalSelector
-            .attr('x', xPosition)
-            .attr('y', INTERVAL_RECTANGLE_OFFSET_Y);
-
+        this.handleMouseOutOfPopover();
         this.moveIntervalToPosition(xPosition);
     }
 
@@ -1521,6 +1704,7 @@ export class HorizontalActivityTimeline {
      * Handle the drag start of time interval to set the distance between drag position and min value.
      */
     handleTimeIntervalDragStart(event) {
+        this._isTimelineMoving = true;
         this._distanceBetweenDragAndMin =
             event.x - this.scrollTimeScale(this._intervalMinDate);
     }
@@ -1543,20 +1727,24 @@ export class HorizontalActivityTimeline {
             this._intervalMaxDate
         );
 
-        this._requestHeightChange = true;
-        this._activityTimeline.renderedCallback();
+        this.resetAndRedrawScrollAxisRectangle();
+        this.moveTimelineDisplay();
     }
 
     /**
      * Handle the drag of the upper bound of interval to expand or reduce interval size.
      */
     handleUpperBoundIntervalDrag(event) {
-        const minXPosition =
-            this.scrollTimeScale(this._intervalMinDate) + MIN_INTERVAL_WIDTH;
-        const maxXPosition = this.scrollTimeScale(this.scrollAxisMaxDate);
-        let xPosition = event.x - this.scrollAxisLeftPosition;
+        // Keep popover close while resizing
+        this.handleMouseOutOfPopover();
+        this._isTimelineMoving = true;
 
-        if (xPosition < minXPosition) {
+        const minXPosition =
+            this.scrollTimeScale(this._intervalMinDate) + this.minimumIntervalWidth;
+        const maxXPosition = this.scrollTimeScale(this.scrollAxisMaxDate);
+
+        let xPosition = this.findEndOfDayPosition(event.sourceEvent.offsetX);
+        if (event.sourceEvent.pageX < this.scrollAxisLeftPosition || xPosition < minXPosition) {
             xPosition = minXPosition;
         } else if (xPosition > maxXPosition) {
             xPosition = maxXPosition;
@@ -1585,11 +1773,15 @@ export class HorizontalActivityTimeline {
         this.cancelSwipeLeftIfScrollLeft(event);
         this.cancelEditIntervalSizeMode();
         this.handleMouseOutOfPopover();
-
+       
         // Horizontal scroll of interval
-        const requestedPosition =
+        let requestedPosition =
             Number(this._timeIntervalSelector.attr('x')) +
             this.normalizeHorizontalScrollDeltaX(event);
+
+        // To set hours at 0,0,0,0 for min date
+        requestedPosition = this.findBeginningOfDayPosition(requestedPosition);
+        
         this.moveIntervalToPosition(
             this.validateXMousePosition(requestedPosition)
         );

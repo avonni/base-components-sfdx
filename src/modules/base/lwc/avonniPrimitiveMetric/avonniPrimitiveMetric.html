@@ -33,7 +33,11 @@
 -->
 
 <template>
-    <div class="slds-grid slds-grid_vertical-align-end avonni-metric__wrapper">
+    <div
+        if:true={hasValue}
+        class="slds-grid slds-grid_vertical-align-end avonni-metric__wrapper"
+        data-element-id="div-wrapper"
+    >
         <!-- Trend icon -->
         <lightning-dynamic-icon
             if:true={showDynamicIcon}

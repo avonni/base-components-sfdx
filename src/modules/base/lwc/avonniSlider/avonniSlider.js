@@ -42,9 +42,11 @@ import { AvonniResizeObserver } from 'c/resizeObserver';
 import { FieldConstraintApiWithProxyInput } from 'c/inputUtils';
 
 const DEFAULT_MIN = 0;
+const DEFAULT_MINIMUM_DISTANCE = 0;
 const DEFAULT_MAX = 100;
 const PERCENT_SCALING_FACTOR = 100;
 const DEFAULT_STEP = 1;
+const DEFAULT_VALUE = 50;
 
 const SLIDER_SIZES = {
     valid: ['x-small', 'small', 'medium', 'large', 'responsive'],
@@ -108,7 +110,7 @@ export default class AvonniSlider extends LightningElement {
     _disableSwap = false;
     _max = DEFAULT_MAX;
     _min = DEFAULT_MIN;
-    _minimumDistance = DEFAULT_MIN;
+    _minimumDistance = DEFAULT_MINIMUM_DISTANCE;
     _pin = false;
     _hideTrack = false;
     _hideMinMaxValues = false;
@@ -120,17 +122,17 @@ export default class AvonniSlider extends LightningElement {
     _unit = SLIDER_UNITS.default;
     _unitAttributes = {};
     _variant = LABEL_VARIANTS.default;
-    _value = (DEFAULT_MAX - DEFAULT_MIN) / 2;
+    _value = [DEFAULT_VALUE];
 
     computedMax = DEFAULT_MAX;
     computedMin = DEFAULT_MIN;
-    _computedValues = [(DEFAULT_MAX - DEFAULT_MIN) / 2];
+    _computedValues = [DEFAULT_VALUE];
     customLabels = [];
     _helpMessage;
     _moveEventWait = false;
     _pinLocked = false;
     _previousScalingFactor = 1;
-    _trackInterval = [DEFAULT_MIN, (DEFAULT_MAX - DEFAULT_MIN) / 2];
+    _trackInterval = [DEFAULT_MIN, DEFAULT_VALUE];
     _resizeObserver;
     _focusedInputIndex;
     _scalingFactor = 1;
@@ -229,7 +231,7 @@ export default class AvonniSlider extends LightningElement {
         return this._disableSwap;
     }
     set disableSwap(value) {
-        this._disableSwap = value;
+        this._disableSwap = normalizeBoolean(value);
     }
 
     /**
@@ -246,13 +248,13 @@ export default class AvonniSlider extends LightningElement {
 
     set max(value) {
         const intValue = parseInt(value, 10);
-        if (!isNaN(intValue)) {
-            this.computedMax = intValue;
-            this._max = intValue;
-            if (this._connected) {
-                this.scaleValues();
-                this.capValues();
-            }
+        const normalizedMax = isNaN(intValue) ? DEFAULT_MAX : intValue;
+        this.computedMax = normalizedMax;
+        this._max = normalizedMax;
+
+        if (this._connected) {
+            this.scaleValues();
+            this.capValues();
         }
     }
 
@@ -269,13 +271,13 @@ export default class AvonniSlider extends LightningElement {
     }
     set min(value) {
         const intValue = parseInt(value, 10);
-        if (!isNaN(intValue)) {
-            this.computedMin = intValue;
-            this._min = intValue;
-            if (this._connected) {
-                this.scaleValues();
-                this.capValues();
-            }
+        const normalizedMin = isNaN(intValue) ? DEFAULT_MIN : intValue;
+        this.computedMin = normalizedMin;
+        this._min = normalizedMin;
+
+        if (this._connected) {
+            this.scaleValues();
+            this.capValues();
         }
     }
 
@@ -292,9 +294,9 @@ export default class AvonniSlider extends LightningElement {
     }
     set minimumDistance(value) {
         const intValue = parseInt(value, 10);
-        if (!isNaN(intValue)) {
-            this._minimumDistance = intValue;
-        }
+        this._minimumDistance = isNaN(intValue)
+            ? DEFAULT_MINIMUM_DISTANCE
+            : intValue;
     }
 
     /**
@@ -395,7 +397,7 @@ export default class AvonniSlider extends LightningElement {
     set step(value) {
         this._step = Number(value);
         this._scalingFactor =
-            0 < this._step && this._step < 1 ? 1 / this.step : 1;
+            0 < this._step && this._step < 1 ? 1 / this.step : DEFAULT_STEP;
         if (this._connected) {
             this.scaleValues();
             this.capValues();
@@ -451,7 +453,7 @@ export default class AvonniSlider extends LightningElement {
      */
     @api
     get unit() {
-        return this._unit === 'custom' ? SLIDER_UNITS.default : this._unit;
+        return this._unit;
     }
     set unit(unit) {
         this._unit = normalizeString(unit, {
@@ -466,12 +468,12 @@ export default class AvonniSlider extends LightningElement {
             }
         }
     }
+
     /**
      * Attributes specific to the selected unit. See Units and Unit Attributes table for more details.
      *
      * @type {object}
      * @public
-     * @default
      */
     @api
     get unitAttributes() {
@@ -512,16 +514,16 @@ export default class AvonniSlider extends LightningElement {
         return this._value;
     }
     set value(value) {
-        if (value !== 0 && !value) {
-            this._value = (DEFAULT_MAX - DEFAULT_MIN) / 2;
-            return;
-        }
         if (!isNaN(Number(value))) {
             this._value = [Number(value)];
         } else {
-            this._value = normalizeArray(value, 'number');
+            const normalizedValue = normalizeArray(value, 'number');
+            this._value = normalizedValue.length
+                ? normalizedValue
+                : [DEFAULT_VALUE];
+            this._value.sort((a, b) => a - b);
         }
-        this._value = this._value.sort((a, b) => a - b);
+
         this._computedValues = [...this._value];
         if (this._connected) {
             this.scaleValues();
@@ -675,6 +677,15 @@ export default class AvonniSlider extends LightningElement {
     }
 
     /**
+     * Unit normalized to a valid lightning-formatted-number unit.
+     *
+     * @type {string}
+     */
+    get computedUnit() {
+        return this.unit === 'custom' ? SLIDER_UNITS.default : this.unit;
+    }
+
+    /**
      * Computed right pin class styling.
      *
      * @type {string}
@@ -822,7 +833,7 @@ export default class AvonniSlider extends LightningElement {
                         max: () => this.max,
                         min: () => this.min,
                         step: () => this.step,
-                        formatter: () => this.unit,
+                        formatter: () => this.computedUnit,
                         disabled: () => this.disabled
                     });
 

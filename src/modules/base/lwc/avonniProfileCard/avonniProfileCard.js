@@ -111,8 +111,8 @@ export default class AvonniProfileCard extends LightningElement {
 
     _avatarMobilePosition = AVATAR_POSITIONS.default;
     _avatarPosition = AVATAR_POSITIONS.default;
+    _avatarSize = AVATAR_SIZES.default;
     _avatarVariant = AVATAR_VARIANTS.default;
-    _size = AVATAR_SIZES.default;
 
     isError = false;
     showActions = true;
@@ -240,6 +240,25 @@ export default class AvonniProfileCard extends LightningElement {
     }
 
     /**
+     * The size of the avatar. Valid values include x-small, small, medium, large, x-large.
+     *
+     * @type {string}
+     * @public
+     * @default medium
+     */
+    @api
+    get avatarSize() {
+        return this._avatarSize;
+    }
+
+    set avatarSize(avatarSize) {
+        this._avatarSize = normalizeString(avatarSize, {
+            fallbackValue: AVATAR_SIZES.default,
+            validValues: AVATAR_SIZES.valid
+        });
+    }
+
+    /**
      * The variant change the shape of the avatar. Valid values are circle, square.
      *
      * @type {string}
@@ -259,22 +278,21 @@ export default class AvonniProfileCard extends LightningElement {
     }
 
     /**
-     * The size of the avatar. Valid values include x-small, small, medium, large, x-large.
+     * Deprecated. Use `resources` instead.
      *
-     * @type {string}
-     * @public
-     * @default medium
+     * @type {object[]}
+     * @deprecated
      */
     @api
     get size() {
-        return this._size;
+        return this.avatarSize;
     }
-
-    set size(size) {
-        this._size = normalizeString(size, {
-            fallbackValue: AVATAR_SIZES.default,
-            validValues: AVATAR_SIZES.valid
-        });
+    set size(value) {
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
+        this.avatarSize = value;
+        console.warn(
+            'The "size" attribute is deprecated. Use "avatar-size" instead.'
+        );
     }
 
     /*
@@ -318,7 +336,7 @@ export default class AvonniProfileCard extends LightningElement {
         return classSet('')
             .add(`${this._avatarPosition}-desktop`)
             .add(`mobile-${this._avatarMobilePosition}`)
-            .add(`avonni-profile-card__card_size-${this._size}`)
+            .add(`avonni-profile-card__card_size-${this._avatarSize}`)
             .toString();
     }
 
@@ -331,7 +349,7 @@ export default class AvonniProfileCard extends LightningElement {
         return classSet(
             'slds-media slds-media_center slds-has-flexi-truncate avonni-profile-card_color-background'
         )
-            .add(`avonni-profile-card__background_size-${this._size}`)
+            .add(`avonni-profile-card__background_size-${this._avatarSize}`)
             .toString();
     }
 
@@ -342,7 +360,7 @@ export default class AvonniProfileCard extends LightningElement {
      */
     get computedAvatarClass() {
         return classSet('avonni-profile-card__avatar-img')
-            .add(`avonni-profile-card__avatar_size-${this._size}`)
+            .add(`avonni-profile-card__avatar_size-${this._avatarSize}`)
             .add({
                 'avonni-profile-card__avatar-img-circle':
                     this._avatarVariant === 'circle',

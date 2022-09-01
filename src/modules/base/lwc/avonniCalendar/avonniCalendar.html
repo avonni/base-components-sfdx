@@ -107,7 +107,7 @@
                 </template>
                 <table
                     aria-labelledby="month"
-                    aria-multiselectable="true"
+                    aria-multiselectable={isMultiSelect}
                     class={tableClasses}
                     role="grid"
                 >
@@ -137,28 +137,28 @@
                             >
                                 <template for:each={week} for:item="day">
                                     <td
-                                        class={day.class}
-                                        role="gridcell"
+                                        class={day.wrapperClass}
                                         key={generateKey}
                                         aria-selected={day.selected}
-                                        aria-current={day.currentDate}
+                                        aria-current={day.ariaCurrent}
+                                        role="gridcell"
+                                        tabindex={day.tabIndex}
+                                        data-full-date={day.date}
+                                        data-date={day.label}
                                         onmouseover={handleMouseOver}
                                         onmouseout={handleMouseOut}
                                         onfocus={handleDateFocus}
-                                        data-cell-day={day.fullDate}
-                                        data-day={day.fullDate}
-                                        tabindex={day.tabIndex}
                                     >
                                         <span
-                                            class={day.dayClass}
-                                            data-day={day.fullDate}
+                                            class={day.labelClass}
+                                            data-full-date={day.date}
                                             data-date={day.label}
                                             data-element-id="span-day-label"
-                                            onclick={handlerSelectDate}
-                                            >{day.label}
-                                        </span>
+                                            onclick={handleSelectDate}
+                                            >{day.label}</span
+                                        >
                                         <div
-                                            if:true={day.marked}
+                                            if:true={day.markers.length}
                                             class="slds-is-relative"
                                         >
                                             <div
@@ -167,7 +167,7 @@
                                                 "
                                             >
                                                 <template
-                                                    for:each={day.markedColors}
+                                                    for:each={day.markers}
                                                     for:item="marker"
                                                 >
                                                     <div
@@ -176,22 +176,22 @@
                                                             avonni-calendar__marked-cells
                                                         "
                                                         data-element-id="div-marked-cells"
-                                                        style={marker.color}
+                                                        style={marker}
                                                     ></div>
                                                 </template>
                                             </div>
                                         </div>
                                         <c-avonni-chip
-                                            if:true={day.labeled}
-                                            class={day.chip.classes}
+                                            if:true={day.hasChip}
+                                            class={day.chip.computedClass}
                                             label={day.chip.label}
                                             variant={day.chip.variant}
                                             outline={day.chip.outline}
-                                            data-day={day.fullDate}
+                                            data-full-date={day.date}
                                             data-element-id="chip-date-label"
                                         >
                                             <c-avonni-primitive-icon
-                                                if:true={day.chip.showLeft}
+                                                if:true={day.chip.showLeftIcon}
                                                 class="
                                                     avonni-calendar-chip-icon-left
                                                 "
@@ -199,10 +199,10 @@
                                                 size="xx-small"
                                                 variant={day.chip.iconVariant}
                                                 icon-name={day.chip.iconName}
-                                                data-day={day.fullDate}
+                                                data-full-date={day.date}
                                             ></c-avonni-primitive-icon>
                                             <c-avonni-primitive-icon
-                                                if:true={day.chip.showRight}
+                                                if:true={day.chip.showRightIcon}
                                                 class="
                                                     avonni-calendar-chip-icon-right
                                                 "
@@ -210,7 +210,7 @@
                                                 size="xx-small"
                                                 variant={day.chip.iconVariant}
                                                 icon-name={day.chip.iconName}
-                                                data-day={day.fullDate}
+                                                data-full-date={day.date}
                                             ></c-avonni-primitive-icon>
                                         </c-avonni-chip>
                                     </td>

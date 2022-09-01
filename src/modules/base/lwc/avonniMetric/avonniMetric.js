@@ -50,7 +50,6 @@ const CURRENCY_DISPLAYS = {
 };
 
 const DEFAULT_TREND_BREAKPOINT_VALUE = 0;
-const DEFAULT_VALUE = 0;
 
 const FORMAT_STYLES = {
     default: 'decimal',
@@ -162,7 +161,7 @@ export default class AvonniMetric extends LightningElement {
     _tooltip;
     _trendBreakpointValue = DEFAULT_TREND_BREAKPOINT_VALUE;
     _trendIcon;
-    _value = DEFAULT_VALUE;
+    _value;
     _valueSign = VALUE_SIGNS.default;
 
     renderedCallback() {
@@ -513,7 +512,7 @@ export default class AvonniMetric extends LightningElement {
         return this._secondaryValue;
     }
     set secondaryValue(value) {
-        const normalizedNumber = Number(value);
+        const normalizedNumber = value === null ? undefined : Number(value);
         this._secondaryValue = isFinite(normalizedNumber)
             ? normalizedNumber
             : undefined;
@@ -617,8 +616,6 @@ export default class AvonniMetric extends LightningElement {
      * Value of the primary metric.
      *
      * @type {number}
-     * @required
-     * @default 0
      * @public
      */
     @api
@@ -626,10 +623,8 @@ export default class AvonniMetric extends LightningElement {
         return this._value;
     }
     set value(value) {
-        const normalizedNumber = Number(value);
-        this._value = isFinite(normalizedNumber)
-            ? normalizedNumber
-            : DEFAULT_VALUE;
+        const normalizedNumber = value === null ? undefined : Number(value);
+        this._value = isFinite(normalizedNumber) ? normalizedNumber : undefined;
     }
 
     /**
@@ -705,9 +700,9 @@ export default class AvonniMetric extends LightningElement {
      * @type {string}
      */
     get secondaryClass() {
-        const classes = classSet(
-            'slds-m-left_x-small avonni-metric__secondary'
-        );
+        const classes = classSet('avonni-metric__secondary').add({
+            'slds-m-left_x-small': isFinite(this.value)
+        });
 
         if (this.secondaryShowTrendColor) {
             const isPositive =

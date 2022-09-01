@@ -50,8 +50,8 @@
                 presence-position={primaryItem.presencePosition}
                 entity-icon-name={primaryItem.entityIconName}
                 entity-initials={primaryItem.entityInitials}
-                entity-variant={primaryItem.entityVariant}
                 entity-src={primaryItem.entitySrc}
+                entity-variant={primaryItem.entityVariant}
                 entity-position={primaryItem.entityPosition}
                 actions={primaryItem.actions}
                 action-position={primaryItem.actionPosition}
@@ -106,37 +106,38 @@
                 <template if:true={item.key}>
                     <span key={item.key} class={avatarWrapperClass}>
                         <c-avonni-avatar
+                            role="button"
+                            actions={item.actions}
+                            action-menu-icon={item.actionMenuIcon}
+                            action-position={item.actionPosition}
                             alternative-text={item.alternativeText}
+                            entity-icon-name={item.entityIconName}
+                            entity-initials={item.entityInitials}
+                            entity-position={item.entityPosition}
+                            entity-src={item.entitySrc}
+                            entity-title={item.entityTitle}
+                            entity-variant={item.entityVariant}
                             fallback-icon-name={item.fallbackIconName}
-                            initials={item.initials}
-                            src={item.src}
-                            variant={variant}
                             hide-avatar-details={isNotList}
-                            size={size}
-                            status={item.status}
-                            status-title={item.statusTitle}
-                            status-position={item.statusPosition}
+                            initials={item.initials}
                             presence={item.presence}
                             presence-title={item.presenceTitle}
                             presence-position={item.presencePosition}
-                            entity-icon-name={item.entityIconName}
-                            entity-initials={item.entityInitials}
-                            entity-variant={item.entityVariant}
-                            entity-src={item.entitySrc}
-                            entity-position={item.entityPosition}
-                            actions={item.actions}
-                            action-position={item.actionPosition}
-                            action-menu-icon={item.actionMenuIcon}
                             primary-text={item.primaryText}
                             secondary-text={item.secondaryText}
+                            size={size}
+                            src={item.src}
+                            status={item.status}
+                            status-title={item.statusTitle}
+                            status-position={item.statusPosition}
+                            tags={item.tags}
                             tertiary-text={item.tertiaryText}
+                            variant={variant}
                             data-element-id="avonni-avatar"
                             data-item-id={index}
                             data-type="show"
                             class={avatarInlineClass}
-                            role="button"
                             onkeyup={handleAvatarClick}
-                            tags={item.tags}
                             tabindex="0"
                             onclick={handleAvatarClick}
                         >
@@ -221,42 +222,39 @@
                                 data-type="hidden"
                                 tabindex="0"
                             >
-                                <c-avonni-primitive-avatar
+                                <c-avonni-avatar
+                                    role="button"
+                                    class={avatarInlineClass}
+                                    action-menu-icon={item.actionMenuIcon}
+                                    action-position={item.actionPosition}
+                                    actions={item.actions}
                                     alternative-text={item.alternativeText}
-                                    fallback-icon-name={item.fallbackIconName}
-                                    initials={item.initials}
-                                    src={item.src}
-                                    variant={variant}
-                                    size={size}
-                                    status={item.status}
-                                    status-title={item.statusTitle}
-                                    status-position={item.statusPosition}
-                                    presence={item.presence}
-                                    presence-title={item.presenceTitle}
-                                    presence-position={item.presencePosition}
                                     entity-icon-name={item.entityIconName}
                                     entity-initials={item.entityInitials}
-                                    entity-variant={item.entityVariant}
-                                    entity-src={item.entitySrc}
                                     entity-position={item.entityPosition}
-                                    actions={item.actions}
-                                    action-position={item.actionPosition}
-                                    action-menu-icon={item.actionMenuIcon}
+                                    entity-src={item.entitySrc}
+                                    entity-variant={item.entityVariant}
+                                    fallback-icon-name={item.fallbackIconName}
+                                    hide-avatar-details={isNotList}
+                                    initials={item.initials}
+                                    presence={item.presence}
+                                    presence-position={item.presencePosition}
+                                    presence-title={item.presenceTitle}
+                                    primary-text={item.primaryText}
+                                    secondary-text={item.secondaryText}
+                                    size={size}
+                                    src={item.src}
+                                    status={item.status}
+                                    status-position={item.statusPosition}
+                                    status-title={item.statusTitle}
+                                    tags={item.tags}
+                                    tertiary-text={item.tertiaryText}
+                                    variant={variant}
                                     data-element-id="avonni-primitive-avatar-show-more-propover"
                                     data-item-id={index}
                                     data-type="hidden"
-                                    class={avatarInlineClass}
                                     onclick={handleAvatarClick}
-                                    role="button"
-                                    onkeyup={handleAvatarClick}
-                                ></c-avonni-primitive-avatar>
-                                <p
-                                    onclick={handleAvatarClick}
-                                    data-item-id={index}
-                                    data-type="hidden"
-                                >
-                                    {item.alternativeText}
-                                </p>
+                                ></c-avonni-avatar>
                             </div>
                         </template>
                     </div>

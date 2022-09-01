@@ -118,3 +118,10 @@
 .avonni-color-picker__dropdown {
     max-width: none;
 }
+
+.avonni-color-picker__label {
+    color: var(--avonni-color-picker-label-text-color, #3e3e3c);
+    font-size: var(--avonni-color-picker-label-font-size, 0.75rem);
+    font-weight: var(--avonni-color-picker-label-font-weight, 400);
+    font-style: var(--avonni-color-picker-label-font-style, normal);
+}

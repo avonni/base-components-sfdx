@@ -121,30 +121,34 @@ export default class AvonniInputDateRange extends LightningElement {
     _required = false;
     _startDate;
     _timeStyle = DATE_STYLES.defaultTime;
-    _timezone;
     _type = DATE_TYPES.default;
     _variant = LABEL_VARIANTS.default;
-    startTime;
+
+    calendarKeyEvent;
+    enteredEndCalendar = false;
+    enteredStartCalendar = false;
     endTime;
     isOpenStartDate = false;
     isOpenEndDate = false;
-    calendarKeyEvent;
-    _cancelBlurStartDate = false;
-    _cancelBlurEndDate = false;
-    _focusStartDate;
-    _focusEndDate;
+    helpMessage;
     savedFocus;
     showEndDate = false;
     showStartDate = false;
-    enteredStartCalendar = false;
-    enteredEndCalendar = false;
-    selectionModeStartDate = 'interval';
+    startTime;
     selectionModeEndDate = 'interval';
-    helpMessage;
+    selectionModeStartDate = 'interval';
+    _cancelBlurStartDate = false;
+    _cancelBlurEndDate = false;
+    _connected = false;
+    _focusStartDate;
+    _focusEndDate;
 
     connectedCallback() {
+        this.initStartDate();
+        this.initEndDate();
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
+        this._connected = true;
     }
 
     /*
@@ -202,9 +206,12 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     set endDate(value) {
-        this._endDate = value;
-        this.initialEndDate = value;
-        this.initEndtDate();
+        const date = new Date(value);
+        this._endDate = isNaN(date) || value === null ? null : date;
+
+        if (this._connected) {
+            this.initEndDate();
+        }
     }
 
     /**
@@ -251,9 +258,14 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     set startDate(value) {
-        this._startDate = value;
-        this.initialStartDate = value;
-        this.initStartDate();
+        const date =
+            isNaN(new Date(value)) || value === null ? null : new Date(value);
+        this._startDate = date;
+        this._initialStartDate = date ? new Date(date) : null;
+
+        if (this._connected) {
+            this.initStartDate();
+        }
     }
 
     /**
@@ -291,8 +303,11 @@ export default class AvonniInputDateRange extends LightningElement {
 
     set timezone(value) {
         this._timezone = value;
-        this.initStartDate();
-        this.initEndtDate();
+
+        if (this._connected) {
+            this.initStartDate();
+            this.initEndDate();
+        }
     }
 
     /**
@@ -312,8 +327,11 @@ export default class AvonniInputDateRange extends LightningElement {
             fallbackValue: DATE_TYPES.default,
             validValues: DATE_TYPES.valid
         });
-        this.initStartDate();
-        this.initEndtDate();
+
+        if (this._connected) {
+            this.initStartDate();
+            this.initEndDate();
+        }
     }
 
     /**
@@ -516,17 +534,16 @@ export default class AvonniInputDateRange extends LightningElement {
      * @type {object}
      */
     get calendarValue() {
-        if (!this.startDate && !this.endDate) {
-            return null;
+        const value = [];
+        if (this.startDate) {
+            const normalizedDate = new Date(this.startDate).setHours(0, 0);
+            value.push(normalizedDate);
         }
-        if (!this.startDate && this.endDate) {
-            return this.endDate;
+        if (this.endDate) {
+            const normalizedDate = new Date(this.endDate).setHours(0, 0);
+            value.push(normalizedDate);
         }
-        if (this.startDate && !this.endDate) {
-            return this.startDate;
-        }
-
-        return [this.startDate, this.endDate];
+        return value;
     }
 
     /**
@@ -664,50 +681,48 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Initialization of start date depending on timezone and type.
+     * Initialize the start time.
      */
     initStartDate() {
-        if (this.startDate) {
-            if (this.timezone) {
-                this._startDate = new Date(
-                    new Date(this.initialStartDate).toLocaleString('default', {
-                        timeZone: this.timezone
-                    })
-                );
-            } else {
-                this._startDate = new Date(this.initialStartDate);
-            }
+        if (!this.startDate) {
+            this.startTime = null;
+            this.startTimeString = '';
+            return;
+        }
+        if (this.timezone) {
+            // Use the date and time from the given time zone
+            const stringDate = this.startDate.toLocaleString('en-us', {
+                timeZone: this.timezone
+            });
+            this._startDate = new Date(stringDate);
+        }
 
-            if (this.type === 'datetime') {
-                this.startTime = this._startDate.toTimeString().substr(0, 5);
-                this.startTimeString = this.timeFormat(this._startDate);
-            }
-
-            this._startDate.setHours(0, 0, 0, 0);
+        if (this.type === 'datetime') {
+            this.startTime = this.startDate.toTimeString().substring(0, 5);
+            this.startTimeString = this.timeFormat(this.startDate);
         }
     }
 
     /**
-     * Initialization of end date depending on timezone and type.
+     * Initialize the end time.
      */
-    initEndtDate() {
-        if (this.endDate) {
-            if (this.timezone) {
-                this._endDate = new Date(
-                    new Date(this.initialEndDate).toLocaleString('default', {
-                        timeZone: this.timezone
-                    })
-                );
-            } else {
-                this._endDate = new Date(this.initialEndDate);
-            }
+    initEndDate() {
+        if (!this.endDate) {
+            this.endTime = null;
+            this.endTimeString = '';
+            return;
+        }
+        if (this.timezone) {
+            // Use the date and time from the given time zone
+            const stringDate = this.endDate.toLocaleString('en-us', {
+                timeZone: this.timezone
+            });
+            this._endDate = new Date(stringDate);
+        }
 
-            if (this.type === 'datetime') {
-                this.endTime = this._endDate.toTimeString().substr(0, 5);
-                this.endTimeString = this.timeFormat(this._endDate);
-            }
-
-            this._endDate.setHours(0, 0, 0, 0);
+        if (this.type === 'datetime') {
+            this.endTime = this.endDate.toTimeString().substring(0, 5);
+            this.endTimeString = this.timeFormat(this.endDate);
         }
     }
 
@@ -778,40 +793,53 @@ export default class AvonniInputDateRange extends LightningElement {
               });
     }
 
+    toISOString(dateObject, timeString) {
+        if (!dateObject) {
+            return null;
+        }
+        const time = timeString ? `T${timeString}` : 'T00:00:00';
+        const date = dateObject && dateObject.toISOString();
+
+        let dateTime = date.replace(/T[^Z]+/, time);
+        try {
+            const formattedWithTimeZone = new Date(dateTime).toLocaleString(
+                'default',
+                {
+                    timeZone: this.timezone,
+                    timeZoneName: 'longOffset'
+                }
+            );
+            const tz = formattedWithTimeZone.match(/GMT([-+]\d{2}:\d{2})?/);
+            if (tz[1]) {
+                dateTime = dateTime.replace('Z', tz[1]);
+            }
+        } catch {
+            // The time zone is not supported
+        }
+        return dateTime;
+    }
+
     /**
      * Dispatch changes from start-date input, end-date input, c-calendar for start-date and c-calendar for end-date.
      */
     dispatchChange() {
-        let startDate = this.startTime
-            ? `${this.startDateString} ${this.startTime}`
-            : this.startDateString;
-        let endDate = this.endTime
-            ? `${this.endDateString} ${this.endTime}`
-            : this.endDateString;
-
-        if (this.timezone) {
-            startDate = new Date(startDate).toLocaleString('default', {
-                timeZone: this.timezone
-            });
-            endDate = new Date(endDate).toLocaleString('default', {
-                timeZone: this.timezone
-            });
-        }
+        const startDate = this.toISOString(this.startDate, this.startTime);
+        const endDate = this.toISOString(this.endDate, this.endTime);
 
         /**
          * The event fired when the value changed.
          *
          * @event
          * @name change
-         * @param {string} startDate Start date value.
-         * @param {string} endDate End date value.
+         * @param {string} startDate Start date, as an ISO8601 formatted string.
+         * @param {string} endDate End date, as an ISO8601 formatted string.
          * @public
          */
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    startDate: startDate,
-                    endDate: endDate
+                    startDate,
+                    endDate
                 }
             })
         );
@@ -1027,57 +1055,73 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Manage focus between inputs and input icons:
-     * Close calendar on input focus out,
-     * unless focus is in input icon or calendar
-     *
-     * @param {Event} event
+     * Handle a blur of the end date button icon. Close the calendar popover if the focus is really lost.
      */
-    handleBlurDateInput(event) {
-        if (!event.target) {
-            return;
+    handleBlurEndButtonIcon() {
+        requestAnimationFrame(() => {
+            if (!this.enteredEndCalendar) {
+                this.showEndDate = false;
+            }
+            this.enteredEndCalendar = false;
+        });
+    }
+
+    /**
+     * Handle a blur of the end date input. Empty the value if the input was cleared, anc close the calendar popover if the focus is really lost.
+     */
+    handleBlurEndInput(event) {
+        const value = event.currentTarget.value;
+        if (!value) {
+            this._endDate = null;
+            this.dispatchChange();
         }
-        const blurredInput = event.target.dataset.elementId;
 
         requestAnimationFrame(() => {
-            let newFocus;
-            if (this.template.activeElement) {
-                newFocus = this.template.activeElement.dataset.elementId;
-            }
+            const activeElement = this.template.activeElement;
+            const activeButton =
+                activeElement &&
+                activeElement.dataset.elementId === 'lightning-icon-start-date';
 
-            switch (blurredInput) {
-                case 'input-start-date':
-                    if (
-                        !this.enteredStartCalendar &&
-                        // don't hide the calendar if the focus was moved to the icon
-                        !(newFocus === 'lightning-icon-start-date')
-                    ) {
-                        this.showStartDate = false;
-                    }
-                    break;
-                case 'input-end-date':
-                    if (
-                        !this.enteredEndCalendar &&
-                        !(newFocus === 'lightning-icon-end-date')
-                    ) {
-                        this.showEndDate = false;
-                    }
-                    break;
-                case 'lightning-icon-start-date':
-                    if (!this.enteredStartCalendar) {
-                        this.showStartDate = false;
-                    }
-                    break;
-                case 'lightning-icon-end-date':
-                    if (!this.enteredEndCalendar) {
-                        this.showEndDate = false;
-                    }
-                    break;
-                default:
+            if (!this.enteredEndCalendar && !activeButton) {
+                // Don't hide the calendar if the focus was moved to the icon
+                this.showEndDate = false;
             }
+        });
+    }
 
+    /**
+     * Handle a blur of the start date button icon. Close the calendar popover if the focus is really lost.
+     */
+    handleBlurStartButtonIcon() {
+        requestAnimationFrame(() => {
+            if (!this.enteredStartCalendar) {
+                this.showStartDate = false;
+            }
             this.enteredStartCalendar = false;
-            this.enteredEndCalendar = false;
+        });
+    }
+
+    /**
+     * Handle a blur of the start date input. Empty the value if the input was cleared, anc close the calendar popover if the focus is really lost.
+     */
+    handleBlurStartInput(event) {
+        const value = event.currentTarget.value;
+        if (!value) {
+            this._startDate = null;
+            this.dispatchChange();
+        }
+
+        requestAnimationFrame(() => {
+            const activeElement = this.template.activeElement;
+            const activeButton =
+                activeElement &&
+                activeElement.dataset.elementId === 'lightning-icon-start-date';
+
+            if (!this.enteredStartCalendar && !activeButton) {
+                // Don't hide the calendar if the focus was moved to the icon
+                this.showStartDate = false;
+            }
+            this.enteredStartCalendar = false;
         });
     }
 

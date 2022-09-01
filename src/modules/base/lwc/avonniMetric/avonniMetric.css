@@ -12,12 +12,14 @@
 /* Texts and value */
 .avonni-metric__description {
     font-size: var(--avonni-metric-description-font-size, 0.75rem);
+    font-style: var(--avonni-metric-description-font-style, normal);
     font-weight: var(--avonni-metric-description-font-weight, normal);
     color: var(--avonni-metric-description-text-color, #747474);
 }
 
 .avonni-metric__label {
     font-size: var(--avonni-metric-label-font-size, 0.875rem);
+    font-style: var(--avonni-metric-label-font-style, normal);
     font-weight: var(--avonni-metric-label-font-weight, normal);
     color: var(--avonni-metric-label-text-color, #444444);
 }
@@ -26,6 +28,10 @@
     --avonni-primitive-metric-prefix-font-size: var(
         --avonni-metric-prefix-font-size,
         1rem
+    );
+    --avonni-primitive-metric-prefix-font-style: var(
+        --avonni-metric-prefix-font-style,
+        normal
     );
     --avonni-primitive-metric-prefix-font-weight: var(
         --avonni-metric-prefix-font-weight,
@@ -40,6 +46,10 @@
         --avonni-metric-suffix-font-size,
         1rem
     );
+    --avonni-primitive-metric-suffix-font-style: var(
+        --avonni-metric-suffix-font-style,
+        normal
+    );
     --avonni-primitive-metric-suffix-font-weight: var(
         --avonni-metric-suffix-font-weight,
         bold
@@ -52,6 +62,10 @@
     --avonni-primitive-metric-value-font-size: var(
         --avonni-metric-value-font-size,
         1.5rem
+    );
+    --avonni-primitive-metric-value-font-style: var(
+        --avonni-metric-value-font-style,
+        normal
     );
     --avonni-primitive-metric-value-font-weight: var(
         --avonni-metric-value-font-weight,
@@ -117,7 +131,10 @@
         --avonni-metric-secondary-prefix-font-size,
         0.8125rem
     );
-
+    --avonni-primitive-metric-prefix-font-style: var(
+        --avonni-metric-secondary-prefix-font-style,
+        normal
+    );
     --avonni-primitive-metric-prefix-font-weight: var(
         --avonni-metric-secondary-prefix-font-weight,
         bold
@@ -131,6 +148,10 @@
         --avonni-metric-secondary-suffix-font-size,
         0.8125rem
     );
+    --avonni-primitive-metric-suffix-font-style: var(
+        --avonni-metric-secondary-suffix-font-style,
+        normal
+    );
     --avonni-primitive-metric-suffix-font-weight: var(
         --avonni-metric-secondary-suffix-font-weight,
         bold
@@ -143,6 +164,10 @@
     --avonni-primitive-metric-value-font-size: var(
         --avonni-metric-secondary-value-font-size,
         0.8125rem
+    );
+    --avonni-primitive-metric-value-font-style: var(
+        --avonni-metric-secondary-value-font-style,
+        normal
     );
     --avonni-primitive-metric-value-font-weight: var(
         --avonni-metric-secondary-value-font-weight,

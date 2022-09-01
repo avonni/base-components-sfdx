@@ -1289,6 +1289,7 @@ export default class AvonniFilterMenu extends LightningElement {
      * @param {Event} event
      */
     handleSearch(event) {
+        event.stopPropagation();
         const searchTerm = event.currentTarget.value;
 
         this.computedItems.forEach((item) => {

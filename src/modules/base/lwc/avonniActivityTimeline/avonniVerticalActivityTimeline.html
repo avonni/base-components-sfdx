@@ -52,7 +52,13 @@
         </template>
         <!-- Vertical timeline -->
         <template if:true={noGroupBy}>
-            <ul class="slds-timeline">
+            <ul
+                class="slds-timeline"
+                onactionclick={handleActionClick}
+                onbuttonclick={handleButtonClick}
+                oncheck={handleCheck}
+                onitemclick={handleItemClick}
+            >
                 <template for:each={sortedItems} for:item="item">
                     <li key={item.name}>
                         <c-avonni-primitive-activity-timeline-item
@@ -80,9 +86,6 @@
                             name={item.name}
                             data-element-id="avonni-primitive-activity-timeline-item"
                             data-name={item.name}
-                            onactionclick={handleActionClick}
-                            onbuttonclick={handleButtonClick}
-                            oncheck={handleCheck}
                         >
                         </c-avonni-primitive-activity-timeline-item>
                     </li>
@@ -99,7 +102,13 @@
                         closed={closed}
                         data-element-id="avonni-expandable-section"
                     >
-                        <ul class="slds-timeline">
+                        <ul
+                            class="slds-timeline"
+                            onactionclick={handleActionClick}
+                            onbuttonclick={handleButtonClick}
+                            oncheck={handleCheck}
+                            onitemclick={handleItemClick}
+                        >
                             <template for:each={date.items} for:item="item">
                                 <li key={item.name}>
                                     <c-avonni-primitive-activity-timeline-item
@@ -127,9 +136,6 @@
                                         name={item.name}
                                         data-element-id="avonni-primitive-activity-timeline-item"
                                         data-name={item.name}
-                                        onactionclick={handleActionClick}
-                                        onbuttonclick={handleButtonClick}
-                                        oncheck={handleCheck}
                                     >
                                     </c-avonni-primitive-activity-timeline-item>
                                 </li>

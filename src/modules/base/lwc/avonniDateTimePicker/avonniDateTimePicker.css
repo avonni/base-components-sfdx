@@ -30,8 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-date-time-picker__label {
+.avonni-date-time-picker__label {
     float: none;
+    color: var(--avonni-date-time-picker-label-text-color, #444444);
+    font-size: var(--avonni-date-time-picker-label-font-size, 0.75rem);
+    font-weight: var(--avonni-date-time-picker-label-font-weight, 700);
+    font-style: var(--avonni-date-time-picker-label-font-style, normal);
 }
 
 .avonni-date-time-picker__day {

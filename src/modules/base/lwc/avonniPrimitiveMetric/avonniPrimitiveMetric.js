@@ -40,7 +40,6 @@ const CURRENCY_DISPLAYS = {
 };
 
 const DEFAULT_TREND_BREAKPOINT_VALUE = 0;
-const DEFAULT_VALUE = 0;
 
 const FORMAT_STYLES = {
     default: 'decimal',
@@ -95,7 +94,7 @@ export default class AvonniPrimitiveMetric extends LightningElement {
     _minimumSignificantDigits;
     _trendBreakpointValue = DEFAULT_TREND_BREAKPOINT_VALUE;
     _trendIcon = TREND_ICONS.default;
-    _value = DEFAULT_VALUE;
+    _value;
     _valueSign = VALUE_SIGNS.default;
 
     /*
@@ -270,8 +269,6 @@ export default class AvonniPrimitiveMetric extends LightningElement {
      * Value of the metric.
      *
      * @type {number}
-     * @required
-     * @default 0
      * @public
      */
     @api
@@ -279,10 +276,8 @@ export default class AvonniPrimitiveMetric extends LightningElement {
         return this._value;
     }
     set value(value) {
-        const normalizedNumber = Number(value);
-        this._value = isFinite(normalizedNumber)
-            ? normalizedNumber
-            : DEFAULT_VALUE;
+        const normalizedNumber = value === null ? undefined : Number(value);
+        this._value = isFinite(normalizedNumber) ? normalizedNumber : undefined;
     }
 
     /**
@@ -323,6 +318,15 @@ export default class AvonniPrimitiveMetric extends LightningElement {
                 'slds-m-right_xx-small': this.value <= this.trendBreakpointValue
             })
             .toString();
+    }
+
+    /**
+     * True if the value is a valid number.
+     *
+     * @type {boolean}
+     */
+    get hasValue() {
+        return isFinite(this.value);
     }
 
     /**

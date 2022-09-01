@@ -712,7 +712,9 @@ export default class AvonniColorPicker extends LightningElement {
      * @type {string}
      */
     get computedLabelClass() {
-        return classSet('slds-form-element__label slds-no-flex')
+        return classSet(
+            'slds-form-element__label avonni-color-picker__label slds-no-flex'
+        )
             .add({
                 'slds-assistive-text': this.variant === 'label-hidden'
             })

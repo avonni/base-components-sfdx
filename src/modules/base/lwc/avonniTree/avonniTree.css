@@ -33,6 +33,7 @@
 .avonni-tree__group-header {
     font-size: var(--avonni-tree-header-font-size, 0.875rem);
     font-weight: var(--avonni-tree-header-font-weight, 700);
+    font-style: var(--avonni-tree-header-font-style, normal);
     color: var(--avonni-tree-header-text-color);
 }
 

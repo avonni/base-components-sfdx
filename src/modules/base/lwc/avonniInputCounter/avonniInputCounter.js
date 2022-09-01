@@ -294,7 +294,7 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     /**
-     * Amount to add or substract from the value.
+     * Amount to add or subtract from the value.
      *
      * @type {number}
      * @default 1

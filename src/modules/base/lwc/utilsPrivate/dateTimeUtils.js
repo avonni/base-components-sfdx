@@ -102,6 +102,25 @@ const addToDate = (date, unit, span) => {
 };
 
 /**
+ * Get the week number of a date, starting the weeks from Sunday.
+ *
+ * @param {Date|DateTime|number|string} date The date we want to get the week number of.
+ * @returns {number|null} The week number or null if the date is not a valid date.
+ */
+const getWeekNumber = (date) => {
+    let normalizedDate = date;
+    if (!(date instanceof DateTime)) {
+        normalizedDate = dateTimeObjectFrom(date);
+        if (!normalizedDate) return null;
+    }
+
+    if (normalizedDate.weekday === 7) {
+        normalizedDate = addToDate(normalizedDate, 'day', 1);
+    }
+    return normalizedDate.weekNumber;
+};
+
+/**
  * Remove unit * span from the date.
  *
  * @param {DateTime} date The date we want to remove time from.
@@ -435,6 +454,7 @@ export {
     addToDate,
     containsAllowedDateTimes,
     dateTimeObjectFrom,
+    getWeekNumber,
     nextAllowedDay,
     nextAllowedMonth,
     nextAllowedTime,

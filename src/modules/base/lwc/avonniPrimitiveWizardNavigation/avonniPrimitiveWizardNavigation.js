@@ -32,6 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
+import { AvonniResizeObserver } from 'c/resizeObserver';
 import { classSet } from 'c/utils';
 
 const BUTTON_POSITIONS = {
@@ -69,7 +70,8 @@ const BUTTON_VARIANTS = {
 };
 const INDICATOR_TYPES = {
     valid: ['base', 'base-shaded', 'path', 'bullet', 'fractions', 'bar'],
-    default: 'base'
+    default: 'base',
+    smallScreen: 'bar'
 };
 
 const DEFAULT_PREVIOUS_BUTTON_LABEL = 'Previous';
@@ -77,6 +79,8 @@ const DEFAULT_NEXT_BUTTON_LABEL = 'Next';
 const DEFAULT_FINISH_BUTTON_LABEL = 'Finish';
 const DEFAULT_FRACTION_PREFIX_LABEL = 'Step';
 const DEFAULT_FRACTION_LABEL = 'of';
+
+const SMALL_SCREEN_WIDTH = 480;
 
 export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     @api previousButtonIconName;
@@ -118,6 +122,7 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
     showBarIndicator = false;
     hidePreviousButton = false;
     hideNextFinishButton = false;
+    _resizeObserver;
 
     renderedCallback() {
         if (!this._rendered && this.steps.length > 0) {
@@ -126,6 +131,13 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
             if (!this.hideIndicator) this._initIndicator();
             this._normalizeProxySteps();
             this._updateSteps();
+        }
+
+        if (this._resizeObserver && this.hideIndicator) {
+            this._resizeObserver.disconnect();
+            this._resizeObserver = undefined;
+        } else if (!this._resizeObserver && !this.hideIndicator) {
+            this._initResizeObserver();
         }
     }
 
@@ -154,9 +166,24 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
             this.hideNextFinishButton = true;
         }
 
-        this.showProgressIndicator = this.showBulletIndicator = this.showFractionIndicator = this.showBarIndicator = false;
+        this.showProgressIndicator =
+            this.showBulletIndicator =
+            this.showFractionIndicator =
+            this.showBarIndicator =
+                false;
 
-        switch (this.indicatorType) {
+        const wrapper = this.template.querySelector(
+            '[data-element-id="lightning-layout-wrapper"]'
+        );
+        const smallScreen =
+            wrapper &&
+            wrapper.getBoundingClientRect().width < SMALL_SCREEN_WIDTH;
+        let indicatorType = this.indicatorType;
+        if (!this.sideNavigation && smallScreen) {
+            // If the space is small, always use the bar indicator
+            indicatorType = INDICATOR_TYPES.smallScreen;
+        }
+        switch (indicatorType) {
             case 'base-shaded':
                 this.showProgressIndicator = true;
                 this.progressIndicatorVariant = 'shade';
@@ -183,6 +210,20 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
                 this.showProgressIndicator = true;
                 break;
         }
+    }
+
+    _initResizeObserver() {
+        const column = this.template.querySelector(
+            '[data-element-id="lightning-layout-item-indicator"]'
+        );
+        if (!column) {
+            return;
+        }
+
+        this._resizeObserver = new AvonniResizeObserver(() => {
+            this._initIndicator();
+        });
+        this._resizeObserver.observe(column);
     }
 
     _updateSteps() {

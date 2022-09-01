@@ -97,7 +97,6 @@
                     name={selectedItem.name}
                     data-element-id="avonni-horizontal-activity-timeline__item-popover"
                     data-name={selectedItem.name}
-                    onclick={handleItemClick}
                 >
                     <!-- Close button -->
                     <lightning-button-icon
@@ -128,6 +127,8 @@
                                 slds-text-heading_small
                                 slds-has-flexi-truncate
                             "
+                            data-name={selectedItem.name}
+                            onclick={handleItemClick}
                         >
                             <a
                                 if:true={selectedItem.href}

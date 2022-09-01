@@ -34,6 +34,7 @@ import { LightningElement, api } from 'lwc';
 import {
     normalizeBoolean,
     normalizeString,
+    normalizeArray,
     assert,
     getRealDOMId,
     getListHeight
@@ -662,7 +663,10 @@ export default class AvonniDualListbox extends LightningElement {
 
     set value(newValue) {
         this.updateHighlightedOptions(newValue);
-        this._selectedValues = newValue || [];
+        this._selectedValues =
+            typeof newValue === 'string'
+                ? [newValue]
+                : [...normalizeArray(newValue)];
         if (this._connected) {
             this.addRequiredOptionsToValue();
         }
@@ -1330,6 +1334,7 @@ export default class AvonniDualListbox extends LightningElement {
      * @param {Event} event
      */
     handleSearch(event) {
+        event.stopPropagation();
         this._searchTerm = event.detail.value;
     }
 
