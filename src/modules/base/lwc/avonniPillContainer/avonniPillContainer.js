@@ -556,6 +556,8 @@ export default class AvonniPillContainer extends LightningElement {
      * @param {Event} event
      */
     handleActionClick(event) {
+        event.stopPropagation();
+
         /**
          * The event fired when a user clicks on an action.
          *
@@ -570,7 +572,7 @@ export default class AvonniPillContainer extends LightningElement {
             new CustomEvent('actionclick', {
                 detail: {
                     name: event.detail.name,
-                    index: Number(event.target.dataset.index),
+                    index: Number(event.currentTarget.dataset.index),
                     targetName: event.detail.targetName
                 }
             })
@@ -724,7 +726,7 @@ export default class AvonniPillContainer extends LightningElement {
      * @param {Event} event
      */
     handlePillClick(event) {
-        const index = Number(event.target.dataset.index);
+        const index = Number(event.currentTarget.dataset.index);
 
         if (index >= 0 && this._focusedIndex !== index) {
             this.switchFocus(index);
