@@ -34,15 +34,14 @@
 
 <template>
     <img
+        alt={alternativeText}
+        class={computedImageClass}
+        data-element-id="img"
         src={src}
         srcset={srcset}
         sizes={sizes}
-        alt={alternativeText}
-        width={width}
-        height={height}
-        style={computedImgStyle}
-        class={computedImageClass}
+        style={computedStyle}
         loading={lazyLoading}
-        data-element-id="img"
+        onload={handleLoadImage}
     />
 </template>

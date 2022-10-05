@@ -155,6 +155,8 @@ export default class AvonniInputCounter extends LightningElement {
     @api name;
 
     _disabled;
+    _max;
+    _min;
     _step = DEFAULT_STEP;
     _type = validTypes.default;
     _readOnly = false;
@@ -196,7 +198,6 @@ export default class AvonniInputCounter extends LightningElement {
      * The minimum acceptable value for the input. Constrains the decrementer to stop at the specified minimum. If an entered value is below the minimum, incrementing or decrementing will then set the value to the specified minimum.
      *
      * @type {number}
-     * @default null
      * @public
      */
     @api
@@ -205,15 +206,13 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     set min(value) {
-        const min = Number(value);
-        this._min = !isNaN(min) ? min : null;
+        this._min = !isNaN(value) && value !== null ? Number(value) : undefined;
     }
 
     /**
      * The maximum acceptable value for the input. Constrains the incrementer to stop at the specified maximum. If the entered value is above the maximum, incrementing or decrementing will then set the value to the specified maximum.
      *
      * @type {number}
-     * @default null
      * @public
      */
     @api
@@ -222,8 +221,7 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     set max(value) {
-        const max = Number(value);
-        this._max = !isNaN(max) ? max : null;
+        this._max = !isNaN(value) && value !== null ? Number(value) : undefined;
     }
 
     /**

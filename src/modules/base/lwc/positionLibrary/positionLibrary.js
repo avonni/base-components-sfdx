@@ -59,7 +59,6 @@ import {
     reposition,
     scheduleReposition
 } from './reposition';
-import { assert } from 'c/utilsPrivate';
 import { Relationship } from './relationship';
 import { OverlayDetector } from './overlayDetector';
 
@@ -91,15 +90,15 @@ function setupObserver(config, scrollableParent) {
 }
 
 function validateConfig(config) {
-    assert(
-        config.element && isDomNode(config.element),
-        'Element is undefined or missing, or not a Dom Node'
-    );
-    assert(
-        config.target &&
-            (WindowManager.isWindow(config.target) || isDomNode(config.target)),
-        'Target is undefined or missing'
-    );
+    if (!config.element || !isDomNode(config.element)) {
+        throw new Error('Element is undefined or missing, or not a Dom Node');
+    }
+    if (
+        !config.target ||
+        !(WindowManager.isWindow(config.target) || isDomNode(config.target))
+    ) {
+        throw new Error('Target is undefined or missing');
+    }
 }
 
 function createRelationship(
@@ -370,8 +369,12 @@ function toElement(root, target) {
 }
 
 export function startPositioning(root, config, disableReposition) {
-    assert(root, 'Root is undefined or missing');
-    assert(config, 'Config is undefined or missing');
+    if (!root) {
+        throw new Error('Root is undefined or missing');
+    }
+    if (!config) {
+        throw new Error('Config is undefined or missing');
+    }
     const node = normalizeElement(root);
     const target = toElement(node, config.target);
     const element = toElement(node, config.element);

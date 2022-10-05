@@ -152,6 +152,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     _buttonDisabled = false;
     _buttonIconPosition = BUTTON_ICON_POSITIONS.default;
     _buttonVariant = BUTTON_VARIANTS.default;
+    _checked = false;
     _closed = false;
     _dateFormat;
     _fields = [];
@@ -236,6 +237,21 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
             fallbackValue: BUTTON_VARIANTS.default,
             validValues: BUTTON_VARIANTS.valid
         });
+    }
+
+    /**
+     * If present and `has-checkbox` is true, the checkbox will be checked.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get checked() {
+        return this._checked;
+    }
+    set checked(value) {
+        this._checked = normalizeBoolean(value);
     }
 
     /**
@@ -558,6 +574,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      */
     handleCheck(event) {
         event.stopPropagation();
+        this._checked = event.detail.checked;
 
         /**
          * The check event returns the following parameters.
@@ -572,7 +589,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
         this.dispatchEvent(
             new CustomEvent('check', {
                 detail: {
-                    checked: event.detail.checked,
+                    checked: this.checked,
                     name: this.name
                 },
                 bubbles: true

@@ -31,99 +31,28 @@
  */
 
 .avonni-hero-banner__background {
-    background-size: cover;
-    background-position: center;
-    padding: 20px;
     background-color: var(--avonni-hero-banner-color-background, #ffffff);
-}
-
-.avonni-hero-banner__text-container-without-slot_height {
+    width: 100%;
     height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
 }
 
-.avonni-hero-banner__text-container-with-slot_height {
-    height: 75%;
-}
-
-.avonni-hero-banner__horizontal-alignment_right {
-    justify-content: flex-end;
-    text-align: right;
-}
-
-.avonni-hero-banner__horizontal-alignment_center {
-    justify-content: center;
-    text-align: center;
-}
-
-.avonni-hero-banner__vertical-alignment_top {
-    display: flex;
-    flex-direction: column;
-}
-
-.avonni-hero-banner__vertical-alignment_bottom {
-    justify-content: flex-end;
-    display: flex;
-    flex-direction: column;
-}
-
-.avonni-hero-banner__vertical-alignment_center {
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-}
-
-.avonni-hero-banner__primary-button {
-    display: inline-block;
-    border: solid 2px;
-    border-color: var(
-        --avonni-hero-banner-primary-button-color-border,
+.avonni-hero-banner__image-overlay {
+    background-color: var(
+        --avonni-hero-banner-color-image-overlay,
         transparent
     );
-    border-radius: var(--avonni-hero-banner-primary-button-radius, 4px);
-    min-width: 135px;
-    transition: all 0.2s;
-    background: var(
-        --avonni-hero-banner-primary-button-color-background,
-        #0070d2
-    );
-    color: var(--avonni-hero-banner-primary-button-text-color, #ffffff);
-}
-
-.avonni-hero-banner__primary-button:hover {
-    background: var(
-        --avonni-hero-banner-primary-button-color-background-hover,
-        #005fb2
-    );
-    color: var(--avonni-hero-banner-primary-button-text-color-hover, #ffffff);
-}
-
-.avonni-hero-banner__secondary-button {
-    display: inline-block;
-    border: solid 2px;
-    border-color: var(
-        --avonni-hero-banner-secondary-button-color-border,
-        transparent
-    );
-    border-radius: var(--avonni-hero-banner-secondary-button-radius, 4px);
-    min-width: 135px;
-    transition: all 0.2s;
-    background: var(
-        --avonni-hero-banner-secondary-button-color-background,
-        #0070d2
-    );
-    color: var(--avonni-hero-banner-secondary-button-text-color, #ffffff);
-}
-
-.avonni-hero-banner__secondary-button:hover {
-    background: var(
-        --avonni-hero-banner-secondary-button-color-background-hover,
-        #005fb2
-    );
-    color: var(--avonni-hero-banner-secondary-button-text-color-hover, #ffffff);
-}
-
-.avonni-hero-banner__justify-content_center {
-    justify-content: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
 }
 
 .avonni-hero-banner__title {
@@ -171,5 +100,1067 @@
     text-shadow: var(
         --avonni-hero-banner-subtitle-shadow-color,
         1px 1px 0 rgb(0 0 0 / 50%)
+    );
+}
+
+.avonni-hero-banner__text-container-without-slot_height {
+    height: 100%;
+}
+
+.avonni-hero-banner__text-container-with-slot_height {
+    height: 75%;
+}
+
+.avonni-hero-banner__horizontal-alignment_right {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.avonni-hero-banner__horizontal-alignment_center {
+    justify-content: center;
+    text-align: center;
+}
+
+.avonni-hero-banner__vertical-alignment_top {
+    display: flex;
+    flex-direction: column;
+}
+
+.avonni-hero-banner__vertical-alignment_bottom {
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: column;
+}
+
+.avonni-hero-banner__vertical-alignment_center {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+/* PRIMARY BUTTON */
+/* Primary button icon variant base */
+.avonni-hero-banner__primary-button-icon {
+    vertical-align: middle;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-brand-spacing-inline-start,
+        0rem
+    ) !important;
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-brand-spacing-inline-end,
+        0rem
+    ) !important;
+}
+
+.avonni-hero-banner__primary-button-icon_medium {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Primary button variant base */
+.avonni-hero-banner__primary-button {
+    background: none;
+    background-clip: border-box;
+    display: inline-flex;
+    position: relative;
+    text-decoration: none;
+    user-select: none;
+    white-space: normal;
+    -webkit-appearance: none;
+    -webkit-box-align: center;
+    align-items: center;
+    padding-top: var(
+        --avonni-hero-banner-primary-button-spacing-block-start,
+        0
+    );
+    padding-right: var(
+        --avonni-hero-banner-primary-button-spacing-inline-end,
+        0
+    );
+    padding-bottom: var(
+        --avonni-hero-banner-primary-button-spacing-block-end,
+        0
+    );
+    padding-left: var(
+        --avonni-hero-banner-primary-button-spacing-inline-start,
+        0
+    );
+    background-color: var(
+        --avonni-hero-banner-primary-button-color-background,
+        transparent
+    );
+    border-radius: var(
+        --avonni-hero-banner-primary-button-radius-border,
+        0.25rem
+    );
+    border-style: var(
+        --avonni-hero-banner-primary-button-styling-border,
+        solid
+    );
+    border-width: var(--avonni-hero-banner-primary-button-sizing-border, 1px);
+    line-height: var(--avonni-hero-banner-primary-button-line-height, 1.875rem);
+    border-color: var(
+        --avonni-hero-banner-primary-button-color-border,
+        transparent
+    );
+    color: var(--avonni-hero-banner-primary-button-text-color, #0176d3);
+    box-shadow: var(--avonni-hero-banner-primary-button-shadow);
+}
+
+.avonni-hero-banner__primary-button:active {
+    background-color: var(
+        --avonni-hero-banner-primary-button-color-background-active
+    );
+    border-color: var(--avonni-hero-banner-primary-button-color-border-active);
+    color: var(--avonni-hero-banner-primary-button-text-color-active, #014486);
+}
+
+.avonni-hero-banner__primary-button:hover,
+.avonni-hero-banner__primary-button:focus {
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-color-background-hover
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-color-border-hover
+    );
+    color: var(--avonni-hero-banner-primary-button-text-color-hover, #014486);
+}
+
+.avonni-hero-banner__primary-button:focus {
+    outline: 0;
+    box-shadow: var(
+        --avonni-hero-banner-primary-button-shadow-focus,
+        0 0 3px #0176d3
+    );
+}
+
+.avonni-hero-banner__primary-button:active,
+.avonni-hero-banner__primary-button:hover,
+.avonni-hero-banner__primary-button:focus {
+    text-decoration: none;
+}
+
+.avonni-hero-banner__primary-button_transition {
+    text-align: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-transition: border 0.15s linear;
+    transition: border 0.15s linear;
+}
+
+/* Primary button variant brand */
+.avonni-hero-banner__primary-button_variant-brand {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-brand-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-brand-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-brand-color-background,
+        #0176d3
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-brand-color-border,
+        #0176d3
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-brand-text-color,
+        white
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-brand:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-brand-color-background-active,
+        #014486
+    );
+
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-brand-text-color-active,
+        white
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-brand:hover,
+.avonni-hero-banner__primary-button_variant-brand:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-brand-color-background-hover,
+        #014486
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-brand-color-border-hover,
+        #014486
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-brand-text-color-hover,
+        white
+    );
+}
+
+/* Primary button variant brand outline */
+.avonni-hero-banner__primary-button_variant-outline-brand {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-outline-brand-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-outline-brand-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-outline-brand-color-background,
+        white
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-outline-brand-color-border,
+        #0176d3
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-outline-brand-text-color,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-outline-brand:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-outline-brand-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-active: var(
+        --avonni-hero-banner-primary-button-outline-brand-color-border-active,
+        #0176d3
+    );
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-outline-brand-text-color-active,
+        #014486
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-outline-brand:hover,
+.avonni-hero-banner__primary-button_variant-outline-brand:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-outline-brand-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-outline-brand-color-border-hover,
+        #0176d3
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-outline-brand-text-color-hover,
+        #014486
+    );
+}
+
+/* Primary button variant destructive */
+.avonni-hero-banner__primary-button_variant-destructive {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-destructive-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-destructive-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-destructive-color-background,
+        #ba0517
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-destructive-color-border,
+        #ba0517
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-destructive-text-color,
+        white
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-destructive:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-destructive-color-background-active,
+        #8e030f
+    );
+    --avonni-hero-banner-primary-button-color-border-active: var(
+        --avonni-hero-banner-primary-button-destructive-color-border-active,
+        #8e030f
+    );
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-destructive-text-color-active,
+        white
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-destructive:hover,
+.avonni-hero-banner__primary-button_variant-destructive:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-destructive-color-background-hover,
+        #8e030f
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-destructive-color-border-hover,
+        #ba0517
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-destructive-text-color-hover,
+        white
+    );
+}
+
+/* Primary button variant destructive-text */
+.avonni-hero-banner__primary-button_variant-text-destructive {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-text-destructive-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-text-destructive-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-text-destructive-color-background,
+        white
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-text-destructive-color-border,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-text-destructive-text-color,
+        #ea001e
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-text-destructive:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-text-destructive-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-active: var(
+        --avonni-hero-banner-primary-button-text-destructive-color-border-active,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-text-destructive-text-color-active,
+        #ba0517
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-text-destructive:hover,
+.avonni-hero-banner__primary-button_variant-text-destructive:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-text-destructive-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-text-destructive-color-border-hover,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-text-destructive-text-color-hover,
+        #ba0517
+    );
+}
+
+/* Primary button variant inverse */
+.avonni-hero-banner__primary-button_variant-inverse {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-inverse-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-inverse-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-inverse-color-background,
+        rgba(0, 0, 0, 0)
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-inverse-color-border,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-inverse-text-color,
+        #f3f3f3
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-inverse:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-inverse-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-active: var(
+        --avonni-hero-banner-primary-button-inverse-color-border-active,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-inverse-text-color-active,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-inverse:hover,
+.avonni-hero-banner__primary-button_variant-inverse:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-inverse-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-inverse-color-border-hover,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-inverse-text-color-hover,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-inverse:focus {
+    --avonni-hero-banner-primary-button-shadow-focus: var(
+        --avonni-hero-banner-primary-button-inverse-shadow-focus,
+        0 0 3px #0176d3
+    );
+    --avonni-hero-banner-primary-button-color-border: #f3f3f3;
+    outline: none;
+}
+
+/* Primary button variant neutral */
+.avonni-hero-banner__primary-button_variant-neutral {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-neutral-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-neutral-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-neutral-color-background,
+        white
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-neutral-color-border,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-neutral-text-color,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-neutral:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-neutral-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-active: var(
+        --avonni-hero-banner-primary-button-neutral-color-border-active,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-neutral-text-color-active,
+        #014486
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-neutral:hover,
+.avonni-hero-banner__primary-button_variant-neutral:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-neutral-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-neutral-color-border-hover,
+        #c9c9c9
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-neutral-text-color-hover,
+        #014486
+    );
+}
+
+/* Primary button variant success */
+.avonni-hero-banner__primary-button_variant-success {
+    --avonni-hero-banner-primary-button-spacing-inline-start: var(
+        --avonni-hero-banner-primary-button-success-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-spacing-inline-end: var(
+        --avonni-hero-banner-primary-button-success-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-primary-button-color-background: var(
+        --avonni-hero-banner-primary-button-success-color-background,
+        #45c65a
+    );
+    --avonni-hero-banner-primary-button-color-border: var(
+        --avonni-hero-banner-primary-button-success-color-border,
+        #91db8b
+    );
+    --avonni-hero-banner-primary-button-text-color: var(
+        --avonni-hero-banner-primary-button-success-text-color,
+        #181818
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-success:active {
+    --avonni-hero-banner-primary-button-color-background-active: var(
+        --avonni-hero-banner-primary-button-success-color-background-active,
+        #2e844a
+    );
+    --avonni-hero-banner-primary-button-color-border-active: var(
+        --avonni-hero-banner-primary-button-success-color-border-active,
+        #2e844a
+    );
+    --avonni-hero-banner-primary-button-text-color-active: var(
+        --avonni-hero-banner-primary-button-success-text-color-active,
+        white
+    );
+}
+
+.avonni-hero-banner__primary-button_variant-success:hover,
+.avonni-hero-banner__primary-button_variant-success:focus {
+    --avonni-hero-banner-primary-button-color-background-hover: var(
+        --avonni-hero-banner-primary-button-success-color-background-hover,
+        #2e844a
+    );
+    --avonni-hero-banner-primary-button-color-border-hover: var(
+        --avonni-hero-banner-primary-button-success-color-border-hover,
+        #2e844a
+    );
+    --avonni-hero-banner-primary-button-text-color-hover: var(
+        --avonni-hero-banner-primary-button-success-text-color-hover,
+        white
+    );
+}
+
+/* SECONDARY BUTTON */
+.avonni-hero-banner__secondary-button-icon {
+    vertical-align: middle;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    align-items: center;
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-brand-spacing-inline-start,
+        0rem
+    ) !important;
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-brand-spacing-inline-end,
+        0rem
+    ) !important;
+}
+
+.avonni-hero-banner__secondary-button-icon_medium {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Secondary button variant base */
+.avonni-hero-banner__secondary-button {
+    background: none;
+    background-clip: border-box;
+    display: inline-flex;
+    position: relative;
+    text-decoration: none;
+    user-select: none;
+    white-space: normal;
+    -webkit-appearance: none;
+    -webkit-box-align: center;
+    align-items: center;
+    padding-top: var(
+        --avonni-hero-banner-secondary-button-spacing-block-start,
+        0
+    );
+    padding-right: var(
+        --avonni-hero-banner-secondary-button-spacing-inline-end,
+        0
+    );
+    padding-bottom: var(
+        --avonni-hero-banner-secondary-button-spacing-block-end,
+        0
+    );
+    padding-left: var(
+        --avonni-hero-banner-secondary-button-spacing-inline-start,
+        0
+    );
+    background-color: var(
+        --avonni-hero-banner-secondary-button-color-background,
+        transparent
+    );
+    border-radius: var(
+        --avonni-hero-banner-secondary-button-radius-border,
+        0.25rem
+    );
+    border-style: var(
+        --avonni-hero-banner-secondary-button-styling-border,
+        solid
+    );
+    border-width: var(--avonni-hero-banner-secondary-button-sizing-border, 1px);
+
+    line-height: var(
+        --avonni-hero-banner-secondary-button-line-height,
+        1.875rem
+    );
+
+    border-color: var(
+        --avonni-hero-banner-secondary-button-color-border,
+        transparent
+    );
+    color: var(--avonni-hero-banner-secondary-button-text-color, #0176d3);
+    box-shadow: var(--avonni-hero-banner-secondary-button-shadow);
+}
+
+.avonni-hero-banner__secondary-button:active {
+    background-color: var(
+        --avonni-hero-banner-secondary-button-color-background-active
+    );
+    border-color: var(
+        --avonni-hero-banner-secondary-button-color-border-active
+    );
+    color: var(
+        --avonni-hero-banner-secondary-button-text-color-active,
+        #014486
+    );
+}
+
+.avonni-hero-banner__secondary-button:hover,
+.avonni-hero-banner__secondary-button:focus {
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-color-background-hover
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-color-border-hover
+    );
+    color: var(--avonni-hero-banner-secondary-button-text-color-hover, #014486);
+}
+
+.avonni-hero-banner__secondary-button:focus {
+    outline: 0;
+    box-shadow: var(
+        --avonni-hero-banner-secondary-button-shadow-focus,
+        0 0 3px #0176d3
+    );
+}
+
+.avonni-hero-banner__secondary-button:active,
+.avonni-hero-banner__secondary-button:hover,
+.avonni-hero-banner__secondary-button:focus {
+    text-decoration: none;
+}
+
+.avonni-hero-banner__secondary-button_transition {
+    text-align: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-transition: border 0.15s linear;
+    transition: border 0.15s linear;
+}
+
+/* Secondary button variant brand */
+.avonni-hero-banner__secondary-button_variant-brand {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-brand-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-brand-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-brand-color-background,
+        #0176d3
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-brand-color-border,
+        #0176d3
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-brand-text-color,
+        white
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-brand:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-brand-color-background-active,
+        #014486
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-brand-color-border-active,
+        #014486
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-brand-text-color-active,
+        white
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-brand:hover,
+.avonni-hero-banner__secondary-button_variant-brand:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-brand-color-background-hover,
+        #014486
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-brand-color-border-hover,
+        #014486
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-brand-text-color-hover,
+        white
+    );
+}
+
+/* Secondary button variant brand outline */
+.avonni-hero-banner__secondary-button_variant-outline-brand {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-outline-brand-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-outline-brand-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-outline-brand-color-background,
+        white
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-outline-brand-color-border,
+        #0176d3
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-outline-brand-text-color,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-outline-brand:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-outline-brand-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-outline-brand-color-border-active,
+        #0176d3
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-outline-brand-text-color-active,
+        #014486
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-outline-brand:hover,
+.avonni-hero-banner__secondary-button_variant-outline-brand:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-outline-brand-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-outline-brand-color-border-hover,
+        #0176d3
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-outline-brand-text-color-hover,
+        #014486
+    );
+}
+
+/* Secondary button variant destructive */
+.avonni-hero-banner__secondary-button_variant-destructive {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-destructive-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-destructive-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-destructive-color-background,
+        #ba0517
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-destructive-color-border,
+        #ba0517
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-destructive-text-color,
+        white
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-destructive:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-destructive-color-background-active,
+        #8e030f
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-destructive-color-border-active,
+        #8e030f
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-destructive-text-color-active,
+        white
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-destructive:hover,
+.avonni-hero-banner__secondary-button_variant-destructive:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-destructive-color-background-hover,
+        #8e030f
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-destructive-color-border-hover,
+        #ba0517
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-destructive-text-color-hover,
+        white
+    );
+}
+
+/* Secondary button variant destructive-text */
+.avonni-hero-banner__secondary-button_variant-text-destructive {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-text-destructive-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-text-destructive-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-text-destructive-color-background,
+        white
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-text-destructive-color-border,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-text-destructive-text-color,
+        #ea001e
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-text-destructive:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-text-destructive-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-text-destructive-color-border-active,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-text-destructive-text-color-active,
+        #ba0517
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-text-destructive:hover,
+.avonni-hero-banner__secondary-button_variant-text-destructive:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-text-destructive-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-text-destructive-color-border-hover,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-text-destructive-text-color-hover,
+        #ba0517
+    );
+}
+
+/* Secondary button variant inverse */
+.avonni-hero-banner__secondary-button_variant-inverse {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-inverse-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-inverse-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-inverse-color-background,
+        rgba(0, 0, 0, 0)
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-inverse-color-border,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-inverse-text-color,
+        #f3f3f3
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-inverse:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-inverse-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-inverse-color-border-active,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-inverse-text-color-active,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-inverse:hover,
+.avonni-hero-banner__secondary-button_variant-inverse:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-inverse-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-inverse-color-border-hover,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-inverse-text-color-hover,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-inverse:focus {
+    --avonni-hero-banner-secondary-button-shadow-focus: var(
+        --avonni-hero-banner-secondary-button-inverse-shadow-focus,
+        0 0 3px #0176d3
+    );
+    --avonni-hero-banner-secondary-button-color-border: #f3f3f3;
+    outline: none;
+}
+
+/* Secondary button variant neutral */
+.avonni-hero-banner__secondary-button_variant-neutral {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-neutral-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-neutral-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-neutral-color-background,
+        white
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-neutral-color-border,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-neutral-text-color,
+        #0176d3
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-neutral:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-neutral-color-background-active,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-neutral-color-border-active,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-neutral-text-color-active,
+        #014486
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-neutral:hover,
+.avonni-hero-banner__secondary-button_variant-neutral:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-neutral-color-background-hover,
+        #f3f3f3
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-neutral-color-border-hover,
+        #c9c9c9
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-neutral-text-color-hover,
+        #014486
+    );
+}
+
+/* Secondary button variant success */
+.avonni-hero-banner__secondary-button_variant-success {
+    --avonni-hero-banner-secondary-button-spacing-inline-start: var(
+        --avonni-hero-banner-secondary-button-success-spacing-inline-start,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-spacing-inline-end: var(
+        --avonni-hero-banner-secondary-button-success-spacing-inline-end,
+        1rem
+    );
+    --avonni-hero-banner-secondary-button-color-background: var(
+        --avonni-hero-banner-secondary-button-success-color-background,
+        #45c65a
+    );
+    --avonni-hero-banner-secondary-button-color-border: var(
+        --avonni-hero-banner-secondary-button-success-color-border,
+        #91db8b
+    );
+    --avonni-hero-banner-secondary-button-text-color: var(
+        --avonni-hero-banner-secondary-button-success-text-color,
+        #181818
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-success:active {
+    --avonni-hero-banner-secondary-button-color-background-active: var(
+        --avonni-hero-banner-secondary-button-success-color-background-active,
+        #2e844a
+    );
+    --avonni-hero-banner-secondary-button-color-border-active: var(
+        --avonni-hero-banner-secondary-button-success-color-border-active,
+        #2e844a
+    );
+    --avonni-hero-banner-secondary-button-text-color-active: var(
+        --avonni-hero-banner-secondary-button-success-text-color-active,
+        white
+    );
+}
+
+.avonni-hero-banner__secondary-button_variant-success:hover,
+.avonni-hero-banner__secondary-button_variant-success:focus {
+    --avonni-hero-banner-secondary-button-color-background-hover: var(
+        --avonni-hero-banner-secondary-button-success-color-background-hover,
+        #2e844a
+    );
+    --avonni-hero-banner-secondary-button-color-border-hover: var(
+        --avonni-hero-banner-secondary-button-success-color-border-hover,
+        #2e844a
+    );
+    --avonni-hero-banner-secondary-button-text-color-hover: var(
+        --avonni-hero-banner-secondary-button-success-text-color-hover,
+        white
     );
 }

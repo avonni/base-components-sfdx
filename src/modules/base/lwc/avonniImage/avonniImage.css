@@ -48,7 +48,7 @@
     padding: 0.25rem;
     background-color: #fff;
     border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
+    border-radius: var(--avonni-image-radius-border, 0.25rem);
 }
 
 .avonni-image_float-left {

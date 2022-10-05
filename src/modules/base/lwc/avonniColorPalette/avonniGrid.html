@@ -34,11 +34,16 @@
 
 <template>
     <div
-        class="slds-is-relative slds-show_inline-block"
+        class="
+            slds-is-relative
+            slds-show_inline-block
+            avonni-color-palette__loading-wrapper
+        "
         data-element-id="div-palette-container"
     >
         <lightning-spinner
             if:true={isLoading}
+            alternative-text="Loading..."
             size="small"
             data-element-id="lightning-spinner"
         ></lightning-spinner>
@@ -61,7 +66,10 @@
                         {group.label}
                     </div>
 
-                    <ul class="slds-color-picker__swatches" role="listbox">
+                    <ul
+                        class="slds-grid slds-color-picker__swatches slds-wrap"
+                        role="listbox"
+                    >
                         <template for:each={group.colors} for:item="color">
                             <li
                                 key={generateKey}

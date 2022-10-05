@@ -32,7 +32,6 @@
 
 import { ElementProxy } from './elementProxy';
 import { WindowManager, POSITION_ATTR_NAME } from './util';
-import { assert } from 'c/utilsPrivate';
 
 class ProxyCache {
     proxyCache = {};
@@ -75,12 +74,15 @@ class ProxyCache {
         if (!WindowManager.isWindow(element)) {
             key = element ? element.getAttribute(POSITION_ATTR_NAME) : null;
             // 1 - Node.ELEMENT_NODE, 11 - Node.DOCUMENT_FRAGMENT_NODE
-            assert(
-                key &&
-                    element.nodeType &&
-                    (element.nodeType !== 1 || element.nodeType !== 11),
-                `Element Proxy requires an element and has property ${POSITION_ATTR_NAME}`
-            );
+            if (
+                !key ||
+                !element.nodeType ||
+                !(element.nodeType !== 1 || element.nodeType !== 11)
+            ) {
+                throw new Error(
+                    `Element Proxy requires an element and has property ${POSITION_ATTR_NAME}`
+                );
+            }
         }
 
         if (this.proxyCache[key]) {

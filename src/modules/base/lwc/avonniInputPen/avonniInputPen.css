@@ -45,6 +45,10 @@
     cursor: pointer;
 }
 
+.avonni-input-pen__text-area_no-touch-scroll {
+    touch-action: none;
+}
+
 .avonni-input-pen__cursor {
     overflow: auto;
     height: calc(var(--size) * 1px);

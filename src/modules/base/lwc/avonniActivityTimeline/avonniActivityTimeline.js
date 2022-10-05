@@ -36,6 +36,7 @@ import { HorizontalActivityTimeline } from './avonniHorizontalActivityTimeline';
 import horizontalTimeline from './avonniHorizontalActivityTimeline.html';
 import verticalTimeline from './avonniVerticalActivityTimeline.html';
 import {
+    deepCopy,
     normalizeBoolean,
     normalizeString,
     normalizeArray
@@ -183,12 +184,12 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     renderedCallback() {
-        if(this.isTimelineHorizontal){
+        if (this.isTimelineHorizontal) {
             this.renderedCallbackHorizontalTimeline();
         }
     }
 
-    renderedCallbackHorizontalTimeline(){
+    renderedCallbackHorizontalTimeline() {
         if (!this._resizeObserver) {
             this._resizeObserver = this.initResizeObserver();
         }
@@ -197,18 +198,21 @@ export default class AvonniActivityTimeline extends LightningElement {
             this.initializeHorizontalTimeline();
         }
 
-        if(this._redrawHorizontalTimeline) {
+        if (this._redrawHorizontalTimeline) {
+            this.horizontalTimeline.maxVisibleItems = this._maxVisibleItems;
+            this.horizontalTimeline.clientWidth =  this.divHorizontalTimeline.clientWidth;
             this.horizontalTimeline.createHorizontalActivityTimeline(
-                this.sortedItems,
-                this._maxVisibleItems,
-                this.divHorizontalTimeline.clientWidth
+                this.sortedItems
             );
             this._redrawHorizontalTimeline = false;
         }
-        
+
         this.updateHorizontalTimelineHeader();
 
-        if (this.showItemPopOver && !this.horizontalTimeline._isTimelineMoving) {
+        if (
+            this.showItemPopOver &&
+            !this.horizontalTimeline._isTimelineMoving
+        ) {
             this.horizontalTimeline.initializeItemPopover(this.selectedItem);
         }
     }
@@ -433,7 +437,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     set items(value) {
-        this._items = normalizeArray(value);
+        this._items = deepCopy(normalizeArray(value, 'object'));
         if (this._isConnected) {
             this.initActivityTimeline();
         }
@@ -453,7 +457,7 @@ export default class AvonniActivityTimeline extends LightningElement {
         if (value && value > 0) {
             this._maxVisibleItems = value;
 
-            if(this.isTimelineHorizontal) {
+            if (this.isTimelineHorizontal) {
                 this.requestRedrawTimeline();
             }
         }
@@ -477,7 +481,7 @@ export default class AvonniActivityTimeline extends LightningElement {
             validValues: ORIENTATIONS.valid
         });
 
-        if(this.isTimelineHorizontal) {
+        if (this.isTimelineHorizontal) {
             this.requestRedrawTimeline();
         }
     }
@@ -647,8 +651,21 @@ export default class AvonniActivityTimeline extends LightningElement {
         if (this.selectedItem.iconName.includes('action:')) {
             return 'x-small';
         }
-        return 'small';
+        return 'medium';
     }
+
+    /**
+     * Formatted date with requested format (item-date-format) of popover's item for horizontal activity timeline.
+     * 
+     * @return {string}
+     */
+    get selectedItemFormattedDate(){
+        if(!this.selectedItem || !this.selectedItem.datetimeValue || !this.computedItemDateFormat){
+            return '';
+        }
+        return this.horizontalTimeline.convertDateToFormat(this.selectedItem.datetimeValue, this.computedItemDateFormat);
+    }
+    
 
     /*
      * ------------------------------------------------------------
@@ -823,7 +840,7 @@ export default class AvonniActivityTimeline extends LightningElement {
     /**
      * Triggers a redraw of horizontal activity timeline.
      */
-    requestRedrawTimeline(){
+    requestRedrawTimeline() {
         this._redrawHorizontalTimeline = true;
     }
 
@@ -861,6 +878,11 @@ export default class AvonniActivityTimeline extends LightningElement {
         );
     }
 
+    /**
+     * Handle the click on a button. Dispatch the buttonclick event.
+     *
+     * @param {Event} event
+     */
     handleButtonClick(event) {
         event.stopPropagation();
 
@@ -881,9 +903,18 @@ export default class AvonniActivityTimeline extends LightningElement {
         );
     }
 
+    /**
+     * Handle the check and uncheck event on an item. Dispatch the check event.
+     *
+     * @param {Event} event
+     */
     handleCheck(event) {
         event.stopPropagation();
         const { checked, name } = event.detail;
+        const item = this.items.find((it) => it.name === name);
+        if (item) {
+            item.checked = checked;
+        }
 
         /**
          * The event fired when an item is checked or unchecked.
@@ -930,7 +961,6 @@ export default class AvonniActivityTimeline extends LightningElement {
 
     /**
      * Handle close of item's tooltip for horizontal view timeline.
-     *
      */
     handleTooltipClose(event) {
         // To prevent item click event to be dispatch when closing tooltip
@@ -943,7 +973,6 @@ export default class AvonniActivityTimeline extends LightningElement {
 
     /**
      * Handle the mouse over on item for horizontal view timeline.
-     *
      */
     handleItemMouseOver(item) {
         this.showItemPopOver = true;

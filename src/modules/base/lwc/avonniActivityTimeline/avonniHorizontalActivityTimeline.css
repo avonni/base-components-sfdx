@@ -49,3 +49,11 @@
     overscroll-behavior-x: contain;
     overscroll-behavior-block: contain;
 }
+
+[class*="slds-nubbin_"]::before{
+    background: #f3f3f3;
+}
+
+.avonni-horizontal-activity-timeline__popover {
+    --avonni-output-data-label-font-weight: bold;
+}

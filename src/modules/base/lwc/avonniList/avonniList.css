@@ -30,29 +30,98 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.avonni-list__full-height {
+    max-height: 100%;
+}
+
+/* VALUE ASSIGNMENTS */
+.avonni-list__items-without-divider {
+    --private-list-item-spacing-block-between: var(
+        --avonni-list-item-spacing-block-between,
+        0px
+    );
+    --private-list-item-spacing-inline-between: var(
+        --avonni-list-item-spacing-inline-between,
+        0px
+    );
+}
+.avonni-list__items-have-top-divider {
+    --private-list-item-spacing-block-between: var(
+        --avonni-list-item-divider-top-spacing-block-between,
+        0px
+    );
+    --private-list-item-spacing-inline-between: var(
+        --avonni-list-item-divider-top-spacing-inline-between,
+        0px
+    );
+}
+.avonni-list__items-have-bottom-divider {
+    --private-list-item-spacing-block-between: var(
+        --avonni-list-item-divider-bottom-spacing-block-between,
+        0px
+    );
+    --private-list-item-spacing-inline-between: var(
+        --avonni-list-item-divider-bottom-spacing-inline-between,
+        0px
+    );
+}
+.avonni-list__has-card-style {
+    --private-list-item-spacing-block-between: var(
+        --avonni-list-item-divider-around-spacing-block-between,
+        0.5rem
+    );
+    --private-list-item-spacing-inline-between: var(
+        --avonni-list-item-divider-around-spacing-inline-between,
+        0.5rem
+    );
+    --avonni-card-shadow: none;
+    --avonni-card-sizing-border: 1px;
+}
+
+.avonni-list__item-menu {
+    row-gap: var(--private-list-item-spacing-block-between);
+    margin-inline: calc(var(--private-list-item-spacing-inline-between) / -2);
+}
+
 .avonni-list__item {
-    height: fit-content;
-    background-color: var(--avonni-list-item-color-background, transparent);
-    padding-top: var(--avonni-list-item-spacing-block-start);
-    padding-bottom: var(--avonni-list-item-spacing-block-end);
-    padding-left: var(--avonni-list-item-spacing-inline-start);
-    padding-right: var(--avonni-list-item-spacing-inline-end);
+    align-self: stretch;
+    --avonni-card-color-background: var(
+        --avonni-list-item-color-background,
+        transparent
+    );
+    padding-left: calc(var(--private-list-item-spacing-inline-between) / 2);
+    padding-right: calc(var(--private-list-item-spacing-inline-between) / 2);
+    --avonni-card-header-spacing-block-start: 0px;
+    --avonni-card-header-spacing-block-end: 0px;
+    --avonni-card-media-sizing-border: 0px;
+    --avonni-card-body-spacing-block-start: 0px;
+    --avonni-card-body-spacing-block-end: 0px;
+}
+
+.avonni-list-item-body {
+    padding-left: var(--avonni-list-item-spacing-inline-start, 0.5rem);
+    padding-right: var(--avonni-list-item-spacing-inline-end, 0.5rem);
+    padding-top: var(--avonni-list-item-spacing-block-start, 0.5rem);
+    padding-bottom: var(--avonni-list-item-spacing-block-end, 0.5rem);
 }
 
 .avonni-list__item-sortable {
-    background-color: var(
+    user-select: none;
+    --avonni-card-color-background: var(
         --avonni-list-item-color-background-sortable,
         var(--avonni-list-item-color-background, transparent)
     );
 }
 
-.avonni-list__item:not(:last-child) {
-    margin-bottom: var(--avonni-list-item-spacing-block-between);
+.avonni-list__item-borderless {
+    --avonni-card-sizing-border: 0px;
+    --avonni-card-radius-border: 0px;
+    --avonni-card-shadow: none;
 }
 
 .avonni-list__header_font {
     color: var(--avonni-list-header-text-color, #080707);
-    font-size: var(--avonni-list-header-font-size, 14px);
+    font-size: var(--avonni-list-header-font-size, 0.875rem);
     font-style: var(--avonni-list-header-font-style, normal);
     font-weight: var(--avonni-list-header-font-weight, 400);
     line-height: var(--avonni-list-header-line-height, 1.25);
@@ -62,11 +131,29 @@
     cursor: grab;
 }
 
+.avonni-list__lower-spinner {
+    height: 30px;
+}
+
+.avonni-list__page-change-button-container {
+    position: relative;
+    min-width: 30px;
+    max-width: 30px;
+}
+
+.avonni-list__page-change-button {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
 /* Disable the hover on touch */
 @media (hover: hover) {
     .avonni-list__item:hover {
         cursor: var(--avonni-list-item-cursor, default);
-        background-color: var(--avonni-list-item-color-background-hover);
+        --avonni-card-color-background: var(
+            --avonni-list-item-color-background-hover
+        );
     }
 
     .avonni-list__item-sortable:hover {
@@ -74,70 +161,116 @@
             --avonni-list-item-cursor-sortable,
             var(--avonni-list-item-cursor, grab)
         );
-        background-color: var(
+        --avonni-card-color-background: var(
             --avonni-list-item-color-background-sortable-hover,
-            var(--avonni-list-item-color-background-hover, #f3f2f2)
+            var(
+                --avonni-list-item-color-background-hover,
+                rgba(207, 207, 207, 0.25)
+            )
         );
     }
 }
 
-.avonni-list__item-sortable > div {
-    width: 100%;
-}
-
-.avonni-list__item-expanded > div {
-    width: 100%;
-}
-
-.avonni-list__item-sortable_moved {
-    transition: transform 300ms;
+.avonni-list__item-media-action-top-right {
+    margin-top: -4px;
+    margin-right: -8px;
 }
 
 .avonni-list__item-sortable.avonni-list__item-sortable_dragged {
     position: relative;
     z-index: 1;
     border: none;
-    box-shadow: 0 0 10px rgb(0 0 0 / 40%);
+    --avonni-card-shadow: 0 0 10px rgb(0 0 0 / 40%);
     opacity: 0.8;
     cursor: grabbing;
-    background-color: var(--avonni-list-item-color-background, transparent);
+    --avonni-card-color-background: var(
+        --avonni-list-item-color-background,
+        transparent
+    );
+}
+
+.avonni-list__image_container {
+    height: 100%;
+    width: 100%;
 }
 
 .avonni-list__item-img {
     position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
+    width: 100%;
     object-fit: cover;
     pointer-events: none;
+    background-color: var(--avonni-list-item-image-color-background);
 }
 
-.avonni-list__item-image-container {
-    position: relative;
-    overflow: hidden;
-    height: 100%;
+.avonni-list__item-image_object-fit-contain {
+    object-fit: contain;
 }
 
-.avonni-list__item-image-container_rounded-corners {
-    border-top-left-radius: 0.16rem;
-    border-bottom-left-radius: 0.16rem;
+.avonni-list__item-image_object-fit-fill {
+    object-fit: fill;
 }
 
-.avonni-list__item-divider_around {
-    border-width: var(--avonni-list-item-sizing-border, 1px);
-    border-style: var(--avonni-list-item-styling-border, solid);
-    border-color: var(--avonni-list-item-color-border, #dddbda);
-    border-radius: var(--avonni-list-item-around-border-radius, 0.25rem);
+.avonni-list__item-image_object-fit-none {
+    object-fit: none;
 }
 
-.avonni-list__item-divider_top {
+.avonni-list__item-card-style {
+    --avonni-card-radius-border: var(
+        --avonni-list-item-around-border-radius,
+        0.25rem
+    );
+}
+.avonni-list__item-icons {
+    transform: translateY(-1px);
+}
+.avonni-list__item-icon {
+    padding-left: 0.25rem;
+    --slds-c-icon-color-background: var(
+        --avonni-list-item-icon-color-background
+    );
+    --slds-c-icon-color-foreground: var(
+        --avonni-list-item-icon-color-foreground
+    );
+    --slds-c-icon-color-foreground-default: var(
+        --avonni-list-item-icon-color-foreground-default
+    );
+    --slds-c-icon-radius-border: var(
+        --avonni-list-item-icon-radius-border,
+        0.25rem
+    );
+}
+
+/* LINK COLORS */
+a.avonni-list__item-header-link {
+    color: var(--avonni-list-item-header-link-text-color, #0176d3);
+}
+a.avonni-list__item-header-link:hover,
+a.avonni-list__item-header-link:focus {
+    color: var(--avonni-list-item-header-link-text-color-hover, #014486);
+}
+a.avonni-list__item-header-link:active {
+    color: var(--avonni-list-item-header-link-text-color-active, #014486);
+}
+
+a.avonni-list__item-info-link {
+    color: var(--avonni-list-item-infos-link-text-color, #0176d3);
+}
+a.avonni-list__item-info-link:hover,
+a.avonni-list__item-info-link:focus {
+    color: var(--avonni-list-item-infos-link-text-color-hover, #014486);
+}
+a.avonni-list__item-info-link:active {
+    color: var(--avonni-list-item-infos-link-text-color-active, #014486);
+}
+
+.avonni-list__item-divider_top,
+.avonni-list__item-divider_bottom {
     border-top-width: var(--avonni-list-item-sizing-border, 1px);
     border-top-style: var(--avonni-list-item-styling-border, solid);
     border-top-color: var(--avonni-list-item-color-border, #dddbda);
-}
-
-.avonni-list__item-divider_bottom {
-    border-bottom-width: var(--avonni-list-item-sizing-border, 1px);
-    border-bottom-style: var(--avonni-list-item-styling-border, solid);
-    border-bottom-color: var(--avonni-list-item-color-border, #dddbda);
 }
 
 .avonni-list__item-header_font {
@@ -154,8 +287,65 @@
     font-weight: var(--avonni-list-item-description-font-weight, 400);
 }
 
-@media (max-width: 320px) {
-    .avonni-list__has-images {
-        justify-content: center;
-    }
+/* LINK INVERSE COLORS */
+.avonni-list__item-text-color_inverse a.avonni-list__item-header-link {
+    color: var(--avonni-list-item-header-link-text-color-inverse, white);
+}
+.avonni-list__item-text-color_inverse a.avonni-list__item-header-link:hover,
+.avonni-list__item-text-color_inverse a.avonni-list__item-header-link:focus {
+    color: var(
+        --avonni-list-item-header-link-text-color-inverse-hover,
+        var(--lwc-colorTextLinkInverseHover, rgba(255, 255, 255, 0.75))
+    );
+}
+.avonni-list__item-text-color_inverse a.avonni-list__item-header-link:active {
+    color: var(
+        --avonni-list-item-header-link-text-color-inverse-active,
+        var(--lwc-colorTextLinkInverseActive, rgba(255, 255, 255, 0.5))
+    );
+}
+
+.avonni-list__item-text-color_inverse a.avonni-list__item-info-link {
+    color: var(--avonni-list-item-infos-link-text-color-inverse, white);
+}
+.avonni-list__item-text-color_inverse a.avonni-list__item-info-link:hover,
+.avonni-list__item-text-color_inverse a.avonni-list__item-info-link:focus {
+    color: var(
+        --avonni-list-item-infos-link-text-color-inverse-hover,
+        var(--lwc-colorTextLinkInverseHover, rgba(255, 255, 255, 0.75))
+    );
+}
+.avonni-list__item-text-color_inverse a.avonni-list__item-info-link:active {
+    color: var(
+        --avonni-list-item-infos-link-text-color-inverse-active,
+        var(--lwc-colorTextLinkInverseActive, rgba(255, 255, 255, 0.5))
+    );
+}
+
+/* TEXT INVERSE COLOR */
+.avonni-list__item-text-color_inverse .avonni-list__item-header_font {
+    color: var(--avonni-list-item-header-text-color-inverse, white);
+}
+
+.avonni-list__item-text-color_inverse .avonni-list__item-description_font {
+    color: var(--avonni-list-item-description-text-color-inverse, white);
+}
+
+/* ICON INVERSE COLOR */
+.avonni-list__item-text-color_inverse .avonni-list__item-icon,
+.avonni-list__item-action-button-icon_inverse {
+    --slds-c-icon-color-background: var(
+        --avonni-list-item-icon-color-background-inverse
+    );
+    --slds-c-icon-color-foreground: var(
+        --avonni-list-item-icon-color-foreground-inverse
+    );
+    --slds-c-icon-color-foreground-default: var(
+        --avonni-list-item-icon-color-foreground-default-inverse,
+        white
+    );
+    --slds-c-icon-radius-border: var(
+        --avonni-list-item-icon-radius-border,
+        0.25rem
+    );
 }

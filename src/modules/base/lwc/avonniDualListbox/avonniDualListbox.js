@@ -35,7 +35,6 @@ import {
     normalizeBoolean,
     normalizeString,
     normalizeArray,
-    assert,
     getRealDOMId,
     getListHeight
 } from 'c/utilsPrivate';
@@ -249,7 +248,11 @@ export default class AvonniDualListbox extends LightningElement {
     }
 
     renderedCallback() {
-        this.assertRequiredAttributes();
+        if (!this.options.length) {
+            console.warn(
+                '<avonni-dual-listbox> Missing required "options" attribute.'
+            );
+        }
 
         if (this.disabled) {
             this._upButtonDisabled = true;
@@ -1243,7 +1246,7 @@ export default class AvonniDualListbox extends LightningElement {
 
         // select the focused option if entering a listbox
         const element = event.target;
-        if (element.role === 'option') {
+        if (element.dataset.role === 'option') {
             if (!this.isFocusOnList) {
                 this.isFocusOnList = true;
                 this.updateSelectedOptions(element, true, false);
@@ -1260,7 +1263,7 @@ export default class AvonniDualListbox extends LightningElement {
         this.interactingState.leave();
 
         const element = event.target;
-        if (element.role !== 'option') {
+        if (element.dataset.role !== 'option') {
             this.isFocusOnList = false;
         }
     }
@@ -1638,16 +1641,6 @@ export default class AvonniDualListbox extends LightningElement {
                 bubbles: true,
                 detail: { value: values }
             })
-        );
-    }
-
-    /**
-     * Assert Required Attributes.
-     */
-    assertRequiredAttributes() {
-        assert(
-            !!this.options,
-            `<avonni-dual-listbox> Missing required "options" attribute.`
         );
     }
 

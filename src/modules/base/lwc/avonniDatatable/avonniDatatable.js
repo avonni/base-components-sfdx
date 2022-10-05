@@ -230,7 +230,6 @@ export default class AvonniDatatable extends LightningDatatable {
         'progress-circle': {
             template: progressCircle,
             typeAttributes: [
-                'color',
                 'direction',
                 'label',
                 'size',
@@ -346,9 +345,12 @@ export default class AvonniDatatable extends LightningDatatable {
         this.computeEditableOption();
 
         if (this.isLoading) {
-            this.template.querySelector(
+            const spinner = this.template.querySelector(
                 'lightning-primitive-datatable-loading-indicator'
-            ).style.height = '40px';
+            );
+            if (spinner) {
+                spinner.style.height = '40px';
+            }
         }
 
         // Make sure custom edited cells stay yellow on hover

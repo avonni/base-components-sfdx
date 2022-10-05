@@ -203,6 +203,7 @@ export default class AvonniColorPicker extends LightningElement {
     dropdownVisible = false;
     helpMessage;
     newValue;
+    paletteIsLoading = false;
     showError = false;
     tabPressed = false;
     shiftPressed = false;
@@ -1177,6 +1178,7 @@ export default class AvonniColorPicker extends LightningElement {
             if (this.dropdownVisible) {
                 this._boundingRect = this.getBoundingClientRect();
                 this.pollBoundingRect();
+                this.loadPalette();
             }
 
             this.template
@@ -1192,6 +1194,16 @@ export default class AvonniColorPicker extends LightningElement {
      */
     isAutoAlignment() {
         return this.menuAlignment.startsWith('auto');
+    }
+
+    /**
+     * Show a loading spinner while the palette is generated.
+     */
+    loadPalette() {
+        this.paletteIsLoading = true;
+        setTimeout(() => {
+            this.paletteIsLoading = false;
+        }, 0);
     }
 
     /**
@@ -1237,7 +1249,10 @@ export default class AvonniColorPicker extends LightningElement {
         const palette = this.template.querySelector(
             '[data-element-id="avonni-color-palette-default"]'
         );
-        if (palette) palette.colors = [...this.computedColors];
+        if (palette) {
+            palette.colors = [...this.computedColors];
+        }
+        this.loadPalette();
     }
 
     /**

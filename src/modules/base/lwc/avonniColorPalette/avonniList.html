@@ -33,11 +33,16 @@
 -->
 
 <template>
-    <lightning-spinner
+    <div
         if:true={isLoading}
-        size="small"
-        data-element-id="lightning-spinner"
-    ></lightning-spinner>
+        class="slds-is-relative avonni-color-palette__loading-wrapper"
+    >
+        <lightning-spinner
+            alternative-text="Loading..."
+            size="small"
+            data-element-id="lightning-spinner"
+        ></lightning-spinner>
+    </div>
 
     <div
         if:false={isLoading}

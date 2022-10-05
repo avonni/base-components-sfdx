@@ -30,8 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from 'c/utilsPrivate';
-
 export const POSITION_ATTR_NAME = 'data-position-id';
 
 class BrowserWindow {
@@ -53,7 +51,9 @@ class BrowserWindow {
         this._window = value;
     }
     get documentElement() {
-        assert(this.window.document, 'Missing window.document');
+        if (!this.window.document) {
+            throw new Error('Missing window.document');
+        }
         return this.window.document.documentElement;
     }
 

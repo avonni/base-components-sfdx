@@ -33,20 +33,18 @@
 -->
 
 <template>
-    <div class="slds-p-around_x-small">
-        <c-avonni-avatar
-            alternative-text={typeAttributes.alternativeText}
-            fallback-icon-name={typeAttributes.fallbackIconName}
-            initials={typeAttributes.initials}
-            size={typeAttributes.size}
-            src={value}
-            variant={typeAttributes.variant}
-            status={typeAttributes.status}
-            presence={typeAttributes.presence}
-            entity-icon-name={typeAttributes.entityIconName}
-            entity-src={typeAttributes.entitySrc}
-            primary-text={typeAttributes.primaryText}
-            secondary-text={typeAttributes.secondaryText}
-        ></c-avonni-avatar>
-    </div>
+    <c-avonni-primitive-cell-avatar
+        alternative-text={typeAttributes.alternativeText}
+        fallback-icon-name={typeAttributes.fallbackIconName}
+        initials={typeAttributes.initials}
+        size={typeAttributes.size}
+        src={value}
+        variant={typeAttributes.variant}
+        status={typeAttributes.status}
+        presence={typeAttributes.presence}
+        entity-icon-name={typeAttributes.entityIconName}
+        entity-src={typeAttributes.entitySrc}
+        primary-text={typeAttributes.primaryText}
+        secondary-text={typeAttributes.secondaryText}
+    ></c-avonni-primitive-cell-avatar>
 </template>

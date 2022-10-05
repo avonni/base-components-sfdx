@@ -114,11 +114,11 @@ export default class AvonniVisualPicker extends LightningElement {
 
     renderedCallback() {
         if (this.inputs) {
-            this.inputs.forEach((item) => {
-                if (this._value.indexOf(item.value) > -1) {
-                    item.checked = true;
+            this.inputs.forEach((input) => {
+                if (this._value.indexOf(input.value) > -1) {
+                    input.checked = true;
                 } else {
-                    item.removeAttribute('checked');
+                    input.checked = false;
                 }
             });
         }
@@ -741,11 +741,12 @@ export default class AvonniVisualPicker extends LightningElement {
      */
     handleChange(event) {
         event.stopPropagation();
-        const value = this.inputs
-            .filter((input) => input.checked)
-            .map((input) => input.value);
-
-        this._value = value;
+        this._value =
+            this.type === 'radio'
+                ? event.target.value
+                : this.inputs
+                      .filter((input) => input.checked)
+                      .map((input) => input.value);
 
         /**
          * The event fired when the value changed.
@@ -758,7 +759,7 @@ export default class AvonniVisualPicker extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('change', {
                 detail: {
-                    value: this.type === 'radio' ? value[0] || null : value
+                    value: this.value
                 }
             })
         );

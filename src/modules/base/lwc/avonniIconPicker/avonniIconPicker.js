@@ -133,11 +133,8 @@ export default class AvonniIconPicker extends LightningElement {
     isInvalidInput = false;
     hideTabs = false;
     newValue;
-    isInsideMenu = false;
-    denyBlurOnMenuButtonClick = false;
-    tabPressed = false;
-    shiftPressed = false;
     showError = false;
+    _menuIsFocused = false;
 
     iconTypes = ICON_TYPES;
     @track tabContent;
@@ -145,10 +142,6 @@ export default class AvonniIconPicker extends LightningElement {
 
     renderedCallback() {
         this.initIconInput();
-    }
-
-    connectedCallback() {
-        this.initEventListeners();
     }
 
     /*
@@ -633,8 +626,23 @@ export default class AvonniIconPicker extends LightningElement {
      */
     @api
     focus() {
-        const input = this.template.querySelector('[data-element-id="input"]');
-        if (input) input.focus();
+        if (this.iconMenuOpened) {
+            // Set the focus on the dropdown
+            const searchInput = this.template.querySelector(
+                '[data-element-id="lightning-input"]'
+            );
+            if (searchInput) {
+                searchInput.focus();
+            }
+        } else {
+            // Set the focus on the button menu
+            const input = this.template.querySelector(
+                '[data-element-id="input"]'
+            );
+            if (input) {
+                input.focus();
+            }
+        }
     }
 
     /**
@@ -666,34 +674,6 @@ export default class AvonniIconPicker extends LightningElement {
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
-
-    /**
-     * Initializes the event listeners.
-     * The listeners are used to monitur a blur of the popover by clicking the menu button.
-     */
-    initEventListeners() {
-        this.template.addEventListener('mousedown', (event) => {
-            if (this.iconMenuOpened) {
-                let clickedElement = event.target;
-                while (
-                    clickedElement !== null &&
-                    clickedElement.tagName !== 'BUTTON'
-                ) {
-                    clickedElement = clickedElement.parentElement;
-                }
-
-                if (
-                    clickedElement !== null &&
-                    clickedElement.tagName === 'BUTTON'
-                ) {
-                    this.denyBlurOnMenuButtonClick = true;
-                }
-            }
-        });
-        this.template.addEventListener('click', () => {
-            this.denyBlurOnMenuButtonClick = false;
-        });
-    }
 
     /**
      * Handles a change in input of the selected icon.
@@ -836,7 +816,7 @@ export default class AvonniIconPicker extends LightningElement {
      *
      * @param {Event} event
      */
-    handleTabClick(event) {
+    handleTabSelect(event) {
         this.currentTab = event.detail.value;
         this.changeTabContentTo(event.detail.value);
         this.scrollTopIconList();
@@ -863,54 +843,49 @@ export default class AvonniIconPicker extends LightningElement {
             if (this.iconMenuOpened) {
                 this.restoreTabContent();
                 this.showExtendedIcons();
-                // eslint-disable-next-line @lwc/lwc/no-async-operation
-                setTimeout(() => {
-                    const input = this.template.querySelector(
-                        '[data-element-id="lightning-input"]'
-                    );
-                    if (input) {
-                        input.focus();
-                    }
-                }, 0);
             } else {
                 this.resetMenuState();
             }
+
+            requestAnimationFrame(() => {
+                this.focus();
+            });
         }
         this.reportValidity();
     }
 
     /**
-     * Handles a mouseenter in the icon menu.
-     *
-     * @param {Event} event
+     * Handle a click inside the drop down menu. Focus the search input.
      */
-    handleMenuMouseEnter() {
-        this.isInsideMenu = true;
-    }
-
-    /**
-     * Handles a blur of any element in the icon menu.
-     *
-     * @param {Event} event
-     */
-    handleMenuBlur() {
-        if (
-            !this.isInsideMenu &&
-            this.iconMenuOpened &&
-            !this.denyBlurOnMenuButtonClick &&
-            !this.tabPressed
-        ) {
-            this.toggleMenuVisibility();
+    handleMenuClick() {
+        const searchInput = this.template.querySelector(
+            '[data-element-id="lightning-input"]'
+        );
+        if (searchInput) {
+            this._menuIsFocused = true;
+            searchInput.focus();
         }
     }
 
     /**
-     * Handles a mouseleave from the icon menu.
-     *
-     * @param {Event} event
+     * Handle a focus inside the drop down menu. Make sure the drop down won't close.
      */
-    handleMenuMouseLeave() {
-        this.isInsideMenu = false;
+    handleMenuFocusIn() {
+        this._menuIsFocused = true;
+    }
+
+    /**
+     * Handles a focus outside of the drop down menu. Close the menu if the focus is completely lost.
+     */
+    handleMenuFocusOut() {
+        this._menuIsFocused = false;
+
+        requestAnimationFrame(() => {
+            // Wait to see if another element is focused inside the menu
+            if (!this._menuIsFocused && this.iconMenuOpened) {
+                this.toggleMenuVisibility();
+            }
+        });
     }
 
     /**
@@ -920,7 +895,7 @@ export default class AvonniIconPicker extends LightningElement {
      */
     handleSelectIcon(event) {
         this.newValue = event.currentTarget.dataset.icon;
-        if (this.hideFooter) this.handleDone();
+        if (this.hideFooter) this.handleDone(event);
     }
 
     /**
@@ -931,7 +906,7 @@ export default class AvonniIconPicker extends LightningElement {
     handleSelectIconFromKeyboard(event) {
         if (event.keyCode === 13) {
             this.newValue = event.currentTarget.dataset.icon;
-            this.handleDone();
+            this.handleDone(event);
         }
     }
 
@@ -940,7 +915,8 @@ export default class AvonniIconPicker extends LightningElement {
      *
      * @param {Event} event
      */
-    handleCancel() {
+    handleCancel(event) {
+        event.stopPropagation();
         this.newValue = null;
         this.toggleMenuVisibility();
     }
@@ -950,7 +926,8 @@ export default class AvonniIconPicker extends LightningElement {
      *
      * @param {Event} event
      */
-    handleDone() {
+    handleDone(event) {
+        event.stopPropagation();
         if (this.newValue) {
             this._value = this.newValue;
             this.dispatchChange(this.newValue);
@@ -967,7 +944,6 @@ export default class AvonniIconPicker extends LightningElement {
     resetMenuState() {
         this.newValue = null;
         this.hideTabs = false;
-        this.isInsideMenu = false;
 
         this.resetIcons();
         this.hideExtendedIcons();
@@ -1117,60 +1093,17 @@ export default class AvonniIconPicker extends LightningElement {
     }
 
     /**
-     * Handles a blur of the search input element in the popover.
-     * Focus will be given to the 'Done' button if Shift+Tab is pressed when the focus is on the first field.
-     */
-    handleSearchInputBlur() {
-        this.handleMenuBlur();
-
-        // Trap focus on Tab press
-        if (this.tabPressed && this.shiftPressed) {
-            this.template
-                .querySelector('[data-element-id="lightning-button-done"]')
-                .focus();
-        }
-    }
-
-    /**
-     * Handles a blur of the 'Done' button in the popover.
-     * Focus will be given to the first input field if Tab is pressed when the focus is on the 'Done' button.
-     */
-    handleDoneButtonBlur() {
-        this.handleMenuBlur();
-
-        // Trap focus on Tab press
-        if (this.tabPressed && !this.shiftPressed) {
-            this.template
-                .querySelector('[data-element-id="lightning-input"]')
-                .focus();
-        }
-    }
-
-    /**
      * Handles a keydown inside the popover.
      *
      * @param {Event} event
      */
     handleMenuKeydown(event) {
-        if (event.keyCode === 9) {
-            this.tabPressed = true;
-        } else if (event.keyCode === 16) {
-            this.shiftPressed = true;
-        } else if (event.keyCode === 27) {
-            this.handleCancel();
+        if (event.keyCode === 27) {
+            this.handleCancel(event);
         }
     }
 
-    /**
-     * Handles a keyup inside the popover.
-     *
-     * @param {Event} event
-     */
-    handleMenuKeyup(event) {
-        if (event.keyCode === 9) {
-            this.tabPressed = false;
-        } else if (event.keyCode === 16) {
-            this.shiftPressed = false;
-        }
+    stopPropagation(event) {
+        event.stopPropagation();
     }
 }

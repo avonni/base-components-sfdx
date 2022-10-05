@@ -31,7 +31,6 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { assert } from 'c/utilsPrivate';
 
 import ColorPickerTpl from './avonniColorPicker.html';
 import ComboboxTpl from './avonniCombobox.html';
@@ -121,11 +120,10 @@ export default class AvonniPrimitiveDatatableIeditTypeFactoryCustom extends Ligh
     }
 
     set columnDef(value) {
-        assert(
-            // eslint-disable-next-line no-prototype-builtins
-            CUSTOM_TYPES_TPL.hasOwnProperty(value.type),
-            INVALID_TYPE_FOR_EDIT
-        );
+        // eslint-disable-next-line no-prototype-builtins
+        if (!CUSTOM_TYPES_TPL.hasOwnProperty(value.type)) {
+            throw new Error(INVALID_TYPE_FOR_EDIT);
+        }
         this._columnDef = value;
         this.columnLabel = value.label;
     }

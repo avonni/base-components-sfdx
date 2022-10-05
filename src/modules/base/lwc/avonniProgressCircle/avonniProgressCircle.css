@@ -40,6 +40,10 @@
     background: var(--avonni-progress-circle-bar-color-background, #dddbda);
 }
 
+.avonni-progress-circle__bar {
+    fill: var(--avonni-progress-circle-bar-color, #1589ee);
+}
+
 .avonni-progress-circle__title {
     color: var(--avonni-progress-circle-title-text-color, #080707);
     font-style: var(--avonni-progress-circle-title-font-style, normal);
@@ -48,6 +52,12 @@
 
 .avonni-progress-circle__dots {
     margin-bottom: 11px;
+}
+
+.avonni-progress-circle__value {
+    color: var(--avonni-progress-circle-value-text-color, #1589ee);
+    font-style: var(--avonni-progress-circle-value-font-style, normal);
+    font-weight: var(--avonni-progress-circle-value-font-weight, 400);
 }
 
 .avonni-progress-circle_size-x-small .avonni-progress-circle__dots {

@@ -46,3 +46,11 @@ span {
 .slds-form-element__control .slds-checkbox {
     display: initial;
 }
+
+.avonni-output-data__label {
+    font-weight: var(--avonni-output-data-label-font-weight, 'normal');
+}
+
+.avonni-output-data__label_inline {
+    width: 30%;
+}

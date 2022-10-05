@@ -33,7 +33,10 @@
 -->
 
 <template>
-    <div class="slds-carousel slds-scrollable_x">
+    <div
+        class="slds-carousel slds-scrollable_x"
+        data-element-id="avonni-carousel-container"
+    >
         <lightning-layout vertical-align="center">
             <template if:false={hidePreviousNextPanelNavigation}>
                 <lightning-layout-item>
@@ -61,7 +64,10 @@
             >
                 <div class="slds-carousel__stage">
                     <!-- Carousel panels -->
-                    <div class="slds-carousel__panels" style={panelStyle}>
+                    <div
+                        class="slds-carousel__panels"
+                        style={panelStyle}
+                    >
                         <template
                             for:each={panelItems}
                             for:item="panel"

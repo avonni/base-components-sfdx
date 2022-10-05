@@ -98,15 +98,9 @@ export default class AvonniImage extends LightningElement {
     _thumbnail = false;
     _width;
 
-    _imgWidth;
-    _imgHeight;
-    _widthPercent;
-    _heightPercent;
+    _imgElementWidth;
+    _imgElementHeight;
     _aspectRatio;
-
-    renderedCallback() {
-        this.getImageDimensions();
-    }
 
     /*
      * ------------------------------------------------------------
@@ -211,13 +205,10 @@ export default class AvonniImage extends LightningElement {
     }
 
     set height(value) {
-        this._height = value;
-        if (
-            value !== undefined &&
-            typeof value === 'string' &&
-            value.includes('%')
-        ) {
-            this._heightPercent = value;
+        if (value && !isNaN(value)) {
+            this._height = `${value}px`;
+        } else {
+            this._height = value;
         }
     }
 
@@ -356,28 +347,11 @@ export default class AvonniImage extends LightningElement {
     }
 
     set width(value) {
-        this._width = value;
-        if (
-            value !== undefined &&
-            typeof value === 'string' &&
-            value.includes('%')
-        ) {
-            this._widthPercent = value;
+        if (value && !isNaN(value)) {
+            this._width = `${value}px`;
+        } else {
+            this._width = value;
         }
-    }
-
-    /*
-     * ------------------------------------------------------------
-     *  PRIVATE PROPERTIES
-     * -------------------------------------------------------------
-     */
-
-    get computedHeight() {
-        return !isNaN(Number(this.height)) ? `${this.height}px` : 'auto';
-    }
-
-    get computedWidth() {
-        return !isNaN(Number(this.width)) ? `${this.width}px` : 'auto';
     }
 
     /**
@@ -405,313 +379,46 @@ export default class AvonniImage extends LightningElement {
      *
      * @type {boolean}
      */
-    get computedImgStyle() {
-        if (!this._cropSize) {
-            return this.imgHandlerNoCrop();
-        } else if (this._cropSize) {
-            return this.imgHandlerCropped();
-        }
-        return `
-        width: ${this.computedWidth};
-        height: ${this.computedHeight};        
-        `;
-    }
+    get computedStyle() {
+        let styleProperties = {};
 
-    /*
-     * ------------------------------------------------------------
-     *  PRIVATE METHODS
-     * -------------------------------------------------------------
-     */
+        styleProperties['object-fit'] = this.cropFit ? this.cropFit : null;
+        styleProperties['object-position'] =
+            this.cropPositionX && this.cropPositionY
+                ? `${this.cropPositionX}% ${this.cropPositionY}%`
+                : null;
+        styleProperties['aspect-ratio'] = this._aspectRatio
+            ? this._aspectRatio
+            : null;
 
-    /**
-     * Compute No Crop image style.
-     *
-     * @returns {string} image style
-     */
-    imgHandlerNoCrop() {
-        // Repeated computed styles for fit and position
-        const imageFitPosition = `
-            object-fit: ${this.cropFit};
-            object-position: ${this.cropPositionX}% ${this.cropPositionY}%;
-            `;
-        // No Crop - Static Image
         if (this.staticImages) {
-            // Width px - Height px
-            if (
-                this.width &&
-                this.height &&
-                !this._widthPercent &&
-                !this._heightPercent
-            ) {
-                return `
-                min-width: ${this.width}px;
-                min-height: ${this.computedHeight};
-                max-width: ${this.width}px;
-                max-height: ${this.computedHeight};
-                ${imageFitPosition}      
-                `;
-            }
-            // No width - Height px
-            else if (!this.width && this.height && !this._heightPercent) {
-                return `
-                min-height: ${this.computedHeight};
-                height: ${this.computedHeight};
-                max-height: ${this.computedHeight};
-                max-width: ${this._imgWidth}px;
-                width: ${this._imgWidth}px;
-                min-width: ${this._imgWidth}px;
-                ${imageFitPosition}        
-                `;
-            }
-            // Width px - No height
-            else if (this.width && !this._widthPercent && !this.height) {
-                return `
-                max-width: ${this.computedWidth};
-                ${imageFitPosition}
-                `;
-            }
-            // No Width - No Height
-            // Width % - Height %
-            // Width % - No Height
-            else if (
-                (!this.width && !this.height) ||
-                (this._widthPercent && this._heightPercent) ||
-                (this._widthPercent && !this.height)
-            ) {
-                return `
-                max-width: ${this._imgWidth}px;
-                max-height: ${this._imgHeight}px;
-                min-width: ${this._imgWidth}px;
-                min-height: ${this._imgHeight}px;
-                ${imageFitPosition}        
-                `;
-            }
-            // Width % - Height px
-            else if (
-                this._widthPercent &&
-                this.height &&
-                !this._heightPercent
-            ) {
-                return `
-                max-width: ${this._imgWidth}px;
-                max-height: ${this.computedHeight};
-                min-width: ${this._imgWidth}px;
-                min-height: ${this.computedHeight};
-                ${imageFitPosition}
-                `;
-            }
-            // Width px - Height %
-            else if (this.width && !this._widthPercent && this._heightPercent) {
-                return `
-                max-width: ${this.computedWidth};
-                max-height: ${this._imgHeight}px;
-                min-width: ${this.computedWidth};
-                min-height: ${this._imgHeight}px;
-                ${imageFitPosition}    
-                `;
-            }
-            // No Width - Height %
-            else if (
-                !this.width &&
-                !this._widthPercent &&
-                this._heightPercent
-            ) {
-                return `
-                max-width: ${this._imgWidth}px;
-                max-height: ${this._imgHeight}px;
-                height: ${this._imgHeight};
-                width: ${this._imgWidth};
-                min-width: ${this._imgWidth}px;
-                min-height: ${this._imgHeight}px;
-                ${imageFitPosition}      
-                `;
-            }
+            styleProperties['min-width'] = this._width ? this._width : null;
+            styleProperties['max-width'] = this._width ? this._width : null;
+            styleProperties['min-height'] = this._height ? this._height : null;
+            styleProperties['max-height'] = this._height ? this._height : null;
+        } else {
+            styleProperties['min-width'] = null;
+            styleProperties['max-width'] = null;
+            styleProperties['min-height'] = null;
+            styleProperties['max-height'] = null;
         }
-        // No Crop - No Static Images
-        else if (!this.staticImages) {
-            // Width px - Height %
-            if (this.width && !this._widthPercent && this._heightPercent) {
-                return `
-                width: ${this.computedWidth};
-                height: ${this._heightPercent};
-                ${imageFitPosition}        
-                `;
-            }
-            // Width % - Height %
-            else if (this._widthPercent && this._heightPercent) {
-                return `
-                width: ${this._widthPercent};
-                height: ${this._heightPercent};
-                ${imageFitPosition}      
-                `;
-            }
-            // Width % - Height px
-            else if (this._widthPercent && this.height) {
-                return `
-                width: ${this._widthPercent};
-                height: ${this.computedHeight};
-                ${imageFitPosition}        
-                `;
-            }
-            // Width % - No Height
-            else if (this._widthPercent && !this.height) {
-                return `
-                width: ${this._widthPercent};
-                ${imageFitPosition}        
-                `;
-            }
-            // No Width - Height %
-            else if (this._heightPercent && !this.width) {
-                return `
-                height: ${this._heightPercent};
-                ${imageFitPosition}        
-                `;
-            }
-        }
-        return `
-        width: ${this.computedWidth};
-        height: ${this.computedHeight};
-        ${imageFitPosition}            
-        `;
-    }
 
-    /**
-     * Compute Cropped image style.
-     *
-     * @returns {string} image style
-     */
-    imgHandlerCropped() {
-        // Repeated computed styles for Fit, Position and Aspect-ratio
-        const imageFitPositionAspectRatio = `
-            object-fit: ${this.cropFit};
-            object-position: ${this.cropPositionX}% ${this.cropPositionY}%;
-            aspect-ratio: ${this._aspectRatio};
-            `;
-        // Cropped - No Static Images
-        if (!this.staticImages) {
-            // No Width - No Height
-            if (!this.width && !this.height) {
-                return `
-                width: ${this._imgWidth}px;
-                ${imageFitPositionAspectRatio}
-                `;
-            }
-            // No Width - Height %
-            else if (!this.width && this._heightPercent) {
-                return `
-                height: ${this._heightPercent};
-                ${imageFitPositionAspectRatio}
-                `;
-            }
-            // Width px
-            // Width px - Height %
-            else if (
-                (this.width && !this._widthPercent && !this._heightPercent) ||
-                (this.width && !this._widthPercent && this._heightPercent)
-            ) {
-                return `
-                width: ${this.computedWidth};
-                ${imageFitPositionAspectRatio}
-                `;
-            }
-            // No Width - Height px
-            else if (!this.width && this.height && !this._heightPercent) {
-                return `
-                height: ${this.computedHeight};
-                ${imageFitPositionAspectRatio}
-                `;
-            }
-            // Width % - Height %
-            // Width % - No Height
-            else if (
-                (this._widthPercent && this._heightPercent) ||
-                (this._widthPercent && !this.height)
-            ) {
-                return `
-                width: ${this._widthPercent};
-                ${imageFitPositionAspectRatio}
-                `;
-            }
-            // Width % - Height px
-            else if (
-                this._widthPercent &&
-                this.height &&
-                !this._heightPercent
-            ) {
-                return `
-                    width: ${this.height / (this._cropSize / 100)}px;
-                    ${imageFitPositionAspectRatio}
-                    `;
-            }
+        styleProperties.width =
+            this._cropSize && !this._width && !this._height
+                ? `${this._imgElementWidth}px`
+                : this._width;
+        styleProperties.height = this._height;
+
+        let styleValue = '';
+        if (styleProperties) {
+            Object.keys(styleProperties).forEach((key) => {
+                if (styleProperties[key]) {
+                    styleValue += `${key}: ${styleProperties[key]}; `;
+                }
+            });
         }
-        // Cropped - Static Images
-        else if (this.staticImages) {
-            // No Width - No Height
-            if (!this.width && !this.height) {
-                return `
-                height: ${this._imgHeight}px;
-                max-width: ${this._imgWidth}px;
-                max-height: ${this._imgHeight}px;
-                min-width: ${this._imgWidth}px;
-                min-height: ${this._imgHeight}px;
-                ${imageFitPositionAspectRatio} 
-                `;
-            }
-            // Width px
-            else if (this.width && !this._widthPercent) {
-                return `
-                max-width: ${this.computedWidth};
-                max-height: ${this.width * (this._cropSize / 100)}px;
-                min-width: ${this.computedWidth};
-                min-height: ${this.width * (this._cropSize / 100)}px;
-                ${imageFitPositionAspectRatio} 
-                `;
-            }
-            // No Width - Height px
-            // Width % - Height px
-            else if (
-                (!this.width && this.height && !this._heightPercent) ||
-                (this._widthPercent && this.height)
-            ) {
-                return `
-                max-height: ${this.computedHeight};
-                max-width: ${this.height / (this._cropSize / 100)}px;
-                min-height: ${this.computedHeight};
-                min-width: ${this.height / (this._cropSize / 100)}px;
-                ${imageFitPositionAspectRatio} 
-                `;
-            }
-            // Width % - Height %
-            // Width % - No Height
-            else if (
-                (this._widthPercent && this._heightPercent) ||
-                (this._widthPercent && !this.height)
-            ) {
-                return `
-                max-height: ${this._imgWidth * (this._cropSize / 100)}px;
-                max-width: ${this._imgWidth}px;
-                min-height: ${this._imgWidth * (this._cropSize / 100)}px;
-                min-width: ${this._imgWidth}px;
-                ${imageFitPositionAspectRatio} 
-                `;
-            }
-            // No Width - Height %
-            else if (!this.width && this._heightPercent) {
-                return `
-                height: ${this._imgHeight};
-                max-height: ${this._imgHeight}px;
-                max-width: ${this._imgHeight / (this._cropSize / 100)}px;
-                min-height: ${this._imgHeight}px;
-                min-width: ${this._imgHeight / (this._cropSize / 100)}px;
-                ${imageFitPositionAspectRatio}
-                `;
-            }
-        }
-        return `
-        width: ${this.computedWidth};
-        height: ${this.computedHeight};
-        ${imageFitPositionAspectRatio}        
-        `;
+
+        return styleValue;
     }
 
     /**
@@ -719,9 +426,11 @@ export default class AvonniImage extends LightningElement {
      *
      * @returns {number} imgHeight , imgWidth
      */
-    getImageDimensions() {
+    handleLoadImage() {
         const img = this.template.querySelector('[data-element-id="img"]');
-        this._imgWidth = img.clientWidth;
-        this._imgHeight = img.clientHeight;
+        if (img) {
+            this._imgElementWidth = img.clientWidth;
+            this._imgElementHeight = img.clientHeight;
+        }
     }
 }

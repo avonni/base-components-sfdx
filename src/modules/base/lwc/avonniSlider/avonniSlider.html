@@ -34,7 +34,8 @@
 
 <template>
     <label
-        class="slds-form-element__label slds-p-bottom_x-small"
+        if:true={showLabel}
+        class="slds-form-element__label"
         for="input"
         data-element-id="label"
     >
@@ -44,98 +45,157 @@
             >
         </span>
     </label>
-    <div
-        if:true={isNormalVertical}
-        class={computedUnitContainerClass}
-        data-element-id="vertical-max-unit-container"
-    >
-        <lightning-formatted-number
-            value={max}
-            format-style={computedUnit}
-            currency-code={unitAttributes.currencyCode}
-            currency-display-as={unitAttributes.currencyDisplayAs}
-            maximum-fraction-digits={unitAttributes.maximumFractionDigits}
-            maximum-significant-digits={unitAttributes.maximumSignificantDigits}
-            minimum-fraction-digits={unitAttributes.minimumFractionDigits}
-            minimum-integer-digits={unitAttributes.minimumIntegerDigits}
-            minimum-significant-digits={unitAttributes.minimumSignificantDigits}
-            data-group-name="min-max-values"
-            data-element-id="lightning-formatted-number-max-vertical"
-        ></lightning-formatted-number>
-    </div>
-
-    <div class={computedContainerClass} data-element-id="div-wrapper">
-        <template for:each={values} for:item="value" for:index="index">
-            <div class="slds-form-element" key={generateKey}>
-                <div class="slds-form-element__control">
-                    <div class="slds-slider">
-                        <input
-                            type="range"
-                            min={computedMin}
-                            max={computedMax}
-                            step={step}
-                            value={value}
-                            class={computedInputClass}
-                            disabled={disabled}
-                            data-index={index}
-                            data-group-name="input"
-                            oninput={handleChange}
-                            onmousedown={handleLockPin}
-                            onmouseup={handleUnlockPin}
-                            onmousemove={handleThumbHovered}
-                            onmouseleave={handleThumbExit}
-                        />
-                        <div
-                            data-group-name="hitbox"
-                            data-index={index}
-                            class="avonni-slider__thumb-hitbox"
-                        ></div>
-                        <div
-                            if:true={showPin}
-                            class={computedPinClass}
-                            data-group-name="pin"
-                            data-index={index}
-                        >
-                            <p>
-                                <lightning-formatted-number
-                                    format-style={computedUnit}
-                                    currency-code={unitAttributes.currencyCode}
-                                    currency-display-as={unitAttributes.currencyDisplayAs}
-                                    maximum-fraction-digits={unitAttributes.maximumFractionDigits}
-                                    maximum-significant-digits={unitAttributes.maximumSignificantDigits}
-                                    minimum-fraction-digits={unitAttributes.minimumFractionDigits}
-                                    minimum-integer-digits={unitAttributes.minimumIntegerDigits}
-                                    minimum-significant-digits={unitAttributes.minimumSignificantDigits}
-                                    data-element-id="lightning-formatted-number-pin"
-                                ></lightning-formatted-number>
-                            </p>
+    <div class={computedSliderWrapperClass}>
+        <div
+            if:true={isNormalVertical}
+            class={computedUnitContainerClass}
+            data-element-id="vertical-max-unit-container"
+        >
+            <lightning-formatted-number
+                value={max}
+                format-style={computedUnit}
+                currency-code={unitAttributes.currencyCode}
+                currency-display-as={unitAttributes.currencyDisplayAs}
+                maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                data-group-name="min-max-values"
+                data-element-id="lightning-formatted-number-max-vertical"
+            ></lightning-formatted-number>
+        </div>
+        <div class={computedContainerClass} data-element-id="div-wrapper">
+            <template for:each={values} for:item="value" for:index="index">
+                <div class="slds-form-element" key={generateKey}>
+                    <div class="slds-form-element__control">
+                        <div class="slds-slider">
+                            <input
+                                type="range"
+                                min={computedMin}
+                                max={computedMax}
+                                step={step}
+                                value={value}
+                                class={computedInputClass}
+                                disabled={disabled}
+                                data-index={index}
+                                data-group-name="input"
+                                oninput={handleChange}
+                                onmousedown={handleLockPin}
+                                onmouseup={handleUnlockPin}
+                                onmousemove={handleThumbHovered}
+                                onmouseleave={handleThumbExit}
+                            />
+                            <div
+                                data-group-name="hitbox"
+                                data-index={index}
+                                class="avonni-slider__thumb-hitbox"
+                            ></div>
+                            <div
+                                if:true={showPin}
+                                class={computedPinClass}
+                                data-group-name="pin"
+                                data-index={index}
+                            >
+                                <p>
+                                    <lightning-formatted-number
+                                        format-style={computedUnit}
+                                        currency-code={unitAttributes.currencyCode}
+                                        currency-display-as={unitAttributes.currencyDisplayAs}
+                                        maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                                        maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                                        minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                                        minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                                        minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                                        data-element-id="lightning-formatted-number-pin"
+                                    ></lightning-formatted-number>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </template>
-        <div
-            class={computedTrackContainerClass}
-            data-element-id="track-container"
-        >
+            </template>
             <div
-                if:true={showTrack}
-                class={computedTrackClass}
-                data-element-id="track"
-            ></div>
+                class={computedTrackContainerClass}
+                data-element-id="track-container"
+            >
+                <div
+                    if:true={showTrack}
+                    class={computedTrackClass}
+                    data-element-id="track"
+                ></div>
+            </div>
+            <template if:true={showAnyTickMarks}>
+                <svg
+                    lwc:dom="manual"
+                    xmlns="http://www.w3.org/2000/svg"
+                    data-element-id="ruler"
+                    class="avonni-slider__tick-mark-container"
+                ></svg>
+            </template>
+            <div
+                if:true={isNormalHorizontal}
+                class={computedUnitContainerClass}
+                data-element-id="horizontal-unit-container"
+            >
+                <lightning-formatted-number
+                    value={min}
+                    format-style={computedUnit}
+                    currency-code={unitAttributes.currencyCode}
+                    currency-display-as={unitAttributes.currencyDisplayAs}
+                    maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                    maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                    minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                    minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                    minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                    data-group-name="min-max-values"
+                    data-element-id="lightning-formatted-number-min"
+                ></lightning-formatted-number>
+                <lightning-formatted-number
+                    value={max}
+                    format-style={computedUnit}
+                    currency-code={unitAttributes.currencyCode}
+                    currency-display-as={unitAttributes.currencyDisplayAs}
+                    maximum-fraction-digits={unitAttributes.maximumFractionDigits}
+                    maximum-significant-digits={unitAttributes.maximumSignificantDigits}
+                    minimum-fraction-digits={unitAttributes.minimumFractionDigits}
+                    minimum-integer-digits={unitAttributes.minimumIntegerDigits}
+                    minimum-significant-digits={unitAttributes.minimumSignificantDigits}
+                    data-group-name="min-max-values"
+                    data-element-id="lightning-formatted-number-max"
+                ></lightning-formatted-number>
+            </div>
+            <div
+                if:true={hasCustomLabels}
+                class={computedCustomLabelContainerClass}
+                data-element-id="custom-label-container"
+            >
+                <template for:each={customLabels} for:item="customLabel">
+                    <div
+                        class="avonni-slider__custom-label-wrapper"
+                        key={generateKey}
+                        data-group-name="custom-label-wrapper"
+                    >
+                        <div
+                            data-value={customLabel.value}
+                            class={computedCustomLabelClass}
+                            data-group-name="custom-label"
+                        >
+                            {customLabel.label}
+                        </div>
+                    </div>
+                </template>
+            </div>
         </div>
-        <template if:true={showAnyTickMarks}>
-            <svg
-                lwc:dom="manual"
-                xmlns="http://www.w3.org/2000/svg"
-                data-element-id="ruler"
-                class="avonni-slider__tick-mark-container"
-            ></svg>
-        </template>
         <div
-            if:true={isNormalHorizontal}
+            if:true={isVertical}
+            class={computedSpacerClass}
+            data-element-id="spacer"
+        ></div>
+        <div
+            if:true={isNormalVertical}
             class={computedUnitContainerClass}
-            data-element-id="horizontal-unit-container"
+            data-element-id="vertical-min-unit-container"
         >
             <lightning-formatted-number
                 value={min}
@@ -148,68 +208,11 @@
                 minimum-integer-digits={unitAttributes.minimumIntegerDigits}
                 minimum-significant-digits={unitAttributes.minimumSignificantDigits}
                 data-group-name="min-max-values"
-                data-element-id="lightning-formatted-number-min"
-            ></lightning-formatted-number>
-            <lightning-formatted-number
-                value={max}
-                format-style={computedUnit}
-                currency-code={unitAttributes.currencyCode}
-                currency-display-as={unitAttributes.currencyDisplayAs}
-                maximum-fraction-digits={unitAttributes.maximumFractionDigits}
-                maximum-significant-digits={unitAttributes.maximumSignificantDigits}
-                minimum-fraction-digits={unitAttributes.minimumFractionDigits}
-                minimum-integer-digits={unitAttributes.minimumIntegerDigits}
-                minimum-significant-digits={unitAttributes.minimumSignificantDigits}
-                data-group-name="min-max-values"
-                data-element-id="lightning-formatted-number-max"
+                data-element-id="lightning-formatted-number-min-vertical"
             ></lightning-formatted-number>
         </div>
-        <div
-            if:true={hasCustomLabels}
-            class={computedCustomLabelContainerClass}
-            data-element-id="custom-label-container"
-        >
-            <template for:each={customLabels} for:item="customLabel">
-                <div
-                    class="avonni-slider__custom-label-wrapper"
-                    key={generateKey}
-                    data-group-name="custom-label-wrapper"
-                >
-                    <div
-                        data-value={customLabel.value}
-                        class={computedCustomLabelClass}
-                        data-group-name="custom-label"
-                    >
-                        {customLabel.label}
-                    </div>
-                </div>
-            </template>
-        </div>
     </div>
-    <div
-        if:true={isVertical}
-        class={computedSpacerClass}
-        data-element-id="spacer"
-    ></div>
-    <div
-        if:true={isNormalVertical}
-        class={computedUnitContainerClass}
-        data-element-id="vertical-min-unit-container"
-    >
-        <lightning-formatted-number
-            value={min}
-            format-style={computedUnit}
-            currency-code={unitAttributes.currencyCode}
-            currency-display-as={unitAttributes.currencyDisplayAs}
-            maximum-fraction-digits={unitAttributes.maximumFractionDigits}
-            maximum-significant-digits={unitAttributes.maximumSignificantDigits}
-            minimum-fraction-digits={unitAttributes.minimumFractionDigits}
-            minimum-integer-digits={unitAttributes.minimumIntegerDigits}
-            minimum-significant-digits={unitAttributes.minimumSignificantDigits}
-            data-group-name="min-max-values"
-            data-element-id="lightning-formatted-number-min-vertical"
-        ></lightning-formatted-number>
-    </div>
+
     <template if:true={_helpMessage}>
         <div
             id="message-id"

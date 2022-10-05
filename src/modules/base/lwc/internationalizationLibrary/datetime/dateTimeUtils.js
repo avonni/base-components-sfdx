@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert } from 'c/utilsPrivate';
 import {
     isValidISODateTimeString,
     isValidISOTimeString,
@@ -43,11 +42,12 @@ export function normalizeISODate(value, format) {
         (typeof dateValue === 'string' && dateValue.split(TIME_SEPARATOR)[0]) ||
         dateValue;
 
-    assert(
-        isValidISODateTimeString(dateOnlyString),
-        `datetime component: The value attribute accepts a valid ISO8601 formatted string ` +
-            `with timezone offset. but we are getting the ${typeof value} value "${value}" instead.`
-    );
+    if (!isValidISODateTimeString(dateOnlyString)) {
+        throw new Error(
+            `datetime component: The value attribute accepts a valid ISO8601 formatted string ` +
+                `with timezone offset. but we are getting the ${typeof value} value "${value}" instead.`
+        );
+    }
 
     const parsedDate = parseDateTime(dateOnlyString, STANDARD_DATE_FORMAT);
     if (!parsedDate) {
@@ -79,11 +79,12 @@ export function normalizeISOTime(value, format) {
         };
     }
 
-    assert(
-        isValidISOTimeString(timeValue),
-        `datetime component: The value attribute accepts a valid ISO8601 formatted string. ` +
-            `but we are getting the ${typeof value} value "${value}" instead.`
-    );
+    if (!isValidISOTimeString(timeValue)) {
+        throw new Error(
+            `datetime component: The value attribute accepts a valid ISO8601 formatted string. ` +
+                `but we are getting the ${typeof value} value "${value}" instead.`
+        );
+    }
 
     const parsedTime = parseTime(timeValue);
     if (!parsedTime) {
@@ -107,11 +108,12 @@ export function normalizeISODateTime(value, timezone, format) {
         };
     }
 
-    assert(
-        isValidISODateTimeString(dateTimeValue),
-        `datetime component: The value attribute accepts a valid ISO8601 formatted string ` +
-            `with timezone offset. but we are getting the ${typeof value} value "${value}" instead.`
-    );
+    if (!isValidISODateTimeString(dateTimeValue)) {
+        throw new Error(
+            `datetime component: The value attribute accepts a valid ISO8601 formatted string ` +
+                `with timezone offset. but we are getting the ${typeof value} value "${value}" instead.`
+        );
+    }
 
     const parsedDate = parseDateTimeISO8601(dateTimeValue);
     if (!parsedDate) {

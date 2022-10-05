@@ -161,7 +161,7 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
     }
 
     set actionMenuIcon(icon) {
-        if (icon && icon.length > 0) {
+        if (icon) {
             this._actionMenuIcon = icon;
         } else {
             this._actionMenuIcon = DEFAULT_ICON_MENU_ICON;
@@ -391,26 +391,20 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
     }
 
     get actionMenuSize() {
-        let _actionSize;
         switch (this.size) {
             case 'x-large':
-                _actionSize = 'x-small';
-                break;
+                return 'x-small';
             case 'large':
-                _actionSize = 'xx-small';
-                break;
+                return 'xx-small';
             case 'medium':
-                _actionSize = 'xx-small';
-                break;
+                return 'xx-small';
             default:
-                _actionSize = 'small';
-                break;
+                return 'small';
         }
-        return _actionSize;
     }
 
     get groupedAvatar() {
-        return this.template.host.classList.contains('slds-avatar-grouped');
+        return Array.from(this.classList).includes('slds-avatar-grouped');
     }
 
     get showAvatar() {
@@ -437,6 +431,13 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
         return classSet('slds-avatar__initials')
             .add(computeSldsClass(this.entityIconName))
             .toString();
+    }
+
+    get computedActionMenuIcon() {
+        if (this.actions.length === 1 && this.actions[0].iconName) {
+            return this.actions[0].iconName;
+        }
+        return this.actionMenuIcon;
     }
 
     _updateClassList() {
@@ -518,7 +519,9 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
         const iconFullName =
             typeof entityIconName === 'string' ? entityIconName.trim() : ':';
         const iconCategory = iconFullName.split(':')[0];
-        const iconName = iconFullName.split(':')[1];
+        const iconName = iconFullName.split(':')[1]
+            ? iconFullName.split(':')[1].replace(/_/g, '-')
+            : '';
 
         this.entityClass = classSet(
             `slds-avatar slds-current-color avonni-avatar__entity slds-icon-${iconCategory}-${iconName}`

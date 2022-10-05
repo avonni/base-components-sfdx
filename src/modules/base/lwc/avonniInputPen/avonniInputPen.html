@@ -170,7 +170,6 @@
                                 disabled={disabled}
                                 variant="label-hidden"
                                 onchange={handleColorChange}
-                                type="custom"
                                 data-element-id="color-picker"
                             >
                             </c-avonni-color-picker>
@@ -263,6 +262,7 @@
                     class={computedTextAreaClasses}
                     onmouseenter={handleMouseEnter}
                     onmousedown={handleMouseDown}
+                    ontouchstart={handleMouseDown}
                     onmouseleave={handleMouseLeave}
                     data-element-id="drawing-area"
                 >

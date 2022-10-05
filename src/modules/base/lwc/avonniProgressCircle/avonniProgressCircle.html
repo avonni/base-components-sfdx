@@ -49,13 +49,17 @@
             aria-valuenow={value}
         >
             <svg viewBox="-1 -1 2 2">
-                <path fill={color} d={progress} data-element-id="path"></path>
+                <path
+                    class="avonni-progress-circle__bar"
+                    d={progress}
+                    data-element-id="path"
+                ></path>
             </svg>
         </div>
         <div class={progressRingContentClass}>
             <span
                 if:true={showValue}
-                style={progressValueStyles}
+                class="avonni-progress-circle__value"
                 data-element-id="span"
                 >{value}%</span
             >
@@ -65,10 +69,11 @@
                 data-element-id="label"
                 >{label}</span
             >
-            <span 
-                if:true={isLoading} 
+            <span
+                if:true={isLoading}
                 class="avonni-progress-circle__dots"
-                data-element-id="dots">
+                data-element-id="dots"
+            >
                 {loadingDots}
             </span>
         </div>

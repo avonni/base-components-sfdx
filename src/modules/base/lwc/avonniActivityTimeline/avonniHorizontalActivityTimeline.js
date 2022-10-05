@@ -42,21 +42,20 @@ const BORDER_OFFSET = 0.5;
 const DEFAULT_ICON_NAME = 'empty';
 const DEFAULT_ICON_CATEGORY = 'standard';
 const DEFAULT_DATE_FORMAT = 'dd/MM/yyyy';
+const DEFAULT_NUBBIN_TOP_POSITION_PX = 24;
 const DEFAULT_INTERVAL_DAYS_LENGTH = 15;
-const DEFAULT_POPOVER_CLASSES =
-    'slds-popover slds-popover_panel slds-is-absolute slds-p-bottom_x-small slds-p-top_xx-small slds-popover_medium slds-p-left_medium slds-p-right_x-small';
 const DEFAULT_TIMELINE_AXIS_OFFSET = 16.5;
 const DEFAULT_TIMELINE_AXIS_HEIGHT = 30;
-const DEFAULT_SCROLL_AXIS_TICKS_NUMBER = 12;
 const DEFAULT_TIMELINE_AXIS_TICKS_NUMBER = 9;
 const DEFAULT_TIMELINE_HEIGHT = 350;
 const DEFAULT_TIMELINE_WIDTH = 1300;
+const DEFAULT_TOOLTIP_CLASSES = 'avonni-horizontal-activity-timeline__popover slds-popover slds-popover_large slds-is-absolute slds-p-around_none';
+const DEFAULT_SCROLL_AXIS_TICKS_NUMBER = 12;
 const DISTANCE_BETWEEN_POPOVER_AND_ITEM = 15;
 const INTERVAL_RECTANGLE_OFFSET_Y = 1.5;
 const MAX_LENGTH_TITLE_ITEM = 30;
 const MAX_ITEM_LENGTH = 230;
 const MIN_INTERVAL_WIDTH = 2;
-const NUBBIN_TOP_POSITION_PX = 36;
 const RESIZE_CURSOR_CLASS =
     'avonni-activity-timeline__horizontal-timeline-resize-cursor';
 const SCROLL_AXIS_RECTANGLES_G_ID = 'avonni-horizontal-activity-timeline__scroll-axis-rectangles';
@@ -68,7 +67,7 @@ const TIMELINE_COLORS = {
     scrollAxisItemRect: '#b0adab', // $color-gray-7
     intervalBackground: '#1b96ff', // $color-brand
     intervalBorder: '#0176d3', // $palette-blue-50
-    popoverBackground: '#f3f3f3', //$palette-neutral-95
+    popoverBackground: '#ffffff',
     timelineBorder: '#c9c9c9', // $card-color-border
     axisLabel: '#181818' // $color-text-action-label-active
 };
@@ -83,6 +82,7 @@ const Y_START_POSITION_TIMELINE_ITEM = 10;
 const Y_GAP_BETWEEN_ITEMS_TIMELINE = 28;
 const Y_START_POSITION_SCROLL_ITEM = 4;
 const Y_GAP_BETWEEN_ITEMS_SCROLL = 4;
+
 
 export class HorizontalActivityTimeline {
 	 _d3Loaded = false;
@@ -120,10 +120,11 @@ export class HorizontalActivityTimeline {
     constructor(activityTimeline, sortedItems) {
         this.addValidItemsToData(sortedItems);
         this._activityTimeline = activityTimeline;
-        Promise.all([loadScript(this, D3Js)])
+        Promise.all([loadScript(activityTimeline, D3Js)])
 		.then(() => {
 			this._d3Loaded = true; 
 			this.setDefaultIntervalDates(); 
+            this.createHorizontalActivityTimeline(sortedItems);
 		})
 		 .catch((error) => { 
 			this.dispatchEvent( 
@@ -139,22 +140,18 @@ export class HorizontalActivityTimeline {
     /**
      * Create horizontal view timeline
      */
-    createHorizontalActivityTimeline(sortedItems, maxVisibleItems, width) {
-        
+    createHorizontalActivityTimeline(sortedItems) {
 		 if (this._d3Loaded) {
 			this.resetHorizontalTimeline();
-        this.addValidItemsToData(sortedItems);
-        this._maxVisibleItems = maxVisibleItems;
+            this.addValidItemsToData(sortedItems);
 
-        this.setTimelineWidth(width);
-        this.createTimelineScrollAxis();
-        this.createTimelineAxis();
-        this.createTimeline();
-        
-		this.initializeIntervalHorizontalScroll();  
-		} else {
-			 this._timer = setTimeout(this.createHorizontalActivityTimeline.bind(this), 1);
-		}  
+            this.setTimelineWidth(this.clientWidth);
+            this.createTimelineScrollAxis();
+            this.createTimelineAxis();
+            this.createTimeline();
+            
+            this.initializeIntervalHorizontalScroll();  
+        }
     }
 
     /*
@@ -383,6 +380,22 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Get tooltip offset if nubbin is at top position (header is present)
+     * 
+     * @return {number}
+     */
+    get tooltipNubbinTopOffset(){
+        let nubbinTopOffset = DEFAULT_NUBBIN_TOP_POSITION_PX;
+        const popoverHeader = this._activityTimeline.template.querySelector('[data-element-id="avonni-horizontal-activity-timeline__popover-header"]');
+        
+        if(popoverHeader) {
+            nubbinTopOffset = popoverHeader.getBoundingClientRect().height / 2;
+        }
+
+        return nubbinTopOffset;
+    }
+
+    /**
      * Function that calculate the time scale for the horizontal activity timeline's time axis.
      * If we pass a date, it returns the corresponding x value. If we use invert, we can pass an x value to return date.
      */
@@ -588,6 +601,25 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Check if there is enough space to display popover on left side.
+     *
+     * @return {boolean}
+     */
+     canPopoverBeOnLeft(xPosition, popoverWidth){
+        const maxVisiblePosition = this._timelineWidth - popoverWidth;
+        return xPosition < maxVisiblePosition;
+    }
+
+    /**
+     * Check if there is enough space to display popover on right side.
+     *
+     * @return {boolean}
+     */
+    canPopoverBeOnRight(xPosition){
+        return xPosition > 0
+    }
+
+    /**
      * Formatted item's title to prevent text longer than 30 characters on horizontal timeline
      * @param {Object} item
      * @returns string
@@ -600,29 +632,17 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     * Get all specific and common classes of popover.
-     *
-     * @return {string}
-     */
-    computedPopoverClasses(element, direction) {
-        return (
-            this.getPopoverNubbinClass(element, direction) +
-            ' ' +
-            DEFAULT_POPOVER_CLASSES
-        );
-    }
-
-    /**
      * Convert a date to the correct format
      *
      * @param {Date} date
+     * @param {string} format
      * @returns string
      */
-    convertDateToFormat(date) {
+    convertDateToFormat(date, format = this._dateFormat) {
         if(this.isDateInvalid(date)) {
             return '';
         }
-        return dateTimeObjectFrom(date).toFormat(this._dateFormat);
+        return dateTimeObjectFrom(date).toFormat(format);
     }
 
     /**
@@ -979,6 +999,19 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Extract x scroll position of interval from event. The position corresponds to the beginning of the day.
+     * 
+     * @return {number}
+     */
+    extractScrollXPosition(event){
+        // Horizontal scroll of interval
+        const requestedPosition = Number(this._timeIntervalSelector.attr('x')) + this.normalizeHorizontalScrollDeltaX(event);
+
+        // To set hours at 0,0,0,0 for min date
+        return this.findBeginningOfDayPosition(requestedPosition);
+    }
+
+    /**
      * Find the position of the beginning of the day based on scrollTimeScale. 
      * 
      * @return {number}
@@ -1029,6 +1062,19 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Find the popover's direction by checking which side has more space in timeline.
+     *
+     * @return {string}
+     */
+    findPopoverDirectionWithMoreSpace(leftSpaceForPopover){ 
+        const rightSpaceForPopover = this._timelineWidth - leftSpaceForPopover;
+        if(leftSpaceForPopover > rightSpaceForPopover){
+            return 'right';
+        }
+        return 'left';
+    }
+
+    /**
      * Find the x start position of an item. This position is used to display popover (right).
      *
      * @return {number}
@@ -1052,7 +1098,7 @@ export class HorizontalActivityTimeline {
      * @return {string}
      */
     getPopoverNubbinClass(item, direction) {
-        if (item.fields) {
+        if (this.hasPopoverHeader(item)) {
             return 'slds-nubbin_' + direction + '-top';
         }
         return 'slds-nubbin_' + direction;
@@ -1073,6 +1119,15 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Check if popover has a header.
+     * 
+     * @return {boolean}
+     */
+    hasPopoverHeader(item){
+        return item.fields || item.description;
+    }
+
+    /**
      * Initialize horizontal scroll (wheel event) for interval on timeline's scroll axis.
      *
      */
@@ -1089,10 +1144,15 @@ export class HorizontalActivityTimeline {
      * Initialize item's popover with correct position and classes.
      */
     initializeItemPopover(element) {
-        let tooltipElement = d3.select(this.itemPopoverSelector);
-        
+        const tooltipElement = d3.select(this.itemPopoverSelector);
+
         if (!tooltipElement._groups[0][0]) {
             return;
+        }
+
+        // Reset tooltip's classes if nubbin is already present
+        if(tooltipElement.attr('class').includes('slds-nubbin')){
+            tooltipElement.attr('class', DEFAULT_TOOLTIP_CLASSES)
         }
 
         // Set popover position
@@ -1106,9 +1166,8 @@ export class HorizontalActivityTimeline {
             .style('top', popoverPosition.y + 'px')
             .style('left', popoverPosition.x + 'px')
             .style('background', TIMELINE_COLORS.popoverBackground)
-            .attr(
-                'class',
-                this.computedPopoverClasses(element, popoverPosition.direction)
+            .classed( 
+                this.getPopoverNubbinClass(element, popoverPosition.direction), true
             )
             .on('mouseenter', this.handleMouseOverOnPopover.bind(this))
             .on('mouseleave', this.handleMouseOutOfPopover.bind(this));
@@ -1140,13 +1199,13 @@ export class HorizontalActivityTimeline {
      */
     moveIntervalToPosition(position) {
         this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, position);
+        this.setIntervalMaxDate();
 
         this._timeIntervalSelector
             .attr('x',  position)
             .attr('width', this.intervalWidth)
             .attr('y', INTERVAL_RECTANGLE_OFFSET_Y);
 
-        this.setIntervalMaxDate();
         this.moveTimelineDisplay();
     }
 
@@ -1403,6 +1462,32 @@ export class HorizontalActivityTimeline {
     }
 
     /**
+     * Set popover's direction and adjust x position if needed.
+     */
+    setPopoverDirection(tooltipElement, popoverPosition, element){
+        const popoverWidth = this.convertPxSizeToNumber(
+            tooltipElement.style('width')
+        );
+        
+        if (this.canPopoverBeOnLeft(popoverPosition.x, popoverWidth)) {
+            return;
+        }
+
+        popoverPosition.x = this.findStartPositionOfItem(element) - popoverWidth;
+        if (this.canPopoverBeOnRight(popoverPosition.x)) {
+            popoverPosition.direction = 'right';
+            return;
+        }
+        
+        // Not enough space on either side. We choose the side with more space. 
+        const leftSpaceForPopover = this._offsetAxis + this.viewTimeScale(new Date(element.datetimeValue)) + SVG_ICON_SIZE; 
+        popoverPosition.direction = this.findPopoverDirectionWithMoreSpace(leftSpaceForPopover);
+        if (popoverPosition.direction === 'left'){
+            popoverPosition.x = leftSpaceForPopover;
+        }
+    }
+
+    /**
      * Set the position (x, y, direction) of item's popover.
      *
      * @return {object}
@@ -1413,30 +1498,16 @@ export class HorizontalActivityTimeline {
             y: element.yPosition,
             direction: 'left'
         };
-        const popoverWidth = this.convertPxSizeToNumber(
-            tooltipElement.style('width')
-        );
-        const maxVisiblePositionOfPopover = this._timelineWidth - popoverWidth;
-
-        // Check if popover should be right or left
-        if (popoverPosition.x > maxVisiblePositionOfPopover) {
-            popoverPosition.direction = 'right';
-            popoverPosition.x =
-                this.findStartPositionOfItem(element) - popoverWidth;
-            if (popoverPosition.x < 0) {
-                popoverPosition.x =
-                    this._offsetAxis +
-                    this.viewTimeScale(new Date(element.datetimeValue));
-            }
-        }
+        
+        this.setPopoverDirection(tooltipElement, popoverPosition, element);
 
         // if element has field, adjust position (nubbin top)
-        const popoverHeight = this.convertPxSizeToNumber(
-            tooltipElement.style('height')
-        );
-        if (element.fields) {
-            popoverPosition.y += SVG_ICON_SIZE / 2 - NUBBIN_TOP_POSITION_PX;
+        if (this.hasPopoverHeader(element)) {
+            popoverPosition.y += SVG_ICON_SIZE / 2 - this.tooltipNubbinTopOffset;
         } else {
+            const popoverHeight = this.convertPxSizeToNumber(
+                tooltipElement.style('height')
+            );
             popoverPosition.y += SVG_ICON_SIZE / 2 - popoverHeight / 2;
         }
 
@@ -1775,13 +1846,8 @@ export class HorizontalActivityTimeline {
         this.handleMouseOutOfPopover();
        
         // Horizontal scroll of interval
-        let requestedPosition =
-            Number(this._timeIntervalSelector.attr('x')) +
-            this.normalizeHorizontalScrollDeltaX(event);
+        const requestedPosition = this.extractScrollXPosition(event);
 
-        // To set hours at 0,0,0,0 for min date
-        requestedPosition = this.findBeginningOfDayPosition(requestedPosition);
-        
         this.moveIntervalToPosition(
             this.validateXMousePosition(requestedPosition)
         );

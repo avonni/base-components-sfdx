@@ -194,9 +194,7 @@ export default class AvonniSeparator extends LightningElement {
      * @type {string}
      */
     get computedLineOneClass() {
-        return classSet(
-            'avonni-separator__line-one avonni-separator__lines_styling'
-        )
+        return classSet('avonni-separator__lines_styling slds-grow')
             .add({
                 'slds-border_bottom slds-col':
                     this.orientation === 'horizontal',
@@ -213,9 +211,7 @@ export default class AvonniSeparator extends LightningElement {
      * @type {string}
      */
     get computedLineTwoClass() {
-        return classSet(
-            'avonni-separator__line-two avonni-separator__lines_styling'
-        )
+        return classSet('avonni-separator__lines_styling slds-grow')
             .add({
                 'slds-border_bottom slds-col':
                     this.orientation === 'horizontal',

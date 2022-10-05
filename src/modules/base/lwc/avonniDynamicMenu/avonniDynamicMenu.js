@@ -338,7 +338,7 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
-     * The size of the icon. Options include xx-small, x-small, medium, or large.
+     * The size of the icon. Options include xx-small, x-small, small, medium, or large.
      *
      * @type {string}
      * @public

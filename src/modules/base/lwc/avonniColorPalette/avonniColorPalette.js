@@ -35,8 +35,7 @@ import {
     normalizeArray,
     normalizeBoolean,
     normalizeString,
-    generateColors,
-    deepCopy
+    generateColors
 } from 'c/utilsPrivate';
 import { generateUUID } from 'c/utils';
 import grid from './avonniGrid.html';
@@ -136,7 +135,7 @@ export default class AvonniColorPalette extends LightningElement {
         return this._colors;
     }
     set colors(value) {
-        const colors = deepCopy(normalizeArray(value));
+        const colors = normalizeArray(value);
         this._colors = colors.length ? colors : DEFAULT_COLORS;
 
         if (this._isConnected) this.initGroups();
@@ -382,15 +381,13 @@ export default class AvonniColorPalette extends LightningElement {
             colors: []
         };
 
-        // Create an object with one key per group name used by a color
-        for (let i = 0; i < this.colors.length; i++) {
-            let color = this.colors[i];
+        this.colors.forEach((color) => {
+            let hasBeenAddedToAGroup = false;
 
             if (color instanceof Object) {
                 const colorGroups = normalizeArray(color.groups);
 
                 if (this.groups.length && colorGroups.length) {
-                    let hasBeenAddedToAGroup = false;
                     colorGroups.forEach((groupName) => {
                         // Make sure the group exists
                         const groupDefinition = this.groups.find(
@@ -410,16 +407,16 @@ export default class AvonniColorPalette extends LightningElement {
                             hasBeenAddedToAGroup = true;
                         }
                     });
-                    if (hasBeenAddedToAGroup) continue;
                 }
             } else {
                 color = {
                     color: color
                 };
             }
-
-            undefinedGroup.colors.push(color);
-        }
+            if (!hasBeenAddedToAGroup) {
+                undefinedGroup.colors.push(color);
+            }
+        });
 
         // Create the computed groups, in the order of the groups array
         const computedGroups = [];

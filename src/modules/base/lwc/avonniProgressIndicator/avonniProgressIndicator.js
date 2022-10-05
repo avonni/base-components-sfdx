@@ -176,7 +176,9 @@ export default class AvonniProgressIndicator extends LightningElement {
      * @type {string}
      */
     get computedOuterClass() {
-        return classSet('slds-progress slds-progress_horizontal')
+        return classSet(
+            'slds-progress slds-progress_horizontal slds-scrollable_x'
+        )
             .add({
                 'slds-progress_shade': this._variant === 'shaded'
             })

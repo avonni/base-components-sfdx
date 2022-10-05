@@ -50,18 +50,46 @@ const TOOLBAR_VARIANTS = {
 const PEN_MODES = { valid: ['draw', 'paint', 'ink', 'erase'], default: 'draw' };
 
 const DEFAULT_BACKGROUND_COLORS = [
-    '#ffffff00',
-    '#000000',
+    '#e3abec',
+    '#c2dbf7',
     '#9fd6ff',
     '#9de7da',
     '#9df0bf',
     '#fff099',
-    '#ffca7f'
+    '#fed49a',
+    '#d073df',
+    '#86b9f3',
+    '#5ebbff',
+    '#44d8be',
+    '#3be281',
+    '#ffe654',
+    '#ffb758',
+    '#bd35bd',
+    '#5778c1',
+    '#5ebbff',
+    '#00aea9',
+    '#3bba4c',
+    '#f4bc25',
+    '#f99120',
+    '#580d8c',
+    '#001870',
+    '#0a2399',
+    '#097476',
+    '#096a50',
+    '#b67d11',
+    '#b85d0d',
+    '#ffffff00',
+    '#D3D3D3',
+    '#A9A9A9',
+    '#808080',
+    '#696969',
+    '#3a3a3a',
+    '#000000'
 ];
 
 const DEFAULT_COLOR = '#000';
 const DEFAULT_BACKGROUND_COLOR = '#ffffff00';
-const DEFAULT_SIZE = 10;
+const DEFAULT_SIZE = 3;
 
 /**
  * @class
@@ -123,7 +151,7 @@ export default class AvonniInputPen extends LightningElement {
     _backgroundCanvasElement;
     _backgroundColor = DEFAULT_BACKGROUND_COLOR;
     _backgroundCtx;
-    _foregroundValue = undefined;
+    drawingArea;
 
     _resizeObserver;
     _resizeTimeout;
@@ -142,6 +170,8 @@ export default class AvonniInputPen extends LightningElement {
     constructor() {
         super();
         window.addEventListener('mouseup', this.handleMouseUp);
+        window.addEventListener('touchend', this.handleMouseUp);
+        window.addEventListener('touchmove', this.handleMouseMove);
         window.addEventListener('mousemove', this.handleMouseMove);
         window.addEventListener('keydown', this.handleKeyDown);
     }
@@ -154,7 +184,9 @@ export default class AvonniInputPen extends LightningElement {
 
     disconnectedCallback() {
         window.removeEventListener('mouseup', this.handleMouseUp);
+        window.removeEventListener('touchend', this.handleMouseUp);
         window.removeEventListener('mousemove', this.handleMouseMove);
+        window.removeEventListener('touchmove', this.handleMouseMove);
         window.removeEventListener('keydown', this.handleKeyDown);
     }
 
@@ -175,18 +207,21 @@ export default class AvonniInputPen extends LightningElement {
             this._backgroundCtx =
                 this._backgroundCanvasElement.getContext('2d');
 
-            const parentElement = this.template.querySelector(
+            this.drawingArea = this.template.querySelector(
                 '[data-element-id="drawing-area"]'
             );
-            this.canvasInfo.canvasElement.width = parentElement.clientWidth;
-            this.canvasInfo.canvasElement.height = parentElement.clientHeight;
-            this._backgroundCanvasElement.width = parentElement.clientWidth;
-            this._backgroundCanvasElement.height = parentElement.clientHeight;
+            this.canvasInfo.canvasElement.width = this.drawingArea.clientWidth;
+            this.canvasInfo.canvasElement.height =
+                this.drawingArea.clientHeight;
+            this._backgroundCanvasElement.width = this.drawingArea.clientWidth;
+            this._backgroundCanvasElement.height =
+                this.drawingArea.clientHeight;
 
             this.initResizeObserver();
             this.setToolManager();
             this.fillBackground();
             this.initCursorStyles();
+            this.computeCursorClass();
             this.computeSelectedToolClass();
             if (this._foregroundValue) {
                 this.initSrc();
@@ -336,7 +371,6 @@ export default class AvonniInputPen extends LightningElement {
 
     set mode(value) {
         this.setMode(value);
-        this.initCursorStyles();
         this._updatedDOM = true;
     }
 
@@ -401,7 +435,7 @@ export default class AvonniInputPen extends LightningElement {
      *
      * @type {string}
      * @public
-     * @default 10
+     * @default 3
      */
     @api
     get size() {
@@ -442,10 +476,12 @@ export default class AvonniInputPen extends LightningElement {
     }
 
     set value(value) {
-        this._value = value;
-        this._foregroundValue = value;
-        if (this._rendered) {
-            this.initSrc();
+        if (value) {
+            this._value = value;
+            this._foregroundValue = value;
+            if (this._rendered) {
+                this.initSrc();
+            }
         }
     }
 
@@ -509,7 +545,7 @@ export default class AvonniInputPen extends LightningElement {
      */
     get computedTextAreaClasses() {
         return classSet(
-            'slds-rich-text-editor__textarea slds-grid avonni-input-pen__text-area'
+            'slds-rich-text-editor__textarea slds-grid avonni-input-pen__text-area avonni-input-pen__text-area_no-touch-scroll'
         ).add({
             'avonni-input-pen__rich-text_border-radius-top':
                 this.variant === 'bottom-toolbar',
@@ -539,7 +575,12 @@ export default class AvonniInputPen extends LightningElement {
         let mergedCanvas = document.createElement('canvas');
         mergedCanvas.width = this.canvasInfo.canvasElement.width;
         mergedCanvas.height = this.canvasInfo.canvasElement.height;
-        if (mergedCanvas.width > 0 || mergedCanvas.width > 0) {
+        if (
+            mergedCanvas.width > 0 &&
+            mergedCanvas.height > 0 &&
+            this._backgroundCanvasElement.width > 0 &&
+            this._backgroundCanvasElement.height > 0
+        ) {
             const mergedCtx = mergedCanvas.getContext('2d');
             mergedCtx.drawImage(this._backgroundCanvasElement, 0, 0);
             mergedCtx.drawImage(this.canvasInfo.canvasElement, 0, 0);
@@ -862,9 +903,10 @@ export default class AvonniInputPen extends LightningElement {
             validValues: PEN_MODES.valid
         });
         this.canvasInfo.mode = this._mode;
-        this.computeCursorClass();
         this.computeSelectedToolClass();
         this.setToolManager();
+        this.computeCursorClass();
+        this.initCursorStyles();
     }
 
     /**
@@ -1151,7 +1193,6 @@ export default class AvonniInputPen extends LightningElement {
      */
     setDraw() {
         this.setMode('draw');
-        this.initCursorStyles();
     }
 
     /**
@@ -1159,7 +1200,6 @@ export default class AvonniInputPen extends LightningElement {
      */
     setErase() {
         this.setMode('erase');
-        this.initCursorStyles();
     }
 
     /**
@@ -1167,7 +1207,6 @@ export default class AvonniInputPen extends LightningElement {
      */
     setInk() {
         this.setMode('ink');
-        this.initCursorStyles();
     }
 
     /**
@@ -1175,7 +1214,6 @@ export default class AvonniInputPen extends LightningElement {
      */
     setPaint() {
         this.setMode('paint');
-        this.initCursorStyles();
     }
 
     setToolManager() {
@@ -1295,6 +1333,10 @@ export default class AvonniInputPen extends LightningElement {
      * @param {Event} event
      */
     handleMouseMove = (event) => {
+        if (event.touches && event.touches.length >= 1) {
+            event.clientX = event.touches[0].clientX;
+            event.clientY = event.touches[0].clientY;
+        }
         this.manageMouseEvent('move', event);
     };
 
@@ -1304,6 +1346,10 @@ export default class AvonniInputPen extends LightningElement {
      * @param {Event} event
      */
     handleMouseDown = (event) => {
+        if (event.touches && event.touches.length >= 1) {
+            event.clientX = event.touches[0].clientX;
+            event.clientY = event.touches[0].clientY;
+        }
         this.manageMouseEvent('down', event);
     };
 
@@ -1313,6 +1359,10 @@ export default class AvonniInputPen extends LightningElement {
      * @param {Event} event
      */
     handleMouseUp = (event) => {
+        if (event.touches && event.touches.length >= 1) {
+            event.clientX = event.touches[0].clientX;
+            event.clientY = event.touches[0].clientY;
+        }
         this.manageMouseEvent('up', event);
     };
 

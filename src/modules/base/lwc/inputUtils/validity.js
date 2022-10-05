@@ -30,8 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from 'c/utilsPrivate';
-
 const constraintsSortedByPriority = [
     'customError',
     'badInput',
@@ -159,7 +157,11 @@ export function getErrorMessage(validity, labelMap) {
 
 export class FieldConstraintApi {
     constructor(inputComponentProvider, constraintProviders) {
-        assert(typeof inputComponentProvider === 'function');
+        if (typeof inputComponentProvider !== 'function') {
+            throw new Error(
+                'Expected inputComponentProvider to be a function.'
+            );
+        }
         this._inputComponentProvider = inputComponentProvider;
         this._constraintsProvider = Object.assign({}, constraintProviders);
         if (!this._constraintsProvider.customError) {

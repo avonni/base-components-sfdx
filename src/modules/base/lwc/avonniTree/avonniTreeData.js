@@ -31,7 +31,6 @@
  */
 
 import { getTreeNode } from './avonniTreeNode';
-import { assert } from 'c/utilsPrivate';
 
 /**
  * @class
@@ -421,14 +420,16 @@ export class TreeData {
         function isNodeValid(currentNode, level) {
             const hasCycle = seen.has(currentNode);
             const hasLabel = level === 0 ? true : !!currentNode.label;
-            assert(
-                hasCycle === false,
-                `Data passed to lightning:tree has circular reference. Skipping the node`
-            );
-            assert(
-                hasLabel === true,
-                `The node passed to lightning:tree has empty label. Skipping the node`
-            );
+            if (hasCycle !== false) {
+                console.warn(
+                    'Data passed to lightning:tree has circular reference. Skipping the node'
+                );
+            }
+            if (hasLabel !== true) {
+                console.warn(
+                    'The node passed to lightning:tree has empty label. Skipping the node'
+                );
+            }
             return !hasCycle && hasLabel;
         }
         const buildTreeFn = buildTree.bind(this);

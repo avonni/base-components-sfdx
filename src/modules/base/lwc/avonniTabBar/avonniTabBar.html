@@ -49,6 +49,7 @@
                         role="tab"
                         tabindex={tab.tabIndex}
                         aria-selected={tab.ariaSelected}
+                        data-element-id="a-tab-link"
                         onclick={handleTabClick}
                         onblur={triggerBlur}
                     >
@@ -76,6 +77,7 @@
                             aria-haspopup="true"
                             aria-expanded={showHiddenTabsDropdown}
                             type="button"
+                            data-element-id="button-hidden-tabs"
                             onfocus={handleDropDownButtonFocus}
                             onblur={handleDropDownButtonBlur}
                             onclick={handleShowHiddenTabsClick}
@@ -87,7 +89,13 @@
                                 ></lightning-icon>
                             </span>
                         </button>
-                        <template if:true={showHiddenTabsDropdown}>
+
+                        <!-- Hidden tabs dropdown -->
+                        <div
+                            if:true={showHiddenTabsDropdown}
+                            onfocusin={handleDropDownFocusIn}
+                            onfocusout={handleDropDownFocusOut}
+                        >
                             <div class="slds-dropdown slds-dropdown_right">
                                 <ul
                                     class="
@@ -111,8 +119,8 @@
                                                 role="menuitem"
                                                 tabindex="-1"
                                                 title={hiddenTab}
+                                                data-element-id="a-hidden-tab"
                                                 onmousedown={changeLastCategory}
-                                                onblur={dropdownBlur}
                                             >
                                                 <span
                                                     class="slds-truncate"
@@ -124,7 +132,7 @@
                                     </template>
                                 </ul>
                             </div>
-                        </template>
+                        </div>
                     </div>
                 </li>
             </template>

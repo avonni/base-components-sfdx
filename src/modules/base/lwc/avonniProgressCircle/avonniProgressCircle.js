@@ -56,7 +56,6 @@ const PROGRESS_CIRCLE_THICKNESSES = {
 
 const TITLE_POSITIONS = { valid: ['top', 'bottom'], default: 'bottom' };
 
-const DEFAULT_COLOR = '#1589ee';
 const DEFAULT_VALUE = 0;
 
 /**
@@ -81,7 +80,6 @@ export default class AvonniProgressCircle extends LightningElement {
      */
     @api title;
 
-    _color = DEFAULT_COLOR;
     _direction = PROGRESS_CIRCLE_DIRECTIONS.default;
     _isLoading = false;
     _size = PROGRESS_CIRCLE_SIZES.default;
@@ -100,11 +98,11 @@ export default class AvonniProgressCircle extends LightningElement {
      */
 
     /**
-     * The color of the Progress Circle. Accepts a valid CSS color string, including hex and rgb.
+     * Deprecated. Use "--avonni-progress-circle-bar-color" styling hook instead..
      *
      * @type {string}
-     * @public
      * @default #1589ee
+     * @deprecated
      */
     @api
     get color() {
@@ -112,19 +110,9 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     set color(color) {
-        if (typeof color === 'string') {
-            let styles = new Option().style;
-            styles.color = color;
-
-            if (
-                styles.color === color ||
-                this.isHexColor(color.replace('#', ''))
-            ) {
-                this._color = color;
-            }
-        } else {
-            this._color = DEFAULT_COLOR;
-        }
+        console.warn(
+            'The "color" attribute is deprecated. Use "--avonni-progress-circle-bar-color" styling hook instead.'
+        );
     }
 
     /**
@@ -380,15 +368,6 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     /**
-     * Return value style colors.
-     *
-     * @type {string}
-     */
-    get progressValueStyles() {
-        return `color: ${this.color}`;
-    }
-
-    /**
      * Animate progress bar with continuous loading animation.
      *
      * @type {string}
@@ -475,25 +454,5 @@ export default class AvonniProgressCircle extends LightningElement {
      */
     get showPositionTop() {
         return this.titlePosition === 'top' && this.title;
-    }
-
-    /*
-     * ------------------------------------------------------------
-     *  PRIVATE METHODS
-     * -------------------------------------------------------------
-     */
-
-    /**
-     * Verify if color is of hexadecimal type.
-     *
-     * @param {string} hex
-     * @returns {boolean}
-     */
-    isHexColor(hex) {
-        return (
-            typeof hex === 'string' &&
-            hex.length === 6 &&
-            !isNaN(Number('0x' + hex))
-        );
     }
 }

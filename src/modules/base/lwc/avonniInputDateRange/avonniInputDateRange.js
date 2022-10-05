@@ -803,7 +803,7 @@ export default class AvonniInputDateRange extends LightningElement {
         let dateTime = date.replace(/T[^Z]+/, time);
         try {
             const formattedWithTimeZone = new Date(dateTime).toLocaleString(
-                'default',
+                'en-US',
                 {
                     timeZone: this.timezone,
                     timeZoneName: 'longOffset'

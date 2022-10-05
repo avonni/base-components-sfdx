@@ -49,11 +49,10 @@ export default class AvonniTabBar extends LightningElement {
 
     @track visibleTabs;
     showHiddenTabsDropdown = false;
-    denyDropDownBlur = false;
+    _dropdownHasFocus = false;
 
     connectedCallback() {
         this.initializeVisibleTabs();
-        this.initializeEventListeners();
     }
 
     /**
@@ -137,16 +136,6 @@ export default class AvonniTabBar extends LightningElement {
     }
 
     /**
-     * Initializes the event listeners.
-     * The keyup event is used to reset the state of the variable responsible for denying a blur of the dropdown.
-     */
-    initializeEventListeners() {
-        this.template.addEventListener('keyup', () => {
-            this.denyDropDownBlur = false;
-        });
-    }
-
-    /**
      * Returns the computed CSS classes of a given tab during initialization.
      * @param {string} tabName - The name of the tab.
      * @return {string}
@@ -227,15 +216,18 @@ export default class AvonniTabBar extends LightningElement {
      * Handles a click on the hidden tabs menu button.
      * @param {Event} event
      */
-    handleShowHiddenTabsClick(event) {
+    handleShowHiddenTabsClick() {
         this.showHiddenTabsDropdown = !this.showHiddenTabsDropdown;
 
         if (this.showHiddenTabsDropdown) {
-            const button = event.currentTarget;
-            // eslint-disable-next-line @lwc/lwc/no-async-operation
-            setTimeout(() => {
-                button.nextSibling.firstChild.firstChild.firstChild.focus();
-            }, 0);
+            requestAnimationFrame(() => {
+                const hiddenMenu = this.template.querySelector(
+                    '[data-element-id="a-hidden-tab"]'
+                );
+                if (hiddenMenu) {
+                    hiddenMenu.focus();
+                }
+            });
         }
     }
 
@@ -312,22 +304,6 @@ export default class AvonniTabBar extends LightningElement {
     }
 
     /**
-     * Handles a blur of the hidden tabs menu.
-     * @param {Event} event
-     */
-    dropdownBlur(event) {
-        let isMenuButton = false;
-        if (event.relatedTarget) {
-            isMenuButton = event.relatedTarget.tagName === 'BUTTON';
-        }
-
-        if (!this.denyDropDownBlur && !isMenuButton) {
-            this.showHiddenTabsDropdown = false;
-            this.triggerBlur();
-        }
-    }
-
-    /**
      * Handles a focus on the hidden tabs menu button.
      * This mimics the mouseover effect on the button in case of keyboard navigation.
      * @param {Event} event
@@ -350,6 +326,27 @@ export default class AvonniTabBar extends LightningElement {
         this.triggerBlur();
     }
 
+    handleDropDownFocusIn() {
+        this._dropdownHasFocus = true;
+    }
+
+    handleDropDownFocusOut() {
+        this._dropdownHasFocus = false;
+
+        requestAnimationFrame(() => {
+            if (!this._dropdownHasFocus && this.showHiddenTabsDropdown) {
+                this.showHiddenTabsDropdown = false;
+
+                const button = this.template.querySelector(
+                    '[data-element-id="button-hidden-tabs"]'
+                );
+                if (button) {
+                    button.focus();
+                }
+            }
+        });
+    }
+
     /**
      * Handles a keydown event when the hidden tabs menu is opened.
      * The dropdown options can be navigated using the up and down arrows.
@@ -359,7 +356,6 @@ export default class AvonniTabBar extends LightningElement {
      * @param {Event} event
      */
     handleDropDownItemKeyDown(event) {
-        this.denyDropDownBlur = true;
         if (event.keyCode === 40) {
             // Down arrow
             if (event.currentTarget.nextSibling) {
@@ -377,10 +373,10 @@ export default class AvonniTabBar extends LightningElement {
         } else if (event.keyCode === 13) {
             // Enter key
             this.changeLastCategory(event);
-            this.showHiddenTabsDropdown = false;
+            this.handleDropDownFocusOut();
         } else if (event.keyCode === 27 || event.keyCode === 9) {
             // Escape key and Tab key
-            this.showHiddenTabsDropdown = false;
+            this.handleDropDownFocusOut();
             this.template.querySelector('button').focus();
         }
     }

@@ -32,7 +32,7 @@
 
 <template>
     <div class={computedContainerClass}>
-        <div class={computedLineOneClass}></div>
+        <div class={computedLineOneClass} data-element-id="line-one"></div>
         <div if:true={hasContent} class={computedContentClass}>
             <lightning-icon
                 if:true={iconName}
@@ -49,6 +49,6 @@
                 {label}
             </h1>
         </div>
-        <div class={computedLineTwoClass}></div>
+        <div class={computedLineTwoClass} data-element-id="line-two"></div>
     </div>
 </template>

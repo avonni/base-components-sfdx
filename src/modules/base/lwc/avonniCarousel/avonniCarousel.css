@@ -68,7 +68,7 @@
 }
 
 .avonni-carousel__progress-indicator_active:hover {
-    background: var(
+    --avonni-carousel-active-indicator-color-background: var(
         --avonni-carousel-active-indicator-color-background-hover,
         #0176d3
     );
@@ -90,11 +90,11 @@
 }
 
 .avonni-carousel__progress-indicator_inactive:hover {
-    background: var(
+    --avonni-carousel-inactive-indicator-color-background: var(
         --avonni-carousel-inactive-indicator-color-background-hover,
         #fafaf9
     );
-    border-color: var(
+    --avonni-carousel-inactive-indicator-color-border: var(
         --avonni-carousel-inactive-indicator-color-border-hover,
         #dddbda
     );
@@ -111,13 +111,12 @@
     ) !important;
 }
 
-.avonni-carousel__progress-indicator_shaded-active:hover,
-.avonni-carousel__progress-indicator_shaded-active:focus {
-    background-color: var(
+.avonni-carousel__progress-indicator_shaded-active:hover {
+    --avonni-carousel-active-indicator-shaded-color-background: var(
         --avonni-carousel-active-indicator-shaded-color-background-hover,
         #dddbda
     );
-    border-color: var(
+    --avonni-carousel-active-indicator-shaded-color-border: var(
         --avonni-carousel-active-indicator-shaded-color-border-hover,
         #dddbda
     );
@@ -135,11 +134,11 @@
 }
 
 .avonni-carousel__progress-indicator_shaded-inactive:hover {
-    background-color: var(
+    --avonni-carousel-inactive-indicator-shaded-color-background: var(
         --avonni-carousel-inactive-indicator-shaded-color-background,
         #fafaf9
     );
-    border-color: var(
+    --avonni-carousel-inactive-indicator-shaded-color-border: var(
         --avonni-carousel-inactive-indicator-shaded-color-border,
         #dddbda
     );

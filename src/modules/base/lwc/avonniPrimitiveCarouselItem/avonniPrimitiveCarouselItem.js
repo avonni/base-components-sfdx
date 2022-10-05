@@ -331,6 +331,7 @@ export default class AvonniPrimitiveCarouselItem extends LightningElement {
      * @param {Event}
      */
     handleActionClick(event) {
+        event.stopPropagation();
         event.preventDefault();
         const actionName = event.currentTarget.name;
         this.actionDispatcher(actionName);

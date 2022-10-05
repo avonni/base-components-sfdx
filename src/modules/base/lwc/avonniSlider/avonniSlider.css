@@ -70,7 +70,19 @@
     height: var(--lwc-sizeLarge, 25rem);
 }
 .avonni-slider__spacer-height_responsive {
+    height: calc(
+        calc(100% - calc(var(--avonni-slider-unit-font-size, 0.75rem) * 2)) -
+            16px
+    );
+}
+
+.avonni-slider__wrapper_height_full {
     height: 100%;
+}
+.avonni-slider__wrapper_height_label {
+    height: calc(
+        100% - calc(var(--avonni-slider-header-font-size, 0.75rem) + 10px)
+    );
 }
 
 .avonni-slider__unit-container {

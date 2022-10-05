@@ -272,19 +272,17 @@ export default class AvonniCard extends LightningElement {
      */
     get computedCardClasses() {
         return classSet(
-            'avonni-card__body-container slds-grid slds-is-relative slds-scrollable_none slds-scrollable_none slds-col'
+            'avonni-card__body-container avonni-height_full slds-grid slds-is-relative slds-col'
         )
             .add({
-                'avonni-card__media-top slds-grid_vertical avonni-card__media-top-left-radius avonni-card__media-top-right-radius':
+                'avonni-card__media-top slds-grid_vertical':
                     this.mediaPosition === 'top'
             })
             .add({
-                'avonni-card__media-left avonni-card__media-top-left-radius':
-                    this.mediaPosition === 'left'
+                'avonni-card__media-left': this.mediaPosition === 'left'
             })
             .add({
-                'avonni-card__media-right avonni-card__media-top-right-radius':
-                    this.mediaPosition === 'right'
+                'avonni-card__media-right': this.mediaPosition === 'right'
             })
             .add({
                 'slds-grid_vertical avonni-card__media-center':
@@ -294,15 +292,37 @@ export default class AvonniCard extends LightningElement {
                 'slds-grid_vertical-reverse': this.mediaPosition === 'bottom'
             })
             .add({
-                'avonni-card__media-top-left-radius avonni-card__media-top-right-radius':
-                    this.mediaPosition === 'center' && !this.hasHeader
-            })
-            .add({
-                'avonni-card__media-background avonni-card__media-top-left-radius avonni-card__media-top-right-radius':
+                'avonni-card__media-background':
                     this.mediaPosition === 'background'
             })
             .add({
-                'avonni-card__media-overlay avonni-card__media-top-left-radius avonni-card__media-top-right-radius':
+                'avonni-card__media-overlay ': this.mediaPosition === 'overlay'
+            });
+    }
+
+    /**
+     * In background and overlay variants, the dark background overlay needs round corners.
+     *
+     * @type {string}
+     */
+    get computedMediaRadius() {
+        return classSet('avonni-card__media-border-radius')
+            .add({
+                'avonni-card__media-top avonni-card__media-top-left-radius avonni-card__media-top-right-radius':
+                    this.mediaPosition === 'top' ||
+                    (this.mediaPosition === 'center' && !this.hasHeader)
+            })
+            .add({
+                'avonni-card__media-border-right avonni-card__media-top-left-radius':
+                    this.mediaPosition === 'left'
+            })
+            .add({
+                'avonni-card__media-border-left avonni-card__media-top-right-radius':
+                    this.mediaPosition === 'right'
+            })
+            .add({
+                'avonni-card__media-top-left-radius avonni-card__media-top-right-radius':
+                    this.mediaPosition === 'background' ||
                     this.mediaPosition === 'overlay'
             })
             .add({
@@ -327,6 +347,23 @@ export default class AvonniCard extends LightningElement {
             })
             .toString();
     }
+    /**
+     * In background and overlay variants, the dark background overlay needs round corners.
+     *
+     * @type {string}
+     */
+    get computedContentClasses() {
+        return classSet(
+            'slds-has-flexi-truncate avonni-card__content-container'
+        )
+            .add({
+                'avonni-card__media-bottom-left-radius avonni-card__media-bottom-right-radius avonni-card__media-top-left-radius avonni-card__media-top-right-radius ':
+                    !this.showFooterSlot &&
+                    (this.mediaPosition === 'background' ||
+                        this.mediaPosition === 'overlay')
+            })
+            .toString();
+    }
 
     /**
      * Media container classes
@@ -340,13 +377,8 @@ export default class AvonniCard extends LightningElement {
             .add({
                 'avonni-card__media-border-bottom': this.mediaHasBottomBorder
             })
-            .add({ 'avonni-card__media-border-top': this.mediaHasTopBorder })
             .add({
-                'avonni-card__media-border-left': this.mediaPosition === 'right'
-            })
-            .add({
-                'avonni-card__media-border-right': this.mediaPosition === 'left'
-            })
-            .toString();
+                'avonni-card__media-border-top': this.mediaHasTopBorder
+            });
     }
 }

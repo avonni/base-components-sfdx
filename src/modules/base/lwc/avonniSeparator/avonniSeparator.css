@@ -48,8 +48,7 @@
     border-style: var(--avonni-separator-styling-border, solid);
 }
 
-.avonni-separator__line-one.slds-border_left,
-.avonni-separator__line-two.slds-border_left {
+.avonni-separator__lines_styling.slds-border_left {
     height: 100%;
 }
 

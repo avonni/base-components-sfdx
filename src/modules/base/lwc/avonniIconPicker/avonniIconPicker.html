@@ -52,6 +52,7 @@
         </lightning-helptext>
         <div class="avonni-builder-icon-picker-flex">
             <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                <!-- Button menu -->
                 <button
                     id="toggleMenuButton"
                     class={computedButtonClass}
@@ -117,205 +118,210 @@
                     >
                     </lightning-icon>
                 </button>
-                <template if:true={iconMenuOpened}>
-                    <div
-                        class="
-                            slds-m-top_x-small
-                            slds-dropdown slds-dropdown_left
-                        "
-                        tabindex="0"
-                        onmouseenter={handleMenuMouseEnter}
-                        onmouseleave={handleMenuMouseLeave}
-                        onkeydown={handleMenuKeydown}
-                        onkeyup={handleMenuKeyup}
-                        onblur={handleMenuBlur}
+
+                <!-- Dropdown -->
+                <div
+                    if:true={iconMenuOpened}
+                    tabindex="0"
+                    onfocusin={handleMenuFocusIn}
+                    onfocusout={handleMenuFocusOut}
+                >
+                    <lightning-focus-trap
+                        data-element-id="lightning-focus-trap"
                     >
-                        <lightning-input
-                            type="search"
-                            class="
-                                slds-p-top_x-small
-                                slds-p-horizontal_x-small
-                                slds-align_absolute-center
-                            "
-                            label="Search"
-                            placeholder="Type icon name to search"
-                            variant="label-hidden"
-                            data-element-id="lightning-input"
-                            onchange={handleSearchInput}
-                            onblur={handleSearchInputBlur}
-                        >
-                        </lightning-input>
                         <div
                             class="
-                                slds-popover__body
-                                avonni-builder-icon-picker-popover-width
-                                slds-p-horizontal_xx-small
+                                slds-m-top_x-small
+                                slds-dropdown slds-dropdown_left
+                                slds-p-bottom_none
                             "
+                            onclick={handleMenuClick}
+                            onkeydown={handleMenuKeydown}
                         >
-                            <div class="slds-tabs_default">
-                                <c-avonni-tab-bar
-                                    if:false={hideTabs}
-                                    labels={allTabs}
-                                    tabs-hidden={nHiddenCategories}
-                                    default-tab={defaultTab}
-                                    data-element-id="avonni-builder-tab-bar"
-                                    onselect={handleTabClick}
-                                    onblur={handleMenuBlur}
-                                >
-                                </c-avonni-tab-bar>
-                                <div
-                                    class="
-                                        slds-tabs_default__content
-                                        slds-p-bottom_none
-                                    "
-                                >
+                            <lightning-input
+                                type="search"
+                                class="
+                                    slds-p-top_x-small
+                                    slds-p-horizontal_x-small
+                                    slds-align_absolute-center
+                                "
+                                label="Search"
+                                placeholder="Type icon name to search"
+                                variant="label-hidden"
+                                data-element-id="lightning-input"
+                                onchange={handleSearchInput}
+                                onclick={stopPropagation}
+                            ></lightning-input>
+                            <div
+                                class="
+                                    slds-popover__body
+                                    avonni-builder-icon-picker-popover-width
+                                    slds-p-horizontal_xx-small
+                                "
+                            >
+                                <div class="slds-tabs_default">
+                                    <c-avonni-tab-bar
+                                        if:false={hideTabs}
+                                        class="slds-col"
+                                        labels={allTabs}
+                                        tabs-hidden={nHiddenCategories}
+                                        default-tab={defaultTab}
+                                        data-element-id="avonni-builder-tab-bar"
+                                        onclick={stopPropagation}
+                                        onselect={handleTabSelect}
+                                    ></c-avonni-tab-bar>
                                     <div
                                         class="
-                                            avonni-builder-icon-picker-icon-container
-                                            slds-scrollable_y
-                                            slds-p-left_xx-small
+                                            slds-tabs_default__content
+                                            slds-p-bottom_none
                                         "
                                     >
-                                        <template
-                                            for:each={tabContent}
-                                            for:item="tab"
+                                        <div
+                                            class="
+                                                avonni-builder-icon-picker-icon-container
+                                                slds-scrollable_y
+                                                slds-p-left_xx-small
+                                            "
                                         >
-                                            <div
-                                                if:true={tab.showLabel}
-                                                key={tab.title}
-                                                class="
-                                                    slds-text-heading_small
-                                                    slds-m-left_small
-                                                    slds-p-bottom_x-small
-                                                "
-                                            >
-                                                <strong>{tab.title}</strong>
-                                            </div>
                                             <template
-                                                if:true={tab.showIcons}
-                                                for:each={tab.icons}
-                                                for:item="icon"
+                                                for:each={tabContent}
+                                                for:item="tab"
                                             >
-                                                <li
-                                                    key={icon.value}
+                                                <div
+                                                    if:true={tab.showLabel}
+                                                    key={tab.title}
                                                     class="
-                                                        slds-color-picker__swatch
+                                                        slds-text-heading_small
+                                                        slds-m-left_small
+                                                        slds-p-bottom_x-small
                                                     "
-                                                    role="presentation"
                                                 >
-                                                    <a
+                                                    <strong>{tab.title}</strong>
+                                                </div>
+                                                <template
+                                                    if:true={tab.showIcons}
+                                                    for:each={tab.icons}
+                                                    for:item="icon"
+                                                >
+                                                    <li
+                                                        key={icon.value}
                                                         class="
-                                                            slds-color-picker__swatch-trigger
+                                                            slds-color-picker__swatch
                                                         "
-                                                        href="javascript:void(0)"
-                                                        is-disabled={disabled}
-                                                        read-only={readOnly}
-                                                        role="option"
-                                                        tabindex="0"
-                                                        data-element-id="a-color"
-                                                        data-icon={icon.value}
-                                                        onblur={handleMenuBlur}
-                                                        onkeydown={handleSelectIconFromKeyboard}
+                                                        role="presentation"
                                                     >
-                                                        <span
+                                                        <a
                                                             class="
-                                                                slds-icon_container
+                                                                slds-color-picker__swatch-trigger
                                                             "
+                                                            href="javascript:void(0)"
+                                                            is-disabled={disabled}
+                                                            read-only={readOnly}
+                                                            role="option"
+                                                            tabindex="0"
+                                                            data-element-id="a-color"
+                                                            data-icon={icon.value}
+                                                            onclick={stopPropagation}
+                                                            onkeydown={handleSelectIconFromKeyboard}
                                                         >
-                                                            <lightning-icon
-                                                                icon-name={icon.value}
-                                                                title={icon.title}
-                                                                size="small"
-                                                                data-element-id="lightning-icon-color"
-                                                                data-icon={icon.value}
-                                                                onclick={handleSelectIcon}
+                                                            <span
+                                                                class="
+                                                                    slds-icon_container
+                                                                "
                                                             >
-                                                            </lightning-icon>
-                                                            <div
-                                                                title={icon.value}
-                                                            ></div>
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            </template>
-                                            <template
-                                                if:true={tab.showIconsExtended}
-                                                for:each={tab.iconsExtended}
-                                                for:item="icon"
-                                            >
-                                                <li
-                                                    key={icon.value}
-                                                    class="
-                                                        slds-color-picker__swatch
-                                                    "
-                                                    role="presentation"
+                                                                <lightning-icon
+                                                                    icon-name={icon.value}
+                                                                    title={icon.title}
+                                                                    size="small"
+                                                                    data-element-id="lightning-icon-color"
+                                                                    data-icon={icon.value}
+                                                                    onclick={handleSelectIcon}
+                                                                >
+                                                                </lightning-icon>
+                                                                <div
+                                                                    title={icon.value}
+                                                                ></div>
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                </template>
+                                                <template
+                                                    if:true={tab.showIconsExtended}
+                                                    for:each={tab.iconsExtended}
+                                                    for:item="icon"
                                                 >
-                                                    <a
+                                                    <li
+                                                        key={icon.value}
                                                         class="
-                                                            slds-color-picker__swatch-trigger
+                                                            slds-color-picker__swatch
                                                         "
-                                                        href="javascript:void(0)"
-                                                        is-disabled={disabled}
-                                                        read-only={readOnly}
-                                                        role="option"
-                                                        tabindex="0"
-                                                        onblur={handleMenuBlur}
-                                                        onkeydown={handleSelectIconFromKeyboard}
+                                                        role="presentation"
                                                     >
-                                                        <span
+                                                        <a
                                                             class="
-                                                                slds-icon_container
+                                                                slds-color-picker__swatch-trigger
                                                             "
+                                                            href="javascript:void(0)"
+                                                            is-disabled={disabled}
+                                                            read-only={readOnly}
+                                                            role="option"
+                                                            tabindex="0"
+                                                            onclick={stopPropagation}
+                                                            onkeydown={handleSelectIconFromKeyboard}
                                                         >
-                                                            <lightning-icon
-                                                                icon-name={icon.value}
-                                                                title={icon.title}
-                                                                size="small"
-                                                                data-icon={icon.value}
-                                                                onclick={handleSelectIcon}
-                                                            ></lightning-icon>
-                                                            <div
-                                                                title={icon.value}
-                                                            ></div>
-                                                        </span>
-                                                    </a>
-                                                </li>
+                                                            <span
+                                                                class="
+                                                                    slds-icon_container
+                                                                "
+                                                            >
+                                                                <lightning-icon
+                                                                    icon-name={icon.value}
+                                                                    title={icon.title}
+                                                                    size="small"
+                                                                    data-icon={icon.value}
+                                                                    onclick={handleSelectIcon}
+                                                                ></lightning-icon>
+                                                                <div
+                                                                    title={icon.value}
+                                                                ></div>
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                </template>
+                                                <div
+                                                    if:true={tab.showLabel}
+                                                    key={tab.title}
+                                                    class="slds-p-bottom_small"
+                                                ></div>
                                             </template>
-                                            <div
-                                                if:true={tab.showLabel}
-                                                key={tab.title}
-                                                class="slds-p-bottom_small"
-                                            ></div>
-                                        </template>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <footer
+                                if:false={hideFooter}
+                                class="slds-popover__footer"
+                            >
+                                <div class="slds-color-picker__selector-footer">
+                                    <lightning-button
+                                        label="Cancel"
+                                        title="Cancel"
+                                        data-element-id="lightning-button-cancel"
+                                        onclick={handleCancel}
+                                    ></lightning-button>
+                                    <lightning-button
+                                        variant="brand"
+                                        class="slds-m-left_x-small"
+                                        label="Done"
+                                        title="Done"
+                                        data-element-id="lightning-button-done"
+                                        onclick={handleDone}
+                                    ></lightning-button>
+                                </div>
+                            </footer>
                         </div>
-                        <footer
-                            if:false={hideFooter}
-                            class="slds-popover__footer"
-                        >
-                            <div class="slds-color-picker__selector-footer">
-                                <lightning-button
-                                    label="Cancel"
-                                    title="Cancel"
-                                    data-element-id="lightning-button-cancel"
-                                    onclick={handleCancel}
-                                    onblur={handleMenuBlur}
-                                ></lightning-button>
-                                <lightning-button
-                                    variant="brand"
-                                    class="slds-m-left_x-small"
-                                    label="Done"
-                                    title="Done"
-                                    data-element-id="lightning-button-done"
-                                    onclick={handleDone}
-                                    onblur={handleDoneButtonBlur}
-                                ></lightning-button>
-                            </div>
-                        </footer>
-                    </div>
-                </template>
+                    </lightning-focus-trap>
+                </div>
             </div>
             <div
                 if:true={showInputText}

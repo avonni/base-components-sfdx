@@ -30,9 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.avonni-height_full {
+    height: 100%;
+}
+
 /* outer card */
 
 article.avonni-card {
+    height: 100%;
     background-color: var(--avonni-card-color-background, white);
     color: var(--avonni-card-text-color);
 
@@ -55,6 +60,13 @@ article.avonni-card {
 .avonni-card__media-container {
     flex: 0 1 auto;
 }
+
+.avonni-card__media-border-radius {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
 .avonni-card__media-center .avonni-card__content-container {
     order: -1;
 }
@@ -74,8 +86,8 @@ article.avonni-card {
         --avonni-card-background-media-overlay-background,
         linear-gradient(
             0deg,
-            rgba(0, 0, 0, 0.5) 0%,
-            rgba(0, 0, 0, 0.25) 75%,
+            rgba(0, 0, 0, 0.7) 0%,
+            rgba(0, 0, 0, 0.55) 75%,
             rgba(0, 0, 0, 0) 100%
         )
     );
@@ -93,8 +105,8 @@ article.avonni-card {
         --avonni-card-overlay-media-overlay-background,
         linear-gradient(
             0deg,
-            rgba(0, 0, 0, 0.5) 0%,
-            rgba(0, 0, 0, 0.25) 75%,
+            rgba(0, 0, 0, 0.7) 0%,
+            rgba(0, 0, 0, 0.55) 75%,
             rgba(0, 0, 0, 0) 100%
         )
     );

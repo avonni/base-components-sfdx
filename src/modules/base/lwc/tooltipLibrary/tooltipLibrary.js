@@ -31,12 +31,7 @@
  */
 
 import { AutoPosition, Direction } from 'c/positionLibrary';
-import {
-    assert,
-    guid,
-    normalizeAriaAttribute,
-    normalizeString
-} from 'c/utilsPrivate';
+import { guid, normalizeAriaAttribute, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 
 export { Direction } from 'c/positionLibrary';
@@ -189,7 +184,9 @@ export class Tooltip {
      * @param {object} config specifies the root component, target element of the tooltip
      */
     constructor(value, config) {
-        assert(config.target, 'target for tooltip is undefined or missing');
+        if (!config.target) {
+            console.warn('target for tooltip is undefined or missing');
+        }
 
         this.value = value;
 

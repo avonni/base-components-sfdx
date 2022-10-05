@@ -547,7 +547,7 @@ export default class AvonniAvatarGroup extends LightningElement {
     get showMoreSectionClass() {
         return classSet({
             'slds-grid slds-grid_vertical-reverse': this.layout === 'list',
-            'slds-show_inline': this.layout !== 'list'
+            'slds-show_inline slds-is-relative': this.layout !== 'list'
         }).toString();
     }
 
@@ -647,7 +647,7 @@ export default class AvonniAvatarGroup extends LightningElement {
             item = this.listHiddenItems[itemId];
         }
 
-        if (item.showMore) {
+        if (item.showMore && !this.showPopover) {
             this.showPopover = true;
             this.template.querySelector('.slds-dropdown-trigger').focus();
             this.allowBlur();

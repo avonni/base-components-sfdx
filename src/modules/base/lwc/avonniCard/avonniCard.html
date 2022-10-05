@@ -44,16 +44,18 @@
                 class={computedMediaClasses}
                 data-element-id="avonni-card-media-container"
             >
-                <img
-                    if:true={mediaSrc}
-                    src={mediaSrc}
-                    class="avonni-card__media"
-                    alt="card media"
-                    data-element-id="avonni-card-media-image"
-                />
+                <div class={computedMediaRadius}>
+                    <img
+                        if:true={mediaSrc}
+                        src={mediaSrc}
+                        class="avonni-card__media"
+                        alt="card media"
+                        data-element-id="avonni-card-media-image"
+                    />
 
-                <div if:true={showMediaSlot}>
-                    <slot name="media"></slot>
+                    <div if:true={showMediaSlot} class="avonni-height_full">
+                        <slot name="media" class="avonni-height_full"></slot>
+                    </div>
                 </div>
 
                 <div class="avonni-card__media-action">
@@ -62,7 +64,7 @@
             </div>
 
             <!-- title and actions -->
-            <div class="slds-has-flexi-truncate avonni-card__content-container">
+            <div class={computedContentClasses}>
                 <header
                     class="
                         slds-has-flexi-truncate
