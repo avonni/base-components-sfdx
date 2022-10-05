@@ -1,13 +1,3 @@
-.avonni-combobox__main-combobox:not(.avonni-combobox__main-combobox_no-scopes) {
-    --avonni-combobox-input-radius-border-top-left: 0;
-    --avonni-combobox-input-radius-border-bottom-left: 0;
-}
-
-.avonni-combobox__scopes {
-    --avonni-combobox-input-radius-border-bottom-right: 0;
-    --avonni-combobox-input-radius-border-top-right: 0;
-}
-
 .avonni-combobox__label {
     color: var(--avonni-combobox-label-text-color, #3e3e3c);
     font-size: var(--avonni-combobox-label-font-size, 0.75rem);

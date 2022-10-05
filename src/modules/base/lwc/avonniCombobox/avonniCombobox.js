@@ -643,12 +643,10 @@ export default class AvonniCombobox extends LightningElement {
      * @type {string}
      */
     get computedMainComboboxClass() {
-        return classSet('avonni-combobox__main-combobox')
-            .add({
-                'slds-combobox-addon_end slds-col': this.showScopes,
-                'avonni-combobox__main-combobox_no-scopes': !this.showScopes
-            })
-            .toString();
+        return classSet({
+            'slds-combobox-addon_end slds-col avonni-combobox__main-combobox_scopes':
+                this.showScopes
+        }).toString();
     }
 
     /**
