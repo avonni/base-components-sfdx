@@ -199,10 +199,10 @@ export default class AvonniActivityTimeline extends LightningElement {
         }
 
         if (this._redrawHorizontalTimeline) {
-            this.horizontalTimeline.maxVisibleItems = this._maxVisibleItems;
-            this.horizontalTimeline.clientWidth =  this.divHorizontalTimeline.clientWidth;
             this.horizontalTimeline.createHorizontalActivityTimeline(
-                this.sortedItems
+                this.sortedItems,
+                this._maxVisibleItems,
+                this.divHorizontalTimeline.clientWidth
             );
             this._redrawHorizontalTimeline = false;
         }

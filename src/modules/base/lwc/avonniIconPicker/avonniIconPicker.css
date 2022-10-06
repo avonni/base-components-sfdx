@@ -66,8 +66,8 @@ button:disabled {
     background-color: #ecebea;
 }
 
-.avonni-builder-icon-picker-input-container {
-    width: 17rem;
+.avonni-icon-picker__icon {
+    margin-right: 0.25rem;
 }
 
 .avonni-builder-icon-picker-icon-container {

@@ -124,7 +124,6 @@ export class HorizontalActivityTimeline {
 		.then(() => {
 			this._d3Loaded = true; 
 			this.setDefaultIntervalDates(); 
-            this.createHorizontalActivityTimeline(sortedItems);
 		})
 		 .catch((error) => { 
 			this.dispatchEvent( 
@@ -140,18 +139,20 @@ export class HorizontalActivityTimeline {
     /**
      * Create horizontal view timeline
      */
-    createHorizontalActivityTimeline(sortedItems) {
+    createHorizontalActivityTimeline(sortedItems, maxVisibleItems, width) {
+        
 		 if (this._d3Loaded) {
 			this.resetHorizontalTimeline();
-            this.addValidItemsToData(sortedItems);
+        this.addValidItemsToData(sortedItems);
+        this._maxVisibleItems = maxVisibleItems;
 
-            this.setTimelineWidth(this.clientWidth);
-            this.createTimelineScrollAxis();
-            this.createTimelineAxis();
-            this.createTimeline();
-            
-            this.initializeIntervalHorizontalScroll();  
-        }
+        this.setTimelineWidth(width);
+        this.createTimelineScrollAxis();
+        this.createTimelineAxis();
+        this.createTimeline();
+        
+		this.initializeIntervalHorizontalScroll();  
+		}
     }
 
     /*
