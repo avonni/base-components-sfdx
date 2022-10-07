@@ -37,6 +37,7 @@
     background-color: #ffffff;
     border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
 }
+
 .avonni-input-pen__text-area_cursor {
     cursor: auto;
 }
@@ -66,7 +67,16 @@
     width: 80px;
 }
 
-.avonni-input-pen__label-container label {
+.avonni-input-pen__label {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    display: inline-block;
+    padding-right: var(--lwc-spacingXSmall, 0.5rem);
+    padding-top: var(--lwc-spacingXxSmall, 0.25rem);
+    margin-bottom: var(--lwc-spacingXxxSmall, 0.125rem);
     color: var(--avonni-input-pen-header-text-color, #3e3e3c);
     font-size: var(--avonni-input-pen-header-font-size, 0.75rem);
     font-weight: var(--avonni-input-pen-header-font-weight, 400);

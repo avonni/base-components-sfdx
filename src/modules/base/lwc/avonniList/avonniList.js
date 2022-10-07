@@ -874,10 +874,11 @@ export default class AvonniList extends LightningElement {
      * Only enable scrolling if enable or has been used
      */
     get computedListContainerClass() {
-        return classSet('slds-grid slds-col').add({
+        return classSet({
+            'slds-grid slds-col': this.variant === 'single-line',
             'slds-scrollable_y':
                 this._hasUsedInfiniteLoading && this.variant === 'base'
-        });
+        }).toString();
     }
 
     /*

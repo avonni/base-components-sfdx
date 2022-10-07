@@ -155,20 +155,22 @@
                                 </template>
                             </span>
                         </span>
-                        <span
-                            if:false={isCoverable}
-                            class="
-                                slds-icon_container
-                                slds-visual-picker__text-check
-                            "
-                        >
-                            <lightning-icon
-                                icon-name="utility:check"
-                                size="x-small"
-                                class="slds-icon-text-check"
-                                variant="inverse"
-                            ></lightning-icon>
-                        </span>
+                        <template if:true={item.isChecked}>
+                            <span
+                                if:false={isCoverable}
+                                class="
+                                    slds-icon_container
+                                    slds-visual-picker__text-check
+                                "
+                            >
+                                <lightning-icon
+                                    icon-name="utility:check"
+                                    size="x-small"
+                                    class="slds-icon-text-check"
+                                    variant="inverse"
+                                ></lightning-icon>
+                            </span>
+                        </template>
                     </label>
                 </div>
             </template>

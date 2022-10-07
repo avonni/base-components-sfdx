@@ -556,9 +556,19 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return this._value;
     }
     set value(value) {
-        this._value =
-            typeof value === 'string' ? [value] : normalizeArray(value);
-        if (this._connected) this.initValue();
+        if (typeof value === 'string') {
+            if (value.length > 0) {
+                this._value = [value];
+            } else if (value.length === 0) {
+                this._value = [];
+            }
+        } else {
+            this._value = normalizeArray(value);
+        }
+
+        if (this._connected) {
+            this.initValue();
+        }
     }
 
     /**
@@ -1882,6 +1892,8 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @param {number[]} levelPath Array of level indexes to get to the option.
      */
     dispatchChange(action, levelPath) {
+        this.reportValidity();
+
         /**
          * The event fired when an option is selected or unselected.
          *

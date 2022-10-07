@@ -310,6 +310,7 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
             const alternativeText = avatar
                 ? avatar.alternativeText || avatar.iconName || avatar.initials
                 : '';
+            const isChecked = this._value.indexOf(value) > -1;
             return {
                 key,
                 avatar,
@@ -323,7 +324,8 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
                 mediaIsRight,
                 bodyClass,
                 descriptionClass,
-                alternativeText
+                alternativeText,
+                isChecked
             };
         });
     }
