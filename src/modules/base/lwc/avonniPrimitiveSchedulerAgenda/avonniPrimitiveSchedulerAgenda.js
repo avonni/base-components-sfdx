@@ -41,7 +41,7 @@ import {
     nextAllowedMonth,
     spansOnMoreThanOneDay,
     ScheduleBase
-} from 'c/schedulerUtils';
+} from 'c/avonniSchedulerUtils';
 import DayGroup from './avonniDayGroup';
 import { classSet } from 'c/utils';
 

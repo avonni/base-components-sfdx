@@ -43,7 +43,7 @@ import {
     normalizeObject,
     normalizeString
 } from 'c/utilsPrivate';
-import { isAllDay, spansOnMoreThanOneDay } from 'c/schedulerUtils';
+import { isAllDay, spansOnMoreThanOneDay } from 'c/avonniSchedulerUtils';
 import disabled from './avonniDisabled.html';
 import eventOccurrence from './avonniEventOccurrence.html';
 import referenceLine from './avonniReferenceLine.html';

@@ -48,7 +48,7 @@ import {
     previousAllowedDay,
     previousAllowedMonth,
     previousAllowedTime
-} from 'c/schedulerUtils';
+} from 'c/avonniSchedulerUtils';
 import { classSet, generateUUID } from 'c/utils';
 import {
     EDIT_MODES,

@@ -54,7 +54,7 @@ import {
     spansOnMoreThanOneDay,
     updateOccurrencesOffset,
     updateOccurrencesPosition
-} from 'c/schedulerUtils';
+} from 'c/avonniSchedulerUtils';
 import { AvonniResizeObserver } from 'c/resizeObserver';
 
 const CELL_SELECTOR = '[data-element-id="div-cell"]';

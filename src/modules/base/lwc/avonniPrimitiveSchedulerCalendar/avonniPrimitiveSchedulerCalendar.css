@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-@import 'c/schedulerSharedStyle';
+@import 'c/avonniSchedulerSharedStyle';
 
 .avonni-scheduler__wrapper {
     max-height: 100%;

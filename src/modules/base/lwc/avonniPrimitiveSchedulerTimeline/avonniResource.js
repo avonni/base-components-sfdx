@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { SchedulerCellGroup } from 'c/schedulerUtils';
+import { SchedulerCellGroup } from 'c/avonniSchedulerUtils';
 
 export default class AvonniSchedulerResource extends SchedulerCellGroup {
     constructor(props) {

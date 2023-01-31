@@ -40,7 +40,7 @@ import {
     nextAllowedDay,
     nextAllowedMonth,
     nextAllowedTime
-} from 'c/schedulerUtils';
+} from 'c/avonniSchedulerUtils';
 
 /**
  * Represent one row of the scheduler header group.

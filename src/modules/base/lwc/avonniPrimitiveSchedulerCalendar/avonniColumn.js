@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { SchedulerCellGroup } from 'c/schedulerUtils';
+import { SchedulerCellGroup } from 'c/avonniSchedulerUtils';
 import { dateTimeObjectFrom, normalizeArray } from 'c/utilsPrivate';
 
 /**
