@@ -306,7 +306,7 @@ export default class AvonniSplitter extends LightningElement {
         this.template
             .querySelectorAll('.splitter-orientation-horizontal')
             .forEach((element) => {
-                element.style.height = `${element.offsetHeight}px`;
+                element.style.height = '100%';
             });
 
         this.listenerOnMouseUp = this.onMouseUp.bind(this);
@@ -386,6 +386,10 @@ export default class AvonniSplitter extends LightningElement {
      * @param {Event} event
      */
     onMouseDown(event) {
+        if (event.button) {
+            return;
+        }
+
         let selectedSeparator = event.target;
 
         if (selectedSeparator.className.indexOf('icon') > -1) {

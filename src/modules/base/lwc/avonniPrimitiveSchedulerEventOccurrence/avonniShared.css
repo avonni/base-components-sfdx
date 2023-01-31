@@ -31,7 +31,55 @@
  */
 
 :host {
-    position: absolute;
     top: 0;
+    left: 0;
     user-select: none;
+}
+
+.avonni-primitive-scheduler-event-occurrence__flex-col {
+    flex: 1 1 auto;
+}
+
+.avonni-scheduler__event-dot-chip {
+    min-height: var(
+        --avonni-primitive-scheduler-event-occurrence-standalone-chip-size,
+        8px
+    );
+    min-width: var(
+        --avonni-primitive-scheduler-event-occurrence-standalone-chip-size,
+        8px
+    );
+    border-radius: 50%;
+}
+
+.avonni-scheduler__event-dot-time {
+    font-size: 0.75rem;
+    font-weight: 300;
+}
+
+.avonni-scheduler__event_standalone-multi-day-starts-in-previous-cell::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #fff;
+    border-style: solid;
+    border-width: 9px 9px 9px 0;
+    border-color: transparent
+        var(--avonni-primitive-scheduler-event-occurrence-background-color)
+        transparent transparent;
+}
+
+.avonni-scheduler__event_standalone-multi-day-ends-in-later-cell::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #fff;
+    border-style: solid;
+    border-width: 9px 0 9px 9px;
+    border-color: transparent transparent transparent
+        var(--avonni-primitive-scheduler-event-occurrence-background-color);
 }

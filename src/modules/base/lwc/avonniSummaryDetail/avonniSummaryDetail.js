@@ -190,7 +190,7 @@ export default class AvonniSummaryDetail extends LightningElement {
      */
     get titleClass() {
         return classSet('avonni-summary-detail_min-width').add({
-            'slds-col': this.fullWidth
+            'avonni-summary-detail__flex-col': this.fullWidth
         });
     }
 
@@ -201,7 +201,7 @@ export default class AvonniSummaryDetail extends LightningElement {
      */
     get bodyClass() {
         return classSet('avonni-summary-detail_min-width').add({
-            'slds-col': this.fullWidth
+            'avonni-summary-detail__flex-col': this.fullWidth
         });
     }
 

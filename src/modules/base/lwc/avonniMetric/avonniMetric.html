@@ -47,7 +47,7 @@
             data-element-id="avonni-avatar"
         ></c-avonni-avatar>
 
-        <div class="slds-col">
+        <div class="avonni-metric__flex-col">
             <!-- Label -->
             <div
                 if:true={label}
@@ -56,52 +56,51 @@
             >
                 {label}
             </div>
-            <div
-                class="
-                    slds-grid slds-grid_vertical-align-end
-                    avonni-metric__primary-and-secondary-wrapper
-                "
-            >
+            <div class={metricsClass} data-element-id="div-metrics">
                 <!-- Primary -->
-                <c-avonni-primitive-metric
-                    class={primaryClass}
-                    currency-code={currencyCode}
-                    currency-display-as={currencyDisplayAs}
-                    format-style={formatStyle}
-                    maximum-fraction-digits={maximumFractionDigits}
-                    maximum-significant-digits={maximumSignificantDigits}
-                    minimum-fraction-digits={minimumFractionDigits}
-                    minimum-integer-digits={minimumIntegerDigits}
-                    minimum-significant-digits={minimumSignificantDigits}
-                    prefix={prefix}
-                    suffix={suffix}
-                    trend-breakpoint-value={trendBreakpointValue}
-                    trend-icon={trendIcon}
-                    value={value}
-                    value-sign={valueSign}
-                    data-element-id="avonni-primitive-metric-primary"
-                ></c-avonni-primitive-metric>
+                <div>
+                    <c-avonni-primitive-metric
+                        class={primaryClass}
+                        currency-code={currencyCode}
+                        currency-display-as={currencyDisplayAs}
+                        format-style={formatStyle}
+                        maximum-fraction-digits={maximumFractionDigits}
+                        maximum-significant-digits={maximumSignificantDigits}
+                        minimum-fraction-digits={minimumFractionDigits}
+                        minimum-integer-digits={minimumIntegerDigits}
+                        minimum-significant-digits={minimumSignificantDigits}
+                        prefix={prefix}
+                        suffix={suffix}
+                        trend-breakpoint-value={trendBreakpointValue}
+                        trend-icon={trendIcon}
+                        value={value}
+                        value-sign={valueSign}
+                        data-element-id="avonni-primitive-metric-primary"
+                    ></c-avonni-primitive-metric>
+                </div>
 
                 <!-- Secondary -->
-                <c-avonni-primitive-metric
-                    if:true={showSecondaryMetric}
-                    class={secondaryClass}
-                    currency-code={secondaryCurrencyCode}
-                    currency-display-as={secondaryCurrencyDisplayAs}
-                    format-style={secondaryFormatStyle}
-                    maximum-fraction-digits={secondaryMaximumFractionDigits}
-                    maximum-significant-digits={secondaryMaximumSignificantDigits}
-                    minimum-fraction-digits={secondaryMinimumFractionDigits}
-                    minimum-integer-digits={secondaryMinimumIntegerDigits}
-                    minimum-significant-digits={secondaryMinimumSignificantDigits}
-                    prefix={secondaryPrefix}
-                    suffix={secondarySuffix}
-                    trend-breakpoint-value={secondaryTrendBreakpointValue}
-                    trend-icon={secondaryTrendIcon}
-                    value={secondaryValue}
-                    value-sign={secondaryValueSign}
-                    data-element-id="avonni-primitive-metric-secondary"
-                ></c-avonni-primitive-metric>
+                <div class="avonni-metric__secondary-wrapper">
+                    <c-avonni-primitive-metric
+                        if:true={showSecondaryMetric}
+                        class={secondaryClass}
+                        currency-code={secondaryCurrencyCode}
+                        currency-display-as={secondaryCurrencyDisplayAs}
+                        format-style={secondaryFormatStyle}
+                        maximum-fraction-digits={secondaryMaximumFractionDigits}
+                        maximum-significant-digits={secondaryMaximumSignificantDigits}
+                        minimum-fraction-digits={secondaryMinimumFractionDigits}
+                        minimum-integer-digits={secondaryMinimumIntegerDigits}
+                        minimum-significant-digits={secondaryMinimumSignificantDigits}
+                        prefix={secondaryPrefix}
+                        suffix={secondarySuffix}
+                        trend-breakpoint-value={secondaryTrendBreakpointValue}
+                        trend-icon={secondaryTrendIcon}
+                        value={secondaryValue}
+                        value-sign={secondaryValueSign}
+                        data-element-id="avonni-primitive-metric-secondary"
+                    ></c-avonni-primitive-metric>
+                </div>
             </div>
             <!-- Description -->
             <div

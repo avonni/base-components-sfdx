@@ -138,14 +138,16 @@ export default class AvonniProfileCard extends LightningElement {
                 this.showActions &&
                 this._avatarPosition.indexOf('right') > -1
             ) {
-                let actionsContainer =
-                    this.template.querySelector('.avonni-actions');
+                let actionsContainer = this.template.querySelector(
+                    '[data-element-id="avonni-actions"]'
+                );
                 actionsContainer.classList.add(
                     'avonni-profile-card__actions-left'
                 );
             } else {
-                let actionsContainer =
-                    this.template.querySelector('.avonni-actions');
+                let actionsContainer = this.template.querySelector(
+                    '[data-element-id="avonni-actions"]'
+                );
                 actionsContainer.classList.add(
                     'avonni-profile-card__actions-right'
                 );
@@ -154,13 +156,19 @@ export default class AvonniProfileCard extends LightningElement {
                 this.showActions &&
                 this._avatarMobilePosition.indexOf('right') > -1
             ) {
-                let actionsContainer =
-                    this.template.querySelector('.avonni-actions');
-                actionsContainer.classList.add('avonni-mobile-actions-left');
+                let actionsContainer = this.template.querySelector(
+                    '[data-element-id="avonni-actions"]'
+                );
+                actionsContainer.classList.add(
+                    'avonni-profile-card__actions-left'
+                );
             } else {
-                let actionsContainer =
-                    this.template.querySelector('.avonni-actions');
-                actionsContainer.classList.add('avonni-mobile-actions-right');
+                let actionsContainer = this.template.querySelector(
+                    '[data-element-id="avonni-actions"]'
+                );
+                actionsContainer.classList.add(
+                    'avonni-profile-card__actions-right'
+                );
             }
         }
 
@@ -364,7 +372,7 @@ export default class AvonniProfileCard extends LightningElement {
             .add({
                 'avonni-profile-card__avatar-img-circle':
                     this._avatarVariant === 'circle',
-                'avonni-profile-card__icon-container': this.isError
+                'slds-align_absolute-center': this.isError
             })
             .toString();
     }

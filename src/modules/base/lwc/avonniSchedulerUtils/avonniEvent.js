@@ -31,15 +31,17 @@
  */
 
 import {
+    deepCopy,
     normalizeArray,
     normalizeBoolean,
     normalizeString,
     addToDate,
-    containsAllowedDateTimes,
     dateTimeObjectFrom
 } from 'c/utilsPrivate';
 import { generateUUID } from 'c/utils';
-import { DateTime, Interval } from 'c/luxon';
+import { Interval } from 'c/luxon';
+import { SchedulerEventOccurrence } from './avonniEventOccurrence';
+import { containsAllowedDateTimes } from './avonniDateComputations';
 import {
     DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK,
     DEFAULT_AVAILABLE_MONTHS,
@@ -92,9 +94,13 @@ import {
  *
  * @param {DateTime} schedulerStart Starting date of the scheduler.
  *
+ * @param {string[]} selectedResources Array of selected resources name. If present, only the occurrences belonging to these resources will be created.
+ *
  * @param {SchedulerHeader} smallestHeader Required. Scheduler header with the smallest unit.
  *
  * @param {string} theme Custom theme for the event. If present, it will overwrite the default event theme. Valid values include default, transparent, line, hollow and rounded.
+ *
+ * @param {string} timezone Time zone of the event, in a valid IANA format.
  *
  * @param {string} title Title of the event.
  *
@@ -104,6 +110,7 @@ import {
 
 export default class AvonniSchedulerEvent {
     constructor(props) {
+        this.timezone = props.timezone;
         this.key = generateUUID();
         this.allDay = props.allDay;
         this.availableMonths = props.availableMonths;
@@ -114,6 +121,7 @@ export default class AvonniSchedulerEvent {
         this.disabled = props.disabled;
         this.schedulerEnd = props.schedulerEnd;
         this.schedulerStart = props.schedulerStart;
+        this.selectedResources = normalizeArray(props.selectedResources);
         this.smallestHeader = props.smallestHeader;
         this.from = props.from;
         this.to = props.to;
@@ -130,7 +138,6 @@ export default class AvonniSchedulerEvent {
         this.title = props.title;
 
         this.initOccurrences();
-        this._isCreated = true;
     }
 
     get allDay() {
@@ -138,8 +145,6 @@ export default class AvonniSchedulerEvent {
     }
     set allDay(value) {
         this._allDay = normalizeBoolean(value);
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get availableDaysOfTheWeek() {
@@ -149,8 +154,6 @@ export default class AvonniSchedulerEvent {
         this._availableDaysOfTheWeek = normalizeArray(value).length
             ? normalizeArray(value)
             : DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK;
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get availableMonths() {
@@ -160,8 +163,6 @@ export default class AvonniSchedulerEvent {
         this._availableMonths = normalizeArray(value).length
             ? normalizeArray(value)
             : DEFAULT_AVAILABLE_MONTHS;
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get availableTimeFrames() {
@@ -171,8 +172,6 @@ export default class AvonniSchedulerEvent {
         this._availableTimeFrames = normalizeArray(value).length
             ? normalizeArray(value)
             : DEFAULT_AVAILABLE_TIME_FRAMES;
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get disabled() {
@@ -186,10 +185,7 @@ export default class AvonniSchedulerEvent {
         return this._from;
     }
     set from(value) {
-        this._from =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
-
-        if (this._isCreated) this.initOccurrences();
+        this._from = this.createDate(value);
     }
 
     get resourceNames() {
@@ -197,8 +193,6 @@ export default class AvonniSchedulerEvent {
     }
     set resourceNames(value) {
         this._resourceNames = JSON.parse(JSON.stringify(normalizeArray(value)));
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get name() {
@@ -209,8 +203,6 @@ export default class AvonniSchedulerEvent {
             value ||
             (!this.referenceLine && !this.disabled && 'new-event') ||
             'disabled';
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get recurrence() {
@@ -221,8 +213,6 @@ export default class AvonniSchedulerEvent {
             (recurrenceObject) => recurrenceObject.name === value
         );
         this._recurrence = recurrence || undefined;
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get recurrenceAttributes() {
@@ -231,8 +221,6 @@ export default class AvonniSchedulerEvent {
     set recurrenceAttributes(value) {
         this._recurrenceAttributes =
             typeof value === 'object' ? value : undefined;
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get recurrenceCount() {
@@ -240,17 +228,13 @@ export default class AvonniSchedulerEvent {
     }
     set recurrenceCount(value) {
         this._recurrenceCount = Number.isInteger(value) ? value : Infinity;
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get recurrenceEndDate() {
         return this._recurrenceEndDate;
     }
     set recurrenceEndDate(value) {
-        this._recurrenceEndDate = dateTimeObjectFrom(value);
-
-        if (this._isCreated) this.initOccurrences();
+        this._recurrenceEndDate = this.createDate(value);
     }
 
     get referenceLine() {
@@ -258,28 +242,20 @@ export default class AvonniSchedulerEvent {
     }
     set referenceLine(value) {
         this._referenceLine = normalizeBoolean(value);
-
-        if (this._isCreated) this.initOccurrences();
     }
 
     get schedulerEnd() {
         return this._schedulerEnd;
     }
     set schedulerEnd(value) {
-        this._schedulerEnd =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
-
-        if (this._isCreated) this.initOccurrences();
+        this._schedulerEnd = this.createDate(value);
     }
 
     get schedulerStart() {
         return this._schedulerStart;
     }
     set schedulerStart(value) {
-        this._schedulerStart =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
-
-        if (this._isCreated) this.initOccurrences();
+        this._schedulerStart = this.createDate(value);
     }
 
     get theme() {
@@ -300,10 +276,7 @@ export default class AvonniSchedulerEvent {
         return this._to;
     }
     set to(value) {
-        this._to =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
-
-        if (this._isCreated) this.initOccurrences();
+        this._to = this.createDate(value);
     }
 
     /**
@@ -330,10 +303,7 @@ export default class AvonniSchedulerEvent {
 
         if (this.allDay && to) {
             to = to.endOf('day');
-        } else if (
-            (this.allDay && this.from) ||
-            (this.from && to < this.from)
-        ) {
+        } else if (this.from && (this.allDay || to < this.from)) {
             to = this.from.endOf('day');
         }
 
@@ -396,28 +366,50 @@ export default class AvonniSchedulerEvent {
 
         if (containsAllowedTimes) {
             if (this.referenceLine) {
-                const occurrence = {
-                    from,
-                    to,
-                    key: `${this.title}-${this.occurrences.length}`,
-                    title: this.title
-                };
-                this.occurrences.push(occurrence);
+                const key = `${this.title}-${this.occurrences.length}`;
+                this.occurrences.push(
+                    new SchedulerEventOccurrence({
+                        eventKey: this.key,
+                        from,
+                        to,
+                        key,
+                        title: this.title
+                    })
+                );
             } else {
                 resourceNames.forEach((name) => {
-                    const occurrence = {
-                        from,
-                        key: `${this.name}-${name}-${from.ts}`,
-                        resourceNames: resourceNames,
-                        offsetTop: 0,
-                        resourceName: name,
-                        title: this.title,
-                        to: computedTo
-                    };
-                    this.occurrences.push(occurrence);
+                    if (
+                        !this.selectedResources.length ||
+                        this.selectedResources.includes(name)
+                    ) {
+                        this.occurrences.push(
+                            new SchedulerEventOccurrence({
+                                availableDaysOfTheWeek:
+                                    this.availableDaysOfTheWeek,
+                                availableMonths: this.availableMonths,
+                                eventKey: this.key,
+                                from,
+                                key: `${this.name}-${name}-${from.ts}`,
+                                resourceName: name,
+                                resourceNames,
+                                title: this.title,
+                                to: computedTo
+                            })
+                        );
+                    }
                 });
             }
         }
+    }
+
+    /**
+     * Create a Luxon DateTime object from a date, including the timezone.
+     *
+     * @param {string|number|Date} date Date to convert.
+     * @returns {DateTime|boolean} Luxon DateTime object or false if the date is invalid.
+     */
+    createDate(date) {
+        return dateTimeObjectFrom(date, { zone: this.timezone });
     }
 
     /**
@@ -499,6 +491,9 @@ export default class AvonniSchedulerEvent {
                 end = start.set({ hours, minutes, seconds });
                 break;
         }
+        if (this.referenceLine && end.ts === start.ts) {
+            end = addToDate(end, 'minute', 1);
+        }
         return end;
     }
 
@@ -533,14 +528,10 @@ export default class AvonniSchedulerEvent {
                 break;
             }
             case 'weekly': {
-                const weekdays =
+                const normalizedWeekdays = normalizeArray(
                     attributes && attributes.weekdays
-                        ? JSON.parse(
-                              JSON.stringify(
-                                  normalizeArray(attributes.weekdays)
-                              )
-                          )
-                        : [];
+                );
+                const weekdays = deepCopy(normalizedWeekdays);
 
                 let weekdayIndex;
                 if (weekdays.length) {
@@ -552,7 +543,7 @@ export default class AvonniSchedulerEvent {
                     weekdays.sort();
 
                     // Set the starting week day
-                    let startingDate = dateTimeObjectFrom(from.ts);
+                    let startingDate = this.createDate(from);
                     while (weekdayIndex === undefined) {
                         for (let i = 0; i < weekdays.length; i++) {
                             date = startingDate.set({ weekday: weekdays[i] });
@@ -625,7 +616,7 @@ export default class AvonniSchedulerEvent {
                         weekCount += 1;
                     }
 
-                    let to = dateTimeObjectFrom(this.to.ts);
+                    let to = this.createDate(this.to.ts);
                     const daysDuration = Math.floor(
                         Interval.fromDateTimes(date, to).length('days')
                     );

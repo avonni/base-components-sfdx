@@ -78,12 +78,16 @@
                                                     ></lightning-icon>
                                                     <span
                                                         if:true={step.isCurrentStep}
-                                                        class="slds-assistive-text"
+                                                        class="
+                                                            slds-assistive-text
+                                                        "
                                                         >Current Stage:</span
                                                     >
                                                     <span
                                                         if:true={step.isComplete}
-                                                        class="slds-assistive-text"
+                                                        class="
+                                                            slds-assistive-text
+                                                        "
                                                         >Stage Complete</span
                                                     >
                                                 </span>
@@ -139,7 +143,10 @@
                             onclosedialog={hideDialog}
                         >
                             <div
-                                class="slds-p-bottom_x-large slds-p-horizontal_medium"
+                                class="
+                                    slds-p-bottom_x-large
+                                    slds-p-horizontal_medium
+                                "
                             >
                                 <lightning-combobox
                                     class="slds-p-bottom_xx-large"
@@ -171,7 +178,12 @@
                     <div class="slds-path__coach slds-grid">
                         <div class="slds-path__keys">
                             <div class="slds-grid">
-                                <h2 class="slds-col slds-path__coach-title">
+                                <h2
+                                    class="
+                                        avonni-path__flex-col
+                                        slds-path__coach-title
+                                    "
+                                >
                                     {keyFieldsLabel}
                                 </h2>
                                 <template
@@ -180,7 +192,10 @@
                                 >
                                     <lightning-button
                                         if:true={action.label}
-                                        class="slds-m-horizontal_xx-small slds-path__coach-edit"
+                                        class="
+                                            slds-m-horizontal_xx-small
+                                            slds-path__coach-edit
+                                        "
                                         key={action.name}
                                         icon-name={action.iconName}
                                         label={action.label}
@@ -191,7 +206,10 @@
                                     ></lightning-button>
                                     <lightning-button-icon
                                         if:false={action.label}
-                                        class="slds-m-horizontal_xx-small slds-path__coach-edit"
+                                        class="
+                                            slds-m-horizontal_xx-small
+                                            slds-path__coach-edit
+                                        "
                                         key={action.name}
                                         icon-name={action.iconName}
                                         name={action.name}
@@ -215,14 +233,23 @@
                                             role="listitem"
                                         >
                                             <div
-                                                class="slds-form-element slds-form-element_readonly slds-form-element_stacked slds-hint-parent"
+                                                class="
+                                                    slds-form-element
+                                                    slds-form-element_readonly
+                                                    slds-form-element_stacked
+                                                    slds-hint-parent
+                                                "
                                             >
                                                 <span
-                                                    class="slds-form-element__label"
+                                                    class="
+                                                        slds-form-element__label
+                                                    "
                                                     >{field.label}</span
                                                 >
                                                 <div
-                                                    class="slds-form-element__control"
+                                                    class="
+                                                        slds-form-element__control
+                                                    "
                                                 >
                                                     <c-avonni-output-data
                                                         type={field.type}
@@ -245,7 +272,10 @@
                                 {guidanceLabel}
                             </h2>
                             <div
-                                class="slds-text-longform slds-path__guidance-content"
+                                class="
+                                    slds-text-longform
+                                    slds-path__guidance-content
+                                "
                             >
                                 {computedCurrentStep.guidance}
                             </div>

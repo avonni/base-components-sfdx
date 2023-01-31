@@ -49,10 +49,12 @@ export default class AvonniTabBar extends LightningElement {
 
     @track visibleTabs;
     showHiddenTabsDropdown = false;
+    _connected = false;
     _dropdownHasFocus = false;
 
     connectedCallback() {
         this.initializeVisibleTabs();
+        this._connected = true;
     }
 
     /**
@@ -68,6 +70,10 @@ export default class AvonniTabBar extends LightningElement {
 
     set labels(value) {
         this._labels = normalizeArray(value);
+
+        if (this._connected) {
+            this.initializeVisibleTabs();
+        }
     }
 
     /**
@@ -83,6 +89,10 @@ export default class AvonniTabBar extends LightningElement {
 
     set tabsHidden(value) {
         this._tabsHidden = value;
+
+        if (this._connected) {
+            this.initializeVisibleTabs();
+        }
     }
 
     /**
@@ -98,6 +108,10 @@ export default class AvonniTabBar extends LightningElement {
 
     set defaultTab(value) {
         this._defaultTab = value;
+
+        if (this._connected) {
+            this.initializeVisibleTabs();
+        }
     }
 
     /**
@@ -133,6 +147,21 @@ export default class AvonniTabBar extends LightningElement {
         let visibleTabsName = [];
         this.visibleTabs.forEach((tab) => visibleTabsName.push(tab.title));
         return this.labels.slice().filter((n) => !visibleTabsName.includes(n));
+    }
+
+    /**
+     * Set the focus on the selected tab.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        const defaultTab = this.template.querySelector(
+            '.slds-is-active [data-element-id="a-tab-link"]'
+        );
+        if (defaultTab) {
+            defaultTab.focus();
+        }
     }
 
     /**

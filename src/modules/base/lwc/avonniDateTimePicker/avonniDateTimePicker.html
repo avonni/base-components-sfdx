@@ -78,9 +78,9 @@
                 if:true={showTimeZone}
                 name="timezone"
                 label="Time zone"
-                value={selectedTimeZone}
+                value={timezone}
                 placeholder="Select time zone"
-                options={timeZones}
+                options={timezones}
                 variant="label-hidden"
                 class="slds-m-bottom_small avonni-date-time-picker__time-zone"
                 data-element-id="lightning-combobox"
@@ -132,6 +132,7 @@
                 name={name}
                 max={maxToString}
                 min={minToString}
+                timezone={timezone}
                 type="date"
                 value={datePickerValue}
                 variant="label-hidden"
@@ -155,8 +156,9 @@
                     value={firstWeekDayToString}
                     disabled-dates={disabledDateTimes}
                     disabled={disabled}
-                    max={max}
-                    min={min}
+                    max={computedMax}
+                    min={computedMin}
+                    timezone={timezone}
                     data-element-id="avonni-calendar"
                     onchange={handleDateChange}
                 ></c-avonni-calendar>
@@ -173,7 +175,11 @@
             <div class="slds-grid">
                 <template for:each={table} for:item="day">
                     <template if:true={day.show}>
-                        <div class={dayClass} key={day.key}>
+                        <div
+                            class={dayClass}
+                            key={day.key}
+                            data-element-id="div-day"
+                        >
                             <!-- Day label -->
                             <div
                                 if:true={day.label}
@@ -208,14 +214,18 @@
                                         >
                                             <lightning-formatted-date-time
                                                 value={time.hour}
-                                                time-zone={selectedTimeZone}
+                                                time-zone={timezone}
                                                 hour={timeFormatHour}
                                                 minute={timeFormatMinute}
                                                 second={timeFormatSecond}
                                                 hour12={timeFormatHour12}
                                             ></lightning-formatted-date-time>
                                         </div>
-                                        <div class="slds-col">
+                                        <div
+                                            class="
+                                                avonni-date-time-picker__flex-col
+                                            "
+                                        >
                                             <div class="slds-grid slds-wrap">
                                                 <template
                                                     for:each={time.times}
@@ -246,7 +256,7 @@
                                                             >
                                                                 <lightning-formatted-date-time
                                                                     value={timelineTime.startTimeISO}
-                                                                    time-zone={selectedTimeZone}
+                                                                    time-zone={timezone}
                                                                     hour={timeFormatHour}
                                                                     minute={timeFormatMinute}
                                                                     second={timeFormatSecond}
@@ -261,7 +271,7 @@
                                                                             date-time-picker__formatted-end-time
                                                                         "
                                                                         value={timelineTime.endTimeISO}
-                                                                        time-zone={selectedTimeZone}
+                                                                        time-zone={timezone}
                                                                         hour={timeFormatHour}
                                                                         minute={timeFormatMinute}
                                                                         second={timeFormatSecond}
@@ -297,13 +307,14 @@
                                                 type="button"
                                                 aria-readonly={readOnly}
                                                 data-element-id="button-default"
+                                                data-time={time.startTimeISO}
                                                 onclick={handleTimeSlotClick}
                                                 onblur={handleValueBlur}
                                                 onfocus={handleValueFocus}
                                             >
                                                 <lightning-formatted-date-time
                                                     value={time.startTimeISO}
-                                                    time-zone={selectedTimeZone}
+                                                    time-zone={timezone}
                                                     hour={timeFormatHour}
                                                     minute={timeFormatMinute}
                                                     second={timeFormatSecond}
@@ -317,7 +328,7 @@
                                                             date-time-picker__formatted-end-time
                                                         "
                                                         value={time.endTimeISO}
-                                                        time-zone={selectedTimeZone}
+                                                        time-zone={timezone}
                                                         hour={timeFormatHour}
                                                         minute={timeFormatMinute}
                                                         second={timeFormatSecond}

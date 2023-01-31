@@ -30,6 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+@import 'c/schedulerSharedStyle';
+
 :host {
     display: block;
 }
@@ -38,16 +40,32 @@
     flex: 1 0 auto;
 }
 
-.avonni-scheduler-header-group__header_vertical
+.avonni-scheduler-header-group__header_multiple-vertical
     .avonni-scheduler-header-group__header-label_sticky {
     transform: rotate(180deg);
 }
 
 .avonni-scheduler-header-group__header-cell {
+    flex: 1 1 auto;
     width: var(--avonni-scheduler-cell-size);
     min-width: var(--avonni-scheduler-cell-size);
     color: #514f4d;
-    font-weight: 700;
+    background-color: var(
+        --avonni-primitive-scheduler-header-group-cell-color-background,
+        #f3f3f3
+    );
+    height: var(--avonni-primitive-scheduler-header-group-cell-height);
+    border-right-width: var(
+        --avonni-primitive-scheduler-header-group-cell-border-right-width
+    );
+}
+
+.avonni-scheduler-header-group__header-cell:last-of-type {
+    border-right-width: 0;
+}
+
+.avonni-scheduler-header-group__header-label[data-today='true'] {
+    color: var(--avonni-primitive-scheduler-header-group-cell-text-color-today);
 }
 
 .avonni-scheduler-header-group__header_vertical
@@ -55,18 +73,41 @@
     width: auto;
     min-width: auto;
     height: var(--avonni-scheduler-cell-size);
+}
+
+.avonni-scheduler-header-group__header_multiple-vertical
+    .avonni-scheduler-header-group__header-cell {
     writing-mode: vertical-rl;
+}
+
+.avonni-scheduler-header-group__header_multiple-vertical:last-of-type
+    .avonni-scheduler-header-group__header-cell {
+    height: auto;
+    writing-mode: initial;
 }
 
 .avonni-scheduler-header-group__header_vertical:last-of-type
     .avonni-scheduler-header-group__header-cell {
-    height: auto;
-    writing-mode: initial;
     padding: 0 0.75rem;
+}
+
+.avonni-scheduler-header-group__header-label_horizontal {
+    text-transform: uppercase;
 }
 
 .avonni-scheduler-header-group__header-label_sticky {
     position: sticky;
     left: 0;
-    top: 10px;
+    top: var(
+        --avonni-primitive-scheduler-header-group-label-position-top,
+        10px
+    );
+}
+
+.avonni-scheduler-header-group__header-label_vertical-non-sticky {
+    top: calc(var(--avonni-scheduler-cell-height) / -2);
+    background-color: var(
+        --avonni-primitive-scheduler-header-group-cell-color-background,
+        #f3f3f3
+    );
 }

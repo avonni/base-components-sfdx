@@ -303,7 +303,7 @@ export default class AvonniDynamicMenu extends LightningElement {
     }
 
     /**
-     * If present, the menu cannot be opened by users.
+     * If present, hide the check mark when selected.
      *
      * @type {boolean}
      * @public

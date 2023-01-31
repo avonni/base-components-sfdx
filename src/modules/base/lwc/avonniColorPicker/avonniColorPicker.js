@@ -181,6 +181,7 @@ export default class AvonniColorPicker extends LightningElement {
     _disabled = false;
     _groups = [];
     _hideColorInput = false;
+    _hideClearIcon = false;
     _isLoading = false;
     _menuAlignment = MENU_ALIGNMENTS.default;
     _menuNubbin = false;
@@ -312,6 +313,21 @@ export default class AvonniColorPicker extends LightningElement {
 
     set groups(value) {
         this._groups = normalizeArray(value);
+    }
+
+    /**
+     * If present, it is not possible to clear a selected color using the input clear icon.
+     *
+     * @type {boolean}
+     * @public
+     * @default false
+     */
+    @api
+    get hideClearIcon() {
+        return this._hideClearIcon;
+    }
+    set hideClearIcon(value) {
+        this._hideClearIcon = value;
     }
 
     /**
@@ -635,19 +651,6 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * True if the input field contains a value.
-     *
-     * @type {string}
-     */
-    get isInputFilled() {
-        let input = this.template.querySelector('[data-element-id="input"]');
-        if (input == null) {
-            return this.inputValue;
-        }
-        return !!this.inputValue;
-    }
-
-    /**
      * True if the input value is color type.
      *
      * @type {boolean}
@@ -838,6 +841,15 @@ export default class AvonniColorPicker extends LightningElement {
                 'slds-tabs_default__content': this.isBase
             })
             .toString();
+    }
+
+    /**
+     * True if the clear icon should be visible.
+     *
+     * @type {boolean}
+     */
+    get showClearIcon() {
+        return !this.hideClearIcon && this.inputValue;
     }
 
     get showColorGradient() {
@@ -1156,26 +1168,37 @@ export default class AvonniColorPicker extends LightningElement {
         }
     }
 
+    setInitialFocus() {
+        // Focus on an element inside the popover.
+        requestAnimationFrame(() => {
+            const tab = this.template.querySelector(
+                '[data-element-id="default"]'
+            );
+            const tabBody = this.template.querySelector(
+                '[data-element-id="tab-body"]'
+            );
+
+            if (tab) {
+                tab.focus();
+            } else if (tabBody) {
+                tabBody.focus();
+            }
+        });
+    }
+
     /**
      * Dropdown menu visibility toggle.
      */
     toggleMenuVisibility() {
         if (!this.disabled) {
             this.dropdownVisible = !this.dropdownVisible;
-            requestAnimationFrame(() => {
-                const tab = this.template.querySelector(
-                    '[data-element-id="default"]'
-                );
 
-                if (tab) {
-                    tab.focus();
-                }
-            });
             if (!this.dropdownOpened && this.dropdownVisible) {
                 this.dropdownOpened = true;
             }
 
             if (this.dropdownVisible) {
+                this.setInitialFocus();
                 this._boundingRect = this.getBoundingClientRect();
                 this.pollBoundingRect();
                 this.loadPalette();

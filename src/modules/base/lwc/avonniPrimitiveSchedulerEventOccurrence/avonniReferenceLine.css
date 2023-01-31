@@ -34,6 +34,13 @@
 
 :host.avonni-scheduler__event_horizontal {
     height: 100%;
+    position: absolute;
+}
+
+:host.avonni-scheduler__standalone-event {
+    min-height: 1.3rem;
+    display: block;
+    overflow: hidden;
 }
 
 .avonni-scheduler__reference-line {
@@ -58,4 +65,15 @@
     transform: rotate(-90deg);
     bottom: auto;
     left: 0;
+}
+
+.avonni-scheduler__reference-line_standalone {
+    --avonni-reference-line-badge-height: 1rem;
+    left: 0.5rem;
+    right: 2.75rem;
+    overflow: hidden;
+}
+
+.avonni-scheduler__event-dot-time {
+    right: 0.5rem;
 }

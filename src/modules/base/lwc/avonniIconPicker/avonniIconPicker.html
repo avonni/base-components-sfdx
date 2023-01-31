@@ -165,10 +165,9 @@
                                 <div class="slds-tabs_default">
                                     <c-avonni-tab-bar
                                         if:false={hideTabs}
-                                        class="slds-col"
                                         labels={allTabs}
                                         tabs-hidden={nHiddenCategories}
-                                        default-tab={defaultTab}
+                                        default-tab={currentTab}
                                         data-element-id="avonni-builder-tab-bar"
                                         onclick={stopPropagation}
                                         onselect={handleTabSelect}

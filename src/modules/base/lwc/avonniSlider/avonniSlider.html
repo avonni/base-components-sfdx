@@ -45,7 +45,7 @@
             >
         </span>
     </label>
-    <div class={computedSliderWrapperClass}>
+    <div class={computedSliderWrapperClass} data-element-id="div-wrapper">
         <div
             if:true={isNormalVertical}
             class={computedUnitContainerClass}
@@ -65,7 +65,7 @@
                 data-element-id="lightning-formatted-number-max-vertical"
             ></lightning-formatted-number>
         </div>
-        <div class={computedContainerClass} data-element-id="div-wrapper">
+        <div class={computedContainerClass} data-element-id="div-range">
             <template for:each={values} for:item="value" for:index="index">
                 <div class="slds-form-element" key={generateKey}>
                     <div class="slds-form-element__control">

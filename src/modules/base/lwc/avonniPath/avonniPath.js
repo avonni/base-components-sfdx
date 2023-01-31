@@ -214,7 +214,7 @@ export default class AvonniPath extends LightningElement {
     }
 
     /**
-     * Progression format of the path. Valid values include linear and non-linear.
+     * Sets the progression format of the path. Valid values include linear and non-linear.
      *
      * @type {string}
      * @public

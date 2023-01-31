@@ -244,6 +244,7 @@
                                                 for:item="tag"
                                             >
                                                 <c-avonni-chip
+                                                    if:true={tag.label}
                                                     key={tag.label}
                                                     label={tag.label}
                                                     variant={tag.variant}

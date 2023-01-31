@@ -74,7 +74,6 @@ export default class AvonniProgressStep extends LightningElement {
     @api buttonLabel;
     @api buttonName;
     @api buttonIconName;
-    @api buttonTitle;
     @api popoverIconName;
     @api popoverIconSrc;
     @api popoverIconNameWhenHover;

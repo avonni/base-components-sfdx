@@ -43,4 +43,16 @@
         ondblclick={handleDisabledDoubleClick}
         onmousedown={handleDisabledMouseDown}
     ></c-avonni-primitive-reference-line>
+    <span
+        if:true={isMonthCalendar}
+        class="
+            avonni-scheduler__event-dot-time
+            slds-text-color_weak
+            slds-m-left_small
+            slds-m-top_xx-small
+            slds-show slds-is-absolute
+        "
+    >
+        {startTime}
+    </span>
 </template>

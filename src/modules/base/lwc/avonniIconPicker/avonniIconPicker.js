@@ -33,7 +33,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { normalizeBoolean, normalizeString } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
-import { ICON_TYPES } from './avonniIcons/salesforceIcons.js';
+import { ICON_TYPES } from './avonniIcons/salesforceIcons';
 
 const VARIANTS = {
     valid: ['standard', 'label-inline', 'label-hidden', 'label-stacked'],
@@ -853,6 +853,14 @@ export default class AvonniIconPicker extends LightningElement {
         this.currentTab = event.detail.value;
         this.changeTabContentTo(event.detail.value);
         this.scrollTopIconList();
+
+        requestAnimationFrame(() => {
+            // Set the focus back on the tab bar after render
+            const tabBar = this.template.querySelector(
+                '[data-element-id="avonni-builder-tab-bar"]'
+            );
+            tabBar.focus();
+        });
     }
 
     /**
@@ -1115,10 +1123,11 @@ export default class AvonniIconPicker extends LightningElement {
         this.tabContent.forEach((tab) => {
             tab.showIcons = tab.title === tabName;
 
+            // Load the extended icons only after render
             if (tab.title === tabName) {
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     tab.showIconsExtended = true;
-                }, 0);
+                });
             } else {
                 tab.showIconsExtended = false;
             }

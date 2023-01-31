@@ -30,7 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-active.avonni-continuous:hover ~ .avonni-active.avonni-continuous {
+.avonni-rating__active.avonni-rating__continuous:hover
+    ~ .avonni-rating__active.avonni-rating__continuous {
     border: 1px solid #1b5297;
     background-color: #ffffff;
     border-color: #1b5297;
@@ -38,62 +39,23 @@
     opacity: 0.85;
 }
 
-.avonni-rating {
-    unicode-bidi: bidi-override;
-    width: fit-content;
-    pointer-events: none;
+.avonni-rating__button.slds-button {
+    margin-left: 1px;
+}
+.avonni-rating__button-icon:active,
+.avonni-rating__button-icon:focus {
+    box-shadow: none;
+    --slds-c-button-color-border-active: transparent;
 }
 
-.avonni-active-star {
-    pointer-events: auto;
-}
-
-.avonni-active {
-    pointer-events: auto;
-}
-
-button {
-    direction: initial;
-    margin-left: 1px !important;
-}
-
-.avonni-rating__container,
-[data-element-id='div-wrapper'] {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    pointer-events: none;
-}
-
-.avonni-rating__container:hover .avonni-active.avonni-continuous,
-.avonni-active:hover {
+.avonni-rating__container:hover
+    .avonni-rating__active.avonni-rating__continuous,
+.avonni-rating__active:hover {
     border: 1px solid #ffffff;
     background-color: #1b5297;
     border-color: #1b5297;
     color: #ffffff;
     opacity: 1;
-}
-
-.avonni-rating__container:hover .avonni-active-star.avonni-continuous-star {
-    fill: #1b5297;
-    opacity: 1;
-}
-
-.avonni-rating__container .avonni-rating__value {
-    padding-left: 1rem;
-}
-
-.slds-form-element_stacked .slds-form-element {
-    padding-left: 0.5rem;
-}
-
-.avonni-rating__label_inline {
-    display: flex;
-    align-items: center;
-}
-
-.avonni-rating__label_inline lightning-helptext {
-    padding-right: 0.25rem;
 }
 
 .avonni-rating__label {
@@ -108,4 +70,43 @@ button {
     font-size: var(--avonni-rating-value-font-size, 0.8125rem);
     font-style: var(--avonni-rating-value-font-style, normal);
     font-weight: var(--avonni-rating-value-font-weight, 400);
+}
+
+.avonni-rating__icon {
+    width: 100%;
+    height: 100%;
+}
+
+.avonni-rating__button {
+    --slds-c-icon-color-foreground: var(--lwc-brandDisabled, #c9c7c5);
+}
+
+.avonni-rating__icon_selected {
+    /* Disabled selected icon */
+    color: #747474;
+}
+
+.avonni-rating__active-icon.avonni-rating__icon_selected {
+    /* Selected icon */
+    --slds-c-icon-color-foreground: #0176d3;
+    color: #0176d3;
+}
+
+.avonni-rating__active-icon.avonni-rating__icon_selected:hover,
+.avonni-rating__container:hover
+    .avonni-rating__active-icon.avonni-rating__continuous-icon {
+    /* Hovered icon */
+    --slds-c-icon-color-foreground: #1b5297;
+    color: #1b5297;
+}
+
+.avonni-rating__active-icon.avonni-rating__continuous-icon:hover
+    ~ .avonni-rating__active-icon.avonni-rating__continuous-icon {
+    --slds-c-icon-color-foreground: var(--lwc-brandDisabled, #c9c7c5);
+    color: #c9c7c5;
+}
+
+.avonni-rating__icon_medium {
+    width: 0.875rem;
+    height: 0.875rem;
 }

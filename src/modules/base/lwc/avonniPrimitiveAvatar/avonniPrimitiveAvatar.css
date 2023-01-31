@@ -38,7 +38,7 @@
     border-style: var(--avonni-avatar-styling-border, solid);
     border-color: var(--avonni-avatar-color-border, transparent);
     border-width: var(--avonni-avatar-sizing-border, 0);
-    --sds-c-avatar-radius-border: var(--avonni-avatar-sizing-border-radius);
+    --sds-c-avatar-radius-border: var(--avonni-avatar-radius-border, 0.25rem);
 }
 /* If the avatar is in a group, the cursor changes for a pointer */
 :host(.avonni-avatar-group__avatar) .slds-avatar,
@@ -87,8 +87,19 @@
     width: 100%;
     height: 100%;
 }
+/* Fix icon size for x-large and xx-large icons */
+:host(.slds-avatar-grouped) .avonni-avatar_x-large .avonni-avatar__icon, 
+:host(.slds-avatar-grouped) .avonni-avatar_xx-large .avonni-avatar__icon {
+    scale: 1;
+}
+.avonni-avatar_x-large .avonni-avatar__icon {
+    scale: 1.8;
+}
+.avonni-avatar_xx-large .avonni-avatar__icon  {
+    scale: 2.2;
+}
 /**
-* Positionning
+* Positioning
 */
 .avonni-avatar_square .avonni-avatar_top-right {
     top: -4px;

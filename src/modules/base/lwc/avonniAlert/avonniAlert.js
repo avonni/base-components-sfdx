@@ -39,6 +39,11 @@ const ALERT_VARIANTS = {
     default: 'base'
 };
 
+const ALERT_ICON_SIZES = {
+    valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
+    default: 'small'
+};
+
 /**
  * Alert banners communicate a state that affects the entire system, not just a feature or page. It persists over a session and appears without the user initiating the action.
  * @class
@@ -62,15 +67,49 @@ export default class AvonniAlert extends LightningElement {
      */
     @api closeAction;
 
-    hideAlert;
-    _variant = ALERT_VARIANTS.default;
+    _iconSize = ALERT_ICON_SIZES.default;
     _isDismissible = false;
+    _variant = ALERT_VARIANTS.default;
+
+    hideAlert;
 
     /*
      * ------------------------------------------------------------
      *  PUBLIC PROPERTIES
      * -------------------------------------------------------------
      */
+
+    /**
+     * The size of the icon. Options include xx-small, x-small, small, medium, or large.
+     * @type {string}
+     * @default small
+     * @public
+     */
+    @api
+    get iconSize() {
+        return this._iconSize;
+    }
+
+    set iconSize(value) {
+        this._iconSize = normalizeString(value, {
+            fallbackValue: ALERT_ICON_SIZES.default,
+            validValues: ALERT_ICON_SIZES.valid
+        });
+    }
+
+    /**
+     * Specify if the alert can be closed.
+     * @type {boolean}
+     * @default false
+     * @public
+     */
+    @api
+    get isDismissible() {
+        return this._isDismissible;
+    }
+    set isDismissible(value) {
+        this._isDismissible = normalizeBoolean(value);
+    }
 
     /**
      * The variant change the apparence of the alert. Valid values include base, error, offline and warning.
@@ -88,20 +127,6 @@ export default class AvonniAlert extends LightningElement {
             fallbackValue: ALERT_VARIANTS.default,
             validValues: ALERT_VARIANTS.valid
         });
-    }
-
-    /**
-     * Specify if the alert can be closed.
-     * @type {boolean}
-     * @default false
-     * @public
-     */
-    @api
-    get isDismissible() {
-        return this._isDismissible;
-    }
-    set isDismissible(value) {
-        this._isDismissible = normalizeBoolean(value);
     }
 
     /*

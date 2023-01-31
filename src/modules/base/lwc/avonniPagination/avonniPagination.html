@@ -33,12 +33,11 @@
 -->
 
 <template>
-    <lightning-button-group class={computedContainerClass}>
+    <lightning-button-group class={computedContainerClass} data-element-id="lightning-button-group">
         <template if:true={showFirstButton}>
             <lightning-button-icon
                 if:true={firstButtonIcon}
-                icon-class="avonni-pagination-icon"
-                class="avonni-navigation-button"
+                class="avonni-pagination__navigation-button-icon"
                 icon-name={firstButtonIconName}
                 variant="border-filled"
                 disabled={disabledLeftButtons}
@@ -66,8 +65,7 @@
         ></lightning-button>
         <lightning-button-icon
             if:false={previousButtonLabel}
-            icon-class="avonni-pagination-icon"
-            class="avonni-navigation-button"
+            class="avonni-pagination__navigation-button-icon"
             icon-name={previousButtonIconName}
             variant="border-filled"
             disabled={disabledLeftButtons}
@@ -75,15 +73,17 @@
             onclick={previous}
         ></lightning-button-icon>
         <template for:each={paginationButtons} for:item="index">
-            <lightning-button
-                class="avonni-pagination-button"
-                label={index}
-                key={uniqueKey}
-                value={index}
+            <button
+                class={computedButtonClass}
                 disabled={disabled}
-                data-element-id="lightning-button-no-icon-page"
+                key={uniqueKey}
+                type="button"
+                value={index}
+                data-element-id="button"
                 onclick={goToIndex}
-            ></lightning-button>
+            >
+                {index}
+            </button>
         </template>
         <lightning-button
             if:true={nextButtonLabel}
@@ -96,8 +96,7 @@
         ></lightning-button>
         <lightning-button-icon
             if:false={nextButtonLabel}
-            icon-class="avonni-pagination-icon"
-            class="avonni-navigation-button"
+            class="avonni-pagination__navigation-button-icon"
             icon-name={nextButtonIconName}
             variant="border-filled"
             disabled={disabledRightButtons}
@@ -107,8 +106,7 @@
         <template if:true={showLastButton}>
             <lightning-button-icon
                 if:true={lastButtonIcon}
-                icon-class="avonni-pagination-icon"
-                class="avonni-navigation-button"
+                class="avonni-pagination__navigation-button-icon"
                 icon-name={lastButtonIconName}
                 variant="border-filled"
                 disabled={disabledRightButtons}

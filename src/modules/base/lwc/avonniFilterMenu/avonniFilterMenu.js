@@ -32,13 +32,18 @@
 
 import { LightningElement, api, track } from 'lwc';
 import {
+    dateTimeObjectFrom,
+    deepCopy,
+    formatDateFromStyle,
     normalizeBoolean,
+    normalizeObject,
     normalizeString,
     normalizeArray,
     observePosition,
     animationFrame,
     timeout
 } from 'c/utilsPrivate';
+import { numberFormat } from 'c/internationalizationLibrary';
 import { classSet } from 'c/utils';
 import { Tooltip } from 'c/tooltipLibrary';
 import {
@@ -80,6 +85,8 @@ const BUTTON_VARIANTS = {
     default: 'border'
 };
 
+const LOAD_MORE_OFFSET = 20;
+
 const MENU_VARIANTS = {
     valid: ['horizontal', 'vertical'],
     default: 'horizontal'
@@ -90,9 +97,42 @@ const MENU_WIDTHS = {
     default: 'small'
 };
 
-const MENU_LENGTHS = {
-    valid: ['5-items', '7-items', '10-items'],
-    default: '7-items'
+const TYPE_ATTRIBUTES = {
+    'date-range': [
+        'dateStyle',
+        'labelEndDate',
+        'labelEndTime',
+        'labelStartDate',
+        'labelStartTime',
+        'timeStyle',
+        'timezone',
+        'type'
+    ],
+    list: [
+        'allowSearch',
+        'dropdownLength',
+        'dropdownWidth',
+        'enableInfiniteLoading',
+        'isMultiSelect',
+        'items',
+        'searchInputPlaceholder'
+    ],
+    range: [
+        'hideMinMaxValues',
+        'max',
+        'min',
+        'showPin',
+        'showTickMarks',
+        'step',
+        'tickMarkStyle',
+        'unit',
+        'unitAttributes'
+    ]
+};
+
+const TYPES = {
+    default: 'list',
+    valid: ['date-range', 'list', 'range']
 };
 
 const i18n = {
@@ -103,6 +143,7 @@ const i18n = {
 const DEFAULT_ICON_NAME = 'utility:down';
 const DEFAULT_SEARCH_INPUT_PLACEHOLDER = 'Search...';
 const DEFAULT_APPLY_BUTTON_LABEL = 'Apply';
+const DEFAULT_RANGE_VALUE = [0, 100];
 const DEFAULT_RESET_BUTTON_LABEL = 'Reset';
 
 /**
@@ -146,7 +187,7 @@ export default class AvonniFilterMenu extends LightningElement {
     _buttonVariant = BUTTON_VARIANTS.default;
     _disabled = false;
     _dropdownAlignment = MENU_ALIGNMENTS.default;
-    _dropdownLength = MENU_LENGTHS.default;
+    _dropdownLength;
     _dropdownNubbin = false;
     _dropdownWidth = MENU_WIDTHS.default;
     _hideApplyResetButtons = false;
@@ -161,17 +202,25 @@ export default class AvonniFilterMenu extends LightningElement {
     _searchInputPlaceholder = DEFAULT_SEARCH_INPUT_PLACEHOLDER;
     _showSearchBox = false;
     _tooltip;
+    _type = TYPES.default;
+    _typeAttributes = {};
     _value = [];
     _variant = MENU_VARIANTS.default;
 
-    _cancelBlur = false;
-    _dropdownVisible = false;
+    _allowBlur = true;
+    _dropdownIsFocused = false;
     _order;
+    _previousScroll;
+    _preventDropdownToggle = false;
+    _searchTimeOut;
 
     @track computedItems = [];
     @track selectedItems = [];
-    dropdownOpened = false;
+    computedTypeAttributes = {};
+    @track currentValue = [];
+    dropdownVisible = false;
     fieldLevelHelp;
+    searchTerm;
 
     connectedCallback() {
         // button-group necessities
@@ -200,7 +249,21 @@ export default class AvonniFilterMenu extends LightningElement {
         });
 
         this.dispatchEvent(privatebuttonregister);
+        this.normalizeTypeAttributes();
+        this.computeListItems();
+        this.computeSelectedItems();
         this._connected = true;
+
+        if (
+            this.isVertical &&
+            this.infiniteLoad &&
+            !this.isLoading &&
+            !this.computedItems.length
+        ) {
+            // Fire the loadmore event without waiting for the user
+            // to click on the load more button
+            this.dispatchLoadMore();
+        }
     }
 
     disconnectedCallback() {
@@ -210,28 +273,19 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     renderedCallback() {
-        if (this._variant === 'horizontal') {
-            this.classList.add(
-                'slds-dropdown-trigger',
-                'slds-dropdown-trigger_click'
-            );
-        } else {
-            this.classList.remove(
-                'slds-dropdown-trigger',
-                'slds-dropdown-trigger_click'
-            );
-        }
-
         this.initTooltip();
+
+        if (
+            this.infiniteLoad &&
+            this.dropdownElement &&
+            this.dropdownElement.scrollTop === 0
+        ) {
+            this.handleScroll();
+        }
     }
 
-    /**
-     * Render html template based on variant vertical or not.
-     *
-     * @returns {File} filterMenu.html | filterMenuVertical.html
-     */
     render() {
-        if (this.variant === 'vertical') {
+        if (this.isVertical) {
             return filterMenuVertical;
         }
         return filterMenu;
@@ -329,21 +383,26 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Maximum length of the dropdown menu. Valid values include 5-items, 7-items and 10-items. This attribute isn’t supported for the vertical variant.
+     * Deprecated. Set the dropdown length in the type attributes.
      *
      * @type {string}
-     * @public
      * @default 7-items
+     * @deprecated
      */
     @api
     get dropdownLength() {
         return this._dropdownLength;
     }
     set dropdownLength(value) {
-        this._dropdownLength = normalizeString(value, {
-            fallbackValue: MENU_LENGTHS.default,
-            validValues: MENU_LENGTHS.valid
-        });
+        this._dropdownLength = value;
+
+        console.warn(
+            'The "dropdown-length" attribute is deprecated. Add a "dropdownLength" key to the type attributes instead.'
+        );
+
+        if (this._connected) {
+            this.supportDeprecatedAttributes();
+        }
     }
 
     /**
@@ -362,11 +421,11 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Minimum width of the dropdown menu. Valid values include xx-small, x-small, small, medium and large. This attribute isn’t supported for the vertical variant.
+     * Deprecated. Set the dropdown width in the type attributes.
      *
      * @type {string}
-     * @public
      * @default small
+     * @deprecated
      */
     @api
     get dropdownWidth() {
@@ -377,10 +436,18 @@ export default class AvonniFilterMenu extends LightningElement {
             fallbackValue: MENU_WIDTHS.default,
             validValues: MENU_WIDTHS.valid
         });
+
+        console.warn(
+            'The "dropdown-width" attribute is deprecated. Add a "dropdownWidth" key to the type attributes instead.'
+        );
+
+        if (this._connected) {
+            this.supportDeprecatedAttributes();
+        }
     }
 
     /**
-     * If present, the apply and reset buttons are hidden.
+     * If present, the apply and reset buttons are hidden and the value is immediately saved every time the selection changes.
      *
      * @type {boolean}
      * @public
@@ -458,7 +525,7 @@ export default class AvonniFilterMenu extends LightningElement {
     }
     set isLoading(bool) {
         const normalizedValue = normalizeBoolean(bool);
-        if (this.isAutoAlignment()) {
+        if (this.isAutoAlignment) {
             // stop previous positioning if any as it maintains old position relationship
             this.stopPositioning();
 
@@ -472,11 +539,11 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * If present, multiple items can be selected.
+     * Deprecated. Allow multi-selection in the type attributes.
      *
      * @type {boolean}
-     * @public
      * @default false
+     * @deprecated
      */
     @api
     get isMultiSelect() {
@@ -484,25 +551,36 @@ export default class AvonniFilterMenu extends LightningElement {
     }
     set isMultiSelect(bool) {
         this._isMultiSelect = normalizeBoolean(bool);
+
+        console.warn(
+            'The "is-multi-select" attribute is deprecated. Add an "isMultiSelect" key to the type attributes instead.'
+        );
+
+        if (this._connected) {
+            this.supportDeprecatedAttributes();
+        }
     }
 
     /**
-     * Array of item objects.
+     * Deprecated. Set the items in the type attributes.
      *
      * @type {object[]}
-     * @public
+     * @deprecated
      */
     @api
     get items() {
         return this._items;
     }
-    set items(proxy) {
-        this._items = normalizeArray(proxy);
-        this.computedItems = JSON.parse(JSON.stringify(this._items));
+    set items(value) {
+        this._items = normalizeArray(value, 'object');
+        console.warn(
+            'The "items" attribute is deprecated. Add an "items" key to the type attributes instead.'
+        );
 
-        this.computeValue();
-        this.computeSelectedItems();
-        this.computeTabindex();
+        if (this._connected) {
+            this.supportDeprecatedAttributes();
+            this.computeListItems();
+        }
     }
 
     /**
@@ -540,11 +618,11 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Text displayed when the search input is empty, to prompt the user for a valid entry.
+     * Deprecated. Set the search input placeholder in the type attributes.
      *
      * @type {string}
-     * @public
      * @default Search...
+     * @deprecated
      */
     @api
     get searchInputPlaceholder() {
@@ -552,17 +630,25 @@ export default class AvonniFilterMenu extends LightningElement {
     }
     set searchInputPlaceholder(value) {
         this._searchInputPlaceholder =
-            value && typeof value === 'string'
+            typeof value === 'string'
                 ? value.trim()
                 : DEFAULT_SEARCH_INPUT_PLACEHOLDER;
+
+        console.warn(
+            'The "search-input-placeholder" attribute is deprecated. Add a "searchInputPlaceholder" key to the type attributes instead.'
+        );
+
+        if (this._connected) {
+            this.supportDeprecatedAttributes();
+        }
     }
 
     /**
-     * If present, the search box is visible.
+     * Deprecated. Set the search box visibility in the type attributes.
      *
      * @type {boolean}
-     * @public
      * @default false
+     * @deprecated
      */
     @api
     get showSearchBox() {
@@ -570,6 +656,14 @@ export default class AvonniFilterMenu extends LightningElement {
     }
     set showSearchBox(bool) {
         this._showSearchBox = normalizeBoolean(bool);
+
+        console.warn(
+            'The "show-search-box" attribute is deprecated. Add an "allowSearch" key to the type attributes instead.'
+        );
+
+        if (this._connected) {
+            this.supportDeprecatedAttributes();
+        }
     }
 
     /**
@@ -602,9 +696,63 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Array of selected item's values.
+     * Type of the filter menu. Valid values include list, range and date-range.
      *
-     * @type {String[]}
+     * @type {string}
+     * @default list
+     * @public
+     */
+    @api
+    get type() {
+        return this._type;
+    }
+    set type(value) {
+        this._type = normalizeString(value, {
+            fallbackValue: TYPES.default,
+            validValues: TYPES.valid
+        });
+
+        if (this._connected) {
+            this.normalizeTypeAttributes();
+            this.computeSelectedItems();
+        }
+    }
+
+    /**
+     * Attributes specific to the type (see **Types and Type Attributes**).
+     *
+     * @type {object}
+     * @public
+     */
+    @api
+    get typeAttributes() {
+        return this._typeAttributes;
+    }
+    set typeAttributes(value) {
+        this._typeAttributes = normalizeObject(value);
+
+        if (this._connected) {
+            this.normalizeTypeAttributes();
+            this.computeSelectedItems();
+
+            if (
+                this.isVertical &&
+                this.infiniteLoad &&
+                !this.isLoading &&
+                !this.visibleListItems.length
+            ) {
+                // Fire the loadmore event without waiting for the user
+                // to click on the load more button
+                this.dispatchLoadMore();
+            }
+        }
+    }
+
+    /**
+     * Value of the filter menu.
+     * If the type is `list`, array of selected items values. If the type is `range`, array of selected numbers. If the type is `date-range`, array of ISO 8601 dates.
+     *
+     * @type {String[] | Number[] | Date[]}
      * @public
      */
     @api
@@ -613,10 +761,13 @@ export default class AvonniFilterMenu extends LightningElement {
     }
     set value(val) {
         const array = typeof val === 'string' ? [val] : normalizeArray(val);
-        this._value = JSON.parse(JSON.stringify(array));
+        this._value = deepCopy(array);
+        this.currentValue = deepCopy(array);
 
-        this.computeValue();
-        this.computeSelectedItems();
+        if (this._connected) {
+            this.computeListItems();
+            this.computeSelectedItems();
+        }
     }
 
     /**
@@ -635,6 +786,18 @@ export default class AvonniFilterMenu extends LightningElement {
             fallbackValue: MENU_VARIANTS.default,
             validValues: MENU_VARIANTS.valid
         });
+
+        if (
+            this._connected &&
+            this.isVertical &&
+            this.infiniteLoad &&
+            !this.isLoading &&
+            !this.visibleListItems.length
+        ) {
+            // Fire the loadmore event without waiting for the user
+            // to click on the load more button
+            this.dispatchLoadMore();
+        }
     }
 
     /*
@@ -670,7 +833,7 @@ export default class AvonniFilterMenu extends LightningElement {
      * @type {string}
      */
     get computedAriaExpanded() {
-        return String(this._dropdownVisible); // default value must be a string for the attribute to always be present with a string value
+        return String(this.dropdownVisible); // default value must be a string for the attribute to always be present with a string value
     }
 
     /**
@@ -739,37 +902,36 @@ export default class AvonniFilterMenu extends LightningElement {
      * @type {string}
      */
     get computedDropdownClass() {
-        return classSet('slds-dropdown')
-            .add({
-                'slds-dropdown_left':
-                    this.dropdownAlignment === 'left' || this.isAutoAlignment(),
-                'slds-dropdown_center': this.dropdownAlignment === 'center',
-                'slds-dropdown_right': this.dropdownAlignment === 'right',
-                'slds-dropdown_bottom':
-                    this.dropdownAlignment === 'bottom-center',
-                'slds-dropdown_bottom slds-dropdown_right slds-dropdown_bottom-right':
-                    this.dropdownAlignment === 'bottom-right',
-                'slds-dropdown_bottom slds-dropdown_left slds-dropdown_bottom-left':
-                    this.dropdownAlignment === 'bottom-left',
-                'slds-nubbin_top-left':
-                    this.dropdownNubbin && this.dropdownAlignment === 'left',
-                'slds-nubbin_top-right':
-                    this.dropdownNubbin && this.dropdownAlignment === 'right',
-                'slds-nubbin_top':
-                    this.dropdownNubbin && this.dropdownAlignment === 'center',
-                'slds-nubbin_bottom-left':
-                    this.dropdownNubbin &&
-                    this.dropdownAlignment === 'bottom-left',
-                'slds-nubbin_bottom-right':
-                    this.dropdownNubbin &&
-                    this.dropdownAlignment === 'bottom-right',
-                'slds-nubbin_bottom':
-                    this.dropdownNubbin &&
-                    this.dropdownAlignment === 'bottom-center',
-                'slds-p-vertical_large': this.isLoading
-            })
-            .add(`slds-dropdown_${this._dropdownWidth}`)
-            .toString();
+        const alignment = this.dropdownAlignment;
+        const nubbin = this.dropdownNubbin;
+        const isDateTime = this.computedTypeAttributes.type === 'datetime';
+        const isSmallRange = this.isRange || (this.isDateRange && isDateTime);
+
+        const classes = classSet('slds-dropdown slds-p-around_none').add({
+            'slds-dropdown_left': alignment === 'left' || this.isAutoAlignment,
+            'slds-dropdown_center': alignment === 'center',
+            'slds-dropdown_right': alignment === 'right',
+            'slds-dropdown_bottom': alignment === 'bottom-center',
+            'slds-dropdown_bottom slds-dropdown_right slds-dropdown_bottom-right':
+                alignment === 'bottom-right',
+            'slds-dropdown_bottom slds-dropdown_left slds-dropdown_bottom-left':
+                alignment === 'bottom-left',
+            'slds-nubbin_top-left': nubbin && alignment === 'left',
+            'slds-nubbin_top-right': nubbin && alignment === 'right',
+            'slds-nubbin_top': nubbin && alignment === 'center',
+            'slds-nubbin_bottom-left': nubbin && alignment === 'bottom-left',
+            'slds-nubbin_bottom-right': nubbin && alignment === 'bottom-right',
+            'slds-nubbin_bottom': nubbin && alignment === 'bottom-center',
+            'slds-dropdown_small': isSmallRange,
+            'slds-dropdown_large': this.isDateRange && !isDateTime
+        });
+
+        if (this.computedTypeAttributes.dropdownWidth) {
+            classes.add(
+                `slds-dropdown_${this.computedTypeAttributes.dropdownWidth}`
+            );
+        }
+        return classes.toString();
     }
 
     /**
@@ -777,24 +939,230 @@ export default class AvonniFilterMenu extends LightningElement {
      *
      * @type {string}
      */
-    get computedItemListClass() {
-        return classSet('slds-dropdown__list').add({
-            'slds-dropdown_length-with-icon-5':
-                this.dropdownLength === '5-items',
-            'slds-dropdown_length-with-icon-7':
-                this.dropdownLength === '7-items',
-            'slds-dropdown_length-with-icon-10':
-                this.dropdownLength === '10-items'
-        });
+    get computedDropdownContentClass() {
+        const length = this.computedTypeAttributes.dropdownLength;
+        return classSet('slds-dropdown__list')
+            .add({
+                'slds-dropdown_length-with-icon-5':
+                    this.isList && length === '5-items',
+                'slds-dropdown_length-with-icon-7':
+                    this.isList && (!length || length === '7-items'),
+                'slds-dropdown_length-with-icon-10':
+                    this.isList && length === '10-items'
+            })
+            .toString();
     }
 
     /**
-     * Display selected items.
+     * Computed vertical list CSS classes.
+     *
+     * @type {string}
+     */
+    get computedVerticalListClass() {
+        const length = this.computedTypeAttributes.dropdownLength;
+        return classSet({
+            'slds-dropdown_length-with-icon-5':
+                this.isList && length === '5-items',
+            'slds-dropdown_length-with-icon-7':
+                this.isList && length === '7-items',
+            'slds-dropdown_length-with-icon-10':
+                this.isList && length === '10-items'
+        }).toString();
+    }
+
+    /**
+     * Selected end date, when the type is date-range.
+     *
+     * @type {string|null}
+     */
+    get dateRangeEndDate() {
+        if (!Array.isArray(this.currentValue)) {
+            return null;
+        }
+        return this.currentValue[1];
+    }
+
+    /**
+     * Selected start date, when the type is date-range.
+     *
+     * @type {string|null}
+     */
+    get dateRangeStartDate() {
+        if (!Array.isArray(this.currentValue)) {
+            return null;
+        }
+        return this.currentValue[0];
+    }
+
+    /**
+     * True if the filter menu is disabled or loading.
+     *
+     * @type {boolean}
+     */
+    get disabledOrLoading() {
+        return this.isLoading || this.disabled;
+    }
+
+    /**
+     * HTML element of the dropdown.
+     *
+     * @type {HTMLElement}
+     */
+    get dropdownElement() {
+        return this.template.querySelector(
+            '[data-element-id="div-dropdown-content"]'
+        );
+    }
+
+    /**
+     * True if inifinite loading is enabled.
+     *
+     * @type {boolean}
+     */
+    get infiniteLoad() {
+        return this.computedTypeAttributes.enableInfiniteLoading;
+    }
+
+    /**
+     * True if the dropdown menu is automatically positionned.
+     *
+     * @type {boolean}
+     */
+    get isAutoAlignment() {
+        return this.dropdownAlignment.startsWith('auto');
+    }
+
+    /**
+     * True if the type is date-range.
+     *
+     * @type {boolean}
+     */
+    get isDateRange() {
+        return this.type === 'date-range';
+    }
+
+    /**
+     * True if the type is list.
+     *
+     * @type {boolean}
+     */
+    get isList() {
+        return this.type === 'list';
+    }
+
+    /**
+     * True if the type is range.
+     *
+     * @type {boolean}
+     */
+    get isRange() {
+        return this.type === 'range';
+    }
+
+    /**
+     * True if the variant is vertical.
+     *
+     * @type {boolean}
+     */
+    get isVertical() {
+        return this.variant === 'vertical';
+    }
+
+    /**
+     * True if no list items are visible.
+     *
+     * @type {boolean}
+     */
+    get noVisibleListItem() {
+        let i = 0;
+        let noVisibleListItem = true;
+        while (i < this.computedItems.length && noVisibleListItem) {
+            if (!this.computedItems[i].hidden) {
+                noVisibleListItem = false;
+            }
+            i += 1;
+        }
+        return noVisibleListItem;
+    }
+
+    /**
+     * Array of one action: remove. The action is shown on the selected items pills.
+     *
+     * @type {object[]}
+     */
+    get pillActions() {
+        return [
+            {
+                label: 'Remove',
+                name: 'remove',
+                iconName: 'utility:close'
+            }
+        ];
+    }
+
+    /**
+     * True if the end of the list is reached.
+     *
+     * @type {boolean}
+     */
+    get scrolledToEnd() {
+        const fullHeight = this.dropdownElement.scrollHeight;
+        const scrolledDistance = this.dropdownElement.scrollTop;
+        const visibleHeight = this.dropdownElement.offsetHeight;
+        return (
+            visibleHeight + scrolledDistance + LOAD_MORE_OFFSET >= fullHeight
+        );
+    }
+
+    /**
+     * True if the load more button should be visible.
+     *
+     * @type {boolean}
+     */
+    get showLoadMoreButton() {
+        return this.infiniteLoad && !this.isLoading;
+    }
+
+    /**
+     * True if the no search result message should be visible.
+     *
+     * @type {boolean}
+     */
+    get showNoResultMessage() {
+        return !this.isLoading && this.searchTerm && this.noVisibleListItem;
+    }
+
+    /**
+     * Value of the slider, when the type is range.
+     *
+     * @type {number[]}
+     */
+    get rangeValue() {
+        if (this.currentValue.length) {
+            return this.currentValue;
+        }
+        const { min, max } = this.computedTypeAttributes;
+        const start = isNaN(min) ? DEFAULT_RANGE_VALUE[0] : Number(min);
+        const end = isNaN(max) ? DEFAULT_RANGE_VALUE[1] : Number(max);
+        return [start, end];
+    }
+
+    /**
+     * True if the selected items should be visible.
      *
      * @type {boolean}
      */
     get showSelectedItems() {
         return !this.hideSelectedItems && this.selectedItems.length > 0;
+    }
+
+    /**
+     * Array of currently visible list items.
+     *
+     * @type {object[]}
+     */
+    get visibleListItems() {
+        return this.computedItems.filter((it) => !it.hidden);
     }
 
     /*
@@ -804,42 +1172,72 @@ export default class AvonniFilterMenu extends LightningElement {
      */
 
     /**
-     * Set the focus on the menu.
-     *
-     * @public
-     */
-    @api
-    focus() {
-        if (this.variant === 'vertical') {
-            this.template
-                .querySelector('[data-element-id="avonni-input-choice-set"]')
-                .focus();
-        } else {
-            this.template.querySelector('[data-element-id="button"]').focus();
-        }
-    }
-
-    /**
-     * Simulate a click on the apply button.
+     * Save the currently selected values.
      *
      * @public
      */
     @api
     apply() {
+        this._value = [...this.currentValue];
         this.computeSelectedItems();
         this.close();
     }
 
     /**
-     * Clear the selected items.
+     * Deprecated. To unselect the value, use `reset()`. To remove the current value, use the `value` attribute.
      *
-     * @public
+     * @deprecated
      */
     @api
     clear() {
         this._value = [];
-        this.computeValue();
+        this.currentValue = [];
+        this.computeListItems();
         this.computeSelectedItems();
+
+        console.warn(
+            'The clear() method is deprecated. To unselect the value, use reset(). To remove the current value, use the value attribute.'
+        );
+    }
+
+    /**
+     * Set the focus on the filter menu.
+     *
+     * @public
+     */
+    @api
+    focus() {
+        if (this.isVertical) {
+            const choiceSet = this.template.querySelector(
+                '[data-element-id="avonni-input-choice-set"]'
+            );
+            if (choiceSet) {
+                choiceSet.focus();
+            }
+        } else {
+            const button = this.template.querySelector(
+                '[data-element-id="button"]'
+            );
+            if (button) {
+                button.focus();
+            }
+        }
+    }
+
+    /**
+     * Unselect all values, without saving the change.
+     *
+     * @public
+     */
+    @api
+    reset() {
+        this.currentValue = [];
+        if (this.isList) {
+            this.computedItems = this.computedItems.map((item) => {
+                item.checked = false;
+                return item;
+            });
+        }
     }
 
     /*
@@ -847,73 +1245,6 @@ export default class AvonniFilterMenu extends LightningElement {
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
-
-    /**
-     * Compute Tab index.
-     */
-    computeTabindex() {
-        let firstFocusableItem;
-        this.computedItems.forEach((item) => {
-            if (!firstFocusableItem && !item.disabled) {
-                firstFocusableItem = true;
-                item.tabindex = '0';
-            } else {
-                item.tabindex = '-1';
-            }
-        });
-    }
-
-    /**
-     * Compute Value of items by 'checked' state.
-     */
-    computeValue() {
-        this.computedItems.forEach((item) => {
-            if (this.value.indexOf(item.value) > -1) {
-                item.checked = true;
-            } else {
-                item.checked = false;
-            }
-        });
-    }
-
-    /**
-     * Compute Selected Items List by checked items.
-     */
-    computeSelectedItems() {
-        const selectedItems = [];
-        this.computedItems.forEach((item) => {
-            if (item.checked) {
-                selectedItems.push({
-                    label: item.label,
-                    name: item.value
-                });
-            }
-        });
-        this.selectedItems = selectedItems;
-    }
-
-    /**
-     * Allow blur.
-     */
-    allowBlur() {
-        this._cancelBlur = false;
-    }
-
-    /**
-     * Cancel blur.
-     */
-    cancelBlur() {
-        this._cancelBlur = true;
-    }
-
-    /**
-     * Close dropdown menu.
-     */
-    close() {
-        if (this._dropdownVisible) {
-            this.toggleMenuVisibility();
-        }
-    }
 
     /**
      * Initialize tooltip.
@@ -925,21 +1256,234 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Set order of items.
-     *
-     * @param {object} order
+     * Create the computed list items, based on the given items.
      */
-    setOrder(order) {
-        this._order = order;
+    computeListItems() {
+        if (!this.isList) {
+            return;
+        }
+        let firstFocusableItem;
+        const items = normalizeArray(
+            this.computedTypeAttributes.items,
+            'object'
+        );
+
+        this.computedItems = deepCopy(items).map((item) => {
+            item.checked = this.currentValue.includes(item.value);
+            item.hidden = this.isOutOfSearchScope(item.label);
+
+            if (!firstFocusableItem && !item.disabled && !item.hidden) {
+                firstFocusableItem = true;
+                item.tabindex = '0';
+            } else {
+                item.tabindex = '-1';
+            }
+            return item;
+        });
+
+        if (this.dropdownVisible) {
+            // If the items are set while the popover is open, prevent losing focus
+            this.focusDropdown();
+        }
     }
 
     /**
-     * Checks if dropdown is auto Aligned.
-     *
-     * @returns boolean
+     * Compute the selected items, that will be displayed as pills.
      */
-    isAutoAlignment() {
-        return this.dropdownAlignment.startsWith('auto');
+    computeSelectedItems() {
+        if (this.isList) {
+            this.computeSelectedListItems();
+        } else {
+            this.computeSelectedRange();
+        }
+    }
+
+    /**
+     * Use the value to compute the selected list items that will be displayed as pills.
+     */
+    computeSelectedListItems() {
+        const selectedItems = this.computedItems.filter((item) => {
+            return this.value.includes(item.value);
+        });
+
+        this.selectedItems = selectedItems.map((item) => {
+            return {
+                label: item.label,
+                name: item.value
+            };
+        });
+    }
+
+    /**
+     * Use the value to compute the selected range that will be displayed as a pill.
+     */
+    computeSelectedRange() {
+        const selection = this.value.reduce((string, value) => {
+            let normalizedValue = '';
+            if (this.isDateRange && value && dateTimeObjectFrom(value)) {
+                // Date range
+                const { dateStyle, timeStyle, timezone, type } =
+                    this.computedTypeAttributes;
+                const date = dateTimeObjectFrom(value, { zone: timezone });
+                normalizedValue = formatDateFromStyle(date, {
+                    dateStyle,
+                    showTime: type === 'datetime',
+                    timeStyle
+                });
+            } else if (this.isRange && !isNaN(value)) {
+                // Range
+                const style = this.computedTypeAttributes.unit;
+                const attributes = normalizeObject(
+                    this.computedTypeAttributes.unitAttributes
+                );
+                const options = {
+                    style,
+                    ...attributes
+                };
+                normalizedValue = value.toString();
+                normalizedValue = numberFormat(options).format(normalizedValue);
+            }
+            return string.length
+                ? `${string} - ${normalizedValue}`
+                : normalizedValue;
+        }, '');
+
+        if (selection.length) {
+            this.selectedItems = [
+                {
+                    label: selection,
+                    name: selection
+                }
+            ];
+        } else {
+            this.selectedItems = [];
+        }
+    }
+
+    /**
+     * Close the dropdown menu.
+     */
+    close() {
+        if (this.dropdownVisible) {
+            this.toggleMenuVisibility();
+        }
+    }
+
+    /**
+     * Set the focus on the dropdown menu of the horizontal variant.
+     */
+    focusDropdown() {
+        const isFocusableList =
+            (this.isList && this.visibleListItems.length) ||
+            this.computedTypeAttributes.allowSearch;
+        const isFocusable =
+            isFocusableList || (!this.isList && !this.isLoading);
+
+        if (isFocusable) {
+            this._allowBlur = false;
+            requestAnimationFrame(() => {
+                const focusTrap = this.template.querySelector(
+                    '[data-element-id="lightning-focus-trap"]'
+                );
+                if (focusTrap) {
+                    this._dropdownIsFocused = true;
+                    focusTrap.focus();
+                }
+            });
+        }
+    }
+
+    /**
+     * Set the focus on a list item of the dropdown menu.
+     *
+     * @param {number} currentIndex Index of the currently focused item.
+     * @param {number} addedIndex Index to add to the current index. Valid values include 1 and -1. Defaults to 1.
+     */
+    focusListItem(currentIndex, addedIndex = 1) {
+        const items = this.template.querySelectorAll(
+            '[data-element-id="lightning-menu-item"]'
+        );
+        items[currentIndex].tabIndex = '-1';
+        const index = currentIndex + addedIndex;
+
+        let item = items[index];
+        if (index < 0) {
+            item = items[items.length - 1];
+        } else if (index >= items.length) {
+            item = items[0];
+        } else if (item && item.disabled) {
+            this.focusListItem(index, addedIndex);
+            return;
+        }
+
+        if (item) {
+            item.focus();
+            item.tabIndex = '0';
+        }
+    }
+
+    /**
+     * Check if the given list item label is out of the search scope.
+     *
+     * @param {string} label Label of the list item to check.
+     * @returns {boolean} True if the search term is not included in the label, false otherwise.
+     */
+    isOutOfSearchScope(label) {
+        if (!this.searchTerm || typeof this.searchTerm !== 'string') {
+            return false;
+        }
+        const normalizedLabel = label.toLowerCase();
+        const searchTerm = this.searchTerm.toLowerCase();
+        return !normalizedLabel.includes(searchTerm);
+    }
+
+    /**
+     * Create the computed type attributes. Make sure only the authorized attributes for the given type are kept, add the deperecated attributes and compute the list items.
+     */
+    normalizeTypeAttributes() {
+        const typeAttributes = {};
+        Object.entries(this.typeAttributes).forEach(([key, value]) => {
+            const allowedAttribute =
+                TYPE_ATTRIBUTES[this.type] &&
+                TYPE_ATTRIBUTES[this.type].includes(key);
+            if (allowedAttribute) {
+                typeAttributes[key] = value;
+            }
+        });
+        this.computedTypeAttributes = typeAttributes;
+        this.supportDeprecatedAttributes();
+        this.computeListItems();
+    }
+
+    /**
+     * Observe the dropdown position if its position is automatically set.
+     */
+    pollBoundingRect() {
+        // only poll if the dropdown is auto aligned
+        if (this.isAutoAlignment && this.dropdownVisible) {
+            setTimeout(
+                () => {
+                    if (this._connected) {
+                        observePosition(this, 300, this._boundingRect, () => {
+                            this.close();
+                        });
+
+                        // continue polling
+                        this.pollBoundingRect();
+                    }
+                },
+                250 // check every 0.25 second
+            );
+        }
+    }
+
+    /**
+     * Set the order of the button menu. This method is used as a callback by a potential button group parent.
+     *
+     * @param {number} order Order of the button menu in its siblings.
+     */
+    setOrder(order) {
+        this._order = order;
     }
 
     /**
@@ -948,7 +1492,7 @@ export default class AvonniFilterMenu extends LightningElement {
      * @returns object dropdown menu positioning.
      */
     startPositioning() {
-        if (!this.isAutoAlignment()) {
+        if (!this.isAutoAlignment) {
             return Promise.resolve();
         }
 
@@ -1015,15 +1559,50 @@ export default class AvonniFilterMenu extends LightningElement {
     }
 
     /**
-     * Dropdown menu visibility toggle.
+     * Make sure the deprecated attributes used for the list type are still supported through the type attributes.
+     */
+    supportDeprecatedAttributes() {
+        if (!this.isList) {
+            return;
+        }
+
+        const {
+            isMultiSelect,
+            searchInputPlaceholder,
+            allowSearch,
+            dropdownLength,
+            dropdownWidth,
+            items
+        } = this.computedTypeAttributes;
+
+        if (allowSearch === undefined) {
+            this.computedTypeAttributes.allowSearch = this.showSearchBox;
+        }
+        if (dropdownLength === undefined) {
+            this.computedTypeAttributes.dropdownLength = this.dropdownLength;
+        }
+        if (dropdownWidth === undefined) {
+            this.computedTypeAttributes.dropdownWidth = this.dropdownWidth;
+        }
+        if (isMultiSelect === undefined) {
+            this.computedTypeAttributes.isMultiSelect = this.isMultiSelect;
+        }
+        if (!searchInputPlaceholder) {
+            this.computedTypeAttributes.searchInputPlaceholder =
+                this.searchInputPlaceholder;
+        }
+        if (!Array.isArray(items) || !items.length) {
+            this.computedTypeAttributes.items = deepCopy(this.items);
+        }
+    }
+
+    /**
+     * Toggle the visibility of the dropdown menu.
      */
     toggleMenuVisibility() {
         if (!this.disabled) {
-            this._dropdownVisible = !this._dropdownVisible;
-            if (!this.dropdownOpened && this._dropdownVisible) {
-                this.dropdownOpened = true;
-            }
-            if (this._dropdownVisible) {
+            this.dropdownVisible = !this.dropdownVisible;
+            if (this.dropdownVisible) {
                 this.startPositioning();
 
                 /**
@@ -1039,6 +1618,9 @@ export default class AvonniFilterMenu extends LightningElement {
                 this._boundingRect = this.getBoundingClientRect();
 
                 this.pollBoundingRect();
+                this.currentValue = [...this.value];
+                this.computeListItems();
+                this.focusDropdown();
             } else {
                 this.stopPositioning();
 
@@ -1050,226 +1632,185 @@ export default class AvonniFilterMenu extends LightningElement {
                  * @public
                  */
                 this.dispatchEvent(new CustomEvent('close'));
+                this._previousScroll = undefined;
             }
-
-            this.classList.toggle('slds-is-open');
         }
     }
 
-    /**
-     * Get bounding rect coordinates for dropdown menu.
+    /*
+     * ------------------------------------------------------------
+     *  EVENT HNALDERS AND DISPATCHERS
+     * -------------------------------------------------------------
      */
-    pollBoundingRect() {
-        // only poll if the dropdown is auto aligned
-        if (this.isAutoAlignment() && this._dropdownVisible) {
-            setTimeout(
-                () => {
-                    if (this._connected) {
-                        observePosition(this, 300, this._boundingRect, () => {
-                            this.close();
-                        });
 
-                        // continue polling
-                        this.pollBoundingRect();
-                    }
-                },
-                250 // check every 0.25 second
-            );
-        }
+    /**
+     * Handle a click on the apply button.
+     */
+    handleApply() {
+        this.apply();
+        this.dispatchApply();
     }
 
     /**
-     * Dropdown mouse down event handler.
-     *
-     * @param {Event} event
-     */
-    handleDropdownMouseDown(event) {
-        const mainButton = 0;
-        if (event.button === mainButton) {
-            this.cancelBlur();
-        }
-    }
-
-    /**
-     * Button Mouse Down handler.
-     *
-     * @param {Event} event
-     */
-    handleButtonMouseDown(event) {
-        const mainButton = 0;
-        if (event.button === mainButton) {
-            this.cancelBlur();
-        }
-    }
-
-    /**
-     * Dropdown click handler.
-     */
-    handleDropdownClick() {
-        // On click outside of a focusable element, the focus will go to the button
-        if (!this.template.activeElement) {
-            this.focus();
-        }
-    }
-
-    /**
-     * Button Click handler.
-     */
-    handleButtonClick() {
-        this.allowBlur();
-
-        this.toggleMenuVisibility();
-    }
-
-    /**
-     * Button Focus handler.
-     */
-    handleButtonFocus() {
-        this.dispatchEvent(new CustomEvent('focus'));
-    }
-
-    /**
-     * Button Blur handler.
+     * Handle the blur of the button menu.
      */
     handleButtonBlur() {
-        if (!this._cancelBlur) {
-            this.close();
+        if (this._allowBlur) {
             this.dispatchEvent(new CustomEvent('blur'));
+            this.close();
         }
     }
 
     /**
-     * Checkbox value change event handler.
-     *
-     * @param {Event} event
+     * Handle a click on the button menu.
      */
-    handleCheckboxChange(event) {
-        this._value = event.detail.value;
-        this.computeValue();
-        this.dispatchSelect();
-    }
-
-    /**
-     * Private select handler.
-     *
-     * @param {Event} event
-     */
-    handlePrivateSelect(event) {
-        const index = this.value.findIndex(
-            (itemValue) => itemValue === event.detail.value
-        );
-        if (index > -1) {
-            // Unselect the current item
-            this.value.splice(index, 1);
-        } else {
-            // Select a new item
-            if (!this.isMultiSelect) this._value = [];
-            this.value.push(event.detail.value);
-        }
-
-        this.computeValue();
-
-        event.stopPropagation();
-        this.dispatchSelect();
-    }
-
-    /**
-     * Private Blur handler.
-     *
-     * @param {Event} event
-     */
-    handlePrivateBlur(event) {
-        event.stopPropagation();
-
-        if (this._cancelBlur) {
-            return;
-        }
-
-        if (this._dropdownVisible) {
+    handleButtonClick() {
+        if (!this._preventDropdownToggle) {
             this.toggleMenuVisibility();
         }
+        this._preventDropdownToggle = false;
     }
 
     /**
-     * Private focus handler.
-     *
-     * @param {Event} event
+     * Handle a focus on the button menu.
      */
-    handlePrivateFocus(event) {
-        event.stopPropagation();
-        this.allowBlur();
+    handleButtonFocus() {
+        if (this._allowBlur) {
+            this.dispatchEvent(new CustomEvent('focus'));
+        } else {
+            this._allowBlur = true;
+
+            if (this.dropdownVisible) {
+                // Prevent toggling the menu twice,
+                // if we click on the button when it is open
+                this._preventDropdownToggle = true;
+            }
+        }
     }
 
     /**
-     * Key down event handler.
+     * Handle a change in the value of the input choice set that is visible when the variant is vertical.
      *
-     * @param {Event} event
+     * @param {Event} event change event.
      */
-    handleKeyDown(event) {
-        if (event.code === 'Tab') {
-            this.cancelBlur();
+    handleChoiceSetChange(event) {
+        const value = event.detail.value;
+        this.currentValue =
+            value && !Array.isArray(value) ? [value] : value || [];
+        this.computedItems.forEach((item) => {
+            item.checked = this.currentValue.includes(item.value);
+        });
+        this.dispatchSelect();
+    }
 
-            if (event.target.label === this.applyButtonLabel) {
-                this.allowBlur();
+    /**
+     * Handle a change of the input date range, when the type is date-range.
+     *
+     * @param {Event} event change event.
+     */
+    handleDateRangeChange(event) {
+        const { startDate, endDate } = event.detail;
+        this.currentValue = [startDate, endDate];
+        this.dispatchSelect();
+    }
+
+    /**
+     * Handle a focus set inside the dropdown menu.
+     */
+    handleDropdownFocusIn() {
+        this._dropdownIsFocused = true;
+    }
+
+    /**
+     * Handle a focus lost inside the dropdown menu.
+     */
+    handleDropdownFocusOut() {
+        this._dropdownIsFocused = false;
+
+        requestAnimationFrame(() => {
+            if (!this._dropdownIsFocused) {
                 this.close();
-                this.dispatchEvent(new CustomEvent('blur'));
             }
-        }
-
-        const isMenuItem = event.target.tagName === 'LIGHTNING-MENU-ITEM';
-
-        // To follow LWC convention, menu items are navigable with up and down arrows
-        if (isMenuItem) {
-            const index = Number(event.target.dataset.index);
-
-            if (event.code === 'ArrowUp') {
-                const previousItem = this.template.querySelector(
-                    `[data-index="${index - 1}"]`
-                );
-                if (previousItem) {
-                    this.cancelBlur();
-                    previousItem.focus();
-                }
-            } else if (event.code === 'ArrowDown') {
-                const nextItem = this.template.querySelector(
-                    `[data-index="${index + 1}"]`
-                );
-                if (nextItem) {
-                    this.cancelBlur();
-                    nextItem.focus();
-                }
-            }
-        }
+        });
     }
 
     /**
-     * Selected Item removal handler.
+     * Handle a key up in the dropdown menu.
      *
-     * @param {Event} event
+     * @param {Event} event keyup event.
      */
-    handleSelectedItemRemove(event) {
-        const selectedItemIndex = event.detail.index;
-        this.selectedItems.splice(selectedItemIndex, 1);
+    handleDropdownKeyUp(event) {
+        const key = event.key;
+        if (key === 'Escape') {
+            this.close();
 
-        const valueIndex = this.value.findIndex(
-            (name) => name === event.detail.item.name
-        );
-        this.value.splice(valueIndex, 1);
-        this.computeValue();
-        this.dispatchApply();
+            requestAnimationFrame(() => {
+                // Set the focus on the button after render
+                this.focus();
+            });
+        }
     }
 
     /**
-     * Apply click handler.
+     * Handle a key down on a list item.
+     *
+     * @param {Event} event keydown event.
      */
-    handleApplyClick() {
-        this.computeSelectedItems();
-        this.dispatchApply();
-        this.close();
+    handleListItemKeyDown(event) {
+        const key = event.key;
+        const index = Number(event.currentTarget.dataset.index);
+
+        switch (key) {
+            case 'ArrowUp': {
+                this.focusListItem(index, -1);
+                break;
+            }
+            case 'ArrowDown': {
+                this.focusListItem(index);
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     /**
-     * Reset Click handler.
+     * Handle the selection of a list item.
+     *
+     * @param {Event} event privateselect event.
+     */
+    handlePrivateSelect(event) {
+        event.stopPropagation();
+
+        const selectedValue = event.detail.value;
+        this.currentValue = [];
+        this.computedItems = this.computedItems.map((item) => {
+            if (item.value === selectedValue) {
+                item.checked = !item.checked;
+            } else if (!this.computedTypeAttributes.isMultiSelect) {
+                item.checked = false;
+            }
+            if (item.checked) {
+                this.currentValue.push(item.value);
+            }
+            return item;
+        });
+
+        this.dispatchSelect();
+    }
+
+    /**
+     * Handle a change of the slider value, when the type is range.
+     *
+     * @param {Event} event change event.
+     */
+    handleRangeChange(event) {
+        this.currentValue = event.detail.value;
+        this.dispatchSelect();
+    }
+
+    /**
+     * Handle a click on the reset button.
      */
     handleResetClick() {
         /**
@@ -1278,90 +1819,169 @@ export default class AvonniFilterMenu extends LightningElement {
          * @event
          * @name reset
          * @public
+         * @bubbles
          */
-        this.dispatchEvent(new CustomEvent('reset'));
-        this.clear();
+        this.dispatchEvent(new CustomEvent('reset', { bubbles: true }));
+        this.reset();
     }
 
     /**
-     * Search handler.
+     * Handle a scroll movement in the dropdown menu.
+     */
+    handleScroll() {
+        if (!this.infiniteLoad || this.isLoading) {
+            return;
+        }
+
+        const fullHeight = this.dropdownElement.scrollHeight;
+        const visibleHeight = this.dropdownElement.offsetHeight;
+        const loadLimit = fullHeight - visibleHeight - LOAD_MORE_OFFSET;
+        const firstTimeReachingTheEnd = this._previousScroll < loadLimit;
+
+        if (
+            this.scrolledToEnd &&
+            (!this._previousScroll || firstTimeReachingTheEnd)
+        ) {
+            this.dispatchLoadMore();
+        }
+        this._previousScroll = this.dropdownElement.scrollTop;
+    }
+
+    /**
+     * Handle an input in the search box.
      *
-     * @param {Event} event
+     * @param {Event} event change event.
      */
     handleSearch(event) {
         event.stopPropagation();
-        const searchTerm = event.currentTarget.value;
+        this.searchTerm = event.detail.value;
 
-        this.computedItems.forEach((item) => {
-            const label = item.label.toLowerCase();
-            item.hidden = searchTerm
-                ? !label.includes(searchTerm.toLowerCase())
-                : false;
-        });
+        clearTimeout(this._searchTimeOut);
+        this._searchTimeOut = setTimeout(() => {
+            this.computedItems.forEach((item) => {
+                item.hidden = this.isOutOfSearchScope(item.label);
+            });
+            this.computedItems = [...this.computedItems];
 
-        /**
-         * The event fired when the search input value is changed.
-         *
-         * @event
-         * @name search
-         * @param {string} value The value of the search input.
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('search', {
-                detail: {
-                    value: searchTerm
-                }
-            })
-        );
+            /**
+             * The event fired when the search input value is changed.
+             *
+             * @event
+             * @name search
+             * @param {string} value The value of the search input.
+             * @public
+             * @bubbles
+             */
+            this.dispatchEvent(
+                new CustomEvent('search', {
+                    detail: {
+                        value: this.searchTerm
+                    },
+                    bubbles: true
+                })
+            );
+
+            if (
+                this.isVertical &&
+                this.infiniteLoad &&
+                !this.isLoading &&
+                this.noVisibleListItem
+            ) {
+                this.dispatchLoadMore();
+            }
+        }, 300);
     }
 
     /**
-     * Dispatch Apply event.
+     * Handle the removal of a selected item.
+     *
+     * @param {Event} event actionclick event.
+     */
+    handleSelectedItemRemove(event) {
+        const { targetName, index } = event.detail;
+        this.selectedItems.splice(index, 1);
+        this.selectedItems = [...this.selectedItems];
+
+        if (this.isList) {
+            const valueIndex = this.value.findIndex((name) => {
+                return name === targetName;
+            });
+            this.value.splice(valueIndex, 1);
+        } else {
+            this._value = [];
+        }
+
+        this.currentValue = [...this.value];
+        this.computeListItems();
+        this.dispatchApply();
+    }
+
+    /**
+     * Dispatch the apply event.
      */
     dispatchApply() {
         /**
-         * The event fired when a user clicks on the “Apply” button or removes a pill from the selected items.
+         * The event fired when the “Apply” button is clicked, or a pill removed from the selected items. If `hide-apply-reset-buttons` is `true`, the `apply` event is also fired when the user selects or unselects a value.
          *
          * @event
          * @name apply
-         * @param {string[]} value Array of selected items' values.
+         * @param {string[]|number[]} value New value of the filter menu.
          * @public
+         * @bubbles
          */
         this.dispatchEvent(
             new CustomEvent('apply', {
                 detail: {
-                    value: this.isMultiSelect
-                        ? this.value
-                        : this.value[0] || null
-                }
+                    value: this.value
+                },
+                bubbles: true
             })
         );
     }
 
+    dispatchLoadMore() {
+        /**
+         * The event fired when the end of a list is reached. It is only fired if the `enableInfiniteLoading` type attribute is present. In the horizontal variant, the `loadmore` event is triggered by a scroll to the end of the list. In the vertical variant, the `loadmore` event is triggered by a button clicked by the user.
+         *
+         * @event
+         * @name loadmore
+         * @public
+         * @bubbles
+         */
+        this.dispatchEvent(new CustomEvent('loadmore', { bubbles: true }));
+    }
+
     /**
-     * Dispatch Select event.
+     * Dispatch the select event.
      */
     dispatchSelect() {
-        // Dispatch the event with the same properties as LWC button-menu
         this.dispatchEvent(
             /**
-             * The event fired when a user clicks on a menu item.
+             * TThe event fired when a user selects or unselects a value.
              *
              * @event
              * @name select
-             * @param {string[]} value Value of the selected item.
+             * @param {string[]} value Currently selected value. The value is not saved, as long as the user does not click on the “apply” button.
              * @public
-             * @cancelable
+             * @bubbles
              */
             new CustomEvent('select', {
-                cancelable: true,
                 detail: {
-                    value: this.isMultiSelect
-                        ? this.value
-                        : this.value[0] || null
-                }
+                    value: deepCopy(this.currentValue)
+                },
+                bubbles: true
             })
         );
+
+        if (this.hideApplyResetButtons) {
+            // Save the selection immediately
+            this._value = [...this.currentValue];
+            this.computeSelectedItems();
+            this.dispatchApply();
+
+            if (this.isList && !this.computedTypeAttributes.isMultiSelect) {
+                this.close();
+            }
+        }
     }
 }

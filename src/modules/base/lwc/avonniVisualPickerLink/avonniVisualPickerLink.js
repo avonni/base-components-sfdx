@@ -164,8 +164,7 @@ export default class AvonniVisualPickerLink extends LightningElement {
     get computedContainerClass() {
         return classSet('slds-welcome-mat__tile')
             .add({
-                'slds-welcome-mat__tile_complete':
-                    this._completed && !this._infoOnly,
+                'slds-welcome-mat__tile_complete': this._completed,
                 'slds-welcome-mat__tile_info-only': this._infoOnly
             })
             .toString();

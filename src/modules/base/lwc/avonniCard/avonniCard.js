@@ -272,7 +272,7 @@ export default class AvonniCard extends LightningElement {
      */
     get computedCardClasses() {
         return classSet(
-            'avonni-card__body-container avonni-height_full slds-grid slds-is-relative slds-col'
+            'avonni-card__body-container avonni-height_full slds-grid slds-is-relative'
         )
             .add({
                 'avonni-card__media-top slds-grid_vertical':
@@ -371,9 +371,7 @@ export default class AvonniCard extends LightningElement {
      * @type {string}
      */
     get computedMediaClasses() {
-        return classSet(
-            'avonni-card__media-container slds-col slds-is-relative'
-        )
+        return classSet('avonni-card__media-container slds-is-relative')
             .add({
                 'avonni-card__media-border-bottom': this.mediaHasBottomBorder
             })

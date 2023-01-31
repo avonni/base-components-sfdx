@@ -662,7 +662,7 @@ export default class AvonniWizard extends LightningElement {
      */
     get mainColClass() {
         return classSet('main-col').add({
-            'slds-col':
+            'avonni-wizard__flex-col':
                 this.indicatorPosition === 'right' ||
                 this.indicatorPosition === 'left',
             'slds-order_2': this.indicatorPosition === 'left'

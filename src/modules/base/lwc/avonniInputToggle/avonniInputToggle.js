@@ -32,7 +32,6 @@
 
 import { LightningElement, api } from 'lwc';
 import {
-    ContentMutation,
     synchronizeAttrs,
     getRealDOMId,
     normalizeBoolean,
@@ -157,11 +156,6 @@ export default class AvonniInputToggle extends LightningElement {
     _rendered;
     helpMessage;
 
-    constructor() {
-        super();
-        this.ariaObserver = new ContentMutation(this);
-    }
-
     connectedCallback() {
         this.classList.add('slds-form-element');
         this.interactingState = new InteractingState();
@@ -192,12 +186,10 @@ export default class AvonniInputToggle extends LightningElement {
 
     set ariaControls(references) {
         this._ariaControls = normalizeAriaAttribute(references);
-        this.ariaObserver.link(
-            '[data-element-id="input"]',
-            'aria-controls',
-            this._ariaControls,
-            '[data-aria]'
-        );
+
+        if (this._rendered) {
+            this._synchronizeA11y();
+        }
     }
 
     /**
@@ -213,12 +205,10 @@ export default class AvonniInputToggle extends LightningElement {
 
     set ariaDescribedBy(references) {
         this._ariaDescribedBy = normalizeAriaAttribute(references);
-        this.ariaObserver.link(
-            '[data-element-id="input"]',
-            'aria-describedby',
-            this._ariaDescribedBy,
-            '[data-aria]'
-        );
+
+        if (this._rendered) {
+            this._synchronizeA11y();
+        }
     }
 
     /**
@@ -234,12 +224,10 @@ export default class AvonniInputToggle extends LightningElement {
 
     set ariaLabelledBy(references) {
         this._ariaLabelledBy = normalizeAriaAttribute(references);
-        this.ariaObserver.link(
-            '[data-element-id="input"]',
-            'aria-labelledby',
-            this._ariaLabelledBy,
-            '[data-aria]'
-        );
+
+        if (this._rendered) {
+            this._synchronizeA11y();
+        }
     }
 
     /**
@@ -445,38 +433,12 @@ export default class AvonniInputToggle extends LightningElement {
     get computedAriaDescribedBy() {
         const ariaValues = [];
 
-        if (this.messageWhenValueMissing) {
+        if (this.helpMessage) {
             ariaValues.push(this.computedUniqueHelpElementId);
         }
 
         if (this.ariaDescribedBy) {
             ariaValues.push(this.ariaDescribedBy);
-        }
-
-        return normalizeAriaAttribute(ariaValues);
-    }
-
-    /**
-     * Gets Aria Controls.
-     */
-    get computedAriaControls() {
-        const ariaValues = [];
-
-        if (this.ariaControls) {
-            ariaValues.push(this.ariaControls);
-        }
-
-        return normalizeAriaAttribute(ariaValues);
-    }
-
-    /**
-     * Gets Aria Labelled by.
-     */
-    get computedAriaLabelledBy() {
-        const ariaValues = [];
-
-        if (this.ariaLabelledBy) {
-            ariaValues.push(this.ariaLabelledBy);
         }
 
         return normalizeAriaAttribute(ariaValues);
@@ -603,8 +565,8 @@ export default class AvonniInputToggle extends LightningElement {
         if (input) {
             synchronizeAttrs(input, {
                 [ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
-                [ARIA_CONTROLS]: this.computedAriaControls,
-                [ARIA_LABELEDBY]: this.computedAriaLabelledBy
+                [ARIA_CONTROLS]: this.ariaControls,
+                [ARIA_LABELEDBY]: this.ariaLabelledBy
             });
         }
     }

@@ -143,16 +143,21 @@
                                         aria-current={day.ariaCurrent}
                                         role="gridcell"
                                         tabindex={day.tabIndex}
-                                        data-full-date={day.date}
                                         data-date={day.label}
+                                        data-disabled={day.disabled}
+                                        data-element-id="td"
+                                        data-full-date={day.date.ts}
+                                        data-selected={day.appearsSelected}
+                                        data-today={day.isToday}
                                         onmouseover={handleMouseOver}
                                         onmouseout={handleMouseOut}
                                         onfocus={handleDateFocus}
                                     >
                                         <span
                                             class={day.labelClass}
-                                            data-full-date={day.date}
+                                            data-full-date={day.date.ts}
                                             data-date={day.label}
+                                            data-disabled={day.disabled}
                                             data-element-id="span-day-label"
                                             onclick={handleSelectDate}
                                             >{day.label}</span
@@ -187,7 +192,7 @@
                                             label={day.chip.label}
                                             variant={day.chip.variant}
                                             outline={day.chip.outline}
-                                            data-full-date={day.date}
+                                            data-full-date={day.date.ts}
                                             data-element-id="chip-date-label"
                                         >
                                             <c-avonni-primitive-icon
@@ -199,7 +204,7 @@
                                                 size="xx-small"
                                                 variant={day.chip.iconVariant}
                                                 icon-name={day.chip.iconName}
-                                                data-full-date={day.date}
+                                                data-full-date={day.date.ts}
                                             ></c-avonni-primitive-icon>
                                             <c-avonni-primitive-icon
                                                 if:true={day.chip.showRightIcon}
@@ -210,7 +215,7 @@
                                                 size="xx-small"
                                                 variant={day.chip.iconVariant}
                                                 icon-name={day.chip.iconName}
-                                                data-full-date={day.date}
+                                                data-full-date={day.date.ts}
                                             ></c-avonni-primitive-icon>
                                         </c-avonni-chip>
                                     </td>

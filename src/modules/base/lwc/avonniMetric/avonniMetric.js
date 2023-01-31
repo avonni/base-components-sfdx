@@ -56,6 +56,11 @@ const FORMAT_STYLES = {
     valid: ['currency', 'decimal', 'percent', 'percent-fixed']
 };
 
+const POSITIONS = {
+    valid: ['right', 'left', 'top', 'bottom'],
+    default: 'right'
+};
+
 const TREND_ICONS = {
     valid: ['dynamic', 'arrow', 'caret'],
     default: undefined
@@ -152,6 +157,7 @@ export default class AvonniMetric extends LightningElement {
     _secondaryMinimumFractionDigits;
     _secondaryMinimumIntegerDigits;
     _secondaryMinimumSignificantDigits;
+    _secondaryPosition = POSITIONS.default;
     _secondaryShowTrendColor = false;
     _secondaryTrendBreakpointValue = DEFAULT_TREND_BREAKPOINT_VALUE;
     _secondaryTrendIcon;
@@ -452,6 +458,24 @@ export default class AvonniMetric extends LightningElement {
     }
 
     /**
+     * Position of the secondary value, relative to the value.
+     *
+     * @type {string}
+     * @default right
+     * @public
+     */
+    @api
+    get secondaryPosition() {
+        return this._secondaryPosition;
+    }
+    set secondaryPosition(value) {
+        this._secondaryPosition = normalizeString(value, {
+            validValues: POSITIONS.valid,
+            fallbackValue: POSITIONS.default
+        });
+    }
+
+    /**
      * If present, the secondary value will change color and background depending on the trend direction.
      *
      * @type {boolean}
@@ -673,13 +697,31 @@ export default class AvonniMetric extends LightningElement {
         }).toString();
     }
 
+    get metricsClass() {
+        const position = this.secondaryPosition;
+        return classSet('avonni-metric__primary-and-secondary-wrapper')
+            .add({
+                'slds-grid': position !== 'bottom',
+                'slds-grid_vertical-align-end':
+                    position === 'left' || position === 'right',
+                'slds-grid_reverse': position === 'left',
+                'slds-grid_vertical-reverse': position === 'top'
+            })
+            .toString();
+    }
+
     /**
      * Computed CSS classes for the primary metric.
      *
      * @type {string}
      */
     get primaryClass() {
-        const classes = classSet('avonni-metric__primary');
+        const position = this.secondaryPosition;
+        const classes = classSet('avonni-metric__primary').add({
+            'slds-show_inline-block':
+                position === 'bottom' || position === 'top',
+            'slds-show': position === 'left' || position === 'right'
+        });
 
         if (this.showTrendColor) {
             const isPositive = this.value > this.trendBreakpointValue;
@@ -700,8 +742,13 @@ export default class AvonniMetric extends LightningElement {
      * @type {string}
      */
     get secondaryClass() {
+        const position = this.secondaryPosition;
         const classes = classSet('avonni-metric__secondary').add({
-            'slds-m-left_x-small': isFinite(this.value)
+            'slds-m-left_x-small': isFinite(this.value) && position === 'right',
+            'slds-m-right_x-small': isFinite(this.value) && position === 'left',
+            'slds-show_inline-block':
+                position === 'bottom' || position === 'top',
+            'slds-show': position === 'left' || position === 'right'
         });
 
         if (this.secondaryShowTrendColor) {

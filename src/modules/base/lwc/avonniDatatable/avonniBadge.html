@@ -33,7 +33,7 @@
 -->
 
 <template>
-    <div class="slds-p-around_x-small">
+    <div if:true={value} class="slds-p-around_x-small">
         <c-avonni-primitive-cell-badge
             label={value}
             variant={typeAttributes.variant}

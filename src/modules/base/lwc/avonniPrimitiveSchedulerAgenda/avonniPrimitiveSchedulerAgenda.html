@@ -1,0 +1,340 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="avonni-scheduler__wrapper slds-grid">
+        <!-- Side panel: left position -->
+        <template if:true={showLeftPanel}>
+            <div class={sidePanelClass} data-element-id="div-panel">
+                <div
+                    class="slds-p-around_medium"
+                    data-element-id="div-panel-content"
+                >
+                    <c-avonni-calendar
+                        disabled-dates={navCalendarDisabledDates}
+                        value={selectedDate}
+                        data-element-id="avonni-calendar-left-panel"
+                        onchange={handleCalendarChange}
+                        onnavigate={handleLeftPanelCalendarNavigate}
+                    ></c-avonni-calendar>
+                    <div
+                        if:false={hideResourcesFilter}
+                        class="slds-m-top_medium"
+                    >
+                        <template
+                            for:each={resourceOptions}
+                            for:item="resource"
+                        >
+                            <lightning-input
+                                key={resource.value}
+                                label={resource.label}
+                                checked={resource.selected}
+                                type="checkbox"
+                                value={resource.value}
+                                style={resource.style}
+                                data-element-id="lightning-input-resource"
+                                onchange={handleResourceToggle}
+                            ></lightning-input>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div
+                if:true={showSplitter}
+                class={splitterClass}
+                onmousedown={handleSplitterResizeMouseDown}
+            >
+                <lightning-button-icon
+                    if:true={showSplitterCollapse}
+                    alternative-text="Expand the right side"
+                    icon-name="utility:left"
+                    size="x-small"
+                    variant="bare"
+                    data-element-id="lightning-button-icon-splitter-collapse"
+                    onclick={handleSplitterCollapse}
+                    onmousedown={stopPropagation}
+                ></lightning-button-icon>
+                <div
+                    if:true={showSplitterResize}
+                    class="
+                        avonni-scheduler__splitter-resize-handle
+                        slds-m-vertical_x-small
+                        slds-m-horizontal_xx-small
+                    "
+                    data-element-id="div-splitter-resize-handle"
+                >
+                    <span class="slds-assistive-text">Resize</span>
+                </div>
+                <lightning-button-icon
+                    if:true={showSplitterExpand}
+                    class="avonni-scheduler__splitter-expand-left-button"
+                    alternative-text="Expand the left side"
+                    icon-name="utility:right"
+                    size="x-small"
+                    variant="bare"
+                    data-element-id="lightning-button-icon-splitter-expand"
+                    onclick={handleSplitterExpand}
+                    onmousedown={stopPropagation}
+                ></lightning-button-icon>
+            </div>
+        </template>
+
+        <!-- Agenda panel -->
+        <div class={mainSectionClass}>
+            <div
+                class="avonni-primitive-scheduler-calendar__inherit-height"
+                data-element-id="div-schedule-body"
+            >
+                <!-- No result illustration -->
+                <div
+                    if:false={computedGroups.length}
+                    class="
+                        avonni-scheduler__agenda-no-event-wrapper
+                        slds-grid_align-center
+                        slds-grid slds-grid_vertical-align-center
+                    "
+                >
+                    <c-avonni-illustration
+                        class="slds-p-around_medium"
+                        variant="no-events"
+                        title="No events for the selected date."
+                        data-element-id="avonni-illustration-no-events"
+                    ></c-avonni-illustration>
+                </div>
+                <template for:each={computedGroups} for:item="group">
+                    <!-- Month heading -->
+                    <div
+                        if:true={group.isFirstDayOfMonth}
+                        key={uniqueKey}
+                        class="
+                            slds-p-vertical_medium
+                            slds-theme_shade
+                            vertical
+                            slds-text-title_caps
+                            slds-p-left_large
+                            avonni-scheduler__border_bottom
+                            avonni-scheduler__agenda-month-header
+                        "
+                        data-element-id="div-month-heading"
+                    >
+                        {group.fullMonth}
+                    </div>
+                    <div
+                        key={uniqueKey}
+                        class="
+                            slds-p-around_medium
+                            slds-grid
+                            avonni-scheduler__agenda-day-group
+                            avonni-scheduler__border_bottom
+                        "
+                        data-element-id="div-day-group"
+                        data-date={group.date.ts}
+                        oncontextmenu={handleEmptySpotContextMenu}
+                        ondblclick={handleDoubleClick}
+                    >
+                        <!-- Day heading -->
+                        <div
+                            class="slds-m-right_large slds-size_1-of-5"
+                            data-element-id="div-day-heading"
+                        >
+                            <div
+                                class="
+                                    slds-grid slds-grid_vertical-align-center
+                                "
+                            >
+                                <div class={group.dayClass} title={group.day}>
+                                    {group.day}
+                                </div>
+                                <div class="slds-text-title_caps slds-truncate">
+                                    <div
+                                        class="slds-truncate"
+                                        title={group.weekday}
+                                    >
+                                        {group.weekday}
+                                    </div>
+                                    <div
+                                        class="slds-truncate"
+                                        title={group.month}
+                                    >
+                                        {group.month} {group.year}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Day events -->
+                        <div class="avonni-scheduler__flex-col">
+                            <div
+                                for:each={group.events}
+                                for:item="occurrence"
+                                key={occurrence.key}
+                                class="slds-grid slds-m-bottom_x-small"
+                            >
+                                <div
+                                    class="
+                                        avonni-scheduler__flex-col
+                                        slds-size_1-of-5
+                                        slds-has-flexi-truncate
+                                        avonni-scheduler__agenda-time
+                                    "
+                                    data-element-id="div-event-time"
+                                >
+                                    <div
+                                        class="
+                                            slds-truncate
+                                            slds-text-color_weak
+                                        "
+                                        title={occurrence.time}
+                                    >
+                                        {occurrence.time}
+                                    </div>
+                                </div>
+                                <c-avonni-primitive-scheduler-event-occurrence
+                                    class="
+                                        slds-m-bottom_xx-small
+                                        avonni-scheduler__agenda-event
+                                        slds-show
+                                        avonni-scheduler__flex-col
+                                    "
+                                    color={occurrence.event.color}
+                                    date-format={dateFormat}
+                                    disabled={occurrence.event.disabled}
+                                    event-data={occurrence.event.data}
+                                    event-name={occurrence.event.name}
+                                    from={occurrence.from}
+                                    icon-name={occurrence.event.iconName}
+                                    labels={occurrence.event.labels}
+                                    occurrence={occurrence}
+                                    occurrence-key={occurrence.key}
+                                    reference-line={occurrence.event.referenceLine}
+                                    resource-key={occurrence.resourceName}
+                                    resources={computedResources}
+                                    timezone={timezone}
+                                    title={occurrence.title}
+                                    theme={occurrence.event.theme}
+                                    to={occurrence.to}
+                                    variant="agenda"
+                                    data-element-id="avonni-primitive-scheduler-event-occurrence"
+                                    data-event-name={occurrence.event.name}
+                                    data-start={occurrence.from.ts}
+                                    data-end={occurrence.to.ts}
+                                    oncontextmenu={stopPropagation}
+                                    onprivatecontextmenu={handleEventContextMenu}
+                                    onprivatedblclick={handleEventDoubleClick}
+                                    onprivatedisabledcontextmenu={handleEmptySpotContextMenu}
+                                    onprivatedisableddblclick={handleDoubleClick}
+                                    onprivatefocus={handleEventFocus}
+                                    onprivatemouseenter={handleEventMouseEnter}
+                                    onprivatemouseleave={handleEventMouseLeave}
+                                ></c-avonni-primitive-scheduler-event-occurrence>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Side panel: right position -->
+        <template if:true={showRightPanel}>
+            <div
+                if:true={showSplitter}
+                class={splitterClass}
+                onmousedown={handleSplitterResizeMouseDown}
+            >
+                <lightning-button-icon
+                    if:true={showSplitterCollapse}
+                    alternative-text="Expand the right side"
+                    icon-name="utility:left"
+                    size="x-small"
+                    variant="bare"
+                    onclick={handleSplitterCollapse}
+                    onmousedown={stopPropagation}
+                ></lightning-button-icon>
+                <div
+                    if:true={showSplitterResize}
+                    class="
+                        avonni-scheduler__splitter-resize-handle
+                        slds-m-vertical_x-small
+                        slds-m-horizontal_xx-small
+                    "
+                >
+                    <span class="slds-assistive-text">Resize</span>
+                </div>
+                <lightning-button-icon
+                    if:true={showSplitterExpand}
+                    class="avonni-scheduler__splitter-expand-left-button"
+                    alternative-text="Expand the left side"
+                    icon-name="utility:right"
+                    size="x-small"
+                    variant="bare"
+                    onclick={handleSplitterExpand}
+                    onmousedown={stopPropagation}
+                ></lightning-button-icon>
+            </div>
+            <div class={sidePanelClass} data-element-id="div-panel">
+                <div
+                    class="slds-p-around_medium"
+                    data-element-id="div-panel-content"
+                >
+                    <c-avonni-calendar
+                        disabled-dates={navCalendarDisabledDates}
+                        value={selectedDate}
+                        data-element-id="avonni-calendar-left-panel"
+                        onchange={handleCalendarChange}
+                        onnavigate={handleLeftPanelCalendarNavigate}
+                    ></c-avonni-calendar>
+                    <div
+                        if:false={hideResourcesFilter}
+                        class="slds-m-top_medium"
+                    >
+                        <template
+                            for:each={resourceOptions}
+                            for:item="resource"
+                        >
+                            <lightning-input
+                                key={resource.value}
+                                label={resource.label}
+                                checked={resource.selected}
+                                type="checkbox"
+                                value={resource.value}
+                                style={resource.style}
+                                data-element-id="lightning-input-resource"
+                                onchange={handleResourceToggle}
+                            ></lightning-input>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

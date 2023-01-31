@@ -30,6 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.avonni-path__flex-col {
+    flex: 1 1 auto;
+}
+
 .path__item_error {
     background: #ba0517;
 }

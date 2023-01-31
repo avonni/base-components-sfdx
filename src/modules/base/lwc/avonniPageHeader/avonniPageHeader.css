@@ -30,6 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.avonni-page-header__flex-col {
+    flex: 1 1 auto;
+}
+
 .avonni-page-header__header_base {
     background-color: var(
         --avonni-page-header-base-header-color-background,

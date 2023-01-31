@@ -34,14 +34,20 @@
 
 <template>
     <template if:false={hideAlert}>
-        <div class={variantClass} data-element-id="div">
-            <lightning-icon
-                icon-name={iconName}
-                size="small"
-                class="slds-m-right_x-small avonni-alert__primitive-icon_color"
-                data-element-id="lightning-icon"
-            ></lightning-icon>
-            <slot></slot>
+        <div class={variantClass} data-element-id="div" role="alert">
+            <span class="avonni-alert__content-container">
+                <lightning-icon
+                    if:true={iconName}
+                    icon-name={iconName}
+                    size={iconSize}
+                    class="
+                        slds-m-right_x-small
+                        avonni-alert__primitive-icon_color
+                    "
+                    data-element-id="lightning-icon"
+                ></lightning-icon>
+                <slot></slot>
+            </span>
             <template if:true={isDismissible}>
                 <button
                     data-element-id="lightning-button-icon"

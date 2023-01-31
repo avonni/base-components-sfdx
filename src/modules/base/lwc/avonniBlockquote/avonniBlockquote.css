@@ -33,6 +33,7 @@
 .avonni-blockquote__primitive-icon_color {
     --sds-c-icon-radius-border: var(--avonni-blockquote-icon-radius-border);
 }
+
 .avonni-blockquote__theme-default.avonni-blockquote__container {
     background-color: var(
         --avonni-blockquote-default-color-background,
@@ -44,6 +45,7 @@
     );
     color: var(--avonni-blockquote-default-text-color, #3e3e3c);
 }
+
 .avonni-blockquote__theme-brand.avonni-blockquote__container {
     background-color: var(--avonni-blockquote-brand-color-background, #fafaf9);
     border-left-color: var(
@@ -52,6 +54,7 @@
     );
     color: var(--avonni-blockquote-brand-text-color, #3e3e3c);
 }
+
 .avonni-blockquote__theme-warning.avonni-blockquote__container {
     background-color: var(
         --avonni-blockquote-warning-color-background,
@@ -63,6 +66,7 @@
     );
     color: var(--avonni-blockquote-warning-text-color, #3e3e3c);
 }
+
 .avonni-blockquote__theme-error.avonni-blockquote__container {
     background-color: var(--avonni-blockquote-error-color-background, #fafaf9);
     border-left-color: var(
@@ -71,6 +75,7 @@
     );
     color: var(--avonni-blockquote-error-text-color, #3e3e3c);
 }
+
 .avonni-blockquote__theme-success.avonni-blockquote__container {
     background-color: var(
         --avonni-blockquote-success-color-background,
@@ -82,6 +87,7 @@
     );
     color: var(--avonni-blockquote-success-text-color, #3e3e3c);
 }
+
 blockquote.avonni-blockquote__container {
     font-size: 1rem;
     font-weight: 300;
@@ -89,17 +95,24 @@ blockquote.avonni-blockquote__container {
     margin: 0 0 1.5rem 0;
     border: 1px solid var(--avonni-blockquote-color-border, #f2f2f2);
     border-left-width: 0.125rem;
+    height: var(--avonni-blockquote-sizing-height);
+    width: var(--avonni-blockquote-sizing-width);
+    overflow: var(--avonni-blockquote-sizing-overflow);
+    border-radius: var(--avonni-blockquote-radius-border);
 }
+
 blockquote.avonni-blockquote__container .avonni-blockquote__title {
     margin-bottom: 0;
     font-weight: var(--avonni-blockquote-title-font-weight, 600);
     font-size: var(--avonni-blockquote-title-font-size, 1rem);
     font-style: var(--avonni-blockquote-title-font-style, normal);
 }
+
 .avonni-blockquote__theme-default.avonni-blockquote__container
     .avonni-blockquote__title {
     color: var(--avonni-blockquote-default-title-text-color, #080707);
 }
+
 .avonni-blockquote__theme-default .avonni-blockquote__primitive-icon_color {
     --sds-c-icon-color-foreground: var(
         --avonni-blockquote-default-icon-color-foreground
@@ -111,10 +124,12 @@ blockquote.avonni-blockquote__container .avonni-blockquote__title {
         --avonni-blockquote-default-icon-color-background
     );
 }
+
 .avonni-blockquote__theme-brand.avonni-blockquote__container
     .avonni-blockquote__title {
     color: var(--avonni-blockquote-brand-title-text-color, #0070d2);
 }
+
 .avonni-blockquote__theme-brand .avonni-blockquote__primitive-icon_color {
     --sds-c-icon-color-foreground: var(
         --avonni-blockquote-brand-icon-color-foreground
@@ -126,10 +141,12 @@ blockquote.avonni-blockquote__container .avonni-blockquote__title {
         --avonni-blockquote-brand-icon-color-background
     );
 }
+
 .avonni-blockquote__theme-warning.avonni-blockquote__container
     .avonni-blockquote__title {
     color: var(--avonni-blockquote-warning-title-text-color, #d47500);
 }
+
 .avonni-blockquote__theme-warning .avonni-blockquote__primitive-icon_color {
     --sds-c-icon-color-foreground: var(
         --avonni-blockquote-warning-icon-color-foreground
@@ -141,10 +158,12 @@ blockquote.avonni-blockquote__container .avonni-blockquote__title {
         --avonni-blockquote-warning-icon-color-background
     );
 }
+
 .avonni-blockquote__theme-error.avonni-blockquote__container
     .avonni-blockquote__title {
     color: var(--avonni-blockquote-error-title-text-color, #c23934);
 }
+
 .avonni-blockquote__theme-error .avonni-blockquote__primitive-icon_color {
     --sds-c-icon-color-foreground: var(
         --avonni-blockquote-error-icon-color-foreground
@@ -156,10 +175,12 @@ blockquote.avonni-blockquote__container .avonni-blockquote__title {
         --avonni-blockquote-error-icon-color-background
     );
 }
+
 .avonni-blockquote__theme-success.avonni-blockquote__container
     .avonni-blockquote__title {
     color: var(--avonni-blockquote-success-title-text-color, #027e46);
 }
+
 .avonni-blockquote__theme-success .avonni-blockquote__primitive-icon_color {
     --sds-c-icon-color-foreground: var(
         --avonni-blockquote-success-icon-color-foreground

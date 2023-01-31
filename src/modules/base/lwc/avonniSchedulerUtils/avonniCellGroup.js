@@ -31,54 +31,32 @@
  */
 
 import { normalizeArray } from 'c/utilsPrivate';
+import Cell from './avonniCell';
 
-export default class AvonniSchedulerResource {
+/**
+ * Group of scheduler cells. Corresponds to the resources rows/columns in the timeline display, or the day columns in the calendar display.
+ *
+ * @class
+ * @param {SchedulerCell[]} cells Array of `SchedulerCell` objects.
+ * @param {object[]} events Array of event objects.
+ * @param {object[]} referenceCells Array of cell objects used as a reference to create the cells.
+ */
+export class SchedulerCellGroup {
     constructor(props) {
-        this.avatarSrc = props.avatarSrc;
-        this.avatarFallbackIconName = props.avatarFallbackIconName;
-        this.avatarInitials = props.avatarInitials;
-        this.color = props.color;
-        this.label = props.label;
-        this.data = props.data;
         this.cells = [];
-        this.minHeight = 0;
         this.referenceCells = normalizeArray(props.referenceCells);
-        this.name = props.name;
         this.events = normalizeArray(props.events);
-        this._height = 0;
+        this.timezone = props.timezone;
         this.initCells();
     }
 
-    get height() {
-        return this._height > this.minHeight ? this._height : this.minHeight;
-    }
-    set height(value) {
-        this._height = value;
-    }
-
-    get avatar() {
-        if (
-            this.avatarFallbackIconName ||
-            this.avatarInitials ||
-            this.avatarSrc
-        ) {
-            return {
-                src: this.avatarSrc,
-                fallbackIconName: this.avatarFallbackIconName,
-                initials: this.avatarInitials
-            };
-        }
-        return null;
-    }
-
+    /**
+     * Initialize the cells array.
+     */
     initCells() {
         this.cells = [];
         this.referenceCells.forEach((element) => {
-            this.cells.push({
-                start: element.start,
-                end: element.end,
-                events: []
-            });
+            this.cells.push(new Cell({ ...element, timezone: this.timezone }));
         });
 
         const events = this.events;
@@ -87,27 +65,56 @@ export default class AvonniSchedulerResource {
         });
     }
 
-    addEventToCells(event) {
+    /**
+     * Add the event to the each cell it crosses.
+     *
+     * @param {object} Event Event to add to the cells.
+     * @param {string} eventType Type of the event. Used by the calendar display, in the SchedulerCalendarColumn child class. The event will be added to the corresponding property, depending on its type.
+     */
+    addEventToCells(event, eventType = 'events') {
         const cells = this.cells;
-        event.offsetTop = 0;
+        event.offsetSide = 0;
 
         // Find the cell where the event starts
         let i = cells.findIndex((cell) => {
-            return cell.end >= event.from;
+            // If the event is a calendar month placeholder
+            // that spans on multiple weeks,
+            // use the beginning of the current week as a start
+            const start = event.weekStart || event.from;
+            return cell.end >= start;
         });
 
         if (i > -1) {
+            // If the event is a reference line,
+            // use the start date as an end date too
+            const to = event.to || event.from;
+
             // Add the event to every cell it crosses
-            while (i < cells.length && event.to > cells[i].start) {
-                cells[i].events.push(event);
-                cells[i].events = cells[i].events.sort(
-                    (a, b) => a.from - b.from
+            while (i < cells.length && to >= cells[i].start) {
+                // If the event is a calendar month placeholder,
+                // make sure it hasn't been added already
+                const exists = cells[i][eventType].find(
+                    (evt) => evt.key === event.key
                 );
+                if (!exists) {
+                    cells[i][eventType].push(event);
+                    cells[i][eventType].sort((a, b) => a.from - b.from);
+                }
                 i += 1;
+                if (event.weekStart) {
+                    // If the event is a visible calendar month placeholder,
+                    // add it only to the first week it crosses
+                    break;
+                }
             }
         }
     }
 
+    /**
+     * Remove the event from the cells it crosses.
+     *
+     * @param {object} event Event to remove from the cells.
+     */
     removeEvent(event) {
         const { cells, events } = this;
 
@@ -128,6 +135,12 @@ export default class AvonniSchedulerResource {
         events.splice(eventIndex, 1);
     }
 
+    /**
+     * Get a cell from its start date.
+     *
+     * @param {number} start Start of the cell to find.
+     * @returns {SchedulerCell|undefined} Cell found, or undefined if not found.
+     */
     getCellFromStart(start) {
         return this.cells.find((cell) => cell.start === start);
     }

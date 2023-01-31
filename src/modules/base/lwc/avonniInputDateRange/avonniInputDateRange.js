@@ -31,7 +31,12 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeBoolean, normalizeString, keyCodes } from 'c/utilsPrivate';
+import {
+    dateTimeObjectFrom,
+    normalizeBoolean,
+    normalizeString,
+    keyCodes
+} from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
 
@@ -206,8 +211,8 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     set endDate(value) {
-        const date = new Date(value);
-        this._endDate = isNaN(date) || value === null ? null : date;
+        const date = dateTimeObjectFrom(value);
+        this._endDate = !date || value === null ? null : new Date(date.ts);
 
         if (this._connected) {
             this.initEndDate();
@@ -258,10 +263,10 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     set startDate(value) {
-        const date =
-            isNaN(new Date(value)) || value === null ? null : new Date(value);
-        this._startDate = date;
-        this._initialStartDate = date ? new Date(date) : null;
+        const date = dateTimeObjectFrom(value);
+        this._startDate = !date || value === null ? null : new Date(date.ts);
+        this._initialStartDate =
+            !date || value === null ? null : new Date(date.ts);
 
         if (this._connected) {
             this.initStartDate();
@@ -290,8 +295,7 @@ export default class AvonniInputDateRange extends LightningElement {
     }
 
     /**
-     * Specifies the time zone used when the type is <code>datetime</code> only.
-     * This value defaults to the user's Salesforce time zone setting.
+     * Time zone used, in a valid IANA format. If empty, the browser's time zone is used.
      *
      * @type {string}
      * @public
@@ -1156,7 +1160,7 @@ export default class AvonniInputDateRange extends LightningElement {
     handleStartCalendarFocusOut() {
         this.keepFocus = true;
 
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             if (this.keepFocus) {
                 this.showStartDate = false;
 
@@ -1164,7 +1168,7 @@ export default class AvonniInputDateRange extends LightningElement {
                     this.startDateInput.focus();
                 }
             }
-        }, 1);
+        });
     }
 
     /**

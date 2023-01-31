@@ -37,9 +37,7 @@ import { classSet } from 'c/utils';
  * Option
  *
  * @class
- * @property {string} avatarFallbackIconName The Lightning Design System name of the icon used as a fallback when the image fails to load. The initials fallback relies on this for its background color.
- * Names are written in the format 'standard:account' where 'standard' is the category, and 'account' is the specific icon to be displayed. Only icons from the standard and custom categories are allowed.
- * @property {string} avatarSrc Image URL for the option avatar.
+ * @property {object} avatar An object with item fields to be rendered as an avatar.
  * @property {string[]} groups Array of group names this option belongs to.
  * @property {string} label Label of the option.
  * @property {object[]} options Array of option objects. If present:
@@ -51,8 +49,6 @@ import { classSet } from 'c/utils';
  */
 export default class AvonniOption {
     constructor(option, levelPath) {
-        this.avatarFallbackIconName = option.avatarFallbackIconName;
-        this.avatarSrc = option.avatarSrc;
         this.iconName = option.iconName;
         this.isLoading = normalizeBoolean(option.isLoading);
         this.levelPath = levelPath;
@@ -61,11 +57,39 @@ export default class AvonniOption {
         this.options = normalizeArray(option.options);
         this.secondaryText = option.secondaryText;
         this.value = option.value;
+        this.avatar = option.avatar || {};
+        this.avatarFallbackIconName = option.avatarFallbackIconName
+            ? option.avatarFallbackIconName
+            : this.avatar && this.avatar.fallbackIconName
+            ? this.avatar.fallbackIconName
+            : undefined;
+        this.avatarSrc = option.avatarSrc
+            ? option.avatarSrc
+            : this.avatar && this.avatar.src
+            ? this.avatar.src
+            : undefined;
+        this.avatarInitials = this.avatar.avatarInitials;
 
         if (this.hasAvatar) {
             this.avatar = {
+                fallbackIconName: this.avatarFallbackIconName,
+                initials:
+                    this.avatar && this.avatar.initials
+                        ? this.avatar.initials
+                        : undefined,
+                presence:
+                    this.avatar && this.avatar.presence
+                        ? this.avatar.presence
+                        : undefined,
+                presencePosition:
+                    this.avatar && this.avatar.presencePosition
+                        ? this.avatar.presencePosition
+                        : 'bottom-right',
                 src: this.avatarSrc,
-                fallbackIconName: this.avatarFallbackIconName
+                variant:
+                    this.avatar && this.avatar.variant
+                        ? this.avatar.variant
+                        : 'square'
             };
         }
     }
@@ -106,7 +130,9 @@ export default class AvonniOption {
     }
 
     get hasAvatar() {
-        return this.avatarFallbackIconName || this.avatarSrc;
+        return (
+            this.avatarFallbackIconName || this.avatarSrc || this.avatarInitials
+        );
     }
 
     get hasChildren() {

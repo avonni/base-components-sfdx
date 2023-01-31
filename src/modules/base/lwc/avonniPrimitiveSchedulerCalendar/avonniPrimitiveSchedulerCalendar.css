@@ -1,0 +1,131 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+@import 'c/schedulerSharedStyle';
+
+.avonni-scheduler__wrapper {
+    max-height: 100%;
+    height: calc(100vh - var(--avonni-scheduler-toolbar-height, 70px));
+    max-width: 100%;
+}
+
+.avonni-scheduler__panel {
+    width: 310px;
+}
+
+.avonni-scheduler__main-section {
+    flex: 1 1 0;
+}
+
+.avonni-scheduler__calendar-column {
+    flex: 1 0 0;
+}
+
+.avonni-scheduler__calendar-cell {
+    height: var(--avonni-scheduler-cell-height);
+    min-height: var(--avonni-scheduler-cell-height);
+}
+
+.avonni-scheduler__calendar-cell-month {
+    height: 100%;
+}
+
+.avonni-scheduler__calendar-cell-month-day {
+    font-size: 0.75rem;
+}
+
+.avonni-scheduler__calendar-cell_outside-of-current-month {
+    background-color: var(--lwc-colorBackground, #f3f3f3);
+}
+
+.avonni-scheduler__calendar-cell-multi-day:last-of-type {
+    border-right: none;
+}
+
+.avonni-primitive-scheduler-calendar__inherit-height {
+    height: inherit;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.avonni-scheduler__calendar-header {
+    --avonni-primitive-scheduler-header-group-cell-color-background: #fff;
+    --avonni-primitive-scheduler-header-group-cell-height: 2.5rem;
+    --avonni-primitive-scheduler-header-group-cell-border-right-width: 0;
+}
+
+.avonni-scheduler__calendar-day-header-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    --avonni-primitive-scheduler-header-group-cell-text-color-today: var(
+        --lwc-brandAccessible,
+        #0176d3
+    );
+}
+
+.avonni-scheduler__calendar-day-header-wrapper:not(.avonni-scheduler__calendar-day-header-wrapper_month) {
+    border-bottom: 2px solid #c9c9c9;
+}
+
+.avonni-scheduler__calendar-show-more-popover {
+    --slds-c-popover-position-zindex: 5;
+    min-width: var(--lwc-sizeXSmall, 12rem);
+}
+
+.avonni-scheduler__calendar-month-multi-day-placeholder {
+    height: 1.5rem;
+}
+
+.avonni-scheduler__calendar-show-more-popover-close-button {
+    top: 0;
+    right: 0;
+}
+
+.avonni-scheduler__calendar-month-grid .avonni-scheduler__calendar-cell {
+    border-right-color: var(--lwc-colorBorder, #e5e5e5);
+    border-bottom-color: #c9c9c9;
+}
+
+.avonni-scheduler__calendar-month-grid .avonni-scheduler__calendar-cell_today {
+    border: 1px solid var(--lwc-colorBorderRowSelected, #0176d3);
+}
+
+.avonni-scheduler__calendar-cell:last-of-type {
+    border-bottom: none;
+}
+
+.avonni-scheduler__calendar-column:nth-child(7)
+    .avonni-scheduler__calendar-cell,
+.avonni-scheduler__calendar-column_day .avonni-scheduler__calendar-cell {
+    border-right: none;
+}

@@ -32,7 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 
-export default class AvonniPrimitiveCellInputDateRange extends LightningElement {
+export default class AvonniPrimitiveCellToggle extends LightningElement {
     @api colKeyValue;
     @api rowKeyValue;
     @api disabled;

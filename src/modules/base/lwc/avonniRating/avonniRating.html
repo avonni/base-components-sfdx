@@ -47,46 +47,55 @@
             </label>
             <lightning-helptext
                 if:true={fieldLevelHelp}
+                class="slds-p-right_xx-small"
                 content={fieldLevelHelp}
                 data-element-id="lightning-helptext"
             ></lightning-helptext>
         </template>
-        <div class="avonni-rating__container">
-            <span if:false={iconName} class="avonni-rating">
+        <div
+            class="
+                avonni-rating__container
+                slds-grid slds-grid_vertical-align-center
+                slds-wrap
+            "
+        >
+            <div
+                class="
+                    avonni-rating
+                    slds-grid slds-grid_vertical-align-center
+                    slds-wrap
+                    slds-p-top_xx-small
+                "
+            >
                 <template for:each={items} for:item="item">
                     <button
-                        class="slds-button slds-button_outline-brand"
-                        key={item}
-                        title={item}
+                        class={item.buttonClass}
+                        key={item.value}
+                        title={item.value}
                         type="button"
-                        value={item}
+                        value={item.value}
                         disabled={disabled}
                         data-element-id="button"
-                        onclick={selectRating}
+                        onclick={handleItemClick}
                     >
-                        {item}
+                        <template if:false={iconName}>{item.value}</template>
+                        <c-avonni-primitive-icon
+                            if:true={iconName}
+                            class="
+                                avonni-rating__icon
+                                slds-grid slds-grid_vertical-align-center
+                            "
+                            icon-name={iconName}
+                            variant="bare"
+                            svg-class={computedIconClass}
+                            data-element-id="avonni-primitive-icon"
+                        ></c-avonni-primitive-icon>
                     </button>
                 </template>
-            </span>
-            <span if:true={iconName} class="avonni-rating">
-                <template for:each={items} for:item="item">
-                    <lightning-button-icon
-                        icon-name={iconName}
-                        key={item}
-                        title={item}
-                        value={item}
-                        disabled={disabled}
-                        variant="bare"
-                        size={iconSize}
-                        class="avonni-icon"
-                        data-element-id="lightning-button-icon"
-                        onclick={selectRating}
-                    ></lightning-button-icon>
-                </template>
-            </span>
+            </div>
             <span
                 if:true={showRating}
-                class="avonni-rating__value"
+                class="avonni-rating__value slds-p-left_medium"
                 data-element-id="avonni-rating-value"
                 >{value}/{max}</span
             >

@@ -207,17 +207,16 @@ export default class AvonniChipContainer extends LightningElement {
      * @returns {AvonniResizeObserver} Resize observer.
      */
     initWrapObserver() {
-        if (!this._resizeObserver) {
-            const resizeObserver = new AvonniResizeObserver(() => {
-                this.calculateWrappedNodes();
-            });
-            resizeObserver.observe(
-                this.template.querySelector(
-                    '[data-element-id="chip-container-list"]'
-                )
-            );
-            this._resizeObserver = resizeObserver;
+        const container = this.template.querySelector(
+            '[data-element-id="chip-container-list"]'
+        );
+        if (!container || this._resizeObserver) {
+            return;
         }
+        this._resizeObserver = new AvonniResizeObserver(
+            container,
+            this.calculateWrappedNodes.bind(this)
+        );
     }
 
     calculateWrappedNodes() {

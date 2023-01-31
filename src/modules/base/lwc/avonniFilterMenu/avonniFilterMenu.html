@@ -45,131 +45,180 @@
             type="button"
             name={name}
             data-element-id="button"
-            onclick={handleButtonClick}
             onblur={handleButtonBlur}
             onfocus={handleButtonFocus}
-            onmousedown={handleButtonMouseDown}
-            onkeydown={handleKeyDown}
+            onclick={handleButtonClick}
         >
             {label}
             <c-avonni-primitive-icon
+                if:true={iconName}
+                class="slds-m-horizontal_xx-small"
                 icon-name={iconName}
                 svg-class="slds-button__icon"
                 variant="bare"
                 data-element-id="avonni-primitive-icon-main"
             ></c-avonni-primitive-icon>
-            <template if:true={computedShowDownIcon}>
-                <c-avonni-primitive-icon
-                    icon-name="utility:down"
-                    svg-class="slds-button__icon slds-button__icon_x-small slds-m-left_xx-small"
-                    variant="bare"
-                    data-element-id="avonni-primitive-icon-down"
-                ></c-avonni-primitive-icon>
-            </template>
+            <c-avonni-primitive-icon
+                if:true={computedShowDownIcon}
+                icon-name="utility:down"
+                svg-class="slds-button__icon slds-button__icon_x-small slds-m-left_xx-small"
+                variant="bare"
+                data-element-id="avonni-primitive-icon-down"
+            ></c-avonni-primitive-icon>
             <span class="slds-assistive-text">{alternativeText}</span>
         </button>
-        <template if:true={dropdownOpened}>
-            <div
-                class={computedDropdownClass}
-                onprivateselect={handlePrivateSelect}
-                onprivateblur={handlePrivateBlur}
-                onprivatefocus={handlePrivateFocus}
-                onmousedown={handleDropdownMouseDown}
-                onclick={handleDropdownClick}
-                onmouseout={allowBlur}
-            >
-                <template if:true={isLoading}>
-                    <lightning-spinner
-                        size="small"
-                        alternative-text={loadingStateAlternativeText}
-                        data-element-id="lightning-spinner"
-                    ></lightning-spinner>
-                </template>
-                <template if:false={isLoading}>
-                    <div class="slds-dropdown__list" role="menu">
-                        <lightning-input
-                            if:true={showSearchBox}
-                            class="slds-p-around_small"
-                            label={searchInputPlaceholder}
-                            placeholder={searchInputPlaceholder}
-                            variant="label-hidden"
-                            type="search"
-                            disabled={disabled}
-                            is-loading={isLoading}
-                            value={searchTerm}
-                            autocomplete="off"
-                            data-element-id="lightning-input"
-                            onchange={handleSearch}
-                            onblur={handlePrivateBlur}
-                            onfocus={handlePrivateFocus}
-                            onkeydown={handleKeyDown}
-                        ></lightning-input>
-                        <div class={computedItemListClass}>
-                            <template
-                                for:each={computedItems}
-                                for:item="item"
-                                for:index="index"
-                            >
-                                <lightning-menu-item
-                                    if:false={item.hidden}
-                                    key={item.value}
-                                    label={item.label}
-                                    value={item.value}
-                                    icon-name={item.iconName}
-                                    prefix-icon-name={item.prefixIconName}
-                                    checked={item.checked}
-                                    disabled={item.disabled}
-                                    tab-index={item.tabindex}
-                                    data-element-id="lightning-menu-item"
-                                    data-index={index}
-                                    onkeydown={handleKeyDown}
-                                >
-                                </lightning-menu-item>
-                            </template>
-                        </div>
-                        <lightning-menu-divider
-                            if:false={hideApplyResetButtons}
-                        ></lightning-menu-divider>
-                        <div
-                            if:false={hideApplyResetButtons}
-                            class="
-                                slds-p-horizontal_small
-                                slds-p-bottom_x-small
-                                slds-text-align_right
-                            "
+        <div
+            if:true={dropdownVisible}
+            class={computedDropdownClass}
+            tabindex="0"
+            data-element-id="div-dropdown"
+            onfocusin={handleDropdownFocusIn}
+            onfocusout={handleDropdownFocusOut}
+            onkeyup={handleDropdownKeyUp}
+            onfocus={focusDropdown}
+        >
+            <lightning-focus-trap data-element-id="lightning-focus-trap">
+                <div class="slds-p-vertical_xx-small" role="menu">
+                    <!-- Search box -->
+                    <lightning-input
+                        if:true={computedTypeAttributes.allowSearch}
+                        class="slds-p-around_small"
+                        label={computedTypeAttributes.searchInputPlaceholder}
+                        placeholder={computedTypeAttributes.searchInputPlaceholder}
+                        variant="label-hidden"
+                        type="search"
+                        value={searchTerm}
+                        autocomplete="off"
+                        data-element-id="lightning-input"
+                        onchange={handleSearch}
+                    ></lightning-input>
+                    <p
+                        if:true={showNoResultMessage}
+                        class="slds-p-around_small"
+                    >
+                        No matches found
+                    </p>
+                    <div
+                        class={computedDropdownContentClass}
+                        data-element-id="div-dropdown-content"
+                        onprivateselect={handlePrivateSelect}
+                        onscroll={handleScroll}
+                    >
+                        <!-- List -->
+                        <template
+                            if:true={isList}
+                            for:each={visibleListItems}
+                            for:item="item"
+                            for:index="index"
                         >
-                            <lightning-button
-                                class="slds-m-right_x-small"
-                                variant="base"
-                                label={resetButtonLabel}
-                                title={resetButtonLabel}
-                                data-element-id="lightning-button-reset"
-                                onfocus={handlePrivateFocus}
-                                onblur={handlePrivateBlur}
-                                onclick={handleResetClick}
-                                onkeydown={handleKeyDown}
-                            ></lightning-button>
-                            <lightning-button
-                                variant="brand"
-                                label={applyButtonLabel}
-                                title={applyButtonLabel}
-                                data-element-id="lightning-button-apply"
-                                onfocus={handlePrivateFocus}
-                                onblur={handlePrivateBlur}
-                                onclick={handleApplyClick}
-                                onkeydown={handleKeyDown}
-                            ></lightning-button>
+                            <lightning-menu-item
+                                key={item.value}
+                                label={item.label}
+                                value={item.value}
+                                icon-name={item.iconName}
+                                prefix-icon-name={item.prefixIconName}
+                                checked={item.checked}
+                                disabled={item.disabled}
+                                tab-index={item.tabindex}
+                                data-element-id="lightning-menu-item"
+                                data-index={index}
+                                onkeydown={handleListItemKeyDown}
+                            >
+                            </lightning-menu-item>
+                        </template>
+                        <!-- Loading spinner -->
+                        <div
+                            if:true={isLoading}
+                            class="slds-is-relative slds-p-vertical_large"
+                        >
+                            <lightning-spinner
+                                size="small"
+                                alternative-text={loadingStateAlternativeText}
+                                data-element-id="lightning-spinner"
+                            ></lightning-spinner>
                         </div>
+                        <template if:false={isLoading}>
+                            <!-- Date Range -->
+                            <c-avonni-input-date-range
+                                if:true={isDateRange}
+                                class="slds-show slds-p-around_small"
+                                date-style={computedTypeAttributes.dateStyle}
+                                end-date={dateRangeEndDate}
+                                label={label}
+                                label-end-date={computedTypeAttributes.labelEndDate}
+                                label-end-time={computedTypeAttributes.labelEndTime}
+                                label-start-date={computedTypeAttributes.labelStartDate}
+                                label-start-time={computedTypeAttributes.labelStartTime}
+                                start-date={dateRangeStartDate}
+                                time-style={computedTypeAttributes.timeStyle}
+                                timezone={computedTypeAttributes.timezone}
+                                type={computedTypeAttributes.type}
+                                variant="label-hidden"
+                                data-element-id="avonni-input-date-range"
+                                onchange={handleDateRangeChange}
+                            ></c-avonni-input-date-range>
+                            <!-- Range -->
+                            <c-avonni-slider
+                                if:true={isRange}
+                                class="slds-show slds-m-around_small"
+                                disable-swap
+                                hide-min-max-values={computedTypeAttributes.hideMinMaxValues}
+                                label={label}
+                                max={computedTypeAttributes.max}
+                                min={computedTypeAttributes.min}
+                                show-pin={computedTypeAttributes.showPin}
+                                show-tick-marks={computedTypeAttributes.showTickMarks}
+                                step={computedTypeAttributes.step}
+                                tick-mark-style={computedTypeAttributes.tickMarkStyle}
+                                unit={computedTypeAttributes.unit}
+                                unit-attributes={computedTypeAttributes.unitAttributes}
+                                value={rangeValue}
+                                variant="label-hidden"
+                                data-element-id="avonni-slider"
+                                onchange={handleRangeChange}
+                            ></c-avonni-slider>
+                        </template>
                     </div>
-                </template>
-            </div>
-        </template>
+                    <!-- Reset and apply buttons -->
+                    <lightning-menu-divider
+                        if:false={hideApplyResetButtons}
+                    ></lightning-menu-divider>
+                    <div
+                        if:false={hideApplyResetButtons}
+                        class="
+                            slds-p-horizontal_small
+                            slds-p-bottom_x-small
+                            slds-text-align_right
+                        "
+                    >
+                        <lightning-button
+                            class="slds-m-right_x-small"
+                            disabled={isLoading}
+                            variant="base"
+                            label={resetButtonLabel}
+                            title={resetButtonLabel}
+                            data-element-id="lightning-button-reset"
+                            onclick={handleResetClick}
+                        ></lightning-button>
+                        <lightning-button
+                            disabled={isLoading}
+                            label={applyButtonLabel}
+                            title={applyButtonLabel}
+                            variant="brand"
+                            data-element-id="lightning-button-apply"
+                            onclick={handleApply}
+                        ></lightning-button>
+                    </div>
+                </div>
+            </lightning-focus-trap>
+        </div>
     </div>
     <div if:true={showSelectedItems} class="slds-m-top_x-small">
-        <lightning-pill-container
+        <c-avonni-pill-container
+            actions={pillActions}
             items={selectedItems}
-            data-element-id="lightning-pill-container"
-            onitemremove={handleSelectedItemRemove}
-        ></lightning-pill-container>
+            data-element-id="avonni-pill-container"
+            onactionclick={handleSelectedItemRemove}
+        ></c-avonni-pill-container>
     </div>
 </template>

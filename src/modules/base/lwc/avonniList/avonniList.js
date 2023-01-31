@@ -816,7 +816,7 @@ export default class AvonniList extends LightningElement {
      */
     get computedListClass() {
         return classSet(
-            'avonni-list__item-menu slds-grid slds-is-relative slds-col'
+            'avonni-list__item-menu slds-grid slds-is-relative avonni-list__flex-col'
         )
             .add({
                 'slds-grid_vertical': this._currentColumnCount === 1,
@@ -860,12 +860,18 @@ export default class AvonniList extends LightningElement {
                     this.variant === 'base',
                 'avonni-list__item-divider_top': this.divider === 'top',
                 'avonni-list__item-divider_bottom': this.divider === 'bottom',
-                'slds-col slds-size_12-of-12': this._currentColumnCount === 1,
-                'slds-col slds-size_6-of-12': this._currentColumnCount === 2,
-                'slds-col slds-size_4-of-12': this._currentColumnCount === 3,
-                'slds-col slds-size_3-of-12': this._currentColumnCount === 4,
-                'slds-col slds-size_2-of-12': this._currentColumnCount === 6,
-                'slds-col slds-size_1-of-12': this._currentColumnCount === 12
+                'avonni-list__flex-col slds-size_12-of-12':
+                    this._currentColumnCount === 1,
+                'avonni-list__flex-col slds-size_6-of-12':
+                    this._currentColumnCount === 2,
+                'avonni-list__flex-col slds-size_4-of-12':
+                    this._currentColumnCount === 3,
+                'avonni-list__flex-col slds-size_3-of-12':
+                    this._currentColumnCount === 4,
+                'avonni-list__flex-col slds-size_2-of-12':
+                    this._currentColumnCount === 6,
+                'avonni-list__flex-col slds-size_1-of-12':
+                    this._currentColumnCount === 12
             })
             .toString();
     }
@@ -875,7 +881,7 @@ export default class AvonniList extends LightningElement {
      */
     get computedListContainerClass() {
         return classSet({
-            'slds-grid slds-col': this.variant === 'single-line',
+            'slds-grid avonni-list__flex-col': this.variant === 'single-line',
             'slds-scrollable_y':
                 this._hasUsedInfiniteLoading && this.variant === 'base'
         }).toString();
@@ -1297,13 +1303,13 @@ export default class AvonniList extends LightningElement {
      * @returns {AvonniResizeObserver} Resize observer.
      */
     initWrapObserver() {
-        if (!this._resizeObserver) {
-            const resizeObserver = new AvonniResizeObserver(() => {
-                this.listResize();
-            });
-            resizeObserver.observe(this.listContainer);
-            this._resizeObserver = resizeObserver;
+        if (!this.listContainer) {
+            return;
         }
+        this._resizeObserver = new AvonniResizeObserver(
+            this.listContainer,
+            this.listResize.bind(this)
+        );
     }
 
     /**
@@ -1619,15 +1625,18 @@ export default class AvonniList extends LightningElement {
              * @public
              * @bubbles
              */
-            this.dispatchEvent(
-                new CustomEvent('itemmousedown', {
-                    detail: {
-                        item: this.cleanUpItem(item),
-                        name: item.name
-                    },
-                    bubbles: true
-                })
-            );
+            const itemMouseDownEvent = new CustomEvent('itemmousedown', {
+                detail: {
+                    item: this.cleanUpItem(item),
+                    name: item.name
+                },
+                bubbles: true
+            });
+            itemMouseDownEvent.clientX = event.clientX;
+            itemMouseDownEvent.clientY = event.clientY;
+            itemMouseDownEvent.pageX = event.pageX;
+            itemMouseDownEvent.pageY = event.pageY;
+            this.dispatchEvent(itemMouseDownEvent);
         }
 
         if (this._keyboardDragged) {
@@ -1757,15 +1766,18 @@ export default class AvonniList extends LightningElement {
              * @public
              * @bubbles
              */
-            this.dispatchEvent(
-                new CustomEvent('itemmouseup', {
-                    detail: {
-                        item: this.cleanUpItem(item),
-                        name: item.name
-                    },
-                    bubbles: true
-                })
-            );
+            const itemMouseUpEvent = new CustomEvent('itemmouseup', {
+                detail: {
+                    item: this.cleanUpItem(item),
+                    name: item.name
+                },
+                bubbles: true
+            });
+            itemMouseUpEvent.clientX = event.clientX;
+            itemMouseUpEvent.clientY = event.clientY;
+            itemMouseUpEvent.pageX = event.pageX;
+            itemMouseUpEvent.pageY = event.pageY;
+            this.dispatchEvent(itemMouseUpEvent);
         }
 
         if (!this._draggedElement) {
@@ -1892,8 +1904,8 @@ export default class AvonniList extends LightningElement {
         if (event.key === 'Enter') {
             this.handleItemClick(event);
         } else if (
-            (this.sortable && event.key === ' ') ||
-            event.key === 'Spacebar'
+            this.sortable &&
+            (event.key === ' ' || event.key === 'Spacebar')
         ) {
             event.preventDefault();
             if (this._draggedElement) {
@@ -2027,6 +2039,21 @@ export default class AvonniList extends LightningElement {
                 !this.isLoading)
         ) {
             this.handleLoadMore();
+        }
+    }
+
+    /**
+     * Handle a keydown event on an action button. If the button is actioned, prevent the `itemclick` event from being dispatched.
+     *
+     * @param {Event} event `keydown` event.
+     */
+    handleStopKeyDown(event) {
+        if (
+            event.key === 'Enter' ||
+            event.key === ' ' ||
+            event.key === 'Spacebar'
+        ) {
+            event.stopPropagation();
         }
     }
 }

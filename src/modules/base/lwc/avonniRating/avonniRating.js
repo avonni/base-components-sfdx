@@ -34,6 +34,7 @@ import { LightningElement, api } from 'lwc';
 import { normalizeString, normalizeBoolean } from 'c/utilsPrivate';
 import { generateUUID, classSet } from 'c/utils';
 import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
+import Item from './avonniItem';
 
 const RATING_SELECTIONS = {
     valid: ['continuous', 'single'],
@@ -68,13 +69,6 @@ export default class AvonniRating extends LightningElement {
      */
     @api fieldLevelHelp;
     /**
-     * The Lightning Design System name of the icon. Specify the name in the format 'utility:favorite' where 'utility' is the category, and 'favorite' is the specific icon to be displayed.
-     *
-     * @type {string}
-     * @public
-     */
-    @api iconName;
-    /**
      * Label for the rating component.
      *
      * @type {string}
@@ -99,51 +93,15 @@ export default class AvonniRating extends LightningElement {
     _variant = LABEL_VARIANTS.default;
     _required = false;
 
-    init = false;
-    initStyles = false;
+    items = [];
     helpMessage;
+    _connected = false;
 
     connectedCallback() {
         this.interactingState = new InteractingState();
         this.interactingState.onleave(() => this.showHelpMessageIfInvalid());
-    }
-
-    renderedCallback() {
-        this.ratingRecalculation();
-
-        if (!this.initStyles) {
-            let selectedIcons = this.template.querySelector(
-                '[data-element-id="lightning-button-icon"]'
-            );
-
-            if (selectedIcons) {
-                const style = document.createElement('style');
-                style.innerText = `
-                    .avonni-icon-selected .slds-button:disabled svg {fill: #a5a4a2;}
-                    .avonni-icon-selected svg {fill: #1b5297 !important;}
-                    .avonni-rating:hover .avonni-active-star.avonni-continuous-star svg {
-                        fill: #1b5297;
-                        opacity: 1;
-                    }
-                    .avonni-active-star.avonni-continuous-star svg {
-                        fill: #c9c7c5;
-                    }
-                    .avonni-active-star.avonni-continuous-star:hover ~ .avonni-active-star.avonni-continuous-star svg {
-                        fill: #c9c7c5;
-                        opacity: 1;
-                    }
-                    .avonni-icon button, 
-                    .avonni-icon button:active, 
-                    .avonni-icon button:focus {
-                        box-shadow: none;
-                    }
-                `;
-                selectedIcons.appendChild(style);
-                this.initStyles = true;
-            }
-        }
-
-        this.init = true;
+        this.initItems();
+        this._connected = true;
     }
 
     /*
@@ -151,17 +109,6 @@ export default class AvonniRating extends LightningElement {
      *  PUBLIC PROPERTIES
      * -------------------------------------------------------------
      */
-
-    /**
-     * Checks if the input is valid.
-     *
-     * @returns {boolean} True if the element meets all constraint validations.
-     * @public
-     */
-    @api
-    checkValidity() {
-        return this._constraint.checkValidity();
-    }
 
     /**
      * If present, the rating component is disabled and users cannot interact with it.
@@ -178,8 +125,26 @@ export default class AvonniRating extends LightningElement {
     set disabled(value) {
         this._disabled = normalizeBoolean(value);
 
-        if (this.init) {
-            this.ratingRecalculation();
+        if (this._connected) {
+            this.initItems();
+        }
+    }
+
+    /**
+     * The Lightning Design System name of the icon. Specify the name in the format 'utility:favorite' where 'utility' is the category, and 'favorite' is the specific icon to be displayed.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get iconName() {
+        return this._iconName;
+    }
+    set iconName(value) {
+        this._iconName = value;
+
+        if (this._connected) {
+            this.initItems();
         }
     }
 
@@ -215,10 +180,12 @@ export default class AvonniRating extends LightningElement {
     }
 
     set max(value) {
-        this._max = isNaN(parseInt(value, 10)) ? DEFAULT_MAX : value;
+        this._max = isNaN(parseInt(value, 10))
+            ? DEFAULT_MAX
+            : parseInt(value, 10);
 
-        if (this.init) {
-            this.ratingRecalculation();
+        if (this._connected) {
+            this.initItems();
         }
     }
 
@@ -235,10 +202,12 @@ export default class AvonniRating extends LightningElement {
     }
 
     set min(value) {
-        this._min = isNaN(parseInt(value, 10)) ? DEFAULT_MIN : value;
+        this._min = isNaN(parseInt(value, 10))
+            ? DEFAULT_MIN
+            : parseInt(value, 10);
 
-        if (this.init) {
-            this.ratingRecalculation();
+        if (this._connected) {
+            this.initItems();
         }
     }
 
@@ -257,22 +226,9 @@ export default class AvonniRating extends LightningElement {
     set readOnly(value) {
         this._readOnly = normalizeBoolean(value);
 
-        if (this.init) {
-            this.ratingRecalculation();
+        if (this._connected) {
+            this.initItems();
         }
-    }
-
-    /**
-     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
-     *
-     * @returns {boolean} False if invalid, true if valid.
-     * @public
-     */
-    @api
-    reportValidity() {
-        return this._constraint.reportValidity((message) => {
-            this.helpMessage = message;
-        });
     }
 
     /**
@@ -289,17 +245,6 @@ export default class AvonniRating extends LightningElement {
 
     set required(value) {
         this._required = normalizeBoolean(value);
-    }
-
-    /**
-     * Sets a custom error message to be displayed when a form is submitted.
-     *
-     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
-     * @public
-     */
-    @api
-    setCustomValidity(message) {
-        this._constraint.setCustomValidity(message);
     }
 
     /**
@@ -320,20 +265,9 @@ export default class AvonniRating extends LightningElement {
             validValues: RATING_SELECTIONS.valid
         });
 
-        if (this.init) {
-            this.ratingRecalculation();
+        if (this._connected) {
+            this.initItems();
         }
-    }
-
-    /**
-     * Displays error messages on invalid fields.
-     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
-     *
-     * @public
-     */
-    @api
-    showHelpMessageIfInvalid() {
-        this.reportValidity();
     }
 
     /**
@@ -350,8 +284,8 @@ export default class AvonniRating extends LightningElement {
     set value(value) {
         this._value = Number(value);
 
-        if (this.init) {
-            this.ratingRecalculation();
+        if (this._connected) {
+            this.initItems();
         }
     }
 
@@ -419,30 +353,30 @@ export default class AvonniRating extends LightningElement {
     }
 
     /**
-     * Compute items to display with min and max ratings.
-     *
-     * @type {object[]}
-     */
-    get items() {
-        let items = [];
-
-        for (let i = Number(this.min); i <= this.max; i++) {
-            items.push(i);
-        }
-
-        return items;
-    }
-
-    /**
      * Computed container class styling for label inline and stacked.
      *
      * @type {string}
      */
     get computedContainerClass() {
-        return classSet()
+        return classSet({
+            'slds-grid slds-grid_vertical-align-center slds-wrap':
+                this.variant === 'label-inline',
+            'slds-form-element_stacked': this.variant === 'label-stacked'
+        }).toString();
+    }
+
+    /**
+     * Computed CSS classes for the button icon SVG.
+     *
+     * @type {string}
+     */
+    get computedIconClass() {
+        return classSet('slds-button__icon')
             .add({
-                'slds-form-element_stacked': this.variant === 'label-stacked',
-                'avonni-rating__label_inline': this.variant === 'label-inline'
+                'slds-button__icon_large': this.iconSize === 'large',
+                'avonni-rating__icon_medium': this.iconSize === 'medium',
+                'slds-button__icon_small': this.iconSize === 'small',
+                'slds-button__icon_x-small': this.iconSize === 'x-small'
             })
             .toString();
     }
@@ -479,96 +413,112 @@ export default class AvonniRating extends LightningElement {
 
     /*
      * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Checks if the input is valid.
+     *
+     * @returns {boolean} True if the element meets all constraint validations.
+     * @public
+     */
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    /**
+     * Displays the error messages. If the input is valid, <code>reportValidity()</code> clears displayed error messages.
+     *
+     * @returns {boolean} False if invalid, true if valid.
+     * @public
+     */
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this.helpMessage = message;
+        });
+    }
+
+    /**
+     * Sets a custom error message to be displayed when a form is submitted.
+     *
+     * @param {string} message The string that describes the error. If message is an empty string, the error message is reset.
+     * @public
+     */
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    /**
+     * Displays error messages on invalid fields.
+     * An invalid field fails at least one constraint validation and returns false when <code>checkValidity()</code> is called.
+     *
+     * @public
+     */
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
+    }
+
+    /*
+     * ------------------------------------------------------------
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
 
     /**
-     * Get rating value and dispatch the change as the selected event.
-     *
-     * @param {Event} event
+     * Initialize the rating items array.
      */
-    selectRating(event) {
-        if (!this._readOnly) {
-            this._value = Number(event.target.value);
-
-            /**
-             * The event fired when the value change..
-             *
-             * @event
-             * @name change
-             * @param {string} value Value of the selected rating.
-             * @public
-             */
-            const selectedEvent = new CustomEvent('change', {
-                detail: {
-                    value: this._value
-                }
-            });
-            this.dispatchEvent(selectedEvent);
-
-            this.ratingRecalculation();
+    initItems() {
+        const items = [];
+        for (let i = this.min; i <= this.max; i++) {
+            const isSelected =
+                this.selection === 'continuous'
+                    ? i <= this.value
+                    : i === this.value;
+            items.push(
+                new Item({
+                    disabled: this.disabled,
+                    iconName: this.iconName,
+                    readOnly: this.readOnly,
+                    selected: isSelected,
+                    selectionType: this.selection,
+                    value: i
+                })
+            );
         }
+        this.items = items;
     }
 
     /**
-     * Calculate rating button and icon button classes and styling based on rating value selection and attributes.
+     * Handle a click on a rating item. Update the value and dispatch the change event.
+     *
+     * @param {Event} event
      */
-    ratingRecalculation() {
-        let buttons = this.template.querySelectorAll(
-            '[data-element-id="button"]'
-        );
+    handleItemClick(event) {
+        if (this.readOnly || this.disabled) {
+            return;
+        }
 
-        buttons.forEach((button) => {
-            button.classList.remove('slds-button_outline-brand');
-            button.classList.remove('slds-button_brand');
+        this._value = Number(event.currentTarget.value);
 
-            if (this.selection === 'continuous') {
-                button.classList.add('avonni-continuous');
-
-                if (Number(button.title) <= Number(this.value)) {
-                    button.classList.add('slds-button_brand');
-                } else {
-                    button.classList.add('slds-button_outline-brand');
-                }
-            } else if (Number(button.title) === Number(this.value)) {
-                button.classList.remove('avonni-continuous');
-                button.classList.add('slds-button_brand');
-            } else {
-                button.classList.remove('avonni-continuous');
-                button.classList.add('slds-button_outline-brand');
-            }
-
-            if (!this._disabled && !this._readOnly) {
-                button.classList.add('avonni-active');
-            } else {
-                button.classList.remove('avonni-active');
+        /**
+         * The event fired when the value change..
+         *
+         * @event
+         * @name change
+         * @param {string} value Value of the selected rating.
+         * @public
+         */
+        const selectedEvent = new CustomEvent('change', {
+            detail: {
+                value: this._value
             }
         });
-
-        let iconButtons = this.template.querySelectorAll(
-            '[data-element-id="lightning-button-icon"]'
-        );
-
-        iconButtons.forEach((button) => {
-            button.classList.remove('avonni-icon-selected');
-
-            if (this.selection === 'continuous') {
-                button.classList.add('avonni-continuous-star');
-
-                if (Number(button.title) <= Number(this.value)) {
-                    button.classList.add('avonni-icon-selected');
-                }
-            } else if (Number(button.title) === Number(this.value)) {
-                button.classList.remove('avonni-continuous-star');
-                button.classList.add('avonni-icon-selected');
-            }
-
-            if (!this._disabled && !this._readOnly) {
-                button.classList.add('avonni-active-star');
-            } else {
-                button.classList.remove('avonni-active');
-            }
-        });
+        this.dispatchEvent(selectedEvent);
+        this.initItems();
     }
 }

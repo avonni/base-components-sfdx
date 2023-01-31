@@ -34,7 +34,7 @@
 
 <template>
     <div class={sectionClass}>
-        <h3 if:true={showHeader} class={headerClass} data-element-id="h3">
+        <h3 if:true={showHeader} class={headerClass} data-element-id="header">
             <template if:true={collapsible}>
                 <button
                     class={titleButtonClass}
@@ -63,13 +63,19 @@
                             data-element-id="lightning-icon-closed"
                         ></lightning-icon>
                     </template>
-                    <span class="slds-truncate" title={title}>{title}</span>
+                    <span
+                        class="slds-truncate avonni-expandable-section__title"
+                        title={title}
+                        data-element-id="title"
+                        >{title}</span
+                    >
                 </button>
             </template>
             <template if:false={collapsible}>
                 <span
                     class="slds-truncate avonni-expandable-section__title"
                     title={title}
+                    data-element-id="title"
                     >{title}</span
                 >
             </template>

@@ -579,7 +579,9 @@ export default class AvonniCombobox extends LightningElement {
     }
     set value(value) {
         this._value =
-            typeof value === 'string' ? [value] : [...normalizeArray(value)];
+            typeof value === 'string' || typeof value === 'number'
+                ? [value]
+                : [...normalizeArray(value)];
     }
 
     /**
@@ -644,7 +646,7 @@ export default class AvonniCombobox extends LightningElement {
      */
     get computedMainComboboxClass() {
         return classSet({
-            'slds-combobox-addon_end slds-col avonni-combobox__main-combobox_scopes':
+            'slds-combobox-addon_end avonni-combobox__main-combobox_scopes':
                 this.showScopes
         }).toString();
     }
@@ -986,7 +988,7 @@ export default class AvonniCombobox extends LightningElement {
      */
     handleChange(event) {
         const { action, levelPath, value } = event.detail;
-        this._value = this.isMultiSelect ? value : value.toString();
+        this._value = value;
         this.dispatchChange(action, levelPath);
     }
 
@@ -1091,7 +1093,7 @@ export default class AvonniCombobox extends LightningElement {
                 detail: {
                     action,
                     levelPath,
-                    value: this._value
+                    value: !this.isMultiSelect ? this.value[0] : this.value
                 },
                 bubbles: true
             })

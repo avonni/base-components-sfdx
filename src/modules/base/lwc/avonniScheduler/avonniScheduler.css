@@ -30,156 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-scheduler__wrapper {
-    height: 100%;
-    min-height: 5rem;
-    max-height: 100vh;
-    overflow: auto;
+.avonni-scheduler__flex-col {
+    flex: 1 1 auto;
 }
 
-.avonni-scheduler__first-col {
-    background-color: #f3f3f3;
-    position: sticky;
-    left: 0;
-    z-index: 4;
-    height: 100%;
-}
-.avonni-scheduler__first-col_horizontal {
-    width: var(--avonni-scheduler-datatable-column-width, 300px);
-}
-.avonni-scheduler__grid_align-end {
-    /* We can't use slds-grid_align-end because it will prevent the smallest header cells from growing */
-    justify-content: right;
-}
-.avonni-scheduler__first-col.avonni-scheduler__first-col_hidden {
-    width: auto;
-}
-.avonni-scheduler__first-col.avonni-scheduler__first-col_hidden.avonni-scheduler__first-col_vertical {
-    width: 0;
-}
-.avonni-scheduler__first-col.avonni-scheduler__first-col_open {
-    width: 100%;
-}
-.avonni-scheduler__datatable {
-    padding-top: 5px;
-    width: 100%;
+.avonni-scheduler__schedule {
+    height: calc(100% - var(--avonni-scheduler-toolbar-height, 70px));
 }
 
-.avonni-scheduler__header {
-    position: sticky;
+.avonni-scheduler__detail-popover-close-button {
+    z-index: 1;
     top: 0;
-    z-index: 3;
+    right: 2px;
 }
 
-.avonni-scheduler__event-detail-popover {
-    width: auto;
-}
-
-.avonni-scheduler__schedule-col {
-    height: 100%;
-}
-
-.avonni-scheduler__schedule-col_zoom-to-fit {
-    /* Prevent the flex column from allowing overflow */
-    min-width: 0;
-}
-
-.avonni-scheduler__events {
-    height: 100%;
-    top: 0;
+.avonni-scheduler__calendar {
+    z-index: 0;
 }
 
 .avonni-scheduler__context-menu {
     z-index: 1;
 }
 
-.avonni-scheduler__cell {
-    width: var(--avonni-scheduler-cell-width);
-    min-width: var(--avonni-scheduler-cell-width);
-}
-
-.avonni-scheduler__cell_vertical:not(.avonni-scheduler__cell_zoom-to-fit) {
-    min-width: 75px;
-}
-
-.avonni-scheduler__schedule-body_vertical .avonni-scheduler__cell {
-    height: var(--avonni-scheduler-cell-height);
-    min-height: var(--avonni-scheduler-cell-height);
-}
-
-.avonni-scheduler__vertical-header-wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-.avonni-scheduler__vertical-resource-header-cell {
-    overflow: hidden;
-    flex: 1 1 0;
-    min-width: 75px;
-}
-.avonni-scheduler__vertical-resource-header-cell_zoom-to-fit {
-    min-width: auto;
-}
-
-.avonni-scheduler__vertical-resource-header-cell,
-.avonni-scheduler__vertical-resource-header-first-cell {
-    color: #514f4d;
-    font-weight: 700;
-    min-height: 3rem;
-    height: 3rem;
-    position: sticky;
-    top: 0;
-    z-index: 4;
-}
-
-.avonni-scheduler__infinite-load-spinner_right {
-    right: 0;
-    left: auto;
-}
-.avonni-scheduler__infinite-load-spinner_left {
-    left: 2rem;
+.avonni-scheduler__display-menu {
+    fill: #818181;
 }
 
 .avonni-scheduler__toolbar-date-range {
     --slds-c-button-text-color: #444444;
 }
 
-/* Splitter bar between the data table and the schedule --------- */
-.avonni-scheduler__splitter {
-    z-index: 5;
-    top: 0;
-    bottom: 0;
-    left: -5px;
-    width: 20px;
+.avonni-scheduler__toolbar-button-group_first {
+    --slds-c-button-radius-border: 0.25rem 0 0 0.25rem;
 }
-.avonni-scheduler__first-col_hidden .avonni-scheduler__splitter {
-    left: 0;
+
+.avonni-scheduler__toolbar-button-group_middle {
+    --slds-c-button-radius-border: 0;
+    --slds-c-button-sizing-border: 1px 0 1px 0;
 }
-.avonni-scheduler__first-col_open
-    .avonni-scheduler__splitter.avonni-scheduler__splitter_vertical {
-    left: -12px;
+
+.avonni-scheduler__toolbar-button-group_last {
+    --slds-c-button-radius-border: 0 0.25rem 0.25rem 0;
 }
-.avonni-scheduler__splitter:hover > div,
-.avonni-scheduler__splitter:focus-within > div {
-    width: 15px;
+
+.avonni-scheduler__display-menu.avonni-scheduler__toolbar-button-group_first {
+    --slds-c-button-sizing-border: 1px 0 1px 1px;
 }
-.avonni-scheduler__splitter:hover .avonni-scheduler__splitter-icon,
-.avonni-scheduler__splitter-icon:focus {
-    left: 0;
-}
-.avonni-scheduler__splitter > div {
-    height: 100%;
-    overflow: hidden;
-    width: 4px;
-    transition: width 300ms;
-}
-.avonni-scheduler__splitter:not(.avonni-scheduler__splitter_disabled) > div {
-    cursor: col-resize;
-}
-.avonni-scheduler__splitter-icon {
-    left: 30px;
-}
-.avonni-scheduler__splitter.avonni-scheduler__splitter_vertical {
-    left: 0;
-}
-/* ---------- */

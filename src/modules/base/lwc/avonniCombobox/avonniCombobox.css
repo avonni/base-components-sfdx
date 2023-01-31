@@ -4,3 +4,7 @@
     font-weight: var(--avonni-combobox-label-font-weight, 400);
     font-style: var(--avonni-combobox-label-font-style, normal);
 }
+
+.avonni-combobox__main-combobox_scopes {
+    flex: 1 1 auto;
+}

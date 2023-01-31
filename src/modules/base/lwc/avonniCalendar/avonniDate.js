@@ -52,6 +52,10 @@ export default class AvonniCalendarDate {
         this.selected = normalizeBoolean(props.selected);
     }
 
+    get appearsSelected() {
+        return this.selected || this.isPartOfInterval;
+    }
+
     get ariaCurrent() {
         return this.isToday ? 'date' : null;
     }
@@ -64,7 +68,7 @@ export default class AvonniCalendarDate {
         if (this.isWeekNumber) {
             return getWeekNumber(this.date);
         }
-        return new Date(this.date).getDate();
+        return this.date.day;
     }
 
     get labelClass() {
@@ -80,7 +84,7 @@ export default class AvonniCalendarDate {
             'avonni-calendar__week-cell': this.isWeekNumber,
             'slds-day_adjacent-month': this.adjacentMonth,
             'slds-is-today': this.isToday,
-            'slds-is-selected': this.selected || this.isPartOfInterval,
+            'slds-is-selected': this.appearsSelected,
             'slds-is-selected-multi': this.isPartOfInterval
         }).toString();
     }

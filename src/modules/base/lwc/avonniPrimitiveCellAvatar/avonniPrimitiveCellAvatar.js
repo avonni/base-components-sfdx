@@ -83,6 +83,10 @@ export default class AvonniPrimitiveCellAvatar extends LightningElement {
         });
     }
 
+    get showAvatar() {
+        return this.value || this.primaryText || this.secondaryText;
+    }
+
     get value() {
         return this.src || this.fallbackIconName;
     }

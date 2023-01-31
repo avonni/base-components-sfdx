@@ -1,8 +1,15 @@
+.avonni-metric__flex-col {
+    flex: 1 1 auto;
+}
 .avonni-metric__wrapper {
     text-align: var(--avonni-metric-alignment, left);
 }
 .avonni-metric__primary-and-secondary-wrapper {
     justify-content: var(--avonni-metric-alignment, left);
+}
+
+.avonni-metric__secondary-wrapper {
+    text-align: var(--avonni-metric-secondary-alignment);
 }
 
 .avonni-metric__avatar_after-text {

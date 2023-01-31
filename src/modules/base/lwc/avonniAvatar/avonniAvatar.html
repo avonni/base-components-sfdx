@@ -146,6 +146,7 @@
         <div if:true={tags} class="slds-m-top_xx-small">
             <template for:each={tags} for:item="tag">
                 <c-avonni-chip
+                    if:true={tag.label}
                     key={tag.label}
                     label={tag.label}
                     variant={tag.variant}

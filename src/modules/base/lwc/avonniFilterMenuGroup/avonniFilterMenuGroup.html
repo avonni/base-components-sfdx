@@ -35,68 +35,76 @@
 <template>
     <template if:true={isVertical}>
         <div class="slds-m-bottom_medium" if:true={showSelectedItems}>
-            <lightning-pill-container
+            <c-avonni-pill-container
+                actions={pillActions}
                 items={selectedPills}
-                data-element-id="lightning-pill-container-vertical"
-                onitemremove={handleSelectedItemRemove}
-            ></lightning-pill-container>
+                data-element-id="avonni-pill-container-vertical"
+                data-group-name="focusable-element"
+                onactionclick={handleSelectedItemRemove}
+            ></c-avonni-pill-container>
         </div>
     </template>
-    <ul class={filtersWrapperClass}>
-        <template for:each={menus} for:item="menu">
+    <ul
+        class={filtersWrapperClass}
+        data-element-id="ul"
+        onapply={handleApply}
+        onloadmore={handleLoadMore}
+        onreset={handleReset}
+        onsearch={handleSearch}
+        onselect={handleSelect}
+    >
+        <template for:each={computedMenus} for:item="menu">
             <li class={filtersClass} key={menu.name}>
                 <c-avonni-filter-menu
                     access-key={menu.accessKey}
                     alternative-text={menu.alternativeText}
+                    apply-button-label={applyButtonLabel}
+                    button-variant={menu.buttonVariant}
                     disabled={menu.disabled}
+                    dropdown-alignment={menu.dropdownAlignment}
+                    dropdown-nubbin={menu.dropdownNubbin}
+                    hide-apply-reset-buttons={hideMenuApplyResetButtons}
+                    hide-selected-items
                     icon-name={menu.iconName}
                     icon-size={menu.iconSize}
                     is-loading={menu.isLoading}
                     label={menu.label}
                     loading-state-alternative-text={menu.loadingStateAlternativeText}
-                    items={menu.items}
-                    is-multi-select={menu.isMultiSelect}
+                    name={menu.name}
+                    reset-button-label={resetButtonLabel}
                     title={menu.title}
+                    type={menu.type}
+                    type-attributes={menu.typeAttributes}
                     tooltip={menu.tooltip}
                     value={menu.value}
                     variant={variant}
-                    button-variant={menu.buttonVariant}
-                    search-input-placeholder={menu.searchInputPlaceholder}
-                    show-search-box={menu.showSearchBox}
-                    apply-button-label={applyButtonLabel}
-                    reset-button-label={resetButtonLabel}
-                    hide-apply-reset-buttons={isVertical}
-                    dropdown-alignment={menu.dropdownAlignment}
-                    dropdown-width={menu.dropdownWidth}
-                    dropdown-length={menu.dropdownLength}
-                    dropdown-nubbin={menu.dropdownNubbin}
-                    hide-selected-items
                     data-element-id="avonni-filter-menu"
+                    data-group-name="focusable-element"
                     data-name={menu.name}
-                    onapply={handleValueChange}
-                    onreset={handleValueChange}
-                    onselect={dispatchSelect}
                 ></c-avonni-filter-menu>
             </li>
         </template>
     </ul>
     <template if:false={isVertical}>
         <div class="slds-m-top_x-small">
-            <lightning-pill-container
+            <c-avonni-pill-container
                 if:true={showSelectedItems}
+                actions={pillActions}
                 items={selectedPills}
-                data-element-id="lightning-pill-container-horizontal"
-                onitemremove={handleSelectedItemRemove}
-            ></lightning-pill-container>
+                data-element-id="avonni-pill-container-horizontal"
+                data-group-name="focusable-element"
+                onactionclick={handleSelectedItemRemove}
+            ></c-avonni-pill-container>
         </div>
     </template>
-    <template if:true={isVertical}>
+    <template if:true={showApplyResetButtons}>
         <lightning-button
             class="slds-m-right_x-small"
             variant="base"
             label={resetButtonLabel}
             title={resetButtonLabel}
             data-element-id="lightning-button-reset"
+            data-group-name="focusable-element"
             onclick={handleResetClick}
         ></lightning-button>
         <lightning-button
@@ -104,6 +112,7 @@
             label={applyButtonLabel}
             title={applyButtonLabel}
             data-element-id="lightning-button-apply"
+            data-group-name="focusable-element"
             onclick={handleApplyClick}
         ></lightning-button>
     </template>

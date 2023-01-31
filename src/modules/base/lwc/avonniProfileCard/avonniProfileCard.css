@@ -37,18 +37,11 @@
 
 .avonni-profile-card_color-background {
     background-color: var(--avonni-profile-card-color-background, #ffffff);
-}
-
-.slds-media {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-}
-
-.avonni-profile-card__icon-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    flex: 1 1 auto;
 }
 
 .avonni-profile-card__avatar-img {
@@ -99,58 +92,49 @@
 
 .avonni-profile-card__background_size-x-small {
     min-height: 56px;
-    width: 100%;
 }
 
 .avonni-profile-card__background_size-small {
     min-height: 70px;
-    width: 100%;
 }
 
 .avonni-profile-card__background_size-medium {
     min-height: 96px;
-    width: 100%;
 }
 
 .avonni-profile-card__background_size-large {
     min-height: 144px;
-    width: 100%;
 }
 
 .avonni-profile-card__background_size-x-large {
     min-height: 182px;
-    width: 100%;
+}
+
+.avonni-profile-card__text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .avonni-profile-card__title {
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: var(--avonni-profile-card-title-font-size, 18px);
     font-style: var(--avonni-profile-card-title-font-style, normal);
     font-weight: var(--avonni-profile-card-title-font-weight, 400);
     color: var(--avonni-profile-card-title-text-color, #000000);
     line-height: 1.33333em;
-    overflow: hidden;
 }
 
 .avonni-profile-card__subtitle {
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: var(--avonni-profile-card-subtitle-font-size, 14px);
     font-weight: var(--avonni-profile-card-subtitle-font-weight, 400);
     font-style: var(--avonni-profile-card-subtitle-font-style, normal);
     color: var(--avonni-profile-card-subtitle-text-color, #000000);
     line-height: 1.71429em;
-    overflow: hidden;
 }
 
-.avonni-profile-card__avatar-actions {
-    position: absolute;
-}
-
-.avonni-profile-card__card_size-x-small .avonni-profile-card__avatar-actions,
-.avonni-profile-card__card_size-small .avonni-profile-card__avatar-actions,
-.avonni-profile-card__card_size-medium .avonni-profile-card__avatar-actions {
+.avonni-profile-card__card_size-x-small [data-element-id='avatar-action'],
+.avonni-profile-card__card_size-small [data-element-id='avatar-action'],
+.avonni-profile-card__card_size-medium [data-element-id='avatar-action'] {
     bottom: 0;
     right: 0;
 }
@@ -172,18 +156,14 @@
     padding: 0 1.75rem;
 }
 
-.avonni-profile-card__card_size-large .avonni-profile-card__avatar-actions {
+.avonni-profile-card__card_size-large [data-element-id='avatar-action'] {
     bottom: 0.25rem;
     right: 0.25rem;
 }
 
-.avonni-profile-card__card_size-x-large .avonni-profile-card__avatar-actions {
+.avonni-profile-card__card_size-x-large [data-element-id='avatar-action'] {
     bottom: 0.5rem;
     right: 0.5rem;
-}
-
-.avonni-profile-card__title-container {
-    width: 100%;
 }
 
 @media (min-width: 480px) {
@@ -196,17 +176,13 @@
     }
 
     .avonni-profile-card__actions-right {
-        position: absolute;
         right: 0.5rem;
         top: 0.5rem;
-        z-index: 1000;
     }
 
     .avonni-profile-card__actions-left {
-        position: absolute;
         left: 0.5rem;
         top: 0.5rem;
-        z-index: 1000;
     }
 
     [class^='top-'].avonni-profile-card__card_size-x-small {
@@ -329,46 +305,46 @@
         right: 1.75rem;
     }
 
-    .bottom-center-desktop .avonni-profile-card__title-container {
+    .bottom-center-desktop [data-element-id='text-container'] {
         padding: 0 1rem;
     }
 
     .bottom-center-desktop.avonni-profile-card__card_size-x-small
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 1.5rem;
     }
 
     .bottom-center-desktop.avonni-profile-card__card_size-small
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 1.75rem;
     }
 
     .bottom-center-desktop.avonni-profile-card__card_size-medium
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 2rem;
     }
 
     .bottom-center-desktop.avonni-profile-card__card_size-large
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 2.25rem;
     }
 
     .bottom-center-desktop.avonni-profile-card__card_size-x-large
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 2.5rem;
         padding: 0 1rem;
     }
 
-    .top-center-desktop .avonni-profile-card__title-container {
+    .top-center-desktop [data-element-id='text-container'] {
         padding: 1rem 1rem 0 1rem;
     }
 
-    .bottom-center-desktop .avonni-profile-card__title-container {
+    .bottom-center-desktop [data-element-id='text-container'] {
         padding: 0 1rem;
     }
 
     [class*='-left-desktop'][class$='card_size-x-small']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 0.5rem;
         padding-left: 4.75rem;
@@ -376,7 +352,7 @@
     }
 
     [class*='-left-desktop'][class$='card_size-small']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 0.8rem;
         padding-left: 6.5rem;
@@ -384,7 +360,7 @@
     }
 
     [class*='-left-desktop'][class$='card_size-medium']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 1.5rem;
         padding-left: 8.25rem;
@@ -392,7 +368,7 @@
     }
 
     [class*='-left-desktop'][class$='card_size-large']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 2.8rem;
         padding-left: 12.25rem;
@@ -400,7 +376,7 @@
     }
 
     [class*='-left-desktop'][class$='card_size-x-large']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 3.8rem;
         padding-left: 14.75rem;
@@ -408,7 +384,7 @@
     }
 
     [class*='-right-desktop'][class$='card_size-x-small']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 0.5rem;
         padding-right: 4.75rem;
@@ -416,7 +392,7 @@
     }
 
     [class*='-right-desktop'][class$='card_size-small']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 0.8rem;
         padding-right: 6.5rem;
@@ -424,7 +400,7 @@
     }
 
     [class*='-right-desktop'][class$='card_size-medium']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 1.5rem;
         padding-right: 8.25rem;
@@ -432,7 +408,7 @@
     }
 
     [class*='-right-desktop'][class$='card_size-large']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 2.8rem;
         padding-right: 12.25rem;
@@ -440,7 +416,7 @@
     }
 
     [class*='-right-desktop'][class$='card_size-x-large']
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         position: absolute;
         padding: 3.8rem;
         padding-right: 14.75rem;
@@ -508,13 +484,14 @@
         align-items: flex-end;
     }
 
-    .avonni-mobile-actions-right {
+    .avonni-profile-card__actions-right {
         position: absolute;
         right: 0.5rem;
         top: 0.5rem;
         z-index: 1000;
     }
-    .avonni-mobile-actions-left {
+
+    .avonni-profile-card__actions-left {
         position: absolute;
         left: 0.5rem;
         top: 0.5rem;
@@ -631,108 +608,108 @@
         right: 1.75rem;
     }
 
-    .mobile-bottom-center .avonni-profile-card__title-container {
+    .mobile-bottom-center [data-element-id='text-container'] {
         padding: 0 1rem;
     }
 
     .mobile-bottom-center.avonni-profile-card__card_size-x-small
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 1.5rem;
     }
 
     .mobile-bottom-center.avonni-profile-card__card_size-small
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 1.75rem;
     }
 
     .mobile-bottom-center.avonni-profile-card__card_size-medium
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 2rem;
     }
 
     .mobile-bottom-center.avonni-profile-card__card_size-large
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 2.25rem;
     }
 
     .mobile-bottom-center.avonni-profile-card__card_size-x-large
-        .avonni-profile-card__title-container {
+        [data-element-id='text-container'] {
         margin-top: 2.5rem;
         padding: 0 1rem;
     }
 
-    .mobile-top-center .avonni-profile-card__title-container {
+    .mobile-top-center [data-element-id='text-container'] {
         padding: 1rem 1rem 0 1rem;
     }
 
-    .mobile-bottom-center .avonni-profile-card__title-container {
+    .mobile-bottom-center [data-element-id='text-container'] {
         padding: 0 1rem;
     }
 
-    [class$='-left card_size-x-small'] .avonni-profile-card__title-container {
+    [class$='-left card_size-x-small'] [data-element-id='text-container'] {
         position: absolute;
         padding: 0.5rem;
         padding-left: 4.75rem;
         padding-right: 0.75rem;
     }
 
-    [class$='-left card_size-small'] .avonni-profile-card__title-container {
+    [class$='-left card_size-small'] [data-element-id='text-container'] {
         position: absolute;
         padding: 0.8rem;
         padding-left: 6.5rem;
         padding-right: 1rem;
     }
 
-    [class$='-left card_size-medium'] .avonni-profile-card__title-container {
+    [class$='-left card_size-medium'] [data-element-id='text-container'] {
         position: absolute;
         padding: 1.5rem;
         padding-left: 8.25rem;
         padding-right: 1.25rem;
     }
 
-    [class$='-left card_size-large'] .avonni-profile-card__title-container {
+    [class$='-left card_size-large'] [data-element-id='text-container'] {
         position: absolute;
         padding: 2.8rem;
         padding-left: 12.25rem;
         padding-right: 1.5rem;
     }
 
-    [class$='-left card_size-x-large'] .avonni-profile-card__title-container {
+    [class$='-left card_size-x-large'] [data-element-id='text-container'] {
         position: absolute;
         padding: 3.8rem;
         padding-left: 14.75rem;
         padding-right: 1.75rem;
     }
 
-    [class$='-right card_size-x-small'] .avonni-profile-card__title-container {
+    [class$='-right card_size-x-small'] [data-element-id='text-container'] {
         position: absolute;
         padding: 0.5rem;
         padding-right: 4.75rem;
         padding-left: 0.75rem;
     }
 
-    [class$='-right card_size-small'] .avonni-profile-card__title-container {
+    [class$='-right card_size-small'] [data-element-id='text-container'] {
         position: absolute;
         padding: 0.8rem;
         padding-right: 6.5rem;
         padding-left: 1rem;
     }
 
-    [class$='-right card_size-medium'] .avonni-profile-card__title-container {
+    [class$='-right card_size-medium'] [data-element-id='text-container'] {
         position: absolute;
         padding: 1.5rem;
         padding-right: 8.25rem;
         padding-left: 1.25rem;
     }
 
-    [class$='-right card_size-large'] .avonni-profile-card__title-container {
+    [class$='-right card_size-large'] [data-element-id='text-container'] {
         position: absolute;
         padding: 2.8rem;
         padding-right: 12.25rem;
         padding-left: 1.5rem;
     }
 
-    [class$='-right card_size-x-large'] .avonni-profile-card__title-container {
+    [class$='-right card_size-x-large'] [data-element-id='text-container'] {
         position: absolute;
         padding: 3.8rem;
         padding-right: 14.75rem;

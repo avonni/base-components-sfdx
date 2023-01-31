@@ -38,9 +38,15 @@ import {
     normalizeArray
 } from 'c/utilsPrivate';
 import { AvonniResizeObserver } from 'c/resizeObserver';
-import { classSet, generateUUID } from 'c/utils';
+import { classSet } from 'c/utils';
 
+const AUTO_SCROLL_INCREMENT = 5;
+const AUTO_SCROLL_THRESHOLD = 50;
 const DEFAULT_ALTERNATIVE_TEXT = 'Selected Options:';
+const DEFAULT_NUMBER_OF_VISIBLE_ITEMS = 20;
+const SHOW_MORE_BUTTON_WIDTH = 80;
+const LOADING_THRESHOLD = 60;
+const MAX_LOADED_ITEMS = 30;
 
 /**
  * @class
@@ -57,25 +63,48 @@ export default class AvonniPillContainer extends LightningElement {
     _singleLine = false;
     _sortable = false;
 
+    _selectedAction;
     _dragState;
     _dragTimeOut;
+    _expandTimeOut;
     _focusedIndex = 0;
     _focusedTabIndex = 0;
+    _focusOnRender = false;
     _hasFocus = false;
-    _pillsNotFittingCount;
-    _pillContainerElementId;
+    _hiddenItemsStartIndex = 0;
+    _itemsWidths = [];
+    _popoverHasFocus = false;
+    _preventPopoverClosing = false;
     _resizeObserver;
+    _scrollingInterval;
+    _visibleItemsCount = 0;
+
+    showActionMenu = false;
+    showPopover = false;
+    _connected = false;
 
     connectedCallback() {
         window.addEventListener('mouseup', this.handleMouseUp);
+        this.initVisibleItemsCount();
+        this._connected = true;
     }
 
     renderedCallback() {
-        if (this._resizeObserver && !this.computedIsCollapsible) {
+        if (this._resizeObserver && !this.isCollapsible) {
             this._resizeObserver.disconnect();
             this._resizeObserver = undefined;
-        } else if (!this._resizeObserver && this.computedIsCollapsible) {
+        } else if (!this._resizeObserver && this.isCollapsible) {
             this._resizeObserver = this.initResizeObserver();
+        }
+
+        if (this.isCollapsible) {
+            this.saveItemsWidths();
+            this.updateVisibleItems();
+        }
+
+        if (this._focusOnRender) {
+            this.focus();
+            this._focusOnRender = false;
         }
     }
 
@@ -138,6 +167,12 @@ export default class AvonniPillContainer extends LightningElement {
     set isCollapsible(value) {
         this._isCollapsible = normalizeBoolean(value);
         this.clearDrag();
+
+        if (this._connected) {
+            this.initVisibleItemsCount();
+            this.saveItemsWidths();
+            this.updateVisibleItems();
+        }
     }
 
     /**
@@ -154,6 +189,12 @@ export default class AvonniPillContainer extends LightningElement {
     set isExpanded(value) {
         this._isExpanded = normalizeBoolean(value);
         this.clearDrag();
+
+        if (this._connected) {
+            this.initVisibleItemsCount();
+            this.saveItemsWidths();
+            this.updateVisibleItems();
+        }
     }
 
     /**
@@ -168,8 +209,12 @@ export default class AvonniPillContainer extends LightningElement {
     }
     set items(value) {
         this._items = deepCopy(normalizeArray(value));
-
+        this._itemsWidths = [];
         this.clearDrag();
+
+        if (this._connected) {
+            this.initVisibleItemsCount();
+        }
     }
 
     /**
@@ -211,21 +256,25 @@ export default class AvonniPillContainer extends LightningElement {
      */
 
     /**
-     * True if the pill container is considered collapsible.
+     * CSS classes of the items hidden in the single-line collapsed popover.
      *
-     * @type {boolean}
+     * @type {string}
      */
-    get computedIsCollapsible() {
-        return (!this.isCollapsible && !this.isExpanded) || this.isCollapsible;
+    get computedHiddenListItemClass() {
+        return classSet('avonni-pill-container__hidden-pill')
+            .add({
+                'slds-is-relative': this.sortable
+            })
+            .toString();
     }
 
     /**
-     * True of the pill container is considered expanded.
+     * True if the pill container is considered expanded.
      *
      * @type {boolean}
      */
     get computedIsExpanded() {
-        return (!this.isCollapsible && !this.isExpanded) || this.isExpanded;
+        return this.isExpanded || !this.isCollapsible;
     }
 
     /**
@@ -247,8 +296,11 @@ export default class AvonniPillContainer extends LightningElement {
      * @type {string}
      */
     get computedListItemClass() {
-        return classSet('slds-listbox-item').add({
+        return classSet(
+            'slds-listbox-item avonni-pill-container__item slds-p-top_xxx-small'
+        ).add({
             'slds-is-relative': this.sortable,
+            'slds-p-right_xxx-small': !this.singleLine,
             'avonni-pill-container__item_sortable-single-line':
                 this.sortable && this.singleLine
         });
@@ -260,27 +312,11 @@ export default class AvonniPillContainer extends LightningElement {
      * @type {string}
      */
     get computedPillClass() {
-        return classSet('slds-pill')
+        return classSet()
             .add({
                 'avonni-pill-container__pill-sortable': this.sortable
             })
             .toString();
-    }
-
-    /**
-     * Label of the "show more" button.
-     *
-     * @type {string}
-     */
-    get computedPillCountMoreLabel() {
-        if (
-            this.computedIsExpanded ||
-            isNaN(this._pillsNotFittingCount) ||
-            this._pillsNotFittingCount <= 0
-        ) {
-            return undefined;
-        }
-        return `+${this._pillsNotFittingCount} more`;
     }
 
     /**
@@ -289,10 +325,10 @@ export default class AvonniPillContainer extends LightningElement {
      * @type {string}
      */
     get computedWrapperClass() {
-        return classSet('avonni-pill-container__wrapper').add({
-            'slds-is-expanded': this.computedIsExpanded && !this.singleLine,
-            'slds-pill_container': this.singleLine,
-            'slds-listbox_selection-group': !this.singleLine
+        return classSet('avonni-pill-container__wrapper slds-is-relative').add({
+            'slds-pill_container slds-p-top_none slds-p-bottom_none':
+                this.singleLine,
+            'avonni-pill-container__no-items': !this._visibleItemsCount
         });
     }
 
@@ -308,24 +344,34 @@ export default class AvonniPillContainer extends LightningElement {
     }
 
     /**
-     * HTML element of the currently focused pill.
+     * Filtered items that will be displayed in the single-line collapsed popover.
      *
-     * @type {HTMLElement}
+     * @type {object[]}
      */
-    get focusedPillElement() {
-        const pillElements = this.template.querySelectorAll(
-            '[data-element-id="avonni-primitive-pill"]'
-        );
-        return pillElements[this._focusedIndex];
+    get hiddenItems() {
+        let endIndex = this._hiddenItemsStartIndex + MAX_LOADED_ITEMS;
+        const lastIndex = this.items.length;
+        if (endIndex + 10 >= lastIndex) {
+            // If only 10 items are left, load them all
+            endIndex = lastIndex;
+        }
+
+        const items = this.items.slice(this._hiddenItemsStartIndex, endIndex);
+        return items.map((it, index) => {
+            return {
+                ...it,
+                index: index + this._hiddenItemsStartIndex
+            };
+        });
     }
 
     /**
-     * List items' HTML elements.
+     * True if the "show more" button should be visible.
      *
-     * @type {NodeList}
+     * @type {boolean}
      */
-    get itemElements() {
-        return this.template.querySelectorAll('[data-element-id="li"]');
+    get isCollapsed() {
+        return this.items.length > this._visibleItemsCount;
     }
 
     /**
@@ -347,22 +393,26 @@ export default class AvonniPillContainer extends LightningElement {
     }
 
     /**
-     * True if the "show more" button should be visible.
-     *
-     * @type {boolean}
-     * @default false
-     */
-    get showMore() {
-        return this.computedIsCollapsible && !this.computedIsExpanded;
-    }
-
-    /**
-     * Automatically generated unique key.
+     * Label of the "show more" button.
      *
      * @type {string}
      */
-    get uniqueKey() {
-        return generateUUID();
+    get buttonLabel() {
+        const hiddenCount = this.items.length - this._visibleItemsCount;
+        return `+${hiddenCount} more`;
+    }
+
+    /**
+     * Array of items that are always visible, even when the pill container is collapsed.
+     *
+     * @type {object[]}
+     */
+    get visibleItems() {
+        return this.items.slice(0, this._visibleItemsCount);
+    }
+
+    get wrapperElement() {
+        return this.template.querySelector('[data-element-id="div-wrapper"]');
     }
 
     /*
@@ -378,10 +428,13 @@ export default class AvonniPillContainer extends LightningElement {
      */
     @api
     focus() {
-        if (this.focusedPillElement && this.items[this._focusedIndex].href) {
-            this.focusedPillElement.focusLink();
-        } else if (this.focusedPillElement) {
-            this.focusedPillElement.focus();
+        const focusedPill = this.template.querySelector(
+            `[data-element-id^="avonni-primitive-pill"][data-index="${this._focusedIndex}"]`
+        );
+        if (focusedPill && focusedPill.href) {
+            focusedPill.focusLink();
+        } else if (focusedPill) {
+            focusedPill.focus();
         } else if (this.listElement) {
             this.listElement.focus();
         }
@@ -405,10 +458,9 @@ export default class AvonniPillContainer extends LightningElement {
             initialIndex: index,
             lastHoveredIndex: index
         };
-        const wrapper = this.template.querySelector(
-            '[data-element-id="div-wrapper"]'
+        this.wrapperElement.classList.add(
+            'avonni-pill-container__list_dragging'
         );
-        wrapper.classList.add('avonni-pill-container__list_dragging');
         this.updateAssistiveText(index + 1);
     }
 
@@ -418,23 +470,52 @@ export default class AvonniPillContainer extends LightningElement {
      * @returns {AvonniResizeObserver} Resize observer.
      */
     initResizeObserver() {
-        if (!this.listElement) return null;
+        if (!this.wrapperElement) {
+            return null;
+        }
+        return new AvonniResizeObserver(
+            this.wrapperElement,
+            this.updateVisibleItems.bind(this)
+        );
+    }
 
-        const resizeObserver = new AvonniResizeObserver(() => {
-            let notFittingCount = 0;
-            const items = this.template.querySelectorAll(
-                '[data-element-id="li"]'
+    /**
+     * Initialize the number visible items.
+     */
+    initVisibleItemsCount() {
+        const maxCount = this.items.length;
+        const count =
+            DEFAULT_NUMBER_OF_VISIBLE_ITEMS > maxCount
+                ? maxCount
+                : DEFAULT_NUMBER_OF_VISIBLE_ITEMS;
+        this._visibleItemsCount = !this.computedIsExpanded ? count : maxCount;
+    }
+
+    /**
+     * If the given position is close to the top or the bottom of the single-line collapsed popover, scroll the popover in this direction. Used to scroll automatically the popover when sorting an item.
+     * @param {number} y Position of the mouse cursor, on the Y axis.
+     */
+    autoScrollPopover(y) {
+        clearInterval(this._scrollingInterval);
+        this._scrollingInterval = setInterval(() => {
+            const popover = this.template.querySelector(
+                '[data-element-id="div-popover"]'
             );
-            for (let i = 0; i < items.length; i++) {
-                const node = items[i];
-                if (node.offsetTop > 0) {
-                    notFittingCount += 1;
-                }
+            const top = popover.getBoundingClientRect().top;
+            const bottom = popover.getBoundingClientRect().bottom;
+            const isCloseToTop = y - top <= AUTO_SCROLL_THRESHOLD;
+            const isCloseToBottom = bottom - y <= AUTO_SCROLL_THRESHOLD;
+
+            if (isCloseToTop) {
+                popover.scrollTop -= AUTO_SCROLL_INCREMENT;
+                const topItem = this.getHiddenItemFromPosition(top);
+                this.moveAfter(topItem.index);
+            } else if (isCloseToBottom) {
+                popover.scrollTop += AUTO_SCROLL_INCREMENT;
+                const bottomItem = this.getHiddenItemFromPosition(bottom);
+                this.moveBefore(bottomItem.index);
             }
-            this._pillsNotFittingCount = notFittingCount;
-        });
-        resizeObserver.observe(this.listElement);
-        return resizeObserver;
+        }, 20);
     }
 
     /**
@@ -442,17 +523,13 @@ export default class AvonniPillContainer extends LightningElement {
      */
     clearDrag() {
         clearTimeout(this._dragTimeOut);
+        clearInterval(this._scrollingInterval);
         if (!this._dragState) return;
 
-        const index = this._dragState.lastHoveredIndex;
-        this.itemElements[index].classList.remove(
-            'avonni-pill-container__pill_left-border',
-            'avonni-pill-container__pill_right-border'
+        this.clearDragBorder();
+        this.wrapperElement.classList.remove(
+            'avonni-pill-container__list_dragging'
         );
-        const wrapper = this.template.querySelector(
-            '[data-element-id="div-wrapper"]'
-        );
-        wrapper.classList.remove('avonni-pill-container__list_dragging');
         this._dragState = null;
         this.altTextElement.textContent = '';
     }
@@ -462,48 +539,209 @@ export default class AvonniPillContainer extends LightningElement {
      */
     clearDragBorder() {
         const lastIndex = this._dragState.lastHoveredIndex;
-        this.itemElements[lastIndex].classList.remove(
-            'avonni-pill-container__pill_left-border',
-            'avonni-pill-container__pill_right-border'
+        const item = this.template.querySelector(
+            `[data-element-id^="li-item"][data-index="${lastIndex}"]`
+        );
+        item.classList.remove(
+            'avonni-pill-container__pill_before-border',
+            'avonni-pill-container__pill_after-border'
         );
     }
 
     /**
-     * Move the reordered pill to the left.
+     * Get an item in the single-line collapsed popover, based on its position.
      *
-     * @param {number} index Index of the pill the reordered pill is moving to the left of.
+     * @param {number} y Position of the item on the Y axis.
      */
-    moveLeft(index) {
+    getHiddenItemFromPosition(y) {
+        const elements = this.template.querySelectorAll(
+            '[data-element-id="li-item-hidden"]'
+        );
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i];
+            const position = el.getBoundingClientRect();
+
+            if (y + 1 >= position.top && y - 1 <= position.bottom) {
+                return {
+                    index: Number(el.dataset.index),
+                    name: el.dataset.name,
+                    offset: y - position.top
+                };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Move the reordered pill before another pill.
+     *
+     * @param {number} index Index of the pill the reordered pill is moving before.
+     */
+    moveBefore(index) {
         if (index < 0) return;
 
         this.clearDragBorder();
         this._dragState.lastHoveredIndex = index;
-        this.itemElements[index].classList.add(
-            'avonni-pill-container__pill_left-border'
+        const item = this.template.querySelector(
+            `[data-element-id^="li-item"][data-index="${index}"]`
         );
-        this._dragState.position = 'left';
+        item.classList.add('avonni-pill-container__pill_before-border');
+        this._dragState.position = 'before';
         const position =
             index > this._dragState.initialIndex ? index : index + 1;
         this.updateAssistiveText(position);
     }
 
     /**
-     * Move the reordered pill to the right.
+     * Move the reordered pill after another pill.
      *
-     * @param {number} index Index of the pill the reordered pill is moving to the right of.
+     * @param {number} index Index of the pill the reordered pill is moving after.
      */
-    moveRight(index) {
+    moveAfter(index) {
         if (index > this.items.length - 1) return;
 
         this.clearDragBorder();
         this._dragState.lastHoveredIndex = index;
-        this.itemElements[index].classList.add(
-            'avonni-pill-container__pill_right-border'
+
+        const isCollapsed =
+            (!this.singleLine && this.isCollapsed) ||
+            (this.singleLine && !this.showPopover);
+        if (index >= this._visibleItemsCount && isCollapsed) {
+            // Expand the pills (used when sorting using the keyboard)
+            this.handleExpand();
+        }
+
+        let item = this.template.querySelector(
+            `[data-element-id^="li-item"][data-index="${index}"]`
         );
-        this._dragState.position = 'right';
+        if (item) {
+            item.classList.add('avonni-pill-container__pill_after-border');
+        } else {
+            // Wait for the items to be expanded
+            requestAnimationFrame(() => {
+                item = this.template.querySelector(
+                    `[data-element-id^="li-item"][data-index="${index}"]`
+                );
+                item.classList.add('avonni-pill-container__pill_after-border');
+            });
+        }
+        this._dragState.position = 'after';
         const position =
             index >= this._dragState.initialIndex ? index + 1 : index + 2;
         this.updateAssistiveText(position);
+    }
+
+    /**
+     * Make sure the given item index is focusable. Otherwise, normalize it to the right focusable item index.
+     *
+     * @param {number} index Index of the item to focus.
+     * @returns {number} Normalized index of the item to focus.
+     */
+    normalizeFocusedIndex(index) {
+        if (!this.isCollapsed) {
+            const moveToFirst = index > this.items.length - 1;
+            const moveToLast = index < 0;
+            if (moveToFirst) {
+                return 0;
+            } else if (moveToLast) {
+                return this.items.length - 1;
+            }
+            return index;
+        }
+
+        // Collapsed mode
+        let position = 'INDEX';
+        if (index < 0) {
+            position = 'FIRST';
+        } else if (
+            this._focusedIndex < this._visibleItemsCount &&
+            index >= this._visibleItemsCount
+        ) {
+            position = 'LAST_VISIBLE_ITEM';
+        } else if (
+            this._focusedIndex >= this._visibleItemsCount &&
+            index < this._visibleItemsCount
+        ) {
+            position = 'FIRST_HIDDEN_ITEM';
+        } else if (index >= this.items.length) {
+            position = 'LAST';
+        }
+
+        switch (position) {
+            case 'FIRST':
+            case 'LAST_VISIBLE_ITEM':
+            case 'FIRST_HIDDEN_ITEM':
+            case 'LAST':
+                // Keep the focus on the current pill
+                return this._focusedIndex;
+            default:
+                return index;
+        }
+    }
+
+    /**
+     * Set the position of the action menu, based on the given pill position.
+     *
+     * @param {object} position Position of the pill the action menu was opened on.
+     */
+    positionActionMenu({ x, y }) {
+        // Make sure the menu is not outside of the screen
+        const menu = this.template.querySelector(
+            '[data-element-id="avonni-primitive-dropdown-menu"]'
+        );
+        const height = menu.offsetHeight;
+        const width = menu.offsetWidth;
+        const menuBottom = y + height;
+        const menuRight = x + width;
+
+        const bottomView = window.innerHeight;
+        const rightView = window.innerWidth;
+
+        const yTransform = menuBottom > bottomView ? height * -1 : 0;
+        const xTransform = menuRight > rightView ? width * -1 : 0;
+
+        const { top, left } = this.wrapperElement.getBoundingClientRect();
+        menu.style.transform = `translate(${xTransform}px, ${yTransform}px)`;
+        menu.style.top = `${y - top + 10}px`;
+        menu.style.left = `${x - left + 10}px`;
+    }
+
+    /**
+     * Make sure the focused item is visible in the hidden items popover, to prevent a jump of the scroll bar next time it is focused.
+     */
+    scrollToFocusedItem() {
+        const focusedItem = this.template.querySelector(
+            `[data-element-id="li-item-hidden"][data-index="${this._focusedIndex}"]`
+        );
+        const popover = this.template.querySelector(
+            '[data-element-id="div-popover"]'
+        );
+        if (!focusedItem || !popover) {
+            return;
+        }
+        const popoverPosition = popover.getBoundingClientRect();
+        const itemPosition = focusedItem.getBoundingClientRect();
+        const isAbove = itemPosition.top < popoverPosition.top;
+        const isBelow = itemPosition.bottom > popoverPosition.bottom;
+
+        if (isAbove) {
+            popover.scrollTop -= popoverPosition.top - itemPosition.top - 5;
+        } else if (isBelow) {
+            popover.scrollTop +=
+                itemPosition.bottom - popoverPosition.bottom + 5;
+        }
+    }
+
+    /**
+     * Save the visible items widths, to compute their visibility later.
+     */
+    saveItemsWidths() {
+        const items = this.template.querySelectorAll(
+            '[data-element-id^="li-item"]'
+        );
+        items.forEach((item, i) => {
+            this._itemsWidths[i] = item.offsetWidth;
+        });
     }
 
     /**
@@ -512,24 +750,44 @@ export default class AvonniPillContainer extends LightningElement {
      * @param {number} index Index of the new focused pill.
      */
     switchFocus(index) {
-        let normalizedIndex = index;
-        if (index > this.items.length - 1) {
-            normalizedIndex = 0;
-        } else if (index < 0) {
-            normalizedIndex = this.items.length - 1;
-        }
+        const normalizedIndex = this.normalizeFocusedIndex(index);
 
         // remove focus from current pill
-        if (this.focusedPillElement) {
-            this.focusedPillElement.tabIndex = '-1';
+        const previousPill = this.template.querySelector(
+            `[data-element-id^="avonni-primitive-pill"][data-index="${this._focusedIndex}"]`
+        );
+        if (previousPill) {
+            previousPill.tabIndex = '-1';
         }
 
         // move to next
         this._focusedIndex = normalizedIndex;
 
         // set focus
-        this.focusedPillElement.tabIndex = '0';
+        const pill = this.template.querySelector(
+            `[data-element-id^="avonni-primitive-pill"][data-index="${normalizedIndex}"]`
+        );
+        pill.tabIndex = '0';
         this.focus();
+    }
+
+    /**
+     * Toggle the visibility of the single-line collapsed popover.
+     */
+    togglePopover() {
+        this.showPopover = !this.showPopover;
+
+        if (this.showPopover) {
+            this._hiddenItemsStartIndex = this._visibleItemsCount;
+
+            if (!this._dragState) {
+                this._focusedIndex = this._hiddenItemsStartIndex;
+                this._focusOnRender = true;
+            }
+        } else {
+            this._focusOnRender = true;
+            this._focusedIndex = this._visibleItemsCount - 1;
+        }
     }
 
     /**
@@ -544,6 +802,50 @@ export default class AvonniPillContainer extends LightningElement {
         this.altTextElement.textContent = `${label}. ${position} / ${total}`;
     }
 
+    /**
+     * Update the number of visible and collapsed items, depending on the available space.
+     */
+    updateVisibleItems() {
+        const maxCount = this.items.length;
+        if (this.computedIsExpanded) {
+            this._visibleItemsCount = maxCount;
+            return;
+        }
+
+        if (!this.wrapperElement) {
+            return;
+        }
+
+        const totalWidth =
+            this.wrapperElement.offsetWidth - SHOW_MORE_BUTTON_WIDTH;
+
+        let fittingCount = 0;
+        let width = 0;
+        const visibleItems = this.template.querySelectorAll(
+            '[data-element-id="li-item"]'
+        );
+        while (fittingCount < visibleItems.length) {
+            // Count the number of visible items that fit
+            width += this._itemsWidths[fittingCount];
+            if (width > totalWidth) {
+                break;
+            }
+            fittingCount += 1;
+        }
+
+        if (fittingCount === visibleItems.length && width < totalWidth) {
+            // Add more visible items if needed
+            const nextItemWidth = this._itemsWidths[fittingCount];
+            const availableSpace = totalWidth - width;
+            const nextItemFits =
+                !nextItemWidth || availableSpace > nextItemWidth;
+            if (nextItemFits) {
+                fittingCount += MAX_LOADED_ITEMS;
+            }
+        }
+        this._visibleItemsCount = fittingCount;
+    }
+
     /*
      * ------------------------------------------------------------
      *  EVENT HANDLERS AND DISPATCHERS
@@ -553,30 +855,56 @@ export default class AvonniPillContainer extends LightningElement {
     /**
      * Handle the click on a pill action.
      *
-     * @param {Event} event
+     * @param {Event} event `actionclick` event fired by a pill.
      */
     handleActionClick(event) {
         event.stopPropagation();
+        const { name, targetName } = event.detail;
+        const index = Number(event.currentTarget.dataset.index);
+        this.dispatchActionClick({ name, targetName, index });
+    }
+
+    /**
+     * Handle the click on an action, in the action menu.
+     *
+     * @param {Event} event `privateselect` event fired by the action menu.
+     */
+    handleActionSelect(event) {
+        const name = event.detail.name;
+        const { targetName, index } = this._selectedAction;
+        this.dispatchActionClick({ name, targetName, index });
+    }
+
+    /**
+     * Handle the closing of the action menu.
+     */
+    handleCloseActionMenu() {
+        this.showActionMenu = false;
+        this._focusedIndex = this._selectedAction.index;
+        this._focusOnRender = true;
+    }
+
+    /**
+     * Handle the expansion of a collapsed pill container.
+     */
+    handleExpand() {
+        if (this.singleLine) {
+            this.togglePopover();
+        } else {
+            this._isExpanded = true;
+            this._focusedIndex = this._visibleItemsCount - 1;
+            this._focusOnRender = true;
+            this.updateVisibleItems();
+        }
 
         /**
-         * The event fired when a user clicks on an action.
+         * The event fired when the pills are collapsed, and the expand button is clicked.
          *
          * @event
-         * @name actionclick
-         * @param {number} index Index of the item clicked.
-         * @param {string} name Name of the action.
-         * @param {string} targetName Name of the item the action belongs to.
+         * @name expand
          * @public
          */
-        this.dispatchEvent(
-            new CustomEvent('actionclick', {
-                detail: {
-                    name: event.detail.name,
-                    index: Number(event.currentTarget.dataset.index),
-                    targetName: event.detail.targetName
-                }
-            })
-        );
+        this.dispatchEvent(new CustomEvent('expand'));
     }
 
     /**
@@ -595,39 +923,48 @@ export default class AvonniPillContainer extends LightningElement {
         switch (event.keyCode) {
             case keyCodes.left:
             case keyCodes.up: {
+                // Prevent the page from scrolling
+                event.preventDefault();
+
                 const previousIndex = index - 1;
 
                 if (!this._dragState) {
                     this.switchFocus(previousIndex);
                 } else if (
-                    this._dragState.position === 'left' ||
+                    this._dragState.position === 'before' ||
                     previousIndex === this._dragState.initialIndex ||
                     index === this._dragState.initialIndex
                 ) {
-                    this.moveLeft(previousIndex);
+                    this.moveBefore(previousIndex);
                 } else {
-                    this.moveLeft(index);
+                    this.moveBefore(index);
                 }
                 break;
             }
             case keyCodes.right:
             case keyCodes.down: {
+                // Prevent the page from scrolling
+                event.preventDefault();
+
                 const nextIndex = index + 1;
 
                 if (!this._dragState) {
                     this.switchFocus(nextIndex);
                 } else if (
-                    this._dragState.position === 'right' ||
+                    this._dragState.position === 'after' ||
                     nextIndex === this._dragState.initialIndex ||
                     index === this._dragState.initialIndex
                 ) {
-                    this.moveRight(nextIndex);
+                    this.moveAfter(nextIndex);
                 } else {
-                    this.moveRight(index);
+                    this.moveAfter(index);
                 }
                 break;
             }
             case keyCodes.space:
+                // Prevent the page from scrolling
+                event.preventDefault();
+
                 if (this._dragState) {
                     this.handleMouseUp();
                 } else if (this.sortable) {
@@ -636,6 +973,10 @@ export default class AvonniPillContainer extends LightningElement {
                 break;
             case keyCodes.escape:
                 this.clearDrag();
+                if (this.showPopover) {
+                    this._popoverHasFocus = false;
+                    this.togglePopover();
+                }
                 break;
             default:
                 this.focus();
@@ -643,11 +984,24 @@ export default class AvonniPillContainer extends LightningElement {
     }
 
     /**
-     * Handle a click on the "show more" button.
+     * Handle a mouse entering on the "Show more" button. Triggers the expansion of the pills if a pill is being dragged, and the mouse stays on the button for a while.
      */
-    handleMoreClick() {
-        this._isExpanded = true;
-        this.focus();
+    handleMoreButtonMouseEnter() {
+        if (!this._dragState || this.showPopover) {
+            return;
+        }
+
+        clearTimeout(this._expandTimeOut);
+        this._expandTimeOut = setTimeout(() => {
+            this.handleExpand();
+        }, 300);
+    }
+
+    /**
+     * Handle a mouse leaving the "Show more" button. Clears the timeout that triggers the expansion of the pills.
+     */
+    handleMoreButtonMouseLeave() {
+        clearTimeout(this._expandTimeOut);
     }
 
     /**
@@ -664,7 +1018,7 @@ export default class AvonniPillContainer extends LightningElement {
 
         const { initialIndex, lastHoveredIndex, position } = this._dragState;
         const index =
-            position === 'left' ? lastHoveredIndex : lastHoveredIndex + 1;
+            position === 'before' ? lastHoveredIndex : lastHoveredIndex + 1;
 
         if (lastHoveredIndex > initialIndex) {
             this._items.splice(index, 0, this._items[initialIndex]);
@@ -692,11 +1046,43 @@ export default class AvonniPillContainer extends LightningElement {
 
         this.clearDrag();
         this._focusedIndex = lastHoveredIndex;
-        setTimeout(() => {
-            // Set the focus on the pill after rerender
-            this.focus();
-        }, 0);
+        this._focusOnRender = true;
+
+        if (this.showPopover && lastHoveredIndex < this._visibleItemsCount) {
+            // If the pill was not released in the popover, close it
+            this.togglePopover();
+        } else if (this.showPopover) {
+            this.scrollToFocusedItem();
+        }
     };
+
+    /**
+     * Handle the opening of the action menu.
+     *
+     * @param {Event} event `openactionmenu` event fired by a pill.
+     */
+    handleOpenActionMenu(event) {
+        event.stopPropagation();
+
+        this.showActionMenu = true;
+        this._selectedAction = {
+            targetName: event.detail.targetName,
+            index: Number(event.target.dataset.index)
+        };
+        requestAnimationFrame(() => {
+            this.positionActionMenu(event.detail.bounds);
+        });
+    }
+
+    /**
+     * Handle the opening of the action menu from a pill, inside the single-line collapsed popover.
+     *
+     * @param {Event} event `openactionmenu` event fired by a pill.
+     */
+    handleOpenHiddenActionMenu(event) {
+        this._preventPopoverClosing = true;
+        this.handleOpenActionMenu(event);
+    }
 
     /**
      * Handle a focus blur on a pill.
@@ -726,6 +1112,9 @@ export default class AvonniPillContainer extends LightningElement {
      * @param {Event} event
      */
     handlePillClick(event) {
+        if (this.showActionMenu) {
+            return;
+        }
         const index = Number(event.currentTarget.dataset.index);
 
         if (index >= 0 && this._focusedIndex !== index) {
@@ -776,16 +1165,119 @@ export default class AvonniPillContainer extends LightningElement {
     handlePillMouseMove(event) {
         if (!this._dragState) return;
 
-        const index = Number(event.currentTarget.dataset.index);
-        const coordinates = event.currentTarget.getBoundingClientRect();
+        const pill = event.currentTarget;
+        const index = Number(pill.dataset.index);
+        const coordinates = pill.getBoundingClientRect();
+        const isHidden = pill.dataset.elementId === 'li-item-hidden';
         const onLeft = event.clientX < coordinates.left + coordinates.width / 2;
+        const onTop = event.clientY < coordinates.top + coordinates.height / 2;
 
-        if (onLeft) {
-            // The cursor is on the left side of the pill
-            this.moveLeft(index);
+        if ((!isHidden && onLeft) || (isHidden && onTop)) {
+            // The cursor is on the left side of a visible pill
+            // or on the top side of a hidden pill
+            this.moveBefore(index);
         } else {
-            // The cursor is on the right side of the pill
-            this.moveRight(index);
+            // The cursor is on the right side of a visible pill
+            // or on the bottom side of a hidden pill
+            this.moveAfter(index);
         }
+
+        if (isHidden) {
+            this.autoScrollPopover(event.clientY, index);
+        }
+    }
+
+    /**
+     * Handle a focus set inside the single-line collapsed popover.
+     */
+    handlePopoverFocusIn() {
+        this._popoverHasFocus = true;
+    }
+
+    /**
+     * Handle a focus lost inside the single-line collapsed popover.
+     */
+    handlePopoverFocusOut() {
+        this._popoverHasFocus = false;
+
+        requestAnimationFrame(() => {
+            if (
+                !this._popoverHasFocus &&
+                this.showPopover &&
+                !this._preventPopoverClosing
+            ) {
+                this.togglePopover();
+            }
+            this._preventPopoverClosing = false;
+        });
+    }
+
+    /**
+     * Handle a scroll movement inside the single-line collapsed popover.
+     *
+     * @param {Event} event `scroll` event fired by the popover.
+     */
+    handlePopoverScroll(event) {
+        const popover = event.currentTarget;
+        const popoverTop = popover.getBoundingClientRect().top;
+        const height = popover.scrollHeight;
+        const scrolledDistance = popover.scrollTop;
+        const bottomLimit = height - popover.clientHeight - LOADING_THRESHOLD;
+        const loadDown = scrolledDistance >= bottomLimit;
+        const loadUp = scrolledDistance <= LOADING_THRESHOLD;
+
+        let newIndex;
+        if (loadUp) {
+            const previousIndex = this._hiddenItemsStartIndex - 10;
+            newIndex = Math.max(previousIndex, this._visibleItemsCount);
+        } else if (loadDown) {
+            const nextIndex = this._hiddenItemsStartIndex + 10;
+            const maxIndex = this.items.length - MAX_LOADED_ITEMS - 10;
+            newIndex = Math.min(nextIndex, maxIndex);
+        }
+
+        if (!isNaN(newIndex) && this._hiddenItemsStartIndex !== newIndex) {
+            const topItem = this.getHiddenItemFromPosition(popoverTop);
+            this._hiddenItemsStartIndex = newIndex;
+            this._preventPopoverClosing = true;
+            this._focusOnRender = true;
+
+            requestAnimationFrame(() => {
+                // Move the scroll bar back to the previous top item
+                const previousTopItem = this.template.querySelector(
+                    `[data-element-id="li-item-hidden"][data-name="${topItem.name}"]`
+                );
+                popover.scrollTop = previousTopItem.offsetTop + topItem.offset;
+
+                if (this._focusedIndex < topItem.index) {
+                    // If the scroll was triggered using the mouse,
+                    // keep an item focused
+                    this.switchFocus(topItem.index);
+                }
+
+                if (this._dragState) {
+                    this._preventPopoverClosing = false;
+                }
+            });
+        }
+    }
+
+    /**
+     * Dispatch the `actionclick` event.
+     *
+     * @param {object} detail Detail of the event.
+     */
+    dispatchActionClick(detail) {
+        /**
+         * The event fired when a user clicks on an action.
+         *
+         * @event
+         * @name actionclick
+         * @param {number} index Index of the item clicked.
+         * @param {string} name Name of the action.
+         * @param {string} targetName Name of the item the action belongs to.
+         * @public
+         */
+        this.dispatchEvent(new CustomEvent('actionclick', { detail }));
     }
 }

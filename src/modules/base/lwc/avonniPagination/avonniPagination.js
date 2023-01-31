@@ -127,45 +127,7 @@ export default class AvonniPagination extends LightningElement {
     _previousButtonIconName;
     _value = DEFAULT_VALUE;
 
-    _connected = false;
-
     renderedCallback() {
-        if (!this._connected) {
-            let container = this.template.querySelector(
-                '.avonni-pagination__container'
-            );
-            let style = document.createElement('style');
-
-            style.innerText = `
-                lightning-button-icon:focus,
-                lightning-button:focus,
-                .slds-button:focus {
-                    outline: none;
-                    box-shadow: none;
-                }
-                .avonni-navigation-button button:not(:disabled):hover {
-                    background-color: #f4f6f9
-                }
-                .avonni-pagination-icon {
-                    fill: #1b5297;
-                }
-                .avonni-button-active button:not(:disabled) {
-                    border-color: #1b5297;
-                    background-color: #1b5297;
-                    color: #ffffff;
-                }
-                .avonni-pagination__container_fill .avonni-pagination-button {
-                    flex: auto;
-                    display: flex;
-                }   
-                .avonni-pagination__container_fill .avonni-pagination-button button {
-                    flex: 1;
-                }                 
-            `;
-
-            container.appendChild(style);
-            this._connected = true;
-        }
         this.setActiveButton();
     }
 
@@ -293,6 +255,19 @@ export default class AvonniPagination extends LightningElement {
      */
 
     /**
+     * Computed CSS classes of the main pagination buttons.
+     *
+     * @type {string}
+     */
+    get computedButtonClass() {
+        return classSet('slds-button slds-button_neutral')
+            .add({
+                'slds-button_stretch': this.align === 'fill'
+            })
+            .toString();
+    }
+
+    /**
      * Get index of pagination buttons.
      *
      * @type {number}
@@ -380,9 +355,11 @@ export default class AvonniPagination extends LightningElement {
      * @type {string}
      */
     get computedContainerClass() {
-        return classSet('avonni-pagination__container')
-            .add(`avonni-pagination__container_${this._align}`)
-            .toString();
+        return classSet({
+            'slds-grid slds-grid_align-center': this.align === 'center',
+            'slds-grid slds-grid_align-end': this.align === 'right',
+            'avonni-pagination__container_fill': this.align === 'fill'
+        }).toString();
     }
 
     /**
@@ -553,13 +530,14 @@ export default class AvonniPagination extends LightningElement {
      * Function to set the currently selected button as "avonni-button-active".
      */
     setActiveButton() {
-        [
-            ...this.template.querySelectorAll('.avonni-pagination-button')
-        ].forEach((button) => {
+        const buttons = this.template.querySelectorAll(
+            '[data-element-id="button"]'
+        );
+        buttons.forEach((button) => {
             if (Number(button.value) === this.value) {
-                button.classList.add('avonni-button-active');
+                button.classList.add('slds-button_brand');
             } else {
-                button.classList.remove('avonni-button-active');
+                button.classList.remove('slds-button_brand');
             }
         });
     }

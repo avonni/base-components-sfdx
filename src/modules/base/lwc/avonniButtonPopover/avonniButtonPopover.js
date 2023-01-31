@@ -707,15 +707,6 @@ export default class AvonniButtonPopover extends LightningElement {
     }
 
     /**
-     * If variable cancelBlur is true, it sets the variable cancelBlur to false.
-     */
-    handlePopoverKeyPress() {
-        if (this._cancelBlur) {
-            this.allowBlur();
-        }
-    }
-
-    /**
      * If trigger is focus, sets the focus on the button when click on a slot.
      * If trigger is click, keeps the popover visible when click on a slot.
      */

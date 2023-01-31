@@ -48,12 +48,20 @@ export default class AvonniVerticalProgressStep extends LightningElement {
      */
     @api label;
 
-    iconName;
-    contentInLine = false;
     _value;
+
+    contentInLine = false;
+    iconName;
+    showLabelSlot = true;
 
     connectedCallback() {
         this.classList.add('slds-progress__item');
+    }
+
+    renderedCallback() {
+        if (this.labelSlot && !this.label) {
+            this.showLabelSlot = this.labelSlot.assignedElements().length !== 0;
+        }
     }
 
     /**
@@ -61,8 +69,19 @@ export default class AvonniVerticalProgressStep extends LightningElement {
      *
      * @type {Element}
      */
-    get slotItems() {
-        return this.template.querySelector('[data-element-id="slot-default"]');
+    get defaultSlot() {
+        return this.template.querySelector(
+            'slot[data-element-id="slot-default"]'
+        );
+    }
+
+    /**
+     * Get the item elements from the label slot.
+     *
+     * @type {Element}
+     */
+    get labelSlot() {
+        return this.template.querySelector('slot[name="label"]');
     }
 
     /*

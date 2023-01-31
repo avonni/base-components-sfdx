@@ -30,22 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- .avonni-pagination__container {
-    display: flex;
-}
-
-.avonni-pagination__container_left {
-    justify-content: flex-start;
-}
-
-.avonni-pagination__container_center {
-    justify-content: center;
-}
-
-.avonni-pagination__container_right {
-    justify-content: flex-end;
-}
-
 .avonni-pagination__container_fill {
     width: 100%;
+}
+
+.avonni-pagination__navigation-button-icon {
+    --slds-c-icon-color-foreground: var(--lwc-colorBrandDark, #0176d3);
 }

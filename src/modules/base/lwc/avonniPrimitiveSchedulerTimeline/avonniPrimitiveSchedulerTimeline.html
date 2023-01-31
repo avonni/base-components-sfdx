@@ -1,0 +1,345 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class="slds-grid avonni-scheduler__wrapper">
+        <!-- Datatable or vertical headers -->
+        <div class={firstColClass} data-element-id="div-panel">
+            <c-avonni-datatable
+                if:false={isVertical}
+                class="slds-show avonni-scheduler__datatable"
+                max-column-width="9999999999"
+                columns={columns}
+                records={selectedDatatableRecords}
+                hide-checkbox-column
+                key-field="name"
+                resize-column-disabled={resizeColumnDisabled}
+                data-element-id="avonni-datatable"
+                onresize={handleDatatableResize}
+            ></c-avonni-datatable>
+            <div
+                if:true={isVertical}
+                class="avonni-scheduler__vertical-header-wrapper"
+                data-element-id="div-vertical-header-wrapper"
+            >
+                <div
+                    class="
+                        avonni-scheduler__vertical-resource-header-first-cell
+                        avonni-scheduler__border_bottom
+                        avonni-scheduler__border_right
+                        slds-m-bottom_medium
+                        slds-grid
+                        slds-grid_vertical-align-center
+                        slds-grid_align-center
+                        avonni-scheduler__time-zone
+                    "
+                >
+                    {timezoneLabel}
+                </div>
+                <c-avonni-primitive-scheduler-header-group
+                    class="
+                        avonni-scheduler__header_vertical
+                        avonni-scheduler__border_top
+                    "
+                    available-days-of-the-week={availableDaysOfTheWeek}
+                    available-months={availableMonths}
+                    available-time-frames={availableTimeFrames}
+                    available-time-spans={availableTimeSpans}
+                    headers={computedHeaders}
+                    start={computedStart}
+                    time-span={timeSpan}
+                    timezone={timezone}
+                    variant="vertical"
+                    zoom-to-fit={zoomToFit}
+                    data-element-id="avonni-primitive-scheduler-header-group"
+                    onprivatecellsizechange={handleHeaderCellSizeChange}
+                    onprivateheaderchange={handleHeaderChange}
+                ></c-avonni-primitive-scheduler-header-group>
+            </div>
+        </div>
+
+        <!-- Splitter -->
+        <div
+            if:true={showSplitter}
+            class={splitterClass}
+            onmousedown={handleSplitterResizeMouseDown}
+        >
+            <lightning-button-icon
+                if:true={showSplitterCollapse}
+                alternative-text="Expand the right side"
+                icon-name="utility:left"
+                size="x-small"
+                variant="bare"
+                data-element-id="lightning-button-icon-splitter-collapse"
+                onclick={handleSplitterCollapse}
+                onmousedown={stopPropagation}
+            ></lightning-button-icon>
+            <div
+                if:true={showSplitterResize}
+                class="
+                    avonni-scheduler__splitter-resize-handle
+                    slds-m-vertical_x-small
+                    slds-m-horizontal_xx-small
+                "
+                data-element-id="div-splitter-resize-handle"
+            >
+                <span class="slds-assistive-text">Resize</span>
+            </div>
+            <lightning-button-icon
+                if:true={showSplitterExpand}
+                class="avonni-scheduler__splitter-expand-left-button"
+                alternative-text="Expand the left side"
+                icon-name="utility:right"
+                size="x-small"
+                variant="bare"
+                data-element-id="lightning-button-icon-splitter-expand"
+                onclick={handleSplitterExpand}
+                onmousedown={stopPropagation}
+            ></lightning-button-icon>
+        </div>
+
+        <div
+            class="
+                avonni-scheduler__second-col
+                slds-scrollable
+                avonni-scheduler__main-border_top
+                avonni-scheduler__main-border_bottom
+                avonni-scheduler__main-border_right
+            "
+            onscroll={handleScroll}
+        >
+            <!-- Resource headers as columns -->
+            <div
+                if:true={isVertical}
+                class="
+                    slds-grid
+                    slds-theme_shade
+                    avonni-scheduler__border_bottom
+                    slds-scrollable_none
+                    slds-m-bottom_medium
+                "
+                data-element-id="div-vertical-resource-headers"
+            >
+                <div
+                    class="
+                        slds-grid
+                        avonni-scheduler__flex-col
+                        slds-scrollable_none
+                    "
+                    data-element-id="div-resource-header-cells"
+                >
+                    <template
+                        for:each={visibleComputedResources}
+                        for:item="resource"
+                    >
+                        <div
+                            key={resource.name}
+                            class={verticalResourceHeaderCellClass}
+                            data-element-id="div-vertical-resource-header"
+                        >
+                            <c-avonni-primitive-avatar
+                                if:true={resource.avatar}
+                                class="slds-m-right_x-small"
+                                fallback-icon-name={resource.avatar.fallbackIconName}
+                                initials={resource.avatar.initials}
+                                src={resource.avatar.src}
+                                size="small"
+                                variant="circle"
+                                data-element-id="avonni-primitive-avatar"
+                            ></c-avonni-primitive-avatar>
+                            <div
+                                class="slds-truncate avonni-scheduler__flex-col"
+                                data-element-id="div-vertical-resource-header-label"
+                            >
+                                {resource.label}
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div
+                class={scheduleWrapperClass}
+                data-element-id="div-schedule-wrapper"
+                onmousemove={handleMouseMove}
+                onscroll={handleScroll}
+            >
+                <!-- Schedule -->
+                <div
+                    class={scheduleColClass}
+                    data-element-id="div-schedule-col"
+                >
+                    <div
+                        class={scheduleNestedColClass}
+                        data-element-id="div-schedule-nested-col"
+                    >
+                        <!-- Horizontal headers -->
+                        <c-avonni-primitive-scheduler-header-group
+                            if:false={isVertical}
+                            class="avonni-scheduler__header"
+                            available-days-of-the-week={availableDaysOfTheWeek}
+                            available-months={availableMonths}
+                            available-time-frames={availableTimeFrames}
+                            available-time-spans={availableTimeSpans}
+                            headers={computedHeaders}
+                            start={computedStart}
+                            time-span={timeSpan}
+                            timezone={timezone}
+                            visible-width={scheduleColWidth}
+                            zoom-to-fit={zoomToFit}
+                            data-element-id="avonni-primitive-scheduler-header-group"
+                            onprivatecellsizechange={handleHeaderCellSizeChange}
+                            onprivateheaderchange={handleHeaderChange}
+                        ></c-avonni-primitive-scheduler-header-group>
+
+                        <!-- Loading spinner -->
+                        <div
+                            if:true={headersAreLoading}
+                            class="slds-is-relative slds-theme_shade"
+                            data-element-id="div-loading-spinner"
+                        >
+                            <lightning-spinner
+                                alternative-text={loadingStateAlternativeText}
+                                size="large"
+                            ></lightning-spinner>
+                        </div>
+
+                        <!-- Rows (horizontal) or columns (vertical) -->
+                        <div
+                            if:false={headersAreLoading}
+                            class={scheduleBodyClass}
+                            data-element-id="div-schedule-body"
+                        >
+                            <template
+                                for:each={visibleComputedResources}
+                                for:item="resource"
+                                for:index="index"
+                            >
+                                <div
+                                    key={resource.name}
+                                    class={resourceClass}
+                                    data-element-id="div-resource"
+                                    data-index={index}
+                                    data-name={resource.name}
+                                >
+                                    <!-- Cells -->
+                                    <template
+                                        for:each={resource.cells}
+                                        for:item="cell"
+                                    >
+                                        <div
+                                            key={cell.start}
+                                            class={cellClass}
+                                            data-end={cell.end}
+                                            data-element-id="div-cell"
+                                            data-start={cell.start}
+                                            oncontextmenu={handleEmptySpotContextMenu}
+                                            onmousedown={handleMouseDown}
+                                            ondblclick={handleDoubleClick}
+                                        ></div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Events -->
+                            <div
+                                class="
+                                    avonni-scheduler__events
+                                    slds-is-absolute
+                                "
+                            >
+                                <template
+                                    for:each={computedEvents}
+                                    for:item="event"
+                                >
+                                    <div key={event.key}>
+                                        <template
+                                            for:each={event.occurrences}
+                                            for:item="occurrence"
+                                        >
+                                            <c-avonni-primitive-scheduler-event-occurrence
+                                                key={occurrence.key}
+                                                class="slds-is-absolute"
+                                                color={event.color}
+                                                header-cells={eventHeaderCellsSerialized}
+                                                cell-duration={smallestCellDuration}
+                                                cell-height={cellHeight}
+                                                cell-width={cellWidth}
+                                                date-format={dateFormat}
+                                                disabled={event.disabled}
+                                                event-data={event.data}
+                                                event-name={event.name}
+                                                from={occurrence.from}
+                                                icon-name={event.iconName}
+                                                labels={event.labels}
+                                                occurrence={occurrence}
+                                                occurrence-key={occurrence.key}
+                                                read-only={readOnly}
+                                                reference-line={event.referenceLine}
+                                                resource-key={occurrence.resourceName}
+                                                resources={visibleSimplifiedResources}
+                                                timezone={timezone}
+                                                title={occurrence.title}
+                                                theme={event.theme}
+                                                to={occurrence.to}
+                                                variant={eventVariant}
+                                                zoom-to-fit={zoomToFit}
+                                                data-disabled={event.disabled}
+                                                data-element-id="avonni-primitive-scheduler-event-occurrence"
+                                                data-event-name={event.name}
+                                                data-key={occurrence.key}
+                                                data-resource-name={occurrence.resourceName}
+                                                data-start={occurrence.from.ts}
+                                                data-end={occurrence.to.ts}
+                                                onprivatefocus={handleEventFocus}
+                                                onprivatecontextmenu={handleEventContextMenu}
+                                                onprivatedisabledcontextmenu={handleEmptySpotContextMenu}
+                                                onprivatemouseenter={handleEventMouseEnter}
+                                                onprivatemouseleave={handleEventMouseLeave}
+                                                onprivatedblclick={handleEventDoubleClick}
+                                                onprivatedisableddblclick={handleDoubleClick}
+                                                onprivatemousedown={handleEventMouseDown}
+                                                onprivatedisabledmousedown={handleMouseDown}
+                                            ></c-avonni-primitive-scheduler-event-occurrence>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

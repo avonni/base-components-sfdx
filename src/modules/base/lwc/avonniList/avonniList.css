@@ -34,6 +34,10 @@
     max-height: 100%;
 }
 
+.avonni-list__flex-col {
+    flex: 1 1 auto;
+}
+
 /* VALUE ASSIGNMENTS */
 .avonni-list__items-without-divider {
     --private-list-item-spacing-block-between: var(
@@ -266,11 +270,15 @@ a.avonni-list__item-info-link:active {
     color: var(--avonni-list-item-infos-link-text-color-active, #014486);
 }
 
-.avonni-list__item-divider_top,
-.avonni-list__item-divider_bottom {
+.avonni-list__item-divider_top {
     border-top-width: var(--avonni-list-item-sizing-border, 1px);
     border-top-style: var(--avonni-list-item-styling-border, solid);
     border-top-color: var(--avonni-list-item-color-border, #dddbda);
+}
+.avonni-list__item-divider_bottom {
+    border-bottom-width: var(--avonni-list-item-sizing-border, 1px);
+    border-bottom-style: var(--avonni-list-item-styling-border, solid);
+    border-bottom-color: var(--avonni-list-item-color-border, #dddbda);
 }
 
 .avonni-list__item-header_font {

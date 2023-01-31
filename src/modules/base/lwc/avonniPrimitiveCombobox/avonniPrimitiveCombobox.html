@@ -69,8 +69,12 @@
                 <c-avonni-avatar
                     if:true={showInputValueAvatar}
                     class="slds-combobox__input-entity-icon"
-                    fallback-icon-name={selectedOption.avatarFallbackIconName}
-                    src={selectedOption.avatarSrc}
+                    fallback-icon-name={selectedOption.avatar.fallbackIconName}
+                    initials={selectedOption.avatar.initials}
+                    presence={selectedOption.avatar.presence}
+                    presence-position={selectedOption.avatar.presencePosition}
+                    src={selectedOption.avatar.src}
+                    variant={selectedOption.avatar.variant}
                     aria-hidden="true"
                     hide-avatar-details="true"
                     size="x-small"

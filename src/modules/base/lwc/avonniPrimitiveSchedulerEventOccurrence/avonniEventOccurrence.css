@@ -32,26 +32,30 @@
 
 @import './avonniShared.css';
 
-:host.avonni-scheduler__primitive-event {
+:host {
     z-index: 1;
     display: block;
 }
 
 .avonni-scheduler__event {
     width: 100%;
-    opacity: 0.8;
     cursor: pointer;
     position: relative;
     z-index: 2;
+    border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
 }
 
-.avonni-scheduler__event-wrapper:focus {
-    outline: none;
+.avonni-scheduler__event_past {
+    opacity: 0.6;
 }
-.avonni-scheduler__event-wrapper_focused {
+
+.avonni-scheduler__event-wrapper {
+    padding: 1px;
+}
+.avonni-scheduler__event_focused {
     box-shadow: inset 0 0 0 1px var(--lwc-colorBorderRowSelectedHover, #1b96ff);
 }
-:host.avonni-scheduler__event-dragged .avonni-scheduler__event-wrapper_focused {
+:host.avonni-scheduler__event-dragged .avonni-scheduler__event_focused {
     box-shadow: none;
 }
 
@@ -159,7 +163,8 @@
 .avonni-scheduler__event:hover .avonni-scheduler__event-resize-icon {
     visibility: visible;
 }
-.avonni-scheduler__event_vertical:hover .avonni-scheduler__event-label_center {
+.avonni-scheduler__event_vertical-animated:hover
+    .avonni-scheduler__event-label_center {
     transform: translateY(0.75rem);
 }
 

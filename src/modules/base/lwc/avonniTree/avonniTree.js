@@ -171,7 +171,7 @@ export default class AvonniTree extends LightningElement {
     }
 
     /**
-     * Array of fields that should be visible in the item edit form. The item edit form can be opened through the standard ``edit`` action.
+     * Array of fields that should be visible in the item edit form. The item edit form can be opened through the standard `Standard.Tree.Edit` action.
      *
      * @type {string[]}
      * @default ['label', 'metatext', 'name', 'href', 'expanded', 'disabled', 'isLoading']
@@ -1351,14 +1351,14 @@ export default class AvonniTree extends LightningElement {
          *
          * @event
          * @name change
-         * @param {string} action Type of change made to the item. Options are ``add``, ``collapse``, ``delete``, ``duplicate``, ``edit``, ``expand`` and ``move``.
+         * @param {string} action Type of change made to the item. Options are `Standard.Tree.Add`, `Standard.Tree.Collapse`, `Standard.Tree.Delete`, `Standard.Tree.Duplicate`, `Standard.Tree.Edit`, `Standard.Tree.Expand` and `Standard.Tree.Move`.
          * @param {object[]} items The new items array.
          * @param {number[]} levelPath Array of the levels of depth of the changed item.
-         * The levels start from 0. For example, if an item is the third child of its parent, and its parent is the second child of the tree root, the value would be: ``[1, 2]``.
+         * The levels start from 0. For example, if an item is the third child of its parent, and its parent is the second child of the tree root, the value would be: `[1, 2]`.
          * @param {string} name Name of the specific item the change was made to.
-         * @param {string} previousName For the ``duplicate`` action, name of the original item. For the ``edit`` action, if the name has changed, previous name of the item.
+         * @param {string} previousName For the `Standard.Tree.Duplicate` action, name of the original item. For the `Standard.Tree.Edit` action, if the name has changed, previous name of the item.
          * @param {number[]} previousLevelPath Array of the levels of depth, of the previous position of the changed item.
-         * This value will differ from the levelPath only if the action is move.
+         * This value will differ from the levelPath only if the action is `Standard.Tree.Move`.
          * @public
          */
         this.dispatchEvent(

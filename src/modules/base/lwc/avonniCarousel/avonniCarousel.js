@@ -178,7 +178,7 @@ export default class AvonniCarousel extends LightningElement {
             }
         }
 
-        if (!this.resizeObserver) {
+        if (!this.resizeObserver && this.carouselIsResponsive) {
             this.initWrapObserver();
         }
 
@@ -635,13 +635,13 @@ export default class AvonniCarousel extends LightningElement {
      * @returns {AvonniResizeObserver} Resize observer.
      */
     initWrapObserver() {
-        if (this.carouselIsResponsive) {
-            const resizeObserver = new AvonniResizeObserver(() => {
-                this.computeItemsPerPanel();
-            });
-            resizeObserver.observe(this.carouselContainer);
-            this.resizeObserver = resizeObserver;
+        if (!this.carouselContainer) {
+            return;
         }
+        this.resizeObserver = new AvonniResizeObserver(
+            this.carouselContainer,
+            this.computeItemsPerPanel.bind(this)
+        );
     }
 
     /**

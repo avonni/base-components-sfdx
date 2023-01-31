@@ -27,7 +27,7 @@ export default class AvonniItem {
      * On overlay and background media positions, set default text color to white.
      */
     get computedTextColor() {
-        return classSet('slds-col slds-has-flexi-truncate')
+        return classSet('avonni-list__flex-col slds-has-flexi-truncate')
             .add({
                 'avonni-list__item-text-color_inverse':
                     this.imagePosition === 'background' ||
@@ -35,5 +35,4 @@ export default class AvonniItem {
             })
             .toString();
     }
-
 }

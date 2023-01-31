@@ -34,7 +34,7 @@ import D3Js from '@salesforce/resourceUrl/D3Js';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { loadScript } from 'lightning/platformResourceLoader';
 import { dateTimeObjectFrom } from 'c/utilsPrivate';
-import { createSVGIcon } from 'c/iconUtils'
+import { createSVGIcon } from 'c/iconUtils';
 
 const AXIS_LABEL_WIDTH = 50.05;
 const AXIS_TYPE = { timelineAxis: 'timeline-axis', scrollAxis: 'scroll-axis' };
@@ -49,7 +49,8 @@ const DEFAULT_TIMELINE_AXIS_HEIGHT = 30;
 const DEFAULT_TIMELINE_AXIS_TICKS_NUMBER = 9;
 const DEFAULT_TIMELINE_HEIGHT = 350;
 const DEFAULT_TIMELINE_WIDTH = 1300;
-const DEFAULT_TOOLTIP_CLASSES = 'avonni-horizontal-activity-timeline__popover slds-popover slds-popover_large slds-is-absolute slds-p-around_none';
+const DEFAULT_TOOLTIP_CLASSES =
+    'avonni-horizontal-activity-timeline__popover slds-popover slds-popover_large slds-is-absolute slds-p-around_none';
 const DEFAULT_SCROLL_AXIS_TICKS_NUMBER = 12;
 const DISTANCE_BETWEEN_POPOVER_AND_ITEM = 15;
 const INTERVAL_RECTANGLE_OFFSET_Y = 1.5;
@@ -58,7 +59,8 @@ const MAX_ITEM_LENGTH = 230;
 const MIN_INTERVAL_WIDTH = 2;
 const RESIZE_CURSOR_CLASS =
     'avonni-activity-timeline__horizontal-timeline-resize-cursor';
-const SCROLL_AXIS_RECTANGLES_G_ID = 'avonni-horizontal-activity-timeline__scroll-axis-rectangles';
+const SCROLL_AXIS_RECTANGLES_G_ID =
+    'avonni-horizontal-activity-timeline__scroll-axis-rectangles';
 const SCROLL_ITEM_RECTANGLE_WIDTH = 4;
 const SPACE_BETWEEN_ICON_AND_TEXT = 5;
 const SVG_ICON_SIZE = 25;
@@ -82,7 +84,6 @@ const Y_START_POSITION_TIMELINE_ITEM = 10;
 const Y_GAP_BETWEEN_ITEMS_TIMELINE = 28;
 const Y_START_POSITION_SCROLL_ITEM = 4;
 const Y_GAP_BETWEEN_ITEMS_SCROLL = 4;
-
 
 export class HorizontalActivityTimeline {
 	 _d3Loaded = false;
@@ -277,11 +278,11 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     * Check if there is no data to display. 
+     * Check if there is no data to display.
      *
      * @type {boolean}
      */
-    get isTimelineEmpty(){
+    get isTimelineEmpty() {
         return !this._sortedItems.length;
     }
 
@@ -291,8 +292,11 @@ export class HorizontalActivityTimeline {
      * @type {Date}
      */
     get maxDate() {
-        if(this.isTimelineEmpty) {
-            return this.findNextDate(new Date(), 2 * DEFAULT_INTERVAL_DAYS_LENGTH);
+        if (this.isTimelineEmpty) {
+            return this.findNextDate(
+                new Date(),
+                2 * DEFAULT_INTERVAL_DAYS_LENGTH
+            );
         }
 
         const maxIndex =
@@ -308,7 +312,7 @@ export class HorizontalActivityTimeline {
      * @type {Date}
      */
     get minDate() {
-        if(this.isTimelineEmpty) {
+        if (this.isTimelineEmpty) {
             return new Date();
         }
 
@@ -322,17 +326,25 @@ export class HorizontalActivityTimeline {
     /**
      * Calculate the minimum interval width. If the distance for one day is bigger than minimum width, we take this distance.
      * If not, we calculate to find the number of days necessary to obtain the minimum.
-     * 
+     *
      * @type {number}
      */
     get minimumIntervalWidth() {
-        const beginningOfDayPosition = this.findBeginningOfDayPosition(this.scrollTimeScale(this._intervalMinDate));
-        const endOfDayPosition = this.findEndOfDayPosition(this.scrollTimeScale(this._intervalMinDate));
-        const distanceForOneDay = Math.abs(endOfDayPosition - beginningOfDayPosition);
+        const beginningOfDayPosition = this.findBeginningOfDayPosition(
+            this.scrollTimeScale(this._intervalMinDate)
+        );
+        const endOfDayPosition = this.findEndOfDayPosition(
+            this.scrollTimeScale(this._intervalMinDate)
+        );
+        const distanceForOneDay = Math.abs(
+            endOfDayPosition - beginningOfDayPosition
+        );
 
         // To make sure there is minimum distance respected
-        if(distanceForOneDay < MIN_INTERVAL_WIDTH) {
-            const numberOfDays = Math.floor( MIN_INTERVAL_WIDTH / distanceForOneDay );
+        if (distanceForOneDay < MIN_INTERVAL_WIDTH) {
+            const numberOfDays = Math.floor(
+                MIN_INTERVAL_WIDTH / distanceForOneDay
+            );
             return numberOfDays * distanceForOneDay;
         }
 
@@ -382,14 +394,16 @@ export class HorizontalActivityTimeline {
 
     /**
      * Get tooltip offset if nubbin is at top position (header is present)
-     * 
+     *
      * @return {number}
      */
-    get tooltipNubbinTopOffset(){
+    get tooltipNubbinTopOffset() {
         let nubbinTopOffset = DEFAULT_NUBBIN_TOP_POSITION_PX;
-        const popoverHeader = this._activityTimeline.template.querySelector('[data-element-id="avonni-horizontal-activity-timeline__popover-header"]');
-        
-        if(popoverHeader) {
+        const popoverHeader = this._activityTimeline.template.querySelector(
+            '[data-element-id="avonni-horizontal-activity-timeline__popover-header"]'
+        );
+
+        if (popoverHeader) {
             nubbinTopOffset = popoverHeader.getBoundingClientRect().height / 2;
         }
 
@@ -433,9 +447,13 @@ export class HorizontalActivityTimeline {
         );
 
         // Select or create rectangles container
-        let rectanglesContainer = this._scrollAxisSVG.select('#' + SCROLL_AXIS_RECTANGLES_G_ID);
-        if(!rectanglesContainer.node()) {
-            rectanglesContainer = this._scrollAxisSVG.append('g').attr('id', SCROLL_AXIS_RECTANGLES_G_ID);
+        let rectanglesContainer = this._scrollAxisSVG.select(
+            '#' + SCROLL_AXIS_RECTANGLES_G_ID
+        );
+        if (!rectanglesContainer.node()) {
+            rectanglesContainer = this._scrollAxisSVG
+                .append('g')
+                .attr('id', SCROLL_AXIS_RECTANGLES_G_ID);
         }
 
         // Draw rectangle for each item
@@ -457,20 +475,25 @@ export class HorizontalActivityTimeline {
      * Add all items in activity timeline.
      */
     addItemsToTimeline(dataToDisplay) {
-        dataToDisplay.forEach((item) => {
-            const itemGroup = this._timelineSVG
-                .append('g')
-                .attr('id', 'timeline-item-' + item.name)
-                .attr('data-name', item.name);
+        if (dataToDisplay) {
+            dataToDisplay.forEach((item) => {
+                const itemGroup = this._timelineSVG
+                    .append('g')
+                    .attr('id', 'timeline-item-' + item.name)
+                    .attr('data-name', item.name);
 
-            this.createItem(itemGroup, item);
+                this.createItem(itemGroup, item);
 
-            itemGroup
-                .style('cursor', 'default')
-                .on('mouseenter', this.handleMouseOverOnItem.bind(this, item))
-                .on('mouseleave', this.handleMouseOutOnItem.bind(this))
-                .on('click', this._activityTimeline.handleItemClick);
-        });
+                itemGroup
+                    .style('cursor', 'default')
+                    .on(
+                        'mouseenter',
+                        this.handleMouseOverOnItem.bind(this, item)
+                    )
+                    .on('mouseleave', this.handleMouseOutOnItem.bind(this))
+                    .on('click', this._activityTimeline.handleItemClick);
+            });
+        }
     }
 
     /**
@@ -506,7 +529,7 @@ export class HorizontalActivityTimeline {
                     .on('start', this.handleTimeIntervalDragStart.bind(this))
                     .on('drag', this.handleTimeIntervalDrag.bind(this))
                     .on('end', () => {
-                        this._isTimelineMoving = false
+                        this._isTimelineMoving = false;
                     })
             );
 
@@ -515,16 +538,16 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     * Add only items with valid date to sortedItems. 
+     * Add only items with valid date to sortedItems.
      */
-    addValidItemsToData(sortedItems){
+    addValidItemsToData(sortedItems) {
         this._sortedItems = [];
 
-        sortedItems.forEach((item)=> {
-            if(!this.isDateInvalid(item.datetimeValue)) {
+        sortedItems.forEach((item) => {
+            if (!this.isDateInvalid(item.datetimeValue)) {
                 this._sortedItems.push(item);
-            } 
-        })
+            }
+        });
     }
 
     /**
@@ -606,7 +629,7 @@ export class HorizontalActivityTimeline {
      *
      * @return {boolean}
      */
-     canPopoverBeOnLeft(xPosition, popoverWidth){
+    canPopoverBeOnLeft(xPosition, popoverWidth) {
         const maxVisiblePosition = this._timelineWidth - popoverWidth;
         return xPosition < maxVisiblePosition;
     }
@@ -616,8 +639,8 @@ export class HorizontalActivityTimeline {
      *
      * @return {boolean}
      */
-    canPopoverBeOnRight(xPosition){
-        return xPosition > 0
+    canPopoverBeOnRight(xPosition) {
+        return xPosition > 0;
     }
 
     /**
@@ -640,18 +663,21 @@ export class HorizontalActivityTimeline {
      * @returns string
      */
     convertDateToFormat(date, format = this._dateFormat) {
-        if(this.isDateInvalid(date)) {
+        if (this.isDateInvalid(date)) {
             return '';
         }
-        return dateTimeObjectFrom(date).toFormat(format);
+        const dateTime = dateTimeObjectFrom(date, {
+            zone: this._activityTimeline.timezone
+        });
+        return dateTime.toFormat(format);
     }
 
     /**
      * Convert a valid xPosition to a date (timestamp format) based on specific scale.
-     * 
+     *
      * @return {number}
      */
-    convertPositionToScaleDate(scale, xPosition){
+    convertPositionToScaleDate(scale, xPosition) {
         return scale.invert(xPosition).setHours(0, 0, 0, 0);
     }
 
@@ -676,8 +702,8 @@ export class HorizontalActivityTimeline {
     /**
      * Clear active timeout to close item's tooltip.
      */
-     clearPreviousTooltipClosingTimeout(){
-        if(this._tooltipClosingTimeout){
+    clearPreviousTooltipClosingTimeout() {
+        if (this._tooltipClosingTimeout) {
             clearTimeout(this._tooltipClosingTimeout);
             this._tooltipClosingTimeout = null;
         }
@@ -721,8 +747,12 @@ export class HorizontalActivityTimeline {
             .attr('y', yPosition);
 
         const iconInformation = this.setIconInformation(iconName);
-        const iconSVG = createSVGIcon(iconInformation, foreignObjectForIcon, this.resetAndRedrawTimeline.bind(this));
-      
+        const iconSVG = createSVGIcon(
+            iconInformation,
+            foreignObjectForIcon,
+            this.resetAndRedrawTimeline.bind(this)
+        );
+
         if (iconInformation.category === 'action') {
             this.setActionIconPosition(iconSVG);
         }
@@ -929,7 +959,7 @@ export class HorizontalActivityTimeline {
             this._numberOfTimelineAxisTicks = numberOfTicks;
             // Remove all ticks marks
             destinationSVG.selectAll('.tick').selectAll('line').remove();
-        } 
+        }
         // TIMELINE SCROLL AXIS
         else {
             const yPosition = this._timelineAxisHeight + 1.5 * BORDER_OFFSET;
@@ -985,7 +1015,7 @@ export class HorizontalActivityTimeline {
             .attr('stroke', TIMELINE_COLORS.timelineBorder)
             .attr('fill', 'transparent')
             .on('click', this.handleClickOnScrollAxis.bind(this));
-        
+
         this.addTimeIntervalToScrollAxis();
     }
 
@@ -1001,34 +1031,41 @@ export class HorizontalActivityTimeline {
 
     /**
      * Extract x scroll position of interval from event. The position corresponds to the beginning of the day.
-     * 
+     *
      * @return {number}
      */
-    extractScrollXPosition(event){
+    extractScrollXPosition(event) {
         // Horizontal scroll of interval
-        const requestedPosition = Number(this._timeIntervalSelector.attr('x')) + this.normalizeHorizontalScrollDeltaX(event);
+        const requestedPosition =
+            Number(this._timeIntervalSelector.attr('x')) +
+            this.normalizeHorizontalScrollDeltaX(event);
 
         // To set hours at 0,0,0,0 for min date
         return this.findBeginningOfDayPosition(requestedPosition);
     }
 
     /**
-     * Find the position of the beginning of the day based on scrollTimeScale. 
-     * 
+     * Find the position of the beginning of the day based on scrollTimeScale.
+     *
      * @return {number}
      */
-    findBeginningOfDayPosition(position){
-        const beginningOfDay = this.convertPositionToScaleDate(this.scrollTimeScale, position);
+    findBeginningOfDayPosition(position) {
+        const beginningOfDay = this.convertPositionToScaleDate(
+            this.scrollTimeScale,
+            position
+        );
         return this.scrollTimeScale(beginningOfDay);
     }
 
     /**
-     * Find the position of the end of the day based on scrollTimeScale. 
-     * 
+     * Find the position of the end of the day based on scrollTimeScale.
+     *
      * @return {number}
      */
-    findEndOfDayPosition(position){
-        const endOfDay = this.scrollTimeScale.invert(position).setHours(23, 59, 59, 999);      
+    findEndOfDayPosition(position) {
+        const endOfDay = this.scrollTimeScale
+            .invert(position)
+            .setHours(23, 59, 59, 999);
         return this.scrollTimeScale(endOfDay);
     }
 
@@ -1067,9 +1104,9 @@ export class HorizontalActivityTimeline {
      *
      * @return {string}
      */
-    findPopoverDirectionWithMoreSpace(leftSpaceForPopover){ 
+    findPopoverDirectionWithMoreSpace(leftSpaceForPopover) {
         const rightSpaceForPopover = this._timelineWidth - leftSpaceForPopover;
-        if(leftSpaceForPopover > rightSpaceForPopover){
+        if (leftSpaceForPopover > rightSpaceForPopover) {
             return 'right';
         }
         return 'left';
@@ -1121,10 +1158,10 @@ export class HorizontalActivityTimeline {
 
     /**
      * Check if popover has a header.
-     * 
+     *
      * @return {boolean}
      */
-    hasPopoverHeader(item){
+    hasPopoverHeader(item) {
         return item.fields || item.description;
     }
 
@@ -1152,8 +1189,8 @@ export class HorizontalActivityTimeline {
         }
 
         // Reset tooltip's classes if nubbin is already present
-        if(tooltipElement.attr('class').includes('slds-nubbin')){
-            tooltipElement.attr('class', DEFAULT_TOOLTIP_CLASSES)
+        if (tooltipElement.attr('class').includes('slds-nubbin')) {
+            tooltipElement.attr('class', DEFAULT_TOOLTIP_CLASSES);
         }
 
         // Set popover position
@@ -1167,8 +1204,9 @@ export class HorizontalActivityTimeline {
             .style('top', popoverPosition.y + 'px')
             .style('left', popoverPosition.x + 'px')
             .style('background', TIMELINE_COLORS.popoverBackground)
-            .classed( 
-                this.getPopoverNubbinClass(element, popoverPosition.direction), true
+            .classed(
+                this.getPopoverNubbinClass(element, popoverPosition.direction),
+                true
             )
             .on('mouseenter', this.handleMouseOverOnPopover.bind(this))
             .on('mouseleave', this.handleMouseOutOfPopover.bind(this));
@@ -1176,12 +1214,12 @@ export class HorizontalActivityTimeline {
 
     /**
      * Check if date is invalid.
-     * 
-     * @return {boolean} 
+     *
+     * @return {boolean}
      */
     isDateInvalid(date) {
         return new Date(date).toString() === 'Invalid Date' || !date;
-    } 
+    }
 
     /**
      * Check if user is scrolling vertically.
@@ -1199,11 +1237,14 @@ export class HorizontalActivityTimeline {
      * Move interval (drag or scroll) on timeline's scroll axis to new valid position.
      */
     moveIntervalToPosition(position) {
-        this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, position);
+        this._intervalMinDate = this.convertPositionToScaleDate(
+            this.scrollTimeScale,
+            position
+        );
         this.setIntervalMaxDate();
 
         this._timeIntervalSelector
-            .attr('x',  position)
+            .attr('x', position)
             .attr('width', this.intervalWidth)
             .attr('y', INTERVAL_RECTANGLE_OFFSET_Y);
 
@@ -1211,10 +1252,10 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     * Move timeline display with the new interval min and max date. The following elements will be updated : timeline (with items), 
+     * Move timeline display with the new interval min and max date. The following elements will be updated : timeline (with items),
      * timeline axis (only scale), top header and interval rectangle (on scroll axis) position and bounds (blue lines).
      */
-    moveTimelineDisplay(){
+    moveTimelineDisplay() {
         // Set position of interval bounds (blue lines)
         this._leftIntervalLine
             .attr('x1', this.scrollTimeScale(new Date(this._intervalMinDate)))
@@ -1248,7 +1289,7 @@ export class HorizontalActivityTimeline {
     }
 
     /**
-     * Remove timeline (section with items) and re-draw it. This method is used to refresh it's not on salesforce and 
+     * Remove timeline (section with items) and re-draw it. This method is used to refresh it's not on salesforce and
      * iconLibraries are ready after initial draw.
      */
     resetAndRedrawTimeline() {
@@ -1261,20 +1302,25 @@ export class HorizontalActivityTimeline {
     /**
      * Remove all scroll axis rectangles and redraw them with new positions.
      */
-    resetAndRedrawScrollAxisRectangle(){
+    resetAndRedrawScrollAxisRectangle() {
         // Remove all rectangles of scroll axis
-        this._scrollAxisSVG.select('#' + SCROLL_AXIS_RECTANGLES_G_ID).selectAll('*').remove();
+        this._scrollAxisSVG
+            .select('#' + SCROLL_AXIS_RECTANGLES_G_ID)
+            .selectAll('*')
+            .remove();
 
         // Redraw rectangles with new positions
         this.addItemsToScrollAxis();
     }
 
     /**
-     * Remove timeline axis and redraw it with new scale. 
+     * Remove timeline axis and redraw it with new scale.
      */
-    resetAndRedrawTimelineAxis(){
+    resetAndRedrawTimelineAxis() {
         // Select and remove previous timeline axis
-        const timelineAxisSVG = d3.select(this.divTimelineAxisSelector).select('svg');
+        const timelineAxisSVG = d3
+            .select(this.divTimelineAxisSelector)
+            .select('svg');
         timelineAxisSVG.selectChild('#timeline-axis').remove();
 
         // Redraw timeline axis
@@ -1341,11 +1387,16 @@ export class HorizontalActivityTimeline {
      * Set the interval's min date to the middle datetime value of all items
      */
     setDefaultIntervalDates() {
-        if(this.isTimelineEmpty) {
-            this._intervalMinDate = this.findNextDate(new Date(), Math.floor(DEFAULT_INTERVAL_DAYS_LENGTH));
+        if (this.isTimelineEmpty) {
+            this._intervalMinDate = this.findNextDate(
+                new Date(),
+                Math.floor(DEFAULT_INTERVAL_DAYS_LENGTH)
+            );
         } else {
             const middleIndex = Math.ceil(this._sortedItems.length / 2 - 1);
-            this._intervalMinDate = new Date(this._sortedItems[middleIndex].datetimeValue);
+            this._intervalMinDate = new Date(
+                this._sortedItems[middleIndex].datetimeValue
+            );
         }
 
         this._intervalMinDate.setHours(0, 0, 0, 0);
@@ -1457,7 +1508,7 @@ export class HorizontalActivityTimeline {
         );
         this._intervalMaxDate.setHours(23, 59, 59, 999);
 
-        if(this._intervalMaxDate > this.scrollAxisMaxDate) {
+        if (this._intervalMaxDate > this.scrollAxisMaxDate) {
             this._intervalMaxDate = this.scrollAxisMaxDate;
         }
     }
@@ -1465,25 +1516,30 @@ export class HorizontalActivityTimeline {
     /**
      * Set popover's direction and adjust x position if needed.
      */
-    setPopoverDirection(tooltipElement, popoverPosition, element){
+    setPopoverDirection(tooltipElement, popoverPosition, element) {
         const popoverWidth = this.convertPxSizeToNumber(
             tooltipElement.style('width')
         );
-        
+
         if (this.canPopoverBeOnLeft(popoverPosition.x, popoverWidth)) {
             return;
         }
 
-        popoverPosition.x = this.findStartPositionOfItem(element) - popoverWidth;
+        popoverPosition.x =
+            this.findStartPositionOfItem(element) - popoverWidth;
         if (this.canPopoverBeOnRight(popoverPosition.x)) {
             popoverPosition.direction = 'right';
             return;
         }
-        
-        // Not enough space on either side. We choose the side with more space. 
-        const leftSpaceForPopover = this._offsetAxis + this.viewTimeScale(new Date(element.datetimeValue)) + SVG_ICON_SIZE; 
-        popoverPosition.direction = this.findPopoverDirectionWithMoreSpace(leftSpaceForPopover);
-        if (popoverPosition.direction === 'left'){
+
+        // Not enough space on either side. We choose the side with more space.
+        const leftSpaceForPopover =
+            this._offsetAxis +
+            this.viewTimeScale(new Date(element.datetimeValue)) +
+            SVG_ICON_SIZE;
+        popoverPosition.direction =
+            this.findPopoverDirectionWithMoreSpace(leftSpaceForPopover);
+        if (popoverPosition.direction === 'left') {
             popoverPosition.x = leftSpaceForPopover;
         }
     }
@@ -1499,12 +1555,13 @@ export class HorizontalActivityTimeline {
             y: element.yPosition,
             direction: 'left'
         };
-        
+
         this.setPopoverDirection(tooltipElement, popoverPosition, element);
 
         // if element has field, adjust position (nubbin top)
         if (this.hasPopoverHeader(element)) {
-            popoverPosition.y += SVG_ICON_SIZE / 2 - this.tooltipNubbinTopOffset;
+            popoverPosition.y +=
+                SVG_ICON_SIZE / 2 - this.tooltipNubbinTopOffset;
         } else {
             const popoverHeight = this.convertPxSizeToNumber(
                 tooltipElement.style('height')
@@ -1535,7 +1592,7 @@ export class HorizontalActivityTimeline {
      */
     setVisibleTimelineHeight() {
         // To limit height to number of items in timeline
-        if (this._maxVisibleItems > this._sortedItems.length){
+        if (this._maxVisibleItems > this._sortedItems.length) {
             this._maxVisibleItems = this._sortedItems.length;
         }
 
@@ -1632,10 +1689,14 @@ export class HorizontalActivityTimeline {
      */
     handleClickOnScrollAxis(event) {
         this.handleMouseOutOfPopover();
-        
+
         if (!this._changeIntervalSizeMode) {
-            let xPosition = this.findBeginningOfDayPosition(event.offsetX - this.intervalWidth / 2);
-            const maxPosition = this.scrollTimeScale(this.scrollAxisMaxDate) - this.intervalWidth;
+            let xPosition = this.findBeginningOfDayPosition(
+                event.offsetX - this.intervalWidth / 2
+            );
+            const maxPosition =
+                this.scrollTimeScale(this.scrollAxisMaxDate) -
+                this.intervalWidth;
             const minPosition = this.scrollTimeScale(this.scrollAxisMinDate);
 
             if (xPosition < minPosition) {
@@ -1644,7 +1705,10 @@ export class HorizontalActivityTimeline {
                 xPosition = maxPosition;
             }
 
-            this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, xPosition);
+            this._intervalMinDate = this.convertPositionToScaleDate(
+                this.scrollTimeScale,
+                xPosition
+            );
             this.setIntervalMaxDate();
 
             // The width is set again because of setHours that can add small offset if scale is on short period of time
@@ -1663,7 +1727,10 @@ export class HorizontalActivityTimeline {
     handleLowerBoundIntervalChange() {
         this._isResizingInterval = true;
         const xDateMinPosition = this._timeIntervalSelector.attr('x');
-        this._intervalMinDate = this.convertPositionToScaleDate(this.scrollTimeScale, xDateMinPosition);
+        this._intervalMinDate = this.convertPositionToScaleDate(
+            this.scrollTimeScale,
+            xDateMinPosition
+        );
         this._intervalDaysLength = this.calculateDaysBetweenDates(
             this._intervalMinDate,
             this._intervalMaxDate
@@ -1683,21 +1750,27 @@ export class HorizontalActivityTimeline {
 
         const minXPosition = this.scrollTimeScale(this.scrollAxisMinDate);
         const maxXPosition =
-            this.scrollTimeScale(this._intervalMaxDate) - this.minimumIntervalWidth;
-    
+            this.scrollTimeScale(this._intervalMaxDate) -
+            this.minimumIntervalWidth;
 
-        let xPosition = this.findBeginningOfDayPosition(event.sourceEvent.offsetX);
-        if (event.sourceEvent.pageX < this.scrollAxisLeftPosition || xPosition < minXPosition) {
+        let xPosition = this.findBeginningOfDayPosition(
+            event.sourceEvent.offsetX
+        );
+        if (
+            event.sourceEvent.pageX < this.scrollAxisLeftPosition ||
+            xPosition < minXPosition
+        ) {
             xPosition = minXPosition;
         } else if (xPosition > maxXPosition) {
             xPosition = maxXPosition;
         }
 
-        const newRectangleWidth = this.scrollTimeScale(this._intervalMaxDate) - xPosition;
+        const newRectangleWidth =
+            this.scrollTimeScale(this._intervalMaxDate) - xPosition;
         this._timeIntervalSelector
             .attr('x', xPosition)
             .attr('width', newRectangleWidth);
-        
+
         this.handleLowerBoundIntervalChange();
     }
 
@@ -1717,7 +1790,7 @@ export class HorizontalActivityTimeline {
      * Handle mouse over on popover.
      */
     handleMouseOverOnPopover() {
-        if(this._isTimelineMoving){
+        if (this._isTimelineMoving) {
             return;
         }
         this.clearPreviousTooltipClosingTimeout();
@@ -1728,7 +1801,7 @@ export class HorizontalActivityTimeline {
      * Handle mouse out of popover.
      */
     handleMouseOutOfPopover() {
-        if(this._activityTimeline.showItemPopOver) {
+        if (this._activityTimeline.showItemPopOver) {
             this.clearPreviousTooltipClosingTimeout();
             this._isMouseOverOnPopover = false;
             this._activityTimeline.handleTooltipClose();
@@ -1747,7 +1820,7 @@ export class HorizontalActivityTimeline {
      * Handle mouse over on item to display a popover
      */
     handleMouseOverOnItem(element) {
-        if(this._isTimelineMoving) {
+        if (this._isTimelineMoving) {
             return;
         }
         this.clearPreviousTooltipClosingTimeout();
@@ -1759,7 +1832,9 @@ export class HorizontalActivityTimeline {
      * Handle the drag of interval on scroll axis to change dates displayed on main timeline. Timeline is re-render.
      */
     handleTimeIntervalDrag(event) {
-        let xPosition = this.findBeginningOfDayPosition(event.sourceEvent.offsetX - this._distanceBetweenDragAndMin);
+        let xPosition = this.findBeginningOfDayPosition(
+            event.sourceEvent.offsetX - this._distanceBetweenDragAndMin
+        );
 
         // To allow only horizontal drag
         xPosition = this.validateXMousePosition(xPosition);
@@ -1812,11 +1887,15 @@ export class HorizontalActivityTimeline {
         this._isTimelineMoving = true;
 
         const minXPosition =
-            this.scrollTimeScale(this._intervalMinDate) + this.minimumIntervalWidth;
+            this.scrollTimeScale(this._intervalMinDate) +
+            this.minimumIntervalWidth;
         const maxXPosition = this.scrollTimeScale(this.scrollAxisMaxDate);
 
         let xPosition = this.findEndOfDayPosition(event.sourceEvent.offsetX);
-        if (event.sourceEvent.pageX < this.scrollAxisLeftPosition || xPosition < minXPosition) {
+        if (
+            event.sourceEvent.pageX < this.scrollAxisLeftPosition ||
+            xPosition < minXPosition
+        ) {
             xPosition = minXPosition;
         } else if (xPosition > maxXPosition) {
             xPosition = maxXPosition;
@@ -1845,7 +1924,7 @@ export class HorizontalActivityTimeline {
         this.cancelSwipeLeftIfScrollLeft(event);
         this.cancelEditIntervalSizeMode();
         this.handleMouseOutOfPopover();
-       
+
         // Horizontal scroll of interval
         const requestedPosition = this.extractScrollXPosition(event);
 

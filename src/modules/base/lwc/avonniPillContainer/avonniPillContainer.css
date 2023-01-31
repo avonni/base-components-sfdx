@@ -58,13 +58,40 @@
     border-color: var(--avonni-pill-container-color-border, #e5e5e5);
 }
 
+.avonni-pill-container__wrapper.avonni-pill-container__no-items {
+    border-color: transparent;
+}
+
+.avonni-pill-container__wrapper .avonni-pill-container__item:first-of-type {
+    padding-left: 0.125rem;
+}
+
+.avonni-pill-container__item,
+.avonni-pill-container__hidden-pill {
+    height: 1.875rem;
+}
+
+.avonni-pill-container__action-menu {
+    z-index: 7001;
+
+    /* Needed to prevent a potential scroll jump when the menu appears */
+    top: 0;
+    left: 0;
+}
+
+/*
+* ------------------------------------------------------------
+*  SORTABLE
+* -------------------------------------------------------------
+*/
 .avonni-pill-container__pill-sortable {
     user-select: none;
     -webkit-user-select: none;
+    cursor: grab;
 }
 
-.avonni-pill-container__pill-sortable {
-    cursor: grab;
+.avonni-pill-container__item_sortable-single-line {
+    padding-right: 0.125rem;
 }
 
 .avonni-pill-container__list_dragging,
@@ -73,22 +100,37 @@
     cursor: grabbing;
 }
 
-.avonni-pill-container__pill_left-border::before,
-.avonni-pill-container__pill_right-border::after {
+/* Sortable moving border */
+.avonni-pill-container__pill_before-border::before,
+.avonni-pill-container__pill_after-border::after {
     content: '';
-    width: 2px;
     background-color: #747474;
     position: absolute;
+    z-index: 1;
+}
+.avonni-pill-container__item.avonni-pill-container__pill_before-border::before,
+.avonni-pill-container__item.avonni-pill-container__pill_after-border::after {
+    width: 2px;
     top: 1px;
     bottom: 0;
 }
-.avonni-pill-container__pill_left-border::before {
+.avonni-pill-container__item.avonni-pill-container__pill_before-border::before {
     left: -1px;
 }
-.avonni-pill-container__pill_right-border::after {
+.avonni-pill-container__item.avonni-pill-container__pill_after-border::after {
     right: -1px;
 }
 
-.avonni-pill-container__item_sortable-single-line {
-    padding-right: 0.125rem;
+/* Sortable moving border in single-line collapsed popover */
+.avonni-pill-container__hidden-pill.avonni-pill-container__pill_after-border::after,
+.avonni-pill-container__hidden-pill.avonni-pill-container__pill_before-border::before {
+    right: 0;
+    left: 0;
+    height: 2px;
+}
+.avonni-pill-container__hidden-pill.avonni-pill-container__pill_after-border::after {
+    bottom: -1px;
+}
+.avonni-pill-container__hidden-pill.avonni-pill-container__pill_before-border::before {
+    top: -1px;
 }

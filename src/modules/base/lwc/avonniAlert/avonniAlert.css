@@ -69,6 +69,16 @@
     border-color: var(--avonni-alert-color-border, transparent);
 }
 
+.avonni-alert__content-container {
+    display: flex;
+    align-items: center;
+    justify-content: var(--avonni-alert-content-horizontal-alignment, center);
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 100%;
+}
+
 .avonni-notify_alert .avonni-alert__primitive-icon_color {
     border-radius: var(--avonni-alert-icon-radius-border, 0.25rem);
 }

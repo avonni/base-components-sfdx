@@ -18,11 +18,19 @@
     object-position: var(
         --avonni-carousel-item-image-positioning-object-position
     );
+    border-radius: var(--avonni-carousel-item-image-radius-border, 0.25rem);
 }
 
 .avonni-carousel__actions {
     display: flex;
     width: 100%;
+}
+
+.avonni-carousel__panel-action {
+    border-color: var(--avonni-carousel-item-color-border, #e5e5e5);
+    border-width: var(--avonni-carousel-item-sizing-border, 1px);
+    border-style: var(--avonni-carousel-item-styling-border, solid);
+    border-radius: var(--avonni-carousel-item-radius-border, 0.25rem);
 }
 
 .avonni-carousel__actions-bottom-center {
@@ -45,6 +53,7 @@
 
 .avonni-primitive-carousel-item__content_background {
     background-color: var(--avonni-carousel-item-color-background, #ffffff);
+    border-radius: var(--avonni-carousel-item-content-radius-border, 0.25rem);
 }
 
 .avonni-carousel-item__content-description {

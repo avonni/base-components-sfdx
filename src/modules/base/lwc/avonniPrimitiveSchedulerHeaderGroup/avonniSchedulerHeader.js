@@ -31,15 +31,16 @@
  */
 
 import { generateUUID } from 'c/utils';
-import { DateTime } from 'c/luxon';
 import {
     dateTimeObjectFrom,
-    nextAllowedDay,
-    nextAllowedMonth,
-    nextAllowedTime,
     addToDate,
     numberOfUnitsBetweenDates
 } from 'c/utilsPrivate';
+import {
+    nextAllowedDay,
+    nextAllowedMonth,
+    nextAllowedTime
+} from 'c/schedulerUtils';
 
 /**
  * Represent one row of the scheduler header group.
@@ -75,6 +76,7 @@ import {
  *
  * @param {boolean} canExpandOverEndOfUnit If true, the header end does not have to stop at the exact end of its unit.
  *
+ * @param {string} timezone Time zone of the header, in a valid IANA format.
  * @param {string} unit Unit used by the header (minute, hour, day, week, month or year).
  */
 export default class AvonniSchedulerHeader {
@@ -94,6 +96,7 @@ export default class AvonniSchedulerHeader {
         this.numberOfCells = props.numberOfCells;
         this.span = props.span;
         this.start = props.start;
+        this.timezone = props.timezone;
         this.unit = props.unit;
 
         this.initCells();
@@ -103,8 +106,7 @@ export default class AvonniSchedulerHeader {
         return this._end;
     }
     set end(value) {
-        this._end =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
+        this._end = value;
 
         if (this.cells.length) {
             this.cells[this.cells.length - 1].end = value.ts;
@@ -183,7 +185,13 @@ export default class AvonniSchedulerHeader {
                 break;
             }
 
+            // Used to color the text of the current day in the calendar display
+            const isToday =
+                this.createDate(new Date()).ts >= date.ts &&
+                this.createDate(new Date()).ts <= cellEnd.ts;
+
             this.cells.push({
+                isToday,
                 label: date.startOf(unit).toFormat(label),
                 start: date.ts,
                 end: cellEnd.ts
@@ -197,7 +205,7 @@ export default class AvonniSchedulerHeader {
                     : date.startOf(unit);
         }
 
-        this.start = DateTime.fromMillis(this.cells[0].start);
+        this.start = this.createDate(this.cells[0].start);
         this.setHeaderEnd();
         this.cleanEmptyLastCell();
         this.numberOfCells = this.cells.length;
@@ -236,12 +244,12 @@ export default class AvonniSchedulerHeader {
 
         const lastCell = this.cells[this.cells.length - 1];
         const nextDay = nextAllowedDay(
-            DateTime.fromMillis(lastCell.start),
+            this.createDate(lastCell.start),
             this.availableMonths,
             this.availableDaysOfTheWeek
         );
         const nextMonth = nextAllowedMonth(
-            DateTime.fromMillis(lastCell.start),
+            this.createDate(lastCell.start),
             this.availableMonths
         );
 
@@ -256,6 +264,16 @@ export default class AvonniSchedulerHeader {
     }
 
     /**
+     * Create a Luxon DateTime object from a date, including the timezone.
+     *
+     * @param {string|number|Date} date Date to convert.
+     * @returns {DateTime|boolean} Luxon DateTime object or false if the date is invalid.
+     */
+    createDate(date) {
+        return dateTimeObjectFrom(date, { zone: this.timezone });
+    }
+
+    /**
      * Adjust the header end when the start or end is in the middle of a unit.
      */
     setHeaderEnd() {
@@ -267,15 +285,15 @@ export default class AvonniSchedulerHeader {
             canExpandOverEndOfUnit
         } = this;
         const lastCell = cells[cells.length - 1];
-        const start = DateTime.fromMillis(cells[0].start);
-        let end = DateTime.fromMillis(lastCell.end);
+        const start = this.createDate(cells[0].start);
+        let end = this.createDate(lastCell.end);
 
         // If the header has a span bigger than 1, the last cell may not be fully visible
         const partialCell = numberOfCells % 1;
         if (partialCell > 0) {
-            const lastCellStart = DateTime.fromMillis(lastCell.start);
+            const lastCellStart = this.createDate(lastCell.start);
             end = addToDate(lastCellStart, unit, partialCell);
-            end = DateTime.fromMillis(end.ts - 1);
+            end = this.createDate(end.ts - 1);
         }
 
         if (isReference) {
@@ -331,14 +349,12 @@ export default class AvonniSchedulerHeader {
                 let width = 0;
                 let start =
                     index === 0
-                        ? DateTime.fromMillis(smallestCells[0].start)
-                        : DateTime.fromMillis(cell.start);
+                        ? this.createDate(smallestCells[0].start)
+                        : this.createDate(cell.start);
                 const end = addToDate(start, unit, span);
 
                 while (cellIndex < smallestCells.length) {
-                    start = DateTime.fromMillis(
-                        smallestCells[cellIndex].start
-                    );
+                    start = this.createDate(smallestCells[cellIndex].start);
 
                     // Normalize the beginning of the week, because Luxon's week start on Monday
                     const normalizedStart =

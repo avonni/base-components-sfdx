@@ -81,13 +81,7 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      * @type {string}
      */
     @api buttonLabel;
-    /**
-     * The value to be formatted, which can be a Date object, timestamp, or an ISO8601 formatted string. Use lightning-formatted-date-time.
-     *
-     * @public
-     * @type {datetime}
-     */
-    @api datetimeValue;
+
     /**
      * The description can include text, and is displayed under the title.
      *
@@ -155,12 +149,22 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     _checked = false;
     _closed = false;
     _dateFormat;
+    _datetimeValue;
     _fields = [];
     _hasCheckbox = false;
     _hasError = false;
     _iconSize = ICON_SIZES.default;
     _isLoading = false;
     _color;
+    _timezone;
+
+    formattedDate = '';
+    _connected = false;
+
+    connectedCallback() {
+        this.formatDate();
+        this._connected = true;
+    }
 
     renderedCallback() {
         this.setLineColor();
@@ -284,7 +288,29 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     }
 
     set dateFormat(value) {
-        if (value && typeof value === 'string') this._dateFormat = value;
+        this._dateFormat = typeof value === 'string' ? value : undefined;
+
+        if (this._connected) {
+            this.formatDate();
+        }
+    }
+
+    /**
+     * The value to be formatted, which can be a Date object, timestamp, or an ISO8601 formatted string. Use lightning-formatted-date-time.
+     *
+     * @public
+     * @type {datetime}
+     */
+    @api
+    get datetimeValue() {
+        return this._datetimeValue;
+    }
+    set datetimeValue(value) {
+        this._datetimeValue = value;
+
+        if (this._connected) {
+            this.formatDate();
+        }
     }
 
     /**
@@ -367,6 +393,24 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
 
     set isLoading(value) {
         this._isLoading = normalizeBoolean(value);
+    }
+
+    /**
+     * Time zone used, in a valid IANA format. If empty, the browser's time zone is used.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get timezone() {
+        return this._timezone;
+    }
+    set timezone(value) {
+        this._timezone = value;
+
+        if (this._connected) {
+            this.formatDate();
+        }
     }
 
     /*
@@ -452,23 +496,6 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
             .toString();
     }
 
-    get computedDatetimeValue() {
-        return new Date(this.datetimeValue).getTime();
-    }
-
-    /**
-     * Formatted date to display
-     *
-     * @type {string}
-     */
-    get formattedDate() {
-        return this.computedDatetimeValue && this.dateFormat
-            ? dateTimeObjectFrom(this.computedDatetimeValue).toFormat(
-                  this.dateFormat
-              )
-            : '';
-    }
-
     /**
      * Check if the type of the icon is action
      */
@@ -512,6 +539,40 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     /*
      * ------------------------------------------------------------
      *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    /**
+     * Set the formatted date.
+     */
+    formatDate() {
+        const date = dateTimeObjectFrom(this.datetimeValue, {
+            zone: this.timezone
+        });
+        if (!date || !this.dateFormat) {
+            this.formattedDate = '';
+            return;
+        }
+        this.formattedDate = date.toFormat(this.dateFormat);
+    }
+
+    /**
+     * Takes computed style for icon color and sets it to the line color.
+     *
+     * @returns {string} line background color
+     */
+    setLineColor() {
+        const icon = this.template.querySelector(
+            '[data-element-id="item-marker"]'
+        );
+        if (icon === null) return;
+        const style = getComputedStyle(icon);
+        this._color = style.backgroundColor;
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  EVENT HANDLERS AND DISPATCHERS
      * -------------------------------------------------------------
      */
 
@@ -609,19 +670,5 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
                 bubbles: true
             })
         );
-    }
-
-    /**
-     * Takes computed style for icon color and sets it to the line color.
-     *
-     * @returns {string} line background color
-     */
-    setLineColor() {
-        const icon = this.template.querySelector(
-            '[data-element-id="item-marker"]'
-        );
-        if (icon === null) return;
-        const style = getComputedStyle(icon);
-        this._color = style.backgroundColor;
     }
 }

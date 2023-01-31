@@ -36,19 +36,16 @@
     overflow: hidden;
 }
 
-.avonni-scheduler__disabled-date {
-    height: 100%;
+.avonni-scheduler__disabled-date:not(.avonni-scheduler__disabled-date_standalone) {
     width: 100%;
+    height: 100%;
+}
+.avonni-scheduler__disabled-date {
     opacity: 0.5;
 }
 .avonni-scheduler__disabled-date-title {
-    position: absolute;
-    bottom: 0;
-    left: 0;
     max-width: 100%;
-    z-index: 1;
 }
 .avonni-scheduler__disabled-date-title_vertical {
-    bottom: auto;
-    top: 0;
+    max-height: 100%;
 }

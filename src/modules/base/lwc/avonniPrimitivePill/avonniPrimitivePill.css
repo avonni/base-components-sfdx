@@ -1,9 +1,4 @@
-:host {
-    --slds-c-pill-color-background: var(
-        --avonni-pill-color-background,
-        #ffffff
-    );
-    --slds-c-pill-color-border: var(--avonni-pill-color-border, #e5e5e5);
+.avonni-primitive-pill:not(.avonni-primitive-pill_list) {
     --slds-c-pill-line-height: var(--avonni-pill-line-height, 1.5);
     --slds-c-pill-radius-border: var(--avonni-pill-radius-border, 0.25rem);
     --slds-c-pill-shadow: var(--avonni-pill-shadow);
@@ -24,10 +19,20 @@
         --avonni-pill-spacing-inline-start,
         0.125rem
     );
+}
+
+.avonni-primitive-pill {
     color: var(--avonni-pill-text-color, #181818);
 }
 
-:host.avonni-primitive-pill__action {
+.avonni-primitive-pill_list {
+    --slds-c-pill-sizing-border: 0;
+    --slds-c-pill-shadow: none;
+    --slds-c-pill-radius-border: 0;
+    width: 100%;
+}
+
+.avonni-primitive-pill__action {
     --slds-c-pill-color-background: var(
         --avonni-pill-action-color-background,
         var(--avonni-pill-color-background, #ffffff)
@@ -38,13 +43,17 @@
     );
 }
 
-:host:focus,
-:host:focus-within {
+:host:focus .avonni-primitive-pill,
+:host:focus-within .avonni-primitive-pill {
     --slds-c-pill-color-border: var(--avonni-pill-color-border-focus, #1b96ff);
     --slds-c-pill-shadow: var(--avonni-pill-shadow-focus, 0 0 3px #0176d3);
 }
 
-:host:hover {
+:host:focus-visible {
+    outline: none;
+}
+
+.avonni-primitive-pill:hover {
     background-color: var(--avonni-pill-color-background-hover, #f3f3f3);
 }
 

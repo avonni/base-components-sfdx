@@ -33,7 +33,6 @@
 -->
 
 <template>
-    <!-- Events -->
     <div
         class={eventOccurrenceClass}
         tabindex="0"
@@ -74,7 +73,12 @@
             </span>
         </div>
 
-        <div class="slds-col slds-has-flexi-truncate">
+        <div
+            class="
+                avonni-primitive-scheduler-event-occurrence__flex-col
+                slds-has-flexi-truncate
+            "
+        >
             <!-- Top label -->
             <div
                 if:true={computedLabels.top}
@@ -109,10 +113,11 @@
             >
                 <!-- Start resize icon -->
                 <lightning-icon
-                    if:false={readOnly}
+                    if:false={hideResizeIcon}
                     class="
                         avonni-scheduler__event-resize-icon
                         avonni-scheduler__event-resize-icon_start
+                        slds-current-color
                     "
                     icon-name="utility:drag_and_drop"
                     size="xx-small"
@@ -126,6 +131,16 @@
                     class={eventOccurrenceCenterLabelClass}
                     data-element-id="div-center-label-wrapper"
                 >
+                    <!-- Standalone chip -->
+                    <div
+                        if:true={displayAsDot}
+                        class="
+                            avonni-scheduler__event-dot-chip
+                            slds-m-right_xx-small
+                        "
+                        style={standaloneChipStyle}
+                    ></div>
+
                     <lightning-icon
                         if:true={computedLabels.center.iconName}
                         icon-name={computedLabels.center.iconName}
@@ -142,16 +157,27 @@
                         title={computedLabels.center.value}
                         data-element-id="span-center-label"
                     >
+                        <span
+                            if:true={isMonthCalendarSingleDay}
+                            class="
+                                slds-p-right_xx-small
+                                avonni-scheduler__event-dot-time
+                                slds-text-color_weak
+                            "
+                            data-element-id="span-time-label"
+                            >{startTime}</span
+                        >
                         {computedLabels.center.value}
                     </span>
                 </div>
 
                 <!-- End resize icon -->
                 <lightning-icon
-                    if:false={readOnly}
+                    if:false={hideResizeIcon}
                     class="
                         avonni-scheduler__event-resize-icon
                         avonni-scheduler__event-resize-icon_end
+                        slds-current-color
                     "
                     icon-name="utility:drag_and_drop"
                     size="xx-small"

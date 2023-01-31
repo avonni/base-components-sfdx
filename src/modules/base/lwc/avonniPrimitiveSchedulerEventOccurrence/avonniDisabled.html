@@ -34,30 +34,71 @@
 
 <template>
     <div
-        class="
-            slds-is-absolute
-            avonni-scheduler__disabled-date
-            slds-theme_alert-texture slds-theme_shade
-        "
+        class={disabledClass}
+        style={disabledStyle}
+        title={title}
+        data-element-id="div-disabled-wrapper"
         oncontextmenu={handleDisabledContextMenu}
         ondblclick={handleDisabledDoubleClick}
         onmousedown={handleDisabledMouseDown}
     >
         <div
-            if:true={showTitle}
+            if:false={isStandalone}
             class={disabledTitleClass}
-            title={title}
             data-element-id="div-disabled-title-wrapper"
         >
+            <span>
+                <lightning-icon
+                    if:true={iconName}
+                    class="slds-m-right_xx-small slds-current-color"
+                    icon-name={iconName}
+                    size="x-small"
+                ></lightning-icon>
+            </span>
+            <span
+                if:true={title}
+                class="
+                    slds-truncate
+                    avonni-primitive-scheduler-event-occurrence__flex-col
+                "
+                data-element-id="div-disabled-title"
+                >{title}</span
+            >
+        </div>
+
+        <div if:true={isStandalone} class={eventOccurrenceCenterLabelClass}>
+            <!-- Standalone chip -->
+            <div
+                if:true={displayAsDot}
+                class="
+                    avonni-scheduler__event-dot-chip
+                    slds-m-right_xx-small
+                    slds-theme_shade
+                "
+                style={standaloneChipStyle}
+            ></div>
+
             <lightning-icon
                 if:true={iconName}
                 icon-name={iconName}
                 size="x-small"
-                class="slds-m-right_xx-small slds-current-color"
+                class="slds-m-right_xx-small"
             ></lightning-icon>
-            <span class="slds-truncate" data-element-id="div-disabled-title"
-                >{title}</span
+            <span
+                if:true={title}
+                class="slds-truncate avonni-scheduler__event-label-span_center"
             >
+                <span
+                    if:true={isMonthCalendarSingleDay}
+                    class="
+                        slds-p-right_xx-small
+                        avonni-scheduler__event-dot-time
+                        slds-text-color_weak
+                    "
+                    >{startTime}</span
+                >
+                {computedLabels.center.value}
+            </span>
         </div>
     </div>
 </template>

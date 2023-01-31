@@ -66,7 +66,7 @@
     align-self: center;
 }
 
-.avonni-visual-picker__figure-content_alignement {
+.avonni-visual-picker__figure-content_alignment {
     display: flex;
     justify-content: var(--avonni-visual-picker-title-alignment, center);
     padding: var(--avonni-visual-picker-title-padding, 0.15rem 0.75rem);

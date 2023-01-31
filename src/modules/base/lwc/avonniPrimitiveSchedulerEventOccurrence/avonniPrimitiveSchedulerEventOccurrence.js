@@ -36,18 +36,29 @@ import { DateTime } from 'c/luxon';
 import {
     classListMutation,
     dateTimeObjectFrom,
+    getWeekday,
+    getWeekNumber,
     normalizeArray,
     normalizeBoolean,
+    normalizeObject,
     normalizeString
 } from 'c/utilsPrivate';
+import { isAllDay, spansOnMoreThanOneDay } from 'c/schedulerUtils';
 import disabled from './avonniDisabled.html';
 import eventOccurrence from './avonniEventOccurrence.html';
 import referenceLine from './avonniReferenceLine.html';
 
 const DEFAULT_DATE_FORMAT = 'ff';
 const VARIANTS = {
-    default: 'horizontal',
-    valid: ['horizontal', 'vertical']
+    default: 'timeline-horizontal',
+    valid: [
+        'agenda',
+        'calendar-horizontal',
+        'calendar-month',
+        'calendar-vertical',
+        'timeline-horizontal',
+        'timeline-vertical'
+    ]
 };
 
 /**
@@ -91,7 +102,8 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     @api occurrenceKey;
 
     /**
-     * Theme of the occurrence. Valid values include default, transparent, line, hollow and rounded.
+     * Theme of the occurrence.
+     * If the event is a reference line, valid values include default, inverse, success, warning, error and lightest. Otherwise, valid values include default, transparent, line, hollow and rounded.
      *
      * @type {string}
      * @public
@@ -114,6 +126,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     _referenceLine = false;
     _resourceKey;
     _resources = [];
+    _timezone;
     _title;
     _to;
     _variant = VARIANTS.default;
@@ -126,11 +139,6 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     computedLabels = {};
 
     connectedCallback() {
-        if (!this.disabled)
-            this.template.host.classList.add(
-                'avonni-scheduler__primitive-event'
-            );
-
         this.initLabels();
         this._connected = true;
     }
@@ -148,6 +156,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return eventOccurrence;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
      * Duration of a scheduler column, in milliseconds.
      *
@@ -163,27 +177,6 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         this._cellDuration = !isNaN(Number(value)) ? Number(value) : 0;
 
         if (this._connected) {
-            this.updateLength();
-            this.updateStickyLabels();
-        }
-    }
-
-    /**
-     * The cells of the shortest header unit of the scheduler.
-     *
-     * @type {object[]}
-     * @public
-     * @required
-     */
-    @api
-    get headerCells() {
-        return this._headerCells;
-    }
-    set headerCells(value) {
-        this._headerCells = normalizeArray(value);
-
-        if (this._connected) {
-            this.updatePosition();
             this.updateLength();
             this.updateStickyLabels();
         }
@@ -295,8 +288,32 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return this._from;
     }
     set from(value) {
-        this._from =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
+        this._from = value;
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateLength();
+            this.updateStickyLabels();
+        }
+    }
+
+    /**
+     * The header cells used to position and size the event. Two keys are allowed: xAxis and yAxis. If present, each key must be an array of cell objects.
+     *
+     * @type {object}
+     * @public
+     * @required
+     */
+    @api
+    get headerCells() {
+        return this._headerCells;
+    }
+    set headerCells(value) {
+        const normalized =
+            typeof value === 'string'
+                ? JSON.parse(value)
+                : normalizeObject(value);
+        this._headerCells = normalized;
 
         if (this._connected) {
             this.updatePosition();
@@ -463,6 +480,25 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
+     * Time zone used, in a valid IANA format. If empty, the browser's time zone is used.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get timezone() {
+        return this._timezone;
+    }
+    set timezone(value) {
+        this._timezone = value;
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateLength();
+        }
+    }
+
+    /**
      * Title of the occurrence.
      *
      * @type {string}
@@ -490,8 +526,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return this._to;
     }
     set to(value) {
-        this._to =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
+        this._to = value;
 
         if (this._connected) {
             this.updateLength();
@@ -500,11 +535,11 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Orientation of the scheduler. Valid values include horizontal and vertical.
+     * Orientation of the scheduler. Valid values include timeline-horizontal, timeline-vertical and calendar.
      *
      * @type {string}
      * @public
-     * @default horizontal
+     * @default timeline-horizontal
      */
     @api
     get variant() {
@@ -517,8 +552,17 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         });
 
         classListMutation(this.classList, {
-            'avonni-scheduler__event_horizontal': this._variant === 'horizontal'
+            'avonni-scheduler__event_horizontal':
+                this._variant === 'timeline-horizontal',
+            'avonni-scheduler__standalone-event': this.isStandalone
         });
+
+        if (this._connected) {
+            this.updatePosition();
+            this.updateLength();
+            this.updateThickness();
+            this.updateStickyLabels();
+        }
     }
 
     /**
@@ -575,19 +619,6 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Deprecated. Use `start-position` instead.
-     *
-     * @type {number}
-     * @public
-     * @default 0
-     * @deprecated
-     */
-    @api
-    get leftPosition() {
-        return this.startPosition;
-    }
-
-    /**
      * Position of the end extremity of the occurrence. Right for horizontal, bottom for vertical.
      *
      * @type {number}
@@ -608,6 +639,49 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             this.hostElement.getBoundingClientRect().width +
             this.rightLabelWidth
         );
+    }
+
+    /**
+     * Left label element width.
+     *
+     * @type {HTMLElement}
+     * @public
+     * @default 0
+     */
+    @api
+    get leftLabelWidth() {
+        const label = this.template.querySelector(
+            '.avonni-scheduler__event-label_left'
+        );
+        return label ? label.getBoundingClientRect().width : 0;
+    }
+
+    /**
+     * Deprecated. Use `start-position` instead.
+     *
+     * @type {number}
+     * @public
+     * @default 0
+     * @deprecated
+     */
+    @api
+    get leftPosition() {
+        return this.startPosition;
+    }
+
+    /**
+     * Right label element width.
+     *
+     * @type {HTMLElement}
+     * @public
+     * @default 0
+     */
+    @api
+    get rightLabelWidth() {
+        const label = this.template.querySelector(
+            '.avonni-scheduler__event-label_right'
+        );
+        return label ? label.getBoundingClientRect().width : 0;
     }
 
     /**
@@ -656,29 +730,50 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return 0;
     }
 
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE PROPERTIES
+     * -------------------------------------------------------------
+     */
+
     /**
-     * Computed class of the occurrence.
+     * Computed CSS classes of the occurrence.
      *
      * @type {string}
      */
     get computedClass() {
         const theme = this.theme;
-        return classSet(
-            `avonni-scheduler__event slds-p-horizontal_x-small slds-grid slds-has-flexi-truncate avonni-scheduler__event_${theme}`
+        const centerLabel = normalizeObject(this.labels.center);
+        let classes = classSet(
+            'avonni-scheduler__event slds-grid slds-has-flexi-truncate avonni-primitive-scheduler-event-occurrence__flex-col'
         )
             .add({
+                'slds-p-horizontal_x-small': !this.isVerticalCalendar,
                 'slds-text-color_inverse slds-current-color':
-                    theme === 'default' ||
-                    theme === 'rounded' ||
-                    (this._focused && theme === 'transparent'),
-                'avonni-scheduler__event-wrapper_focused': this._focused,
-                'slds-p-vertical_xx-small':
-                    theme !== 'line' && !this.isVertical,
-                'avonni-scheduler__event_vertical':
-                    theme !== 'line' && this.isVertical,
-                'slds-p-bottom_xx-small': theme === 'line'
+                    !this.displayAsDot &&
+                    (theme === 'default' ||
+                        theme === 'rounded' ||
+                        (this._focused && theme === 'transparent')),
+                'avonni-scheduler__event_focused': this._focused,
+                'slds-p-vertical_xx-small': centerLabel.iconName,
+                'avonni-scheduler__event_vertical-animated':
+                    theme !== 'line' && this.isVertical && !this.readOnly,
+                'slds-p-bottom_xx-small': theme === 'line',
+                'avonni-scheduler__event_display-as-dot': this.displayAsDot,
+                'slds-theme_shade slds-theme_alert-texture slds-text-color_weak':
+                    this.disabled,
+                'avonni-scheduler__event_standalone-multi-day-starts-in-previous-cell':
+                    !this.displayAsDot && this.occurrence.startsInPreviousCell,
+                'avonni-scheduler__event_standalone-multi-day-ends-in-later-cell':
+                    !this.displayAsDot && this.occurrence.endsInLaterCell,
+                'avonni-scheduler__event_past': this.from < Date.now()
             })
             .toString();
+
+        if (!this.displayAsDot) {
+            classes += ` avonni-scheduler__event_${theme}`;
+        }
+        return classes;
     }
 
     /**
@@ -688,6 +783,42 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     get computedColor() {
         return this.color || this.resourceColor;
+    }
+
+    /**
+     * Computed CSS classes for the disabled events wrapper.
+     *
+     * @type {string}
+     */
+    get disabledClass() {
+        return classSet(
+            'slds-theme_alert-texture avonni-scheduler__disabled-date'
+        )
+            .add({
+                'slds-theme_shade': this.isTimeline,
+                'slds-is-absolute': !this.isStandalone,
+                'avonni-scheduler__disabled-date_standalone slds-p-horizontal_x-small slds-m-bottom_xx-small slds-is-relative':
+                    this.isStandalone,
+                'avonni-scheduler__event_month-multi-day-starts-in-previous-cell':
+                    !this.displayAsDot && this.occurrence.startsInPreviousCell,
+                'avonni-scheduler__event_month-multi-day-ends-in-later-cell':
+                    !this.displayAsDot && this.occurrence.endsInLaterCell
+            })
+            .toString();
+    }
+
+    /**
+     * Computed CSS style for the disabled events wrapper.
+     *
+     * @type {string}
+     */
+    get disabledStyle() {
+        return this.isTimeline
+            ? null
+            : `
+                background-color: ${this.transparentColor};
+                --avonni-primitive-scheduler-event-occurrence-background-color: ${this.transparentColor};
+            `;
     }
 
     /**
@@ -707,6 +838,15 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
+     * True if the event should be displayed as a dot.
+     *
+     * @type {boolean}
+     */
+    get displayAsDot() {
+        return this.isStandalone && !this.spansOnMoreThanOneDay;
+    }
+
+    /**
      * Computed CSS classes of the event occurence center label.
      *
      * @type {string}
@@ -716,8 +856,10 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             'slds-truncate slds-grid avonni-scheduler__event-label_center'
         )
             .add({
-                'slds-p-horizontal_x-small': !this.isVertical,
-                'slds-m-top_small': this.isVertical && this.theme === 'line'
+                'slds-p-horizontal_x-small':
+                    !this.isVerticalTimeline && !this.displayAsDot,
+                'slds-m-top_small': this.isVertical && this.theme === 'line',
+                'slds-grid_vertical-align-center': this.displayAsDot
             })
             .toString();
     }
@@ -730,11 +872,23 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     get eventOccurrenceClass() {
         return classSet('slds-grid')
             .add({
-                'slds-grid_vertical-align-center slds-p-vertical_x-small':
-                    !this.isVertical,
-                'avonni-scheduler__event-wrapper_vertical': this.isVertical
+                'slds-grid_vertical-align-center':
+                    !this.isVerticalTimeline &&
+                    !this.isVerticalCalendar &&
+                    !this.displayAsDot,
+                'avonni-scheduler__event-wrapper_vertical': this.isVertical,
+                'avonni-scheduler__event-wrapper': !this.isVertical
             })
             .toString();
+    }
+
+    /**
+     * True if the resize icons should be hidden.
+     *
+     * @type {boolean}
+     */
+    get hideResizeIcon() {
+        return this.readOnly || this.isStandalone;
     }
 
     /**
@@ -747,12 +901,111 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * True if the variant is vertical.
+     * True if the variant is agenda.
+     *
+     * @type {boolean}
+     */
+    get isAgenda() {
+        return this.variant === 'agenda';
+    }
+
+    /**
+     * True if the event spans on one full day.
+     *
+     * @type {boolean}
+     */
+    get isAllDay() {
+        return isAllDay(this.eventData, this.from, this.to);
+    }
+
+    /**
+     * True if the event is part of a calendar.
+     *
+     * @type {boolean}
+     */
+    get isCalendar() {
+        return this.variant.startsWith('calendar');
+    }
+
+    /**
+     * True if the variant is calendar-horizontal.
+     *
+     * @type {boolean}
+     */
+    get isHorizontalCalendar() {
+        return this.variant === 'calendar-horizontal';
+    }
+
+    /**
+     * True if the variant is calendar-month.
+     *
+     * @type {boolean}
+     */
+    get isMonthCalendar() {
+        return this.variant === 'calendar-month';
+    }
+
+    /**
+     * True if the event is part of a calendar in the month view, and it doesn't span on more than one day.
+     *
+     * @type {boolean}
+     */
+    get isMonthCalendarSingleDay() {
+        return this.isMonthCalendar && !this.spansOnMoreThanOneDay;
+    }
+
+    /**
+     * True if the event orientation is horizontal, but it is not set to one row. The standalone events are positionned in absolute on a grid (in a calendar), or positionned statically (in an agenda).
+     *
+     * @type {boolean}
+     */
+    get isStandalone() {
+        return this.isMonthCalendar || this.isAgenda;
+    }
+
+    /**
+     * True if the event start and end are on different days.
+     *
+     * @type {boolean}
+     */
+    get spansOnMoreThanOneDay() {
+        return spansOnMoreThanOneDay(this.eventData, this.from, this.to);
+    }
+
+    /**
+     * True if the event is part of a timeline.
+     *
+     * @type {boolean}
+     */
+    get isTimeline() {
+        return this.variant.startsWith('timeline');
+    }
+
+    /**
+     * True if the orientation of the event is vertical.
      *
      * @type {boolean}
      */
     get isVertical() {
-        return this.variant === 'vertical';
+        return this.isVerticalTimeline || this.isVerticalCalendar;
+    }
+
+    /**
+     * True if the variant is calendar-vertical.
+     *
+     * @type {boolean}
+     */
+    get isVerticalCalendar() {
+        return this.variant === 'calendar-vertical';
+    }
+
+    /**
+     * True if the variant is timeline-vertical.
+     *
+     * @type {boolean}
+     */
+    get isVerticalTimeline() {
+        return this.variant === 'timeline-vertical';
     }
 
     /**
@@ -774,34 +1027,8 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return this.occurrence.offsetSide || 0;
     }
 
-    /**
-     * Left label element width.
-     *
-     * @type {HTMLElement}
-     * @public
-     * @default 0
-     */
-    @api
-    get leftLabelWidth() {
-        const label = this.template.querySelector(
-            '.avonni-scheduler__event-label_left'
-        );
-        return label ? label.getBoundingClientRect().width : 0;
-    }
-
-    /**
-     * Right label element width.
-     *
-     * @type {HTMLElement}
-     * @public
-     * @default 0
-     */
-    @api
-    get rightLabelWidth() {
-        const label = this.template.querySelector(
-            '.avonni-scheduler__event-label_right'
-        );
-        return label ? label.getBoundingClientRect().width : 0;
+    get overflowsCell() {
+        return this.occurrence.overflowsCell;
     }
 
     /**
@@ -812,7 +1039,9 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     get referenceLineClass() {
         return classSet('avonni-scheduler__reference-line slds-is-absolute')
             .add({
-                'avonni-scheduler__reference-line_vertical': this.isVertical
+                'avonni-scheduler__reference-line_vertical':
+                    this.isVerticalTimeline || this.isVerticalCalendar,
+                'avonni-scheduler__reference-line_standalone': this.isStandalone
             })
             .toString();
     }
@@ -829,14 +1058,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return resource && resource.color;
     }
 
-    /**
-     * If true, the title HTML element will be displayed. This property is only used by disabled occurrences.
-     *
-     * @type {boolean}
-     * @default false
-     */
-    get showTitle() {
-        return this.disabled && (this.title || this.iconName);
+    get standaloneChipStyle() {
+        return `background-color: ${this.computedColor};`;
+    }
+
+    get startTime() {
+        return this.from.toFormat('HH:mm');
     }
 
     /**
@@ -845,6 +1072,9 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @type {string}
      */
     get style() {
+        if (this.displayAsDot) {
+            return '';
+        }
         const { computedColor, transparentColor, theme } = this;
         const isDefault = theme === 'default';
         const isTransparent = theme === 'transparent';
@@ -854,9 +1084,15 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
 
         let style = '';
         if (isDefault || isRounded || (isTransparent && this._focused)) {
-            style += `background-color: ${computedColor};`;
+            style += `
+                background-color: ${computedColor};
+                --avonni-primitive-scheduler-event-occurrence-background-color: ${computedColor};
+            `;
         } else if (isTransparent && !this._focused) {
-            style += `background-color: ${transparentColor};`;
+            style += `
+                background-color: ${transparentColor};
+                --avonni-primitive-scheduler-event-occurrence-background-color: ${transparentColor};
+            `;
         }
         if (isTransparent) {
             style += `border-left-color: ${computedColor};`;
@@ -866,6 +1102,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         }
 
         return style;
+    }
+
+    get timelineHeaderCells() {
+        return this.isVerticalTimeline
+            ? this.headerCells.yAxis
+            : this.headerCells.xAxis;
     }
 
     /**
@@ -888,10 +1130,16 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             /rgb\(([0-9]+,\s?[0-9]+,\s?[0-9]+)\)/
         );
         if (isRGB) {
-            return `rgba(${isRGB[1]}, .3)`;
+            return `rgba(${isRGB[1]}, 0.3)`;
         }
         return this.computedColor;
     }
+
+    /*
+     * ------------------------------------------------------------
+     *  PUBLIC METHODS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Set the focus on the occurrence.
@@ -900,9 +1148,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     @api
     focus() {
-        this.template
-            .querySelector('[data-element-id="div-event-occurrence"]')
-            .focus();
+        const wrapper = this.template.querySelector(
+            '[data-element-id="div-event-occurrence"]'
+        );
+        if (wrapper) {
+            wrapper.focus();
+        }
     }
 
     /**
@@ -951,39 +1202,10 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     @api
     updatePosition() {
-        const { from, headerCells, cellHeight, cellWidth } = this;
-
-        // Find the cell where the event starts
-        let i = headerCells.findIndex((column) => {
-            return column.end > from;
-        });
-
-        if (i < 0) return;
-
-        // Place the event at the right header
-        if (this.isVertical) {
-            this._y = i * cellHeight;
+        if (this.isTimeline || this.isHorizontalCalendar) {
+            this.updatePositionInTimeline();
         } else {
-            this._x = i * cellWidth;
-        }
-
-        // Place the event at the right resource,
-        if (!this.referenceLine && !this.isVertical) {
-            const resources = this.resources;
-            let y = 0;
-            for (let j = 0; j < resources.length; j++) {
-                const resourceKey = resources[j].name;
-                if (resourceKey === this.resourceKey) break;
-
-                y += resources[j].height;
-            }
-            y += this.offsetSide;
-            this._y = y;
-        } else if (!this.referenceLine && this.isVertical) {
-            const resourceIndex = this.resources.findIndex((resource) => {
-                return resource.name === this.resourceKey;
-            });
-            this._x = resourceIndex * cellWidth;
+            this.updatePositionInCalendar();
         }
 
         this.updateHostTranslate();
@@ -996,59 +1218,64 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      */
     @api
     updateLength() {
-        const { from, to, headerCells, cellHeight, cellWidth, cellDuration } =
-            this;
+        if (this.isStandalone) {
+            this.updateStandaloneLength();
+            this._offsetStart = 0;
+            return;
+        } else if (this.hostElement) {
+            this.hostElement.style.width = null;
+        }
+        const { cellHeight, cellWidth, cellDuration } = this;
+        const from = this.getComparableTime(this.from);
+        const headerCells = this.isVerticalCalendar
+            ? this.headerCells.yAxis
+            : this.timelineHeaderCells;
+
+        let to = this.getComparableTime(this.to);
         const cellSize = this.isVertical ? cellHeight : cellWidth;
+        if (!headerCells || !cellSize || !cellDuration) {
+            return;
+        }
 
         // Find the cell where the event starts
-        let i = headerCells.findIndex((column) => {
-            return column.end > from;
-        });
-
+        let i = this.getStartCellIndex(headerCells);
         if (i < 0) return;
 
         let length = 0;
+        const startsInMiddleOfCell =
+            this.getComparableTime(headerCells[i].start) < from;
 
-        // If the event starts in the middle of a cell,
-        // add only the appropriate length in the first cell
-        if (headerCells[i].start < from) {
-            const cellEnd = DateTime.fromMillis(headerCells[i].end);
-            const eventDuration = cellEnd.diff(from).milliseconds;
-            const emptyDuration = cellDuration - eventDuration;
-            const emptyPercentageOfCell = emptyDuration / cellDuration;
-            this._offsetStart = cellSize * emptyPercentageOfCell;
-            this.updateHostTranslate();
+        if (startsInMiddleOfCell) {
+            // If the event starts in the middle of a cell,
+            // add only the appropriate length in the first cell
+            const cellEnd = this.getComparableTime(headerCells[i].end);
+            length += this.getOffsetStart(cellEnd, cellSize);
             if (this.referenceLine) return;
 
-            const eventPercentageOfCell = eventDuration / cellDuration;
-            const offsetSize = cellSize * eventPercentageOfCell;
-            length += offsetSize;
-
-            // If the event ends before the end of the first column
-            // remove the appropriate length of the first column
             if (cellEnd > to) {
-                const durationLeft = cellEnd.diff(to).milliseconds;
-                const percentageLeft = durationLeft / cellDuration;
-                length = length - percentageLeft * cellSize;
+                // If the event ends before the end of the first column
+                // remove the appropriate length of the first column
+                length -= this.getOffsetEnd(cellEnd, cellSize, to);
                 this.setLength(length);
                 return;
             }
-
             i += 1;
         } else if (this.referenceLine) return;
 
         // Add the length of the header cells completely filled by the event
         while (i < headerCells.length) {
-            if (headerCells[i].start + cellDuration > to) break;
+            const cellStart = this.getComparableTime(headerCells[i].start);
+            if (cellStart + cellDuration > to) break;
             length += cellSize;
             i += 1;
         }
 
         // If the event ends in the middle of a column,
         // add the remaining length
-        if (headerCells[i] && headerCells[i].start < to) {
-            const cellStart = DateTime.fromMillis(headerCells[i].start);
-            const eventDurationLeft = to.diff(cellStart).milliseconds;
+        const cell = headerCells[i];
+        const cellStart = cell && this.getComparableTime(cell.start);
+        if (cell && cellStart < to) {
+            const eventDurationLeft = to - cellStart;
             const colPercentEnd = eventDurationLeft / cellDuration;
             length += cellSize * colPercentEnd;
         }
@@ -1056,18 +1283,29 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
-     * Update the height of the occurrence in the scheduler grid.
+     * Update the thickness of a disabled occurrence.
      *
      * @public
      */
     @api
     updateThickness() {
-        if (!this.disabled) return;
+        if (!this.disabled || this.isStandalone) return;
 
         const element = this.hostElement;
-        if (this.isVertical) {
+
+        if (this.isVerticalTimeline) {
+            // Vertical timeline
             element.style.width = `${this.cellWidth}px`;
+        } else if (this.isVerticalCalendar) {
+            // Calendar single-day event
+            const width = this.cellWidth / this.numberOfEventsInThisTimeFrame;
+            element.style.width = `${width}px`;
+        } else if (this.isCalendar) {
+            // Calendar day/week multi-day event
+            const height = this.cellHeight / this.numberOfEventsInThisTimeFrame;
+            element.style.height = `${height}px`;
         } else {
+            // Horizontal timeline
             const resource = this.resources.find(
                 (res) => res.name === this.resourceKey
             );
@@ -1089,32 +1327,17 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         this.updateLength();
     }
 
-    /**
-     * Set the left position of the sticky label.
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
      */
-    updateStickyLabels() {
-        const stickyLabel = this.template.querySelector(
-            '[data-element-id="div-center-label-wrapper"]'
-        );
-        if (!stickyLabel) {
-            return;
-        }
-
-        if (this.isVertical) {
-            const top = this.scrollOffset - this.y - this._offsetStart;
-            stickyLabel.style.top = `${top}px`;
-        } else if (!this.zoomToFit) {
-            const left = this.scrollOffset - this.x - this._offsetStart;
-            stickyLabel.style.left = `${left}px`;
-        }
-    }
 
     /**
      * Initialize the labels values.
      */
     initLabels() {
-        if (!this.eventData || !this.resources.length || !this.resourceKey)
-            return;
+        if (!this.resources.length || !this.resourceKey) return;
 
         const labels = {};
         const resource = this.resources.find(
@@ -1125,7 +1348,12 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
             for (let i = 0; i < Object.entries(this.labels).length; i++) {
                 const label = Object.entries(this.labels)[i];
                 const position = label[0];
-                if (this.isVertical && position !== 'center') {
+                const hideLabels =
+                    this.isVertical ||
+                    this.isMonthCalendar ||
+                    this.isAgenda ||
+                    this.isHorizontalCalendar;
+                if (hideLabels && position !== 'center') {
                     continue;
                 }
 
@@ -1161,6 +1389,108 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     /**
+     * Align the event with its resource.
+     */
+    alignPositionWithResource() {
+        if (this.referenceLine) {
+            return;
+        }
+
+        if (this.isVerticalTimeline) {
+            const resourceIndex = this.resources.findIndex((resource) => {
+                return resource.name === this.resourceKey;
+            });
+            this._x = resourceIndex * this.cellWidth;
+        } else {
+            let y = 0;
+            for (let i = 0; i < this.resources.length; i++) {
+                const resource = this.resources[i];
+                const resourceKey = resource.name;
+                if (resourceKey === this.resourceKey) break;
+
+                y += resource.height;
+            }
+            y += this.offsetSide;
+            this._y = y;
+        }
+    }
+
+    /**
+     * Create a Luxon DateTime object from a date, including the timezone.
+     *
+     * @param {string|number|Date} date Date to convert.
+     * @returns {DateTime|boolean} Luxon DateTime object or false if the date is invalid.
+     */
+    createDate(date) {
+        return dateTimeObjectFrom(date, { zone: this.timezone });
+    }
+
+    /**
+     * If the event is in a vertical setup of a calendar, remove the year, month and day from the date, to allow for comparison of the time only.
+     *
+     * @param {Date} date Date to transform.
+     * @returns {Date}
+     */
+    getComparableTime(date) {
+        if (!this.isVerticalCalendar) {
+            return date;
+        }
+        const time = this.createDate(date);
+        return time.set({ year: 1, month: 1, day: 1 });
+    }
+
+    /**
+     * Get the size (in pixels) between the end of the event, and the end of the last cell it crosses.
+     *
+     * @param {Date} cellEnd Time at which the cell ends.
+     * @param {number} cellSize Size of the cell, in pixels.
+     * @param {DateTime} to End date of the event.
+     * @returns {number} Size of the offset between the end of the event, and the end of the cell.
+     */
+    getOffsetEnd(cellEnd, cellSize, to) {
+        const durationLeft = cellEnd - to;
+        const percentageLeft = durationLeft / this.cellDuration;
+        return percentageLeft * cellSize;
+    }
+
+    /**
+     * Get the size (in pixels) between the start of the event, and the end of the first cell it crosses.
+     *
+     * @param {Date} cellEnd Time at which the cell ends.
+     * @param {number} cellSize Size of the cell, in pixels.
+     * @returns {number} Size of the offset between the start of the event, and the end of the cell.
+     */
+    getOffsetStart(cellEnd, cellSize) {
+        const cellDuration = this.cellDuration;
+        const from = this.getComparableTime(this.from);
+
+        const eventDuration = cellEnd - from;
+        const emptyDuration = cellDuration - eventDuration;
+        const emptyPercentageOfCell = emptyDuration / cellDuration;
+        this._offsetStart = cellSize * emptyPercentageOfCell;
+        this.updateHostTranslate();
+        if (this.referenceLine) return 0;
+
+        const eventPercentageOfCell = eventDuration / cellDuration;
+        return cellSize * eventPercentageOfCell;
+    }
+
+    /**
+     * Get the first cell that the event crosses.
+     *
+     * @param {object[]} cells Array of cell objects.
+     * @returns {object} First cell crossed.
+     */
+    getStartCellIndex(cells) {
+        const start = this.occurrence.weekStart || this.from;
+        return cells.findIndex((cell) => {
+            return (
+                this.getComparableTime(cell.end) > this.getComparableTime(start)
+            );
+        });
+    }
+
+    /**
      * Set the length of the event through its CSS style.
      *
      * @param {number} length Length of the event.
@@ -1173,6 +1503,8 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
                 const width =
                     this.cellWidth / this.numberOfEventsInThisTimeFrame;
                 style.width = `${width}px`;
+            } else if (this.isCalendar) {
+                style.width = `${this.cellWidth}px`;
             } else {
                 style.width = null;
             }
@@ -1186,14 +1518,162 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * Add the computed position to the inline style of the component host.
      */
     updateHostTranslate() {
-        const x = this.isVertical
-            ? this.x + this.offsetSide
-            : this.x + this._offsetStart;
+        let x = this.x;
+        if (this.isVertical && !this.referenceLine) {
+            x = this.x + this.offsetSide;
+        } else if (!this.isVertical) {
+            x = this.x + this._offsetStart;
+        }
         const y = this.isVertical ? this.y + this._offsetStart : this.y;
         if (this.hostElement) {
             this.hostElement.style.transform = `translate(${x}px, ${y}px)`;
         }
     }
+
+    /**
+     * Compute and update the length of a standalone event.
+     */
+    updateStandaloneLength() {
+        const headerCells = this.headerCells.xAxis;
+        const { to, cellWidth } = this;
+        const isOneCellLength =
+            this.referenceLine || !this.spansOnMoreThanOneDay || this.isAllDay;
+
+        if ((isOneCellLength || !headerCells) && this.hostElement) {
+            // The event should span on one cell
+            this.hostElement.style.width = cellWidth ? `${cellWidth}px` : null;
+            this.hostElement.style.height = null;
+            return;
+        }
+
+        // The event should span on more than one cell.
+        // Find the cell where it starts.
+        const from = this.occurrence.firstAllowedDate;
+        let i = headerCells.findIndex((cell) => {
+            const cellStart = this.createDate(cell.start);
+            return cellStart.weekday === from.weekday;
+        });
+        if (i < 0) return;
+
+        let length = 0;
+
+        // Add the full length of the cells the event passes through
+        while (i < headerCells.length) {
+            const cellStart = this.createDate(headerCells[i].start);
+            const sameWeek = getWeekNumber(from) === getWeekNumber(to);
+            if (getWeekday(cellStart) > getWeekday(to) && sameWeek) {
+                break;
+            }
+            length += cellWidth;
+            i += 1;
+        }
+        this.setLength(length);
+    }
+
+    /**
+     * Update the position of the event if it is set in a calendar.
+     */
+    updatePositionInCalendar() {
+        const style = this.hostElement.style;
+        const isMonth = this.isMonthCalendar;
+
+        // Hide the placeholders in the month calendar display
+        const { isPlaceholder, columnIndex } = this.hostElement.dataset;
+        const isHidden = isMonth && isPlaceholder && columnIndex !== '0';
+        style.visibility = isHidden ? 'hidden' : 'visible';
+
+        // Hide the overflowing events in the month calendar display
+        let overflows = this.overflowsCell;
+        const yAxis = this.headerCells.yAxis;
+        if (yAxis && !overflows && !isPlaceholder) {
+            const firstVisibleDate = this.createDate(yAxis[0].start);
+            const startsBeforeBeginningOfMonth =
+                this.from < firstVisibleDate &&
+                this.to > firstVisibleDate.endOf('day');
+            // The visible weeks placeholders will be displayed,
+            // but not the original event
+            overflows = startsBeforeBeginningOfMonth;
+        }
+        style.display = isMonth && overflows ? 'none' : null;
+
+        const { cellHeight, headerCells, cellWidth } = this;
+        if (
+            !headerCells.xAxis ||
+            !headerCells.yAxis ||
+            !cellWidth ||
+            !cellHeight
+        ) {
+            return;
+        }
+
+        // Get the vertical and horizontal cells indices
+        const start = this.occurrence.firstAllowedDate;
+        const yIndex = this.getStartCellIndex(headerCells.yAxis);
+        const xIndex = headerCells.xAxis.findIndex((cell) => {
+            const cellEnd = this.createDate(cell.end);
+            const sameWeekDay = cellEnd.weekday === start.weekday;
+            return cellEnd > start && (!this.isMonthCalendar || sameWeekDay);
+        });
+
+        if (yIndex < 0 || xIndex < 0) {
+            return;
+        }
+        this._y = yIndex * cellHeight;
+        this._x = xIndex * cellWidth;
+
+        if (this.isMonthCalendar) {
+            this._y += this.offsetSide;
+        }
+    }
+
+    /**
+     * Update the position of the event if it is set in a timeline.
+     */
+    updatePositionInTimeline() {
+        const { cellHeight, cellWidth, timelineHeaderCells } = this;
+        if (!timelineHeaderCells) {
+            return;
+        }
+
+        // Find the cell where the event starts
+        const i = this.getStartCellIndex(timelineHeaderCells);
+        if (i < 0) return;
+
+        // Place the event at the right header
+        if (this.isVerticalTimeline) {
+            this._y = i * cellHeight;
+        } else {
+            this._x = i * cellWidth;
+        }
+
+        this.alignPositionWithResource();
+    }
+
+    /**
+     * Set the left position of the sticky label.
+     */
+    updateStickyLabels() {
+        const stickyLabel = this.template.querySelector(
+            '[data-element-id="div-center-label-wrapper"]'
+        );
+        if (!stickyLabel) {
+            return;
+        }
+
+        if (this.isVerticalTimeline) {
+            const top = this.scrollOffset - this.y - this._offsetStart;
+            stickyLabel.style.top = `${top}px`;
+        } else if (!this.zoomToFit) {
+            const left = this.scrollOffset - this.x - this._offsetStart;
+            stickyLabel.style.left = `${left}px`;
+        }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  EVENT HANDLERS AND DISPATCHERS
+     * -------------------------------------------------------------
+     */
 
     /**
      * Handle the contextmenu event fired by the occurrence if it is not disabled.
@@ -1226,6 +1706,10 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     handleDisabledContextMenu(event) {
         event.preventDefault();
 
+        const customEvent = new CustomEvent('privatedisabledcontextmenu');
+        customEvent.clientX = event.clientX;
+        customEvent.clientY = event.clientY;
+
         /**
          * The event fired when the user opens the context menu of a disabled or reference line occurrence.
          *
@@ -1234,14 +1718,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
          * @param {number} x Horizontal position of the occurrence.
          * @param {number} y Vertical position of the occurrence.
          */
-        this.dispatchEvent(
-            new CustomEvent('privatedisabledcontextmenu', {
-                detail: {
-                    x: event.clientX,
-                    y: event.clientY
-                }
-            })
-        );
+        this.dispatchEvent(customEvent);
     }
 
     /**
@@ -1317,8 +1794,6 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @param {Event} event
      */
     handleDoubleClick(event) {
-        if (this.readOnly) return;
-
         /**
          * The event fired when the user double-clicks on the occurrence, if it is not disabled.
          *
@@ -1339,7 +1814,9 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @param {Event} event
      */
     handleDisabledDoubleClick(event) {
-        if (this.readOnly) return;
+        const customEvent = new CustomEvent('privatedisableddblclick');
+        customEvent.clientX = event.clientX;
+        customEvent.clientY = event.clientY;
 
         /**
          * The event fired when the user double-clicks on a disabled or reference line occurrence.
@@ -1349,14 +1826,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
          * @param {number} x Horizontal position of the occurrence.
          * @param {number} y Vertical position of the occurrence.
          */
-        this.dispatchEvent(
-            new CustomEvent('privatedisableddblclick', {
-                detail: {
-                    x: event.clientX,
-                    y: event.clientY
-                }
-            })
-        );
+        this.dispatchEvent(customEvent);
     }
 
     /**
@@ -1445,7 +1915,8 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @param {Event} event
      */
     handleDisabledMouseDown(event) {
-        if (event.button !== 0 || this.readOnly) return;
+        if (event.button !== 0) return;
+
         /**
          * The event fired when the mouse is pressed on a disabled or reference line occurrence.
          *

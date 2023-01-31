@@ -220,10 +220,10 @@ export default class AvonniPrimitiveWizardNavigation extends LightningElement {
             return;
         }
 
-        this._resizeObserver = new AvonniResizeObserver(() => {
-            this._initIndicator();
-        });
-        this._resizeObserver.observe(column);
+        this._resizeObserver = new AvonniResizeObserver(
+            column,
+            this._initIndicator.bind(this)
+        );
     }
 
     _updateSteps() {

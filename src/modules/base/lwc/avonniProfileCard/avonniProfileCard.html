@@ -33,9 +33,9 @@
 -->
 
 <template>
-    <div class={computedMainContainerClass}>
+    <div class={computedMainContainerClass} data-element-id="main-container">
         <article class="slds-card">
-            <div class={computedContainerClass}>
+            <div class={computedContainerClass} data-element-id="container">
                 <header class={computedHeaderClass} data-element-id="header">
                     <span
                         if:true={backgroundAlternativeText}
@@ -43,13 +43,17 @@
                         >{backgroundAlternativeText}</span
                     >
                 </header>
-                <div class={computedAvatarClass}>
-                    <div if:true={isError} class={isCircle}>
+                <div class={computedAvatarClass} data-element-id="avatar">
+                    <div
+                        if:true={isError}
+                        class={isCircle}
+                        data-element-id="icon-wrapper"
+                    >
                         <lightning-icon
                             icon-name={avatarFallbackIconName}
                             size="large"
                             alternative-text={avatarAlternativeText}
-                            data-element-id="lightning-icon"
+                            data-element-id="avatar-lightning-icon"
                         ></lightning-icon>
                     </div>
                     <img
@@ -61,30 +65,44 @@
                         onerror={setFallbackIcon}
                     />
                     <template if:true={showAvatarActions}>
-                        <div class="avonni-profile-card__avatar-actions">
+                        <div
+                            class="slds-is-absolute"
+                            data-element-id="avatar-action"
+                        >
                             <slot name="avataractions"></slot>
                         </div>
                     </template>
                 </div>
 
                 <div
-                    class="
-                        avonni-profile-card__flex-container
-                        avonni-profile-card__title-container
-                    "
+                    class="avonni-profile-card__flex-container slds-size_full"
+                    data-element-id="text-container"
                 >
                     <template if:true={showHeaderSlot}>
                         <slot name="header"></slot>
                     </template>
                     <template if:false={showHeaderSlot}>
-                        <span class="avonni-profile-card__title">{title}</span>
-                        <span class="avonni-profile-card__subtitle"
+                        <span
+                            class="
+                                avonni-profile-card__text
+                                avonni-profile-card__title
+                            "
+                            >{title}</span
+                        >
+                        <span
+                            class="
+                                avonni-profile-card__text
+                                avonni-profile-card__subtitle
+                            "
                             >{subtitle}</span
                         >
                     </template>
                 </div>
                 <template if:true={showActions}>
-                    <div class="avonni-actions">
+                    <div
+                        class="slds-is-absolute"
+                        data-element-id="avonni-actions"
+                    >
                         <slot name="actions"></slot>
                     </div>
                 </template>

@@ -1,0 +1,118 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+.avonni-scheduler__flex-col {
+    flex: 1 1 auto;
+}
+
+.avonni-scheduler__border_bottom {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.avonni-scheduler__border_right {
+    border-right: 1px solid #c9c9c9;
+}
+
+.avonni-scheduler__border_left {
+    border-left: 1px solid #c9c9c9;
+}
+
+.avonni-scheduler__border_top {
+    border-top: 1px solid #c9c9c9;
+}
+
+.avonni-scheduler__main-border_left {
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-left-color: var(--avonni-scheduler-color-border-left, #c9c9c9);
+}
+
+.avonni-scheduler__main-border_top {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: var(--avonni-scheduler-color-border-top, #c9c9c9);
+}
+
+.avonni-scheduler__main-border_bottom {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: var(--avonni-scheduler-color-border-bottom, #c9c9c9);
+}
+
+.avonni-scheduler__main-border_right {
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: var(--avonni-scheduler-color-border-right, #c9c9c9);
+}
+
+.avonni-scheduler__time-zone {
+    color: var(--lwc-colorTextPlaceholder, #747474);
+    font-size: 11px;
+    font-weight: 400;
+    height: 2.5rem;
+    text-transform: uppercase;
+}
+
+/* Splitter */
+
+.avonni-scheduler__splitter {
+    position: relative;
+    background-color: #fff;
+    min-height: 100%;
+}
+
+.avonni-scheduler__second-col {
+    flex: 1 1 0;
+}
+
+.avonni-scheduler__splitter_resizable,
+.avonni-scheduler__splitter-resize-handle {
+    cursor: col-resize;
+}
+
+.avonni-scheduler__splitter-resize-handle {
+    height: 25px;
+    width: 2px;
+    background-color: #747474;
+}
+
+.avonni-scheduler__splitter-expand-left-button {
+    margin-top: -6px;
+}
+
+.avonni-scheduler__panel_collapsed {
+    max-width: 0;
+}
+
+.avonni-scheduler__panel_expanded {
+    min-width: calc(100% - 12px);
+}

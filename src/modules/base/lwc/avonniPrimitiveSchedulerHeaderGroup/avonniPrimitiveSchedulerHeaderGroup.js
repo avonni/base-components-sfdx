@@ -31,7 +31,7 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { DateTime, Interval } from 'c/luxon';
+import { Interval } from 'c/luxon';
 import {
     addToDate,
     dateTimeObjectFrom,
@@ -46,7 +46,7 @@ import SchedulerHeader from './avonniSchedulerHeader';
 import { classSet } from 'c/utils';
 
 const UNITS = ['minute', 'hour', 'day', 'week', 'month', 'year'];
-const DEFAULT_START_DATE = dateTimeObjectFrom(new Date());
+const DEFAULT_START_DATE = new Date();
 const DEFAULT_AVAILABLE_MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const DEFAULT_AVAILABLE_DAYS_OF_THE_WEEK = [0, 1, 2, 3, 4, 5, 6];
 const DEFAULT_AVAILABLE_TIME_FRAMES = ['00:00-23:59'];
@@ -91,6 +91,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
     _scrollLeftOffset = 0;
     _start = DEFAULT_START_DATE;
     _timeSpan = DEFAULT_TIME_SPAN;
+    _timezone;
     _variant = VARIANTS.default;
     _visibleWidth = 0;
     _zoomToFit = false;
@@ -252,17 +253,12 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return this._start;
     }
     set start(value) {
-        const start =
-            value instanceof DateTime ? value : dateTimeObjectFrom(value);
-        const msStart = start && start.ts;
-        if (msStart === this._start.ts) {
+        const start = this.createDate(value);
+        if (start && start.ts === this.computedStart.ts) {
             return;
         }
 
-        this._start =
-            start instanceof DateTime
-                ? start
-                : dateTimeObjectFrom(DEFAULT_START_DATE);
+        this._start = start ? value : DEFAULT_START_DATE;
 
         if (this._connected) {
             this.initHeaders();
@@ -288,6 +284,24 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         }
 
         this._timeSpan = typeof value === 'object' ? value : DEFAULT_TIME_SPAN;
+        if (this._connected) {
+            this.initHeaders();
+        }
+    }
+
+    /**
+     * Time zone used, in a valid IANA format. If empty, the browser's time zone is used.
+     *
+     * @type {string}
+     * @public
+     */
+    @api
+    get timezone() {
+        return this._timezone;
+    }
+    set timezone(value) {
+        this._timezone = value;
+
         if (this._connected) {
             this.initHeaders();
         }
@@ -350,8 +364,8 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
 
         const cells = this.smallestHeader.cells;
         const lastIndex = cells.length - 1;
-        const start = dateTimeObjectFrom(cells[0].start);
-        const end = dateTimeObjectFrom(cells[lastIndex].end);
+        const start = this.createDate(cells[0].start);
+        const end = this.createDate(cells[lastIndex].end);
         return Interval.fromDateTimes(start, end);
     }
 
@@ -383,6 +397,27 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
      * -------------------------------------------------------------
      */
 
+    get cellClass() {
+        return classSet(
+            'avonni-scheduler__border_right slds-grid slds-grid_vertical-align-center slds-grid_align-center slds-grow avonni-scheduler-header-group__header-cell'
+        )
+            .add({
+                'avonni-scheduler-header-group__header-cell_vertical slds-border_bottom':
+                    this.isVertical,
+                'avonni-scheduler__border_bottom': !this.isVertical
+            })
+            .toString();
+    }
+
+    /**
+     * Start date as a Luxon DateTime object, including the timezone.
+     *
+     * @type {DateTime}
+     */
+    get computedStart() {
+        return this.createDate(this.start);
+    }
+
     /**
      * Computed end date of the headers.
      *
@@ -394,14 +429,14 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         }
 
         const { unit, span } = this.timeSpan;
-        let start = this.start;
+        let start = this.computedStart;
         if (this.endOnTimeSpanUnit) {
             // Compensate the fact that Luxon weeks start on Monday
             if (unit === 'week' && start.weekday === 7) {
                 // Start is on Sunday and the unit is week
                 start = start.startOf('day');
             } else {
-                start = this.start.startOf(unit);
+                start = this.computedStart.startOf(unit);
 
                 if (unit === 'week') {
                     // Start is not on a Sunday and the unit is week
@@ -412,7 +447,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         const timeSpanEnd = addToDate(start, unit, span);
 
         // We take one millisecond off to exclude the next unit
-        return DateTime.fromMillis(timeSpanEnd - 1);
+        return this.createDate(timeSpanEnd - 1);
     }
 
     /**
@@ -421,16 +456,17 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
      * @type {boolean}
      */
     get endOnTimeSpanUnit() {
-        return this.availableTimeSpans.find((timeSpan) => {
+        const existingTimeSpan = this.availableTimeSpans.find((timeSpan) => {
             return (
                 timeSpan.unit === this.timeSpan.unit &&
                 timeSpan.span === this.timeSpan.span
             );
         });
+        return !this.availableTimeSpans.length || existingTimeSpan;
     }
 
     /**
-     * Computed CSS class of each header cell.
+     * Computed CSS classes of each header cell.
      *
      * @type {string}
      */
@@ -438,13 +474,28 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         return classSet('slds-grid slds-is-relative')
             .add({
                 'slds-grid_vertical avonni-scheduler-header-group__header_vertical':
-                    this.isVertical
+                    this.isVertical,
+                'avonni-scheduler-header-group__header_multiple-vertical':
+                    this.isVertical && this.computedHeaders.length > 1
             })
             .toString();
     }
 
     get isVertical() {
         return this.variant === 'vertical';
+    }
+
+    get nonStickyCellLabelClass() {
+        return classSet(
+            'slds-truncate slds-text-color_weak avonni-scheduler-header-group__header-label'
+        )
+            .add({
+                'avonni-scheduler-header-group__header-label_horizontal':
+                    !this.isVertical,
+                'slds-is-relative avonni-scheduler-header-group__header-label_vertical-non-sticky slds-p-around_xx-small':
+                    this.isVertical
+            })
+            .toString();
     }
 
     /**
@@ -459,6 +510,17 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
 
         const lastIndex = this.computedHeaders.length - 1;
         return this.computedHeaders[lastIndex];
+    }
+
+    get stickyCellLabelClass() {
+        return classSet(
+            'slds-truncate slds-p-horizontal_x-small avonni-scheduler-header-group__header-label avonni-scheduler-header-group__header-label_sticky'
+        )
+            .add({
+                'avonni-scheduler-header-group__header-label_horizontal':
+                    !this.isVertical
+            })
+            .toString();
     }
 
     /**
@@ -512,7 +574,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
 
             const referenceCells = numberOfUnitsBetweenDates(
                 referenceUnit,
-                this.start,
+                this.computedStart,
                 this.end
             );
 
@@ -525,7 +587,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 span: referenceSpan,
                 duration: this.timeSpan.span,
                 label: referenceHeader ? referenceHeader.label : '',
-                start: this.start,
+                start: this.computedStart,
                 end: this.end,
                 availableTimeFrames: this.availableTimeFrames,
                 availableDaysOfTheWeek: this.availableDaysOfTheWeek,
@@ -535,7 +597,8 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 canExpandOverEndOfUnit: !this.endOnTimeSpanUnit,
                 // If there is no header using the timeSpan unit,
                 // hide the reference header
-                isHidden: !referenceHeader
+                isHidden: !referenceHeader,
+                timezone: this.timezone
             });
 
             // Make sure the reference end is at the end of the smallest header unit
@@ -561,7 +624,7 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                 } else {
                     const cells = numberOfUnitsBetweenDates(
                         unit,
-                        this.start,
+                        this.computedStart,
                         this.end
                     );
 
@@ -574,7 +637,8 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
                         availableTimeFrames: this.availableTimeFrames,
                         availableDaysOfTheWeek: this.availableDaysOfTheWeek,
                         availableMonths: this.availableMonths,
-                        numberOfCells: cells / header.span
+                        numberOfCells: cells / header.span,
+                        timezone: this.timezone
                     });
                 }
 
@@ -598,7 +662,8 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
             this.dispatchEvent(
                 new CustomEvent('privateheaderchange', {
                     detail: {
-                        smallestHeader: this.smallestHeader
+                        smallestHeader: this.smallestHeader,
+                        visibleInterval: this.visibleInterval
                     }
                 })
             );
@@ -613,9 +678,13 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         if (!this.smallestHeader) {
             return;
         }
-        const totalWidth =
-            this.visibleWidth ||
-            this.template.host.getBoundingClientRect().width;
+        const wrapper = this.template.querySelector(
+            '[data-element-id="div-wrapper"]'
+        );
+        const wrapperWidth = wrapper.getBoundingClientRect().width;
+
+        // Remove 1 for the border
+        const totalWidth = (this.visibleWidth || wrapperWidth) - 1;
         const totalNumberOfCells = this.smallestHeader.numberOfCells;
         let cellSize = 0;
 
@@ -649,7 +718,19 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
             header.computeCellWidths(cellSize, this.smallestHeader.cells);
         });
         this.dispatchCellSizeChange(cellSize);
-        this.updateCellsSize();
+        requestAnimationFrame(() => {
+            this.updateCellsSize();
+        });
+    }
+
+    /**
+     * Create a Luxon DateTime object from a date, including the timezone.
+     *
+     * @param {string|number|Date} date Date to convert.
+     * @returns {DateTime|boolean} Luxon DateTime object or false if the date is invalid.
+     */
+    createDate(date) {
+        return dateTimeObjectFrom(date, { zone: this.timezone });
     }
 
     /**
@@ -706,7 +787,8 @@ export default class AvonniPrimitiveSchedulerHeaderGroup extends LightningElemen
         this.dispatchEvent(
             new CustomEvent('privatecellsizechange', {
                 detail: {
-                    cellSize: size
+                    cellSize: size,
+                    orientation: this.variant
                 }
             })
         );

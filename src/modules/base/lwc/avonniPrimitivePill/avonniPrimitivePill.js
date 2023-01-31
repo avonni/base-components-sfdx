@@ -31,7 +31,13 @@
  */
 
 import { LightningElement, api } from 'lwc';
-import { normalizeArray, keyCodes, classListMutation } from 'c/utilsPrivate';
+import { normalizeArray, normalizeString, keyCodes } from 'c/utilsPrivate';
+import { classSet } from '../utils/classSet';
+
+const VARIANTS = {
+    valid: ['base', 'list'],
+    default: 'base'
+};
 
 /**
  * @class
@@ -56,6 +62,7 @@ export default class AvonniPrimitivePill extends LightningElement {
     _actions = [];
     _avatar;
     _href;
+    _variant = VARIANTS.default;
 
     _focusedActions = false;
 
@@ -99,7 +106,8 @@ export default class AvonniPrimitivePill extends LightningElement {
         return this._avatar;
     }
     set avatar(value) {
-        this._avatar = value instanceof Object ? value : null;
+        this._avatar =
+            value instanceof Object && Object.keys(value).length ? value : null;
     }
 
     /**
@@ -114,9 +122,23 @@ export default class AvonniPrimitivePill extends LightningElement {
     }
     set href(value) {
         this._href = value;
+    }
 
-        classListMutation(this.classList, {
-            'avonni-primitive-pill__action': !!this._href
+    /**
+     * Variant of the pill. Valid values include base and list.
+     *
+     * @type {string}
+     * @default base
+     * @public
+     */
+    @api
+    get variant() {
+        return this._variant;
+    }
+    set variant(value) {
+        this._variant = normalizeString(value, {
+            fallbackValue: VARIANTS.default,
+            validValues: VARIANTS.valid
         });
     }
 
@@ -126,22 +148,27 @@ export default class AvonniPrimitivePill extends LightningElement {
      * -------------------------------------------------------------
      */
 
-    /**
-     * First action, if there is only one action.
-     *
-     * @type {object}
-     */
-    get oneAction() {
-        return this.actions.length === 1 && this.actions[0];
+    get actionButtonAltText() {
+        return this.actions.length > 1 ? 'Actions menu' : this.actions[0].label;
     }
 
-    /**
-     * True if there is more than one action.
-     *
-     * @type {boolean}
-     */
-    get severalActions() {
-        return this.actions.length > 1;
+    get actionButtonDisabled() {
+        return this.actions.length > 1 ? false : this.actions[0].disabled;
+    }
+
+    get actionButtonIconName() {
+        return this.actions.length > 1
+            ? 'utility:down'
+            : this.actions[0].iconName;
+    }
+
+    get wrapperClass() {
+        return classSet('slds-pill avonni-primitive-pill')
+            .add({
+                'avonni-primitive-pill__action': !!this._href,
+                'avonni-primitive-pill_list': this.variant === 'list'
+            })
+            .toString();
     }
 
     /*
@@ -171,39 +198,37 @@ export default class AvonniPrimitivePill extends LightningElement {
      * @param {Event} event
      */
     handleActionClick(event) {
-        const actionName =
-            event.detail instanceof Object
-                ? event.detail.value
-                : event.currentTarget.value;
-
-        /**
-         * The event fired when a user clicks on an action.
-         *
-         * @event
-         * @name actionclick
-         * @param {string} name Name of the action.
-         * @param {string} targetName Name of the pill the action belongs to.
-         * @public
-         * @bubbles
-         */
-        this.dispatchEvent(
-            new CustomEvent('actionclick', {
-                detail: {
-                    name: actionName,
-                    targetName: this.name
-                },
-                bubbles: true
-            })
-        );
-    }
-
-    /**
-     * Block the propagation of the click on the action menu. Necessary for sortable pill containers.
-     *
-     * @param {Event} event
-     */
-    handleButtonMenuClick(event) {
-        event.stopPropagation();
+        if (this.actions.length > 1) {
+            this.dispatchEvent(
+                new CustomEvent('openactionmenu', {
+                    detail: {
+                        targetName: this.name,
+                        bounds: event.currentTarget.getBoundingClientRect()
+                    },
+                    bubbles: true
+                })
+            );
+        } else {
+            /**
+             * The event fired when a user clicks on an action.
+             *
+             * @event
+             * @name actionclick
+             * @param {string} name Name of the action.
+             * @param {string} targetName Name of the pill the action belongs to.
+             * @public
+             * @bubbles
+             */
+            this.dispatchEvent(
+                new CustomEvent('actionclick', {
+                    detail: {
+                        name: this.actions[0].name,
+                        targetName: this.name
+                    },
+                    bubbles: true
+                })
+            );
+        }
     }
 
     /**
@@ -223,7 +248,7 @@ export default class AvonniPrimitivePill extends LightningElement {
 
             this._focusedActions = true;
             const actionElement = this.template.querySelector(
-                '[data-group-name="action"]'
+                '[data-element-id="lightning-button-icon"]'
             );
             actionElement.focus();
         } else {

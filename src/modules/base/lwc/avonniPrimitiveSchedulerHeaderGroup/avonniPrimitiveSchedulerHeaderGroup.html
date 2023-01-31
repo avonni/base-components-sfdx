@@ -49,37 +49,26 @@
                 >
                     <div
                         key={cell.start}
-                        class="
-                            slds-border_right slds-border_bottom
-                            slds-col slds-grid
-                            slds-theme_shade
-                            slds-grid_vertical-align-center
-                            slds-grid_align-center
-                            slds-grow
-                            avonni-scheduler-header-group__header-cell
-                        "
+                        class={cellClass}
                         data-element-id="div-cell"
                         data-end={cell.end}
                         data-start={cell.start}
                     >
                         <template if:false={header.last}>
                             <span
-                                class="
-                                    slds-truncate
-                                    slds-text-body_small
-                                    slds-p-horizontal_x-small
-                                    avonni-scheduler-header-group__header-label_sticky
-                                "
+                                class={stickyCellLabelClass}
                                 title={cell.label}
                                 data-element-id="span-label-sticky"
+                                data-today={cell.isToday}
                                 >{cell.label}
                             </span>
                         </template>
                         <template if:true={header.last}>
                             <span
-                                class="slds-truncate slds-text-body_small"
+                                class={nonStickyCellLabelClass}
                                 title={cell.label}
                                 data-element-id="span-label-non-sticky"
+                                data-today={cell.isToday}
                                 >{cell.label}
                             </span>
                         </template>

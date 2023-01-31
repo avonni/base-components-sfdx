@@ -137,6 +137,14 @@ export default class AvonniActivityTimeline extends LightningElement {
      */
     @api buttonShowMoreLabel = DEFAULT_BUTTON_SHOW_MORE_LABEL;
 
+    /**
+     * Time zone used, in a valid IANA format. If empty, the browser's time zone is used.
+     *
+     * @type {string}
+     * @public
+     */
+    @api timezone;
+
     _actions = [];
     _buttonShowLessIconPosition = BUTTON_ICON_POSITIONS.default;
     _buttonShowMoreIconPosition = BUTTON_ICON_POSITIONS.default;
@@ -440,6 +448,11 @@ export default class AvonniActivityTimeline extends LightningElement {
         this._items = deepCopy(normalizeArray(value, 'object'));
         if (this._isConnected) {
             this.initActivityTimeline();
+
+            if (this.isTimelineHorizontal) {
+                this.requestRedrawTimeline();
+                this.renderedCallback();
+            }
         }
     }
 
@@ -459,6 +472,9 @@ export default class AvonniActivityTimeline extends LightningElement {
 
             if (this.isTimelineHorizontal) {
                 this.requestRedrawTimeline();
+                setTimeout(() => {
+                    this.renderedCallback();
+                }, 0);
             }
         }
     }
@@ -483,6 +499,9 @@ export default class AvonniActivityTimeline extends LightningElement {
 
         if (this.isTimelineHorizontal) {
             this.requestRedrawTimeline();
+            setTimeout(() => {
+                this.renderedCallback();
+            }, 0);
         }
     }
 
@@ -502,6 +521,10 @@ export default class AvonniActivityTimeline extends LightningElement {
             fallbackValue: SORTED_DIRECTIONS.default,
             validValues: SORTED_DIRECTIONS.valid
         });
+
+        if (this._isConnected) {
+            this.initActivityTimeline();
+        }
     }
 
     /*
@@ -656,16 +679,22 @@ export default class AvonniActivityTimeline extends LightningElement {
 
     /**
      * Formatted date with requested format (item-date-format) of popover's item for horizontal activity timeline.
-     * 
+     *
      * @return {string}
      */
-    get selectedItemFormattedDate(){
-        if(!this.selectedItem || !this.selectedItem.datetimeValue || !this.computedItemDateFormat){
+    get selectedItemFormattedDate() {
+        if (
+            !this.selectedItem ||
+            !this.selectedItem.datetimeValue ||
+            !this.computedItemDateFormat
+        ) {
             return '';
         }
-        return this.horizontalTimeline.convertDateToFormat(this.selectedItem.datetimeValue, this.computedItemDateFormat);
+        return this.horizontalTimeline.convertDateToFormat(
+            this.selectedItem.datetimeValue,
+            this.computedItemDateFormat
+        );
     }
-    
 
     /*
      * ------------------------------------------------------------
@@ -673,35 +702,24 @@ export default class AvonniActivityTimeline extends LightningElement {
      * -------------------------------------------------------------
      */
 
-    /**
-     * Create section's label for each group.
-     */
-    displayDates(array, isUpcoming) {
-        return array.reduce((prev, cur) => {
-            if (!isUpcoming) {
-                const date = new Date(cur.datetimeValue);
-                if (this._groupBy === 'month') {
-                    this._key = `${date.toLocaleString('en-EN', {
-                        month: 'long'
-                    })} ${date.getFullYear()}`;
-                } else if (this._groupBy === 'week') {
-                    this._key = `Week: ${this.getNumberOfWeek(
-                        date
-                    )}, ${date.getFullYear()}`;
-                } else if (this._groupBy === 'year') {
-                    this._key = `${date.getFullYear()}`;
-                }
-            } else {
-                this._key = 'Upcoming';
-            }
-
-            if (!prev[this._key]) {
-                prev[this._key] = [cur];
-            } else {
-                prev[this._key].push(cur);
-            }
-            return prev;
-        }, []);
+    getGroupLabel(date) {
+        if (this._groupBy && date > new Date()) {
+            return 'Upcoming';
+        }
+        switch (this._groupBy) {
+            case 'month':
+                return `${date.toLocaleString('en-EN', {
+                    month: 'long'
+                })} ${date.getFullYear()}`;
+            case 'week':
+                return `Week: ${this.getNumberOfWeek(
+                    date
+                )}, ${date.getFullYear()}`;
+            case 'year':
+                return date.getFullYear().toString();
+            default:
+                return '';
+        }
     }
 
     /**
@@ -719,25 +737,24 @@ export default class AvonniActivityTimeline extends LightningElement {
     }
 
     /**
-     * Group upcomingDates presentDates and beforeDates by year, month or week.
-     */
-    groupDates() {
-        this.orderedDates = [];
-        this._upcomingDates = this.displayDates(this._upcomingDates, true);
-        this._presentDates = this.displayDates(this._presentDates, false);
-        this._pastDates = this.displayDates(this._pastDates, false);
-
-        this.regroupDates(this._upcomingDates);
-        this.regroupDates(this._presentDates);
-        this.regroupDates(this._pastDates);
-    }
-
-    /**
      * Component initialized states.
      */
     initActivityTimeline() {
-        this.sortDates();
-        this.groupDates();
+        this.orderedDates = [];
+        this.sortedItems.forEach((item) => {
+            const date = new Date(item.datetimeValue);
+            const label = this.getGroupLabel(date);
+            const lastGroup = this.orderedDates[this.orderedDates.length - 1];
+
+            if (!lastGroup || lastGroup.label !== label) {
+                this.orderedDates.push({
+                    label,
+                    items: [item]
+                });
+            } else {
+                lastGroup.items.push(item);
+            }
+        });
     }
 
     /**
@@ -759,81 +776,12 @@ export default class AvonniActivityTimeline extends LightningElement {
      * @returns {AvonniResizeObserver} Resize observer.
      */
     initResizeObserver() {
-        const resizeObserver = new AvonniResizeObserver(() => {
+        if (!this.divHorizontalTimeline) {
+            return null;
+        }
+        return new AvonniResizeObserver(this.divHorizontalTimeline, () => {
             this.requestRedrawTimeline();
             this.renderedCallback();
-        });
-
-        resizeObserver.observe(this.divHorizontalTimeline);
-        return resizeObserver;
-    }
-
-    /**
-     * Sort the item dates by year, month, week.
-     */
-    sortDates() {
-        this._upcomingDates = [];
-        this._presentDates = [];
-        this._pastDates = [];
-
-        this.sortedItems.forEach((item) => {
-            const date = new Date(item.datetimeValue);
-            const dateYear = date.getFullYear();
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const isUpcomingYear = dateYear > currentYear;
-            const isPastYear = dateYear < currentYear;
-            if (this._groupBy === 'month') {
-                if (
-                    (date.getMonth() > today.getMonth() && !isPastYear) ||
-                    isUpcomingYear
-                ) {
-                    this._upcomingDates.push(item);
-                } else if (
-                    date.getMonth() === today.getMonth() &&
-                    !isPastYear
-                ) {
-                    this._presentDates.push(item);
-                } else {
-                    this._pastDates.push(item);
-                }
-            } else if (this._groupBy === 'year') {
-                if (isUpcomingYear) {
-                    this._upcomingDates.push(item);
-                } else if (isPastYear) {
-                    this._pastDates.push(item);
-                } else {
-                    this._presentDates.push(item);
-                }
-            } else {
-                if (
-                    (this.getNumberOfWeek(date) > this.getNumberOfWeek(today) &&
-                        !isPastYear) ||
-                    isUpcomingYear
-                ) {
-                    this._upcomingDates.push(item);
-                } else if (
-                    this.getNumberOfWeek(date) ===
-                        this.getNumberOfWeek(today) &&
-                    !isPastYear
-                ) {
-                    this._presentDates.push(item);
-                } else {
-                    this._pastDates.push(item);
-                }
-            }
-        });
-    }
-
-    /**
-     * Regroup each groups in order.
-     */
-    regroupDates(array) {
-        Object.keys(array).forEach((date) => {
-            this.orderedDates.push({
-                label: date,
-                items: array[date]
-            });
         });
     }
 

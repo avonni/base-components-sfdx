@@ -41,21 +41,32 @@
             <template if:false={hidePreviousNextPanelNavigation}>
                 <lightning-layout-item>
                     <!-- Previous navigation -->
-                    <lightning-button-icon
-                        alternative-text={assistiveText.previousPanel}
+                    <button
+                        data-element-id="lightning-button-icon-previous"
+                        title={assistiveText.previousPanel}
                         class="
+                            slds-button
+                            slds-button_icon
+                            slds-button_icon-small
+                            slds-button_icon-border-filled
                             slds-m-right_medium
                             slds-m-bottom_large
                             avonni-carousel__nav-button
                         "
                         disabled={previousPanelNavigationDisabled}
-                        icon-name="utility:chevronleft"
-                        size="small"
-                        title={assistiveText.previousPanel}
-                        variant="border-filled"
-                        data-element-id="lightning-button-icon-previous"
                         onclick={previous}
-                    ></lightning-button-icon>
+                        type="button"
+                    >
+                        <c-avonni-primitive-icon
+                            class="avonni-carousel__nav-icon"
+                            icon-name="utility:chevronleft"
+                            svg-class="slds-button__icon"
+                            variant="bare"
+                        ></c-avonni-primitive-icon>
+                        <span class="slds-assistive-text"
+                            >{assistiveText.previousPanel}</span
+                        >
+                    </button>
                 </lightning-layout-item>
             </template>
             <lightning-layout-item
@@ -64,10 +75,7 @@
             >
                 <div class="slds-carousel__stage">
                     <!-- Carousel panels -->
-                    <div
-                        class="slds-carousel__panels"
-                        style={panelStyle}
-                    >
+                    <div class="slds-carousel__panels" style={panelStyle}>
                         <template
                             for:each={panelItems}
                             for:item="panel"
@@ -171,21 +179,32 @@
             <template if:false={hidePreviousNextPanelNavigation}>
                 <!-- Next navigation -->
                 <lightning-layout-item>
-                    <lightning-button-icon
-                        alternative-text={assistiveText.nextPanel}
+                    <button
+                        data-element-id="lightning-button-icon-next"
                         class="
+                            slds-button
+                            slds-button_icon
+                            slds-button_icon-small
+                            slds-button_icon-border-filled
                             slds-m-left_medium
                             slds-m-bottom_large
                             avonni-carousel__nav-button
                         "
                         disabled={nextPanelNavigationDisabled}
-                        icon-name="utility:chevronright"
-                        size="small"
                         title={assistiveText.nextPanel}
-                        variant="border-filled"
-                        data-element-id="lightning-button-icon-next"
                         onclick={next}
-                    ></lightning-button-icon>
+                        type="button"
+                    >
+                        <c-avonni-primitive-icon
+                            class="avonni-carousel__nav-icon"
+                            icon-name="utility:chevronright"
+                            svg-class="slds-button__icon"
+                            variant="bare"
+                        ></c-avonni-primitive-icon>
+                        <span class="slds-assistive-text"
+                            >{assistiveText.nextPanel}</span
+                        >
+                    </button>
                 </lightning-layout-item>
             </template>
         </lightning-layout>

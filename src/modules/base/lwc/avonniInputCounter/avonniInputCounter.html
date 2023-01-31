@@ -41,12 +41,13 @@
         >*</abbr
     >
     <label
+        if:true={hasLabel}
         class="
             slds-form-element__label
             slds-no-flex
             avonni-input-counter__label
         "
-        if:true={hasLabel}
+        for="input-counter"
         data-element-id="input-counter-label"
     >
         {label}
@@ -68,33 +69,30 @@
                 class="slds-input__button_decrement"
                 disabled={disabled}
                 data-element-id="lightning-button-icon-decrement"
-                onclick={decrementValue}
+                onclick={handleDecrement}
             ></lightning-button-icon>
-            <lightning-input
-                name={name}
-                label="Counter Input"
-                placeholder="0"
-                aria-label={ariaLabel}
-                aria-controls={computedAriaControls}
-                aria-labelledby={computedAriaLabelledBy}
-                aria-describedby={computedAriaDescribedBy}
-                value={value}
-                step={inputStep}
+            <input
+                class={inputClass}
+                id="input-counter"
                 accesskey={accessKey}
-                variant="label-hidden"
+                aria-controls={computedAriaControls}
+                aria-describedby={computedAriaDescribedBy}
+                aria-label={ariaLabel}
+                aria-labelledby={computedAriaLabelledBy}
+                autocomplete="off"
                 disabled={disabled}
+                inputmode="decimal"
+                name={name}
+                placeholder="0"
                 readonly={readOnly}
                 required={required}
-                type="number"
-                formatter={type}
-                class={inputClass}
-                data-element-id="lightning-input"
-                oncommit={handlerCommit}
-                onfocus={handlerFocus}
-                onblur={handlerBlur}
-                onkeydown={handlerKeyDown}
-                autocomplete="off"
-            ></lightning-input>
+                step={step}
+                data-element-id="input"
+                onchange={handleChange}
+                onfocus={handleFocus}
+                onblur={handleBlur}
+                onkeydown={handleKeyDown}
+            />
             <lightning-button-icon
                 if:false={readOnly}
                 icon-name="utility:new"
@@ -105,7 +103,7 @@
                 class="slds-input__button_increment"
                 disabled={disabled}
                 data-element-id="lightning-button-icon-increment"
-                onclick={incrementValue}
+                onclick={handleIncrement}
             ></lightning-button-icon>
             <template if:true={helpMessage}>
                 <div

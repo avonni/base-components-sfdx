@@ -556,15 +556,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         return this._value;
     }
     set value(value) {
-        if (typeof value === 'string') {
-            if (value.length > 0) {
-                this._value = [value];
-            } else if (value.length === 0) {
-                this._value = [];
-            }
-        } else {
-            this._value = normalizeArray(value);
-        }
+        this._value =
+            typeof value === 'string' || typeof value === 'number'
+                ? [value]
+                : [...normalizeArray(value)];
 
         if (this._connected) {
             this.initValue();
@@ -1449,7 +1444,12 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
      * @returns {object} option
      */
     getOption(value, options = this.options) {
-        let option = options.find((opt) => opt.value === value);
+        let option = options.find((opt) => {
+            return (
+                (value || value === 0) &&
+                opt.value.toString() === value.toString()
+            );
+        });
 
         // Search deeper levels
         let i = 0;
@@ -1793,7 +1793,10 @@ export default class AvonniPrimitiveCombobox extends LightningElement {
         event.stopPropagation();
 
         const selectedOption = this.visibleOptions.find((option) => {
-            return option.value === this._highlightedOption.dataset.value;
+            return (
+                option.value.toString() ===
+                this._highlightedOption.dataset.value
+            );
         });
 
         // If the option has children options, change the visible options

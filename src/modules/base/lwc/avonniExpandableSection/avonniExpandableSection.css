@@ -32,12 +32,26 @@
 
 .avonni-expandable-section__title-button_base {
     padding: 0;
+    background-color: var(
+        --avonni-expandable-section-base-header-color-background,
+        white
+    );
+}
+
+.avonni-expandable-section__title-button_shaded {
+    background-color: var(
+        --avonni-expandable-section-shaded-header-color-background,
+        #f3f2f2
+    );
 }
 
 .avonni-expandable-section__title-button_base:hover,
 .avonni-expandable-section__title-button_base:active,
 .avonni-expandable-section__title-button_base:focus {
-    background-color: var(--lwc-colorBackgroundAlt, #ffffff);
+    background-color: var(
+        --avonni-expandable-section-base-header-color-background,
+        white
+    );
 }
 
 .avonni-expandable-section__title-button_base:focus {
@@ -68,6 +82,7 @@
         #080707
     );
 }
+
 .avonni-expandable-section__title-button_shaded:hover {
     color: var(
         --avonni-expandable-section-shaded-header-text-color-hover,
@@ -90,7 +105,7 @@
 .avonni-expandable-section__header_base {
     background: var(
         --avonni-expandable-section-base-header-color-background,
-        transparent
+        white
     );
 }
 

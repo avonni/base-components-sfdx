@@ -614,6 +614,16 @@ export default class AvonniDatatable extends LightningDatatable {
     }
 
     /**
+     * Make widthsData accessible
+     * @public
+     * @type {object}
+     */
+    @api
+    get primitiveWidthsData() {
+        return super.widthsData;
+    }
+
+    /**
      * The array of data to be displayed. The objects keys depend on the columns fieldNames.
      * @public
      * @type {array}
@@ -640,6 +650,22 @@ export default class AvonniDatatable extends LightningDatatable {
 
     set renderConfig(value) {
         super.renderConfig = value;
+    }
+
+    /**
+     * Reserved for internal use.
+     * Allows developer to opt-in to a role-based table.
+     * Allowed options - "role-based" or "default"
+     * `role-based` -> Renders <div>
+     * `default`    -> Renders <table>
+     */
+    @api
+    get renderMode() {
+        return super.renderMode;
+    }
+
+    set renderMode(value) {
+        super.renderMode = value;
     }
 
     /**
@@ -687,6 +713,16 @@ export default class AvonniDatatable extends LightningDatatable {
     set rowNumberOffset(value) {
         if (value === undefined) return;
         super.rowNumberOffset = value;
+    }
+
+    /**
+     * Make scrollable x container accessible.
+     * @public
+     * @type {Element}
+     */
+    @api
+    get scrollerX() {
+        return this.template.querySelector('.slds-scrollable_x');
     }
 
     /**
@@ -826,6 +862,19 @@ export default class AvonniDatatable extends LightningDatatable {
 
         if (row) {
             row.style.height = height ? `${height}px` : undefined;
+        }
+    }
+
+    /**
+     * Scroll the inner table back to the top.
+     *
+     * @public
+     */
+    @api
+    scrollToTop() {
+        const scrollable_y = this.template.querySelector('.slds-scrollable_y');
+        if (scrollable_y) {
+            scrollable_y.scrollTop = 0;
         }
     }
 

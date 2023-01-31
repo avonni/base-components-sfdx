@@ -32,6 +32,7 @@
 
 import { LightningElement, api } from 'lwc';
 import {
+    equal,
     normalizeBoolean,
     normalizeString,
     normalizeArray,
@@ -123,12 +124,13 @@ export default class AvonniSlider extends LightningElement {
     _unit = SLIDER_UNITS.default;
     _unitAttributes = {};
     _variant = LABEL_VARIANTS.default;
-    _value = [DEFAULT_VALUE];
+    _value = DEFAULT_VALUE;
 
     computedMax;
     computedMin = DEFAULT_MIN;
     customLabels = [];
 
+    _changeTimeout;
     _computedValues = [DEFAULT_VALUE];
     _focusedInputIndex;
     _helpMessage;
@@ -178,9 +180,7 @@ export default class AvonniSlider extends LightningElement {
             this._resizeObserver = this.initResizeObserver();
         }
         if (!this._rendered || this._domModified) {
-            if (this.isVerticalResponsive) {
-                this.setVerticalResponsiveHeight();
-            }
+            this.setVerticalResponsiveHeight();
             if (this.showTrack) {
                 this.updateTrack(this._computedValues);
             } else {
@@ -223,7 +223,7 @@ export default class AvonniSlider extends LightningElement {
     }
 
     /**
-     * If present, the slider thumbs can swap order.
+     * If present, the slider thumbs can't swap order.
      *
      * @type {Boolean}
      * @public
@@ -257,6 +257,7 @@ export default class AvonniSlider extends LightningElement {
         if (this._connected) {
             this.scaleValues();
             this.capValues();
+            this._domModified = true;
         }
     }
 
@@ -280,6 +281,7 @@ export default class AvonniSlider extends LightningElement {
         if (this._connected) {
             this.scaleValues();
             this.capValues();
+            this._domModified = true;
         }
     }
 
@@ -397,6 +399,9 @@ export default class AvonniSlider extends LightningElement {
     }
 
     set step(value) {
+        if (isNaN(Number(value))) {
+            return;
+        }
         this._step = Number(value);
         this._scalingFactor =
             0 < this._step && this._step < 1 ? 1 / this.step : DEFAULT_STEP;
@@ -519,17 +524,27 @@ export default class AvonniSlider extends LightningElement {
         return this._value;
     }
     set value(value) {
+        if (equal(value, this._value)) {
+            // Prevent the dragged thumb from being dropped
+            // if the given value is the same as the current value.
+            return;
+        }
+
         if (!isNaN(Number(value))) {
-            this._value = [Number(value)];
+            this._value = Number(value);
+            this._computedValues = [this._value];
+        } else if (!value) {
+            this._value = DEFAULT_VALUE;
+            this._computedValues = [this._value];
         } else {
             const normalizedValue = normalizeArray(value, 'number');
             this._value = normalizedValue.length
                 ? normalizedValue
                 : [DEFAULT_VALUE];
             this._value.sort((a, b) => a - b);
+            this._computedValues = [...this._value];
         }
 
-        this._computedValues = [...this._value];
         if (this._connected) {
             this.scaleValues();
             this.capValues();
@@ -1076,30 +1091,6 @@ export default class AvonniSlider extends LightningElement {
                 Math.round(this._computedValues[index] / this._step) *
                 this._step;
         });
-        this.updatePublicValue();
-    }
-
-    /**
-     * Update slider values and dispatch change event.
-     */
-    changeSlider() {
-        this._updateProxyInputAttributes('value');
-
-        /**
-         * The event fired when the slider value changed.
-         *
-         * @event
-         * @name change
-         * @param {number | number[]} value The value of the slider.
-         * @public
-         */
-        const selectedEvent = new CustomEvent('change', {
-            detail: {
-                value: this._value
-            }
-        });
-
-        this.dispatchEvent(selectedEvent);
     }
 
     /**
@@ -1355,11 +1346,14 @@ export default class AvonniSlider extends LightningElement {
      * @returns {AvonniResizeObserver} Resize observer.
      */
     initResizeObserver() {
-        if (!(this.showAnyTickMarks || this.isVerticalResponsive)) return null;
-        const resizeObserver = new AvonniResizeObserver(() => {
-            if (this.isVerticalResponsive) {
-                this.setVerticalResponsiveHeight();
-            }
+        const wrapper = this.template.querySelector(
+            '[data-element-id="div-wrapper"]'
+        );
+        if (!wrapper || !(this.showAnyTickMarks || this.isVerticalResponsive)) {
+            return null;
+        }
+        return new AvonniResizeObserver(wrapper, () => {
+            this.setVerticalResponsiveHeight();
             if (this.showAnyTickMarks) {
                 this.drawRuler(true);
             }
@@ -1367,10 +1361,6 @@ export default class AvonniSlider extends LightningElement {
                 this.displayCustomLabels();
             }
         });
-        resizeObserver.observe(
-            this.template.querySelector('[data-element-id="div-wrapper"]')
-        );
-        return resizeObserver;
     }
 
     /**
@@ -1418,7 +1408,28 @@ export default class AvonniSlider extends LightningElement {
         }
         this.setHitboxPosition(parseInt(event.target.dataset.index, 10));
         this.updatePublicValue();
-        this.changeSlider();
+        this._updateProxyInputAttributes('value');
+
+        // Make sure the change event is not fired many times,
+        // when the thumb is dragged
+        clearTimeout(this._changeTimeout);
+        this._changeTimeout = setTimeout(() => {
+            /**
+             * The event fired when the slider value changed.
+             *
+             * @event
+             * @name change
+             * @param {number | number[]} value The value of the slider.
+             * @public
+             */
+            const selectedEvent = new CustomEvent('change', {
+                detail: {
+                    value: this._value
+                }
+            });
+
+            this.dispatchEvent(selectedEvent);
+        }, 100);
     }
 
     /**
@@ -1514,6 +1525,14 @@ export default class AvonniSlider extends LightningElement {
      * @param {Event} event
      */
     setVerticalResponsiveHeight() {
+        const wrapper = this.template.querySelector(
+            '[data-element-id="div-range"]'
+        );
+        if (!this.isVerticalResponsive) {
+            wrapper.style.transformOrigin = '';
+            wrapper.style.width = '';
+            return;
+        }
         this.template.host.style.height = '100%';
         this.template.host.style.display = 'block';
         const spacer = this.template.querySelector(
@@ -1522,9 +1541,6 @@ export default class AvonniSlider extends LightningElement {
         const parentHeight = Math.max(
             -this._thumbRadius,
             spacer.offsetHeight - this._thumbRadius
-        );
-        const wrapper = this.template.querySelector(
-            '[data-element-id="div-wrapper"]'
         );
         wrapper.style.transformOrigin = `${
             (parentHeight + this._thumbRadius) / 2

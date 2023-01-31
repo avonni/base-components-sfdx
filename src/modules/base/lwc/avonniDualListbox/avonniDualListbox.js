@@ -1172,7 +1172,13 @@ export default class AvonniDualListbox extends LightningElement {
         const sourceOptions = this.template.querySelectorAll(
             '[data-element-id="li-source"]'
         );
+        const sourceOption = this.template.querySelector(
+            '[data-element-id="li-source"]'
+        );
         const selectedOptions = this.template.querySelectorAll(
+            '[data-element-id="li-selected"]'
+        );
+        const selectedOption = this.template.querySelector(
             '[data-element-id="li-selected"]'
         );
 
@@ -1181,25 +1187,19 @@ export default class AvonniDualListbox extends LightningElement {
             this._maxVisibleOptions
         );
 
-        if (
+        overSourceHeight =
             this.computedSourceList.length < this._maxVisibleOptions &&
             sourceOptions.length > 0
-        ) {
-            overSourceHeight =
-                this.template.querySelector('[data-element-id="li-source"]')
-                    .offsetHeight *
-                (this._maxVisibleOptions - this.computedSourceList.length);
-        } else overSourceHeight = 0;
+                ? sourceOption.offsetHeight *
+                  (this._maxVisibleOptions - this.computedSourceList.length)
+                : 0;
 
-        if (
+        overSelectedHeight =
             this.computedSelectedList.length < this._maxVisibleOptions &&
             selectedOptions.length > 0
-        ) {
-            overSelectedHeight =
-                this.template.querySelector('[data-element-id="li-selected"]')
-                    .offsetHeight *
-                (this._maxVisibleOptions - this.computedSelectedList.length);
-        } else overSelectedHeight = 0;
+                ? selectedOption.offsetHeight *
+                  (this._maxVisibleOptions - this.computedSelectedList.length)
+                : 0;
 
         this._selectedBoxHeight =
             getListHeight(selectedOptions, this._maxVisibleOptions) +

@@ -90,12 +90,16 @@
                             class="slds-media__figure slds-listbox__option-icon"
                         >
                             <c-avonni-avatar
-                                aria-hidden="true"
-                                size="small"
-                                src={option.avatarSrc}
-                                fallback-icon-name={option.avatarFallbackIconName}
-                                hide-avatar-details="true"
                                 data-element-id="avonni-avatar"
+                                aria-hidden="true"
+                                fallback-icon-name={option.avatar.fallbackIconName}
+                                initials={option.avatar.initials}
+                                presence={option.avatar.presence}
+                                presence-position={option.avatar.presencePosition}
+                                size="small"
+                                src={option.avatar.src}
+                                variant={option.avatar.variant}
+                                hide-avatar-details="true"
                             ></c-avonni-avatar>
                         </div>
                         <div class="slds-media__body">

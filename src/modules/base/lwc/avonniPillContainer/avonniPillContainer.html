@@ -50,17 +50,6 @@
             >{alternativeText}</span
         >
 
-        <!-- Show more -->
-        <lightning-button
-            if:true={showMore}
-            aria-hidden="true"
-            class="slds-listbox-toggle"
-            label={computedPillCountMoreLabel}
-            variant="base"
-            data-element-id="lightning-button-show-more"
-            onclick={handleMoreClick}
-        ></lightning-button>
-
         <ul
             class={computedListboxClass}
             aria-describedby="instructions"
@@ -70,14 +59,15 @@
             data-element-id="ul"
             onfocusin={handlePillFocus}
             onfocusout={handlePillBlur}
+            onopenactionmenu={handleOpenActionMenu}
             onkeydown={handleKeyDown}
         >
-            <template for:each={items} for:item="pill" for:index="index">
+            <template for:each={visibleItems} for:item="pill" for:index="index">
                 <li
-                    key={uniqueKey}
+                    key={pill.name}
                     class={computedListItemClass}
                     role="presentation"
-                    data-element-id="li"
+                    data-element-id="li-item"
                     data-index={index}
                     onmousemove={handlePillMouseMove}
                     onmousedown={handlePillMouseDown}
@@ -99,5 +89,80 @@
                 </li>
             </template>
         </ul>
+
+        <div class="slds-is-relative slds-show_inline-block">
+            <!-- Show more -->
+            <lightning-button
+                if:true={isCollapsed}
+                class="slds-p-horizontal_xx-small"
+                label={buttonLabel}
+                variant="base"
+                data-element-id="lightning-button-show-more"
+                onclick={handleExpand}
+                onmouseenter={handleMoreButtonMouseEnter}
+                onmouseleave={handleMoreButtonMouseLeave}
+            ></lightning-button>
+            <div
+                if:true={showPopover}
+                class="
+                    slds-dropdown slds-dropdown_left slds-dropdown_length-7
+                    slds-p-vertical_none
+                    slds-p-horizontal_xx-small
+                "
+                data-element-id="div-popover"
+                onfocusin={handlePopoverFocusIn}
+                onfocusout={handlePopoverFocusOut}
+                onscroll={handlePopoverScroll}
+            >
+                <lightning-focus-trap data-element-id="ligthning-focus-trap">
+                    <ul
+                        aria-describedby="instructions"
+                        aria-labelledby="label"
+                        aria-orientation="vertical"
+                        onkeydown={handleKeyDown}
+                        onopenactionmenu={handleOpenHiddenActionMenu}
+                    >
+                        <template for:each={hiddenItems} for:item="pill">
+                            <li
+                                key={pill.name}
+                                class={computedHiddenListItemClass}
+                                role="presentation"
+                                data-element-id="li-item-hidden"
+                                data-index={pill.index}
+                                data-name={pill.name}
+                                onmousemove={handlePillMouseMove}
+                                onmousedown={handlePillMouseDown}
+                            >
+                                <c-avonni-primitive-pill
+                                    class={computedPillClass}
+                                    actions={actions}
+                                    avatar={pill.avatar}
+                                    href={pill.href}
+                                    label={pill.label}
+                                    name={pill.name}
+                                    role="option"
+                                    tabindex="-1"
+                                    variant="list"
+                                    data-element-id="avonni-primitive-pill-hidden"
+                                    data-index={pill.index}
+                                    onactionclick={handleActionClick}
+                                    onclick={handlePillClick}
+                                ></c-avonni-primitive-pill>
+                            </li>
+                        </template>
+                    </ul>
+                </lightning-focus-trap>
+            </div>
+        </div>
+
+        <c-avonni-primitive-dropdown-menu
+            if:true={showActionMenu}
+            class="slds-is-absolute avonni-pill-container__action-menu"
+            show={showActionMenu}
+            items={actions}
+            data-element-id="avonni-primitive-dropdown-menu"
+            onclose={handleCloseActionMenu}
+            onprivateselect={handleActionSelect}
+        ></c-avonni-primitive-dropdown-menu>
     </div>
 </template>

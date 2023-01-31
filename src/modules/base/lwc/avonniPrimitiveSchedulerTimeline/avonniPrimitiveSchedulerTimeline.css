@@ -1,0 +1,156 @@
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+@import 'c/schedulerSharedStyle';
+
+:host {
+    --vertical-resources-row-height: 3rem;
+}
+
+.avonni-scheduler__wrapper {
+    max-height: calc(100vh - var(--avonni-scheduler-toolbar-height, 70px));
+}
+
+.avonni-scheduler__schedule-wrapper {
+    min-height: 5rem;
+    max-height: calc(100vh - var(--avonni-scheduler-toolbar-height, 70px));
+    overflow: auto;
+}
+
+.avonni-scheduler__schedule-wrapper.avonni-scheduler__schedule-wrapper_vertical {
+    max-height: calc(
+        100vh - var(--avonni-scheduler-toolbar-height, 70px) -
+            var(--vertical-resources-row-height)
+    );
+    height: calc(100% - var(--vertical-resources-row-height) - 1rem - 1px);
+}
+
+.avonni-scheduler__first-col {
+    background-color: #f3f3f3;
+    max-height: calc(100vh - var(--avonni-scheduler-toolbar-height, 70px));
+}
+.avonni-scheduler__first-col_vertical {
+    width: 110px;
+}
+.avonni-scheduler__first-col_horizontal {
+    width: 300px;
+    margin-right: -3px;
+}
+.avonni-scheduler__first-col_horizontal.avonni-scheduler__border_right {
+    margin-right: 0;
+}
+
+.avonni-scheduler__grid_align-end {
+    /* We can't use slds-grid_align-end because it will prevent the smallest header cells from growing */
+    justify-content: right;
+}
+
+.avonni-scheduler__datatable {
+    padding-top: 5px;
+    width: 100%;
+}
+.avonni-scheduler__header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+.avonni-scheduler__header_vertical {
+    --avonni-primitive-scheduler-header-group-label-position-top: calc(
+        var(--vertical-resources-row-height) + 12px
+    );
+}
+
+.avonni-scheduler__vertical-header-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.avonni-scheduler__vertical-splitter {
+    border-left: none;
+}
+
+.avonni-scheduler__vertical-resource-header-cell {
+    overflow: hidden;
+    flex: 1 1 0;
+    min-width: 75px;
+    color: #514f4d;
+    font-weight: 700;
+}
+.avonni-scheduler__vertical-resource-header-cell:last-of-type {
+    border-right-width: 0;
+}
+.avonni-scheduler__vertical-resource-header-cell_zoom-to-fit {
+    min-width: auto;
+}
+
+.avonni-scheduler__vertical-resource-header-cell,
+.avonni-scheduler__vertical-resource-header-first-cell {
+    background-color: #f3f3f3;
+    min-height: var(--vertical-resources-row-height);
+    height: var(--vertical-resources-row-height);
+    position: sticky;
+    top: 0;
+    z-index: 4;
+}
+
+.avonni-scheduler__schedule-col {
+    height: 100%;
+}
+
+.avonni-scheduler__schedule-col_zoom-to-fit {
+    /* Prevent the flex column from allowing overflow */
+    min-width: 0;
+}
+
+.avonni-scheduler__events {
+    height: 100%;
+    top: 0;
+}
+
+.avonni-scheduler__cell {
+    width: var(--avonni-scheduler-cell-width);
+    min-width: var(--avonni-scheduler-cell-width);
+}
+
+.avonni-scheduler__cell-horizontal:last-of-type {
+    border-right: none;
+}
+
+.avonni-scheduler__cell_vertical:not(.avonni-scheduler__cell_zoom-to-fit) {
+    min-width: 75px;
+    width: 100%;
+}
+
+.avonni-scheduler__schedule-body_vertical .avonni-scheduler__cell {
+    height: var(--avonni-scheduler-cell-height);
+    min-height: var(--avonni-scheduler-cell-height);
+}

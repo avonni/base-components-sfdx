@@ -59,12 +59,12 @@ const POPOVER_PLACEMENTS = {
 const BUTTON_VARIANTS = {
     valid: [
         'bare',
-        'container',
-        'brand',
+        'bare-inverse',
         'border',
         'border-filled',
-        'bare-inverse',
-        'border-inverse'
+        'border-inverse',
+        'brand',
+        'container'
     ],
     default: 'border'
 };
@@ -747,15 +747,6 @@ export default class AvonniButtonIconPopover extends LightningElement {
     handlePopoverKeyDown() {
         if (!this._cancelBlur) {
             this.cancelBlur();
-        }
-    }
-
-    /**
-     * If variable cancelBlur is true, it sets the variable cancelBlur to false.
-     */
-    handlePopoverKeyPress() {
-        if (this._cancelBlur) {
-            this.allowBlur();
         }
     }
 
