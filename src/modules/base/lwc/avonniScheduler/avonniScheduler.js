@@ -93,9 +93,9 @@ export default class AvonniScheduler extends LightningElement {
     _dateFormat = DEFAULT_DATE_FORMAT;
     _disabledDatesTimes = [];
     _events = [];
+    _eventsDisplayFields = DEFAULT_EVENTS_DISPLAY_FIELDS;
     _eventsLabels = DEFAULT_EVENTS_LABELS;
     _eventsPalette = EVENTS_PALETTES.default;
-    _eventsDisplayFields = DEFAULT_EVENTS_DISPLAY_FIELDS;
     _eventsTheme = EVENTS_THEMES.default;
     _hiddenDisplays = [];
     _hideResourcesFilter = false;
@@ -2375,6 +2375,30 @@ export default class AvonniScheduler extends LightningElement {
         const { selectedResources, name } = event.detail;
         this._selectedResources = selectedResources;
         this.dispatchResourceSelectEvent(name);
+    }
+
+    /**
+     * Handle a click on a time slot of the schedule.
+     *
+     * @param {Event} event `scheduleclick` event coming a primitive.
+     */
+    handleScheduleClick(event) {
+        event.stopPropagation();
+
+        /**
+         * The event fired when the user clicks on a time slot of the schedule.
+         *
+         * @event
+         * @name scheduleclick
+         * @param {string} from Start of the clicked cell as an ISO 8601 string.
+         * @param {string} to End of the clicked cell as an ISO 8601 string.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('scheduleclick', {
+                detail: event.detail
+            })
+        );
     }
 
     /**

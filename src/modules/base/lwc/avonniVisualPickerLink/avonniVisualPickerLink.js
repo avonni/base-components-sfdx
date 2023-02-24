@@ -218,7 +218,7 @@ export default class AvonniVisualPickerLink extends LightningElement {
     /**
      * Click event handler.
      */
-    handleClick() {
+    handleClick(e) {
         /**
          * The event fired when the visual picker is clicked.
          *
@@ -227,5 +227,6 @@ export default class AvonniVisualPickerLink extends LightningElement {
          * @public
          */
         this.dispatchEvent(new CustomEvent('click'));
+        e.stopPropagation();
     }
 }

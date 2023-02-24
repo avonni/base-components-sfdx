@@ -143,18 +143,17 @@ export default class AvonniCarousel extends LightningElement {
      */
     @api scrollDuration = DEFAULT_SCROLL_DURATION;
 
+    _actionsPosition = ACTIONS_POSITIONS.default;
+    _actionsVariant = ACTIONS_VARIANTS.default;
     _assistiveText = {
         nextPanel: i18n.nextPanel,
         previousPanel: i18n.previousPanel,
         autoplayButton: i18n.autoplayButton
     };
     _carouselItems = [];
-    _itemsPerPanel = DEFAULT_ITEMS_PER_PANEL;
-    initialRender = true;
-    _indicatorVariant = INDICATOR_VARIANTS.default;
     _hideIndicator = false;
-    _actionsPosition = ACTIONS_POSITIONS.default;
-    _actionsVariant = ACTIONS_VARIANTS.default;
+    _itemsPerPanel = DEFAULT_ITEMS_PER_PANEL;
+    _indicatorVariant = INDICATOR_VARIANTS.default;
 
     activeIndexPanel;
     autoScrollIcon = DEFAULT_AUTOCROLL_PLAY_ICON;
@@ -165,6 +164,7 @@ export default class AvonniCarousel extends LightningElement {
     };
     currentPanelIndex = 0;
     currentItemsPerPanel;
+    initialRender = true;
     panelItems = [];
     paginationItems = [];
     panelStyle;
@@ -412,14 +412,11 @@ export default class AvonniCarousel extends LightningElement {
      * -------------------------------------------------------------
      */
 
-    get carouselIsResponsive() {
-        return (
-            this.columnsCount.small != null ||
-            this.columnsCount.medium != null ||
-            this.columnsCount.large != null
-        );
-    }
-
+    /**
+     * HTML element for the carousel container.
+     *
+     * @type {HTMLElement}
+     */
     get carouselContainer() {
         return this.template.querySelector(
             '[data-element-id="avonni-carousel-container"]'
@@ -427,7 +424,21 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     /**
+     * Returns true if the carousel is responsive.
+     *
+     * @type {boolean}
+     */
+    get carouselIsResponsive() {
+        const { small, medium, large } = this.columnsCount;
+        return (
+            small !== undefined || medium !== undefined || large !== undefined
+        );
+    }
+
+    /**
      * Sets the width of each item, depending on the number of items per panel
+     *
+     * @type {string}
      */
     get carouselItemStyle() {
         const itemWidth = 100 / this.currentItemsPerPanel;
@@ -449,9 +460,9 @@ export default class AvonniCarousel extends LightningElement {
      * Verify if actions are present.
      */
     get hasActions() {
-        return this.items.map((item) => {
-            return item.actions && item.actions.length > 0;
-        });
+        return this.items.some(
+            (item) => item.actions && item.actions.length > 0
+        );
     }
 
     /**
@@ -581,122 +592,44 @@ export default class AvonniCarousel extends LightningElement {
      */
 
     /**
-     * Initialize current panel method.
-     *
-     * @param {number} numberOfPanels
+     * Computes the items per panel.
      */
-    initializeCurrentPanel(numberOfPanels) {
-        const currentPanelIndex = this.currentPanel
-            ? this.items.findIndex((item) => item.name === this.currentPanel)
-            : 0;
-        const firstPanel = parseInt(currentPanelIndex, 10);
-        this.activeIndexPanel = firstPanel < numberOfPanels ? firstPanel : 0;
-    }
-
-    /**
-     * Initialize Pagination items method.
-     *
-     * @param {number} numberOfPanels
-     */
-    initializePaginationItems(numberOfPanels) {
-        this.paginationItems = [];
-        for (let i = 0; i < numberOfPanels; i++) {
-            const id = generateUUID();
-            const isItemActive = i === this.activeIndexPanel;
-            if (this.indicatorVariant === 'base') {
-                this.paginationItems.push({
-                    key: id,
-                    id: `pagination-item-${i}`,
-                    className: isItemActive
-                        ? INDICATOR_ACTION + ' ' + SLDS_ACTIVE
-                        : INDICATOR_ACTION,
-                    tabIndex: isItemActive ? '0' : '-1',
-                    ariaSelected: isItemActive ? TRUE_STRING : FALSE_STRING,
-                    tabTitle: `Tab ${i}`
-                });
-            } else if (this.indicatorVariant === 'shaded') {
-                this.paginationItems.push({
-                    key: i,
-                    id: `pagination-item-${i}`,
-                    className: isItemActive
-                        ? INDICATOR_ACTION_SHADED + ' ' + SLDS_ACTIVE_SHADED
-                        : INDICATOR_ACTION_SHADED,
-                    tabIndex: isItemActive ? '0' : '-1',
-                    ariaSelected: isItemActive ? TRUE_STRING : FALSE_STRING,
-                    tabTitle: `Tab ${i}`
-                });
-            }
-        }
-    }
-
-    /**
-     * Setup the carousel resize observer. Used to update the number of items per panel when the carousel is resized.
-     *
-     * @returns {AvonniResizeObserver} Resize observer.
-     */
-    initWrapObserver() {
+    computeItemsPerPanel() {
         if (!this.carouselContainer) {
             return;
         }
-        this.resizeObserver = new AvonniResizeObserver(
-            this.carouselContainer,
-            this.computeItemsPerPanel.bind(this)
-        );
-    }
 
-    /**
-     * Creates an array of panels, each containing an array of items.
-     */
-    initializePanels() {
-        const panelItems = [];
-        let panelIndex = 0;
-        for (
-            let i = 0;
-            i < this._carouselItems.length;
-            i += this.currentItemsPerPanel
+        const previousItemsPerPanel = this.currentItemsPerPanel;
+        const carouselWidth = this.carouselContainer.offsetWidth;
+
+        let calculatedItemsPerPanel;
+
+        if (
+            this.largeItemsPerPanel > 0 &&
+            carouselWidth >= MEDIA_QUERY_BREAKPOINTS.large
         ) {
-            panelItems.push({
-                index: panelIndex,
-                key: `panel-${panelIndex}`,
-                items: this._carouselItems.slice(
-                    i,
-                    i + this.currentItemsPerPanel
-                ),
-                ariaHidden:
-                    this.activeIndexPanel === i ? FALSE_STRING : TRUE_STRING
-            });
-            panelIndex += 1;
-        }
-        this.panelItems = panelItems;
-        this.panelStyle = `transform: translateX(-${
-            this.activeIndexPanel * 100
-        }%);`;
-    }
-
-    /**
-     * Ensure items per panel is an accepted value, otherwise unset it.
-     */
-    normalizeItemsPerPanel(value, size) {
-        let itemCount;
-        if (ITEMS_PER_PANEL.includes(value)) {
-            itemCount = value;
-        }
-
-        if (itemCount) {
-            this.columnsCount[size] = itemCount;
+            calculatedItemsPerPanel = this.columnsCount.large;
+        } else if (
+            this.mediumItemsPerPanel > 0 &&
+            carouselWidth >= MEDIA_QUERY_BREAKPOINTS.medium
+        ) {
+            calculatedItemsPerPanel = this.columnsCount.medium;
+        } else if (
+            this.smallItemsPerPanel > 0 &&
+            carouselWidth >= MEDIA_QUERY_BREAKPOINTS.small
+        ) {
+            calculatedItemsPerPanel = this.columnsCount.small;
         } else {
-            this.columnsCount[size] = undefined;
+            calculatedItemsPerPanel = this.columnsCount.default;
         }
 
-        return itemCount;
-    }
-
-    /**
-     * Call the auto scroll.
-     */
-    startAutoScroll() {
-        this.next();
-        this.play();
+        if (
+            calculatedItemsPerPanel !== previousItemsPerPanel &&
+            this._connected
+        ) {
+            this.currentItemsPerPanel = calculatedItemsPerPanel;
+            this.initCarousel();
+        }
     }
 
     /**
@@ -748,6 +681,106 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     /**
+     * Initialize Carousel method.
+     */
+    initCarousel() {
+        const numberOfPanels = Math.ceil(
+            this._carouselItems.length / this.currentItemsPerPanel
+        );
+
+        this.initializeCurrentPanel(numberOfPanels);
+        this.initializePaginationItems(numberOfPanels);
+        this.initializePanels();
+    }
+
+    /**
+     * Initialize current panel method.
+     *
+     * @param {number} numberOfPanels
+     */
+    initializeCurrentPanel(numberOfPanels) {
+        const currentPanelIndex = this.currentPanel
+            ? this.items.findIndex((item) => item.name === this.currentPanel)
+            : 0;
+        const firstPanel = parseInt(currentPanelIndex, 10);
+        this.activeIndexPanel = firstPanel < numberOfPanels ? firstPanel : 0;
+    }
+
+    /**
+     * Initialize Pagination items method.
+     *
+     * @param {number} numberOfPanels
+     */
+    initializePaginationItems(numberOfPanels) {
+        this.paginationItems = [];
+        const indicatorVariantClass =
+            this.indicatorVariant === 'base'
+                ? INDICATOR_ACTION
+                : INDICATOR_ACTION_SHADED;
+        const activeIndicatorClass =
+            this.indicatorVariant === 'base' ? SLDS_ACTIVE : SLDS_ACTIVE_SHADED;
+
+        for (let i = 0; i < numberOfPanels; i++) {
+            const id = generateUUID();
+            const isItemActive = i === this.activeIndexPanel;
+            this.paginationItems.push({
+                key: id,
+                id: `pagination-item-${i}`,
+                className: isItemActive
+                    ? `${indicatorVariantClass} ${activeIndicatorClass}`
+                    : indicatorVariantClass,
+                tabIndex: isItemActive ? '0' : '-1',
+                ariaSelected: isItemActive ? TRUE_STRING : FALSE_STRING,
+                tabTitle: `Tab ${i}`
+            });
+        }
+    }
+
+    /**
+     * Setup the carousel resize observer. Used to update the number of items per panel when the carousel is resized.
+     *
+     * @returns {AvonniResizeObserver} Resize observer.
+     */
+    initWrapObserver() {
+        if (!this.carouselContainer) {
+            return;
+        }
+        this.resizeObserver = new AvonniResizeObserver(
+            this.carouselContainer,
+            this.computeItemsPerPanel.bind(this)
+        );
+    }
+
+    /**
+     * Creates an array of panels, each containing an array of items.
+     */
+    initializePanels() {
+        const panelItems = [];
+        let panelIndex = 0;
+        for (
+            let i = 0;
+            i < this._carouselItems.length;
+            i += this.currentItemsPerPanel
+        ) {
+            panelItems.push({
+                index: panelIndex,
+                key: `panel-${panelIndex}`,
+                items: this._carouselItems.slice(
+                    i,
+                    i + this.currentItemsPerPanel
+                ),
+                ariaHidden:
+                    this.activeIndexPanel === i ? FALSE_STRING : TRUE_STRING
+            });
+            panelIndex += 1;
+        }
+        this.panelItems = panelItems;
+        this.panelStyle = `transform: translateX(-${
+            this.activeIndexPanel * 100
+        }%);`;
+    }
+
+    /**
      * Key down event handler.
      *
      * @param {Event}
@@ -792,54 +825,16 @@ export default class AvonniCarousel extends LightningElement {
         indicatorActionsElements[this.activeIndexPanel].focus();
     }
 
-    computeItemsPerPanel() {
-        if (!this.carouselContainer) {
-            return;
-        }
-
-        const previousItemsPerPanel = this.currentItemsPerPanel;
-        const carouselWidth = this.carouselContainer.offsetWidth;
-        let setSize = 'default';
-
-        if (
-            this.largeItemsPerPanel > 0 &&
-            carouselWidth >= MEDIA_QUERY_BREAKPOINTS.large
-        ) {
-            setSize = 'large';
-        } else if (
-            this.mediumItemsPerPanel > 0 &&
-            carouselWidth >= MEDIA_QUERY_BREAKPOINTS.medium
-        ) {
-            setSize = 'medium';
-        } else if (
-            this.smallItemsPerPanel > 0 &&
-            carouselWidth >= MEDIA_QUERY_BREAKPOINTS.small
-        ) {
-            setSize = 'small';
-        }
-
-        const calculatedItemsPerPanel = this.columnsCount[setSize];
-
-        if (
-            calculatedItemsPerPanel !== previousItemsPerPanel &&
-            this._connected
-        ) {
-            this.currentItemsPerPanel = calculatedItemsPerPanel;
-            this.initCarousel();
-        }
-    }
-
     /**
-     * Initialize Carousel method.
+     * Ensure items per panel is an accepted value, otherwise unset it.
      */
-    initCarousel() {
-        const numberOfPanels = Math.ceil(
-            this._carouselItems.length / this.currentItemsPerPanel
-        );
-
-        this.initializeCurrentPanel(numberOfPanels);
-        this.initializePaginationItems(numberOfPanels);
-        this.initializePanels();
+    normalizeItemsPerPanel(value, size) {
+        if (ITEMS_PER_PANEL.includes(value)) {
+            this.columnsCount[size] = value;
+            return value;
+        }
+        this.columnsCount[size] = undefined;
+        return undefined;
     }
 
     /**
@@ -885,6 +880,22 @@ export default class AvonniCarousel extends LightningElement {
     }
 
     /**
+     * Call the auto scroll.
+     */
+    startAutoScroll() {
+        this.next();
+        this.play();
+    }
+
+    /**
+     * Auto Scroll toggler method.
+     */
+    toggleAutoScroll() {
+        /*eslint no-unused-expressions: ["error", { "allowTernary": true }]*/
+        this.autoScrollOn ? this.pause() : this.play();
+    }
+
+    /**
      * Selection removed from current panel.
      */
     unselectCurrentPanel() {
@@ -902,13 +913,5 @@ export default class AvonniCarousel extends LightningElement {
         } else {
             activePaginationItem.className = INDICATOR_ACTION;
         }
-    }
-
-    /**
-     * Auto Scroll toggler method.
-     */
-    toggleAutoScroll() {
-        /*eslint no-unused-expressions: ["error", { "allowTernary": true }]*/
-        this.autoScrollOn ? this.pause() : this.play();
     }
 }

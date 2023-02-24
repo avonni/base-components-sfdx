@@ -356,9 +356,8 @@ export default class AvonniPrimitiveSchedulerAgenda extends ScheduleBase {
             y,
             '[data-element-id="div-day-group"]'
         );
-        const date = this.createDate(Number(dayGroupElement.dataset.date));
-        const from = date.startOf('day');
-        const to = from.endOf('day');
+        const from = this.createDate(Number(dayGroupElement.dataset.start));
+        const to = this.createDate(Number(dayGroupElement.dataset.end));
         const resourceNames = [this.firstSelectedResource.name];
         this._eventData.newEvent(
             { from, resourceNames, to, x, y },
@@ -519,6 +518,11 @@ export default class AvonniPrimitiveSchedulerAgenda extends ScheduleBase {
      *  EVENT HANDLERS AND DISPATCHERS
      * -------------------------------------------------------------
      */
+
+    handleClick(event) {
+        const { start, end } = event.currentTarget.dataset;
+        this.dispatchScheduleClick({ from: start, to: end });
+    }
 
     handleEmptySpotContextMenu(event) {
         if (!this.firstSelectedResource) {

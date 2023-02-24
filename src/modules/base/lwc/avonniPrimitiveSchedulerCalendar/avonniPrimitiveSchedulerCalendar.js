@@ -1617,7 +1617,7 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
             '[data-element-id="div-wrapper"]'
         );
         const sidePanel = this.template.querySelector(
-            '[data-element-id="div-panel"]'
+            '[data-element-id^="div-panel"]'
         );
         const schedule = this.template.querySelector(
             '[data-element-id="div-main-panel"]'
@@ -1675,6 +1675,11 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
      *  EVENT HANDLERS AND DISPATCHERS
      * -------------------------------------------------------------
      */
+
+    handleClick(event) {
+        const { start, end } = event.target.dataset;
+        this.dispatchScheduleClick({ from: start, to: end });
+    }
 
     /**
      * Handle a double click on an empty space. Create a new event at this position and open the edit dialog.

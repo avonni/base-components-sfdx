@@ -71,7 +71,7 @@ div:focus {
     width: fit-content;
 }
 
-lightning-combobox {
+.avonni-calendar__year-combobox {
     width: 6rem;
 }
 
@@ -101,6 +101,10 @@ lightning-combobox {
     color: var(--avonni-calendar-week-label-text-color, #747474);
     font-size: var(--avonni-calendar-week-label-font-size, 0.8125em);
     font-weight: var(--avonni-calendar-week-label-font-weight, 600);
+}
+
+.avonni-calendar__table {
+    z-index: 0;
 }
 
 .avonni-calendar__table-row > .avonni-calendar__date-cell:hover > .slds-day {

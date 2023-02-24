@@ -39,6 +39,7 @@ import {
     dateTimeObjectFrom
 } from 'c/utilsPrivate';
 
+import { AvonniResizeObserver } from 'c/resizeObserver';
 import { classSet } from 'c/utils';
 
 const BUTTON_ICON_POSITIONS = { valid: ['left', 'right'], default: 'left' };
@@ -60,6 +61,11 @@ const DEFAULT_LOADING_TEXT = 'Loading';
 const ICON_SIZES = {
     valid: ['xx-small', 'x-small', 'small', 'medium', 'large'],
     default: 'small'
+};
+
+const MEDIA_QUERY_BREAKPOINTS = {
+    small: 480,
+    medium: 768
 };
 
 /**
@@ -159,7 +165,9 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     _timezone;
 
     formattedDate = '';
+    resizeObserver;
     _connected = false;
+    _fieldSize = 6;
 
     connectedCallback() {
         this.formatDate();
@@ -168,6 +176,19 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
 
     renderedCallback() {
         this.setLineColor();
+
+        if (!this.resizeObserver && !this._closed) {
+            this.initFieldsContainerObserver();
+        }
+
+        this.computeFieldsPerColumn();
+    }
+
+    disconnectedCallback() {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+            this.resizeObserver = undefined;
+        }
     }
 
     /*
@@ -420,24 +441,6 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      */
 
     /**
-     * Check if fields is populated.
-     *
-     * @type {boolean}
-     */
-    get hasFields() {
-        return this._fields.length > 0;
-    }
-
-    /**
-     * Return styling for item background color.
-     *
-     * @type {string}
-     */
-    get backgroundColor() {
-        return `--line-color: ${this._color}`;
-    }
-
-    /**
      * Toggle for item expansion.
      *
      * @type {string}
@@ -461,6 +464,68 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
     }
 
     /**
+     * Return styling for item background color.
+     *
+     * @type {string}
+     */
+    get backgroundColor() {
+        return `--line-color: ${this._color}`;
+    }
+
+    /**
+     * Computed styling class for item without fields.
+     *
+     * @type {string}
+     */
+    get computedSldsMedia() {
+        return classSet('slds-media')
+            .add({
+                'avonni-primitive-activity-timeline-item__no-fields_margin':
+                    !this.hasFields
+            })
+            .toString();
+    }
+
+    /**
+     * Returns the container for the fields.
+     *
+     * @type {HTMLElement}
+     */
+    get fieldsContainer() {
+        return this.template.querySelector(
+            '[data-element-id="fields-container"]'
+        );
+    }
+
+    /**
+     * Returns the field size for the lightning layout item.
+     *
+     * @type {string}
+     */
+    get fieldSize() {
+        return this._fieldSize;
+    }
+
+    /**
+     * Check if fields is populated.
+     *
+     * @type {boolean}
+     */
+    get hasFields() {
+        return this._fields.length > 0;
+    }
+
+    /**
+     * Check if the type of the icon is action
+     */
+    get isActionIcon() {
+        return (
+            typeof this.iconName === 'string' &&
+            this.iconName.split(':')[0] === 'action'
+        );
+    }
+
+    /**
      * Classes for items bullet point.
      *
      * @type {string}
@@ -480,30 +545,6 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
                     this.iconSize === 'large'
             })
             .toString();
-    }
-
-    /**
-     * Computed styling class for item without fields.
-     *
-     * @type {string}
-     */
-    get computedSldsMedia() {
-        return classSet('slds-media')
-            .add({
-                'avonni-activity-timeline-item-no-fields_margin':
-                    !this.hasFields
-            })
-            .toString();
-    }
-
-    /**
-     * Check if the type of the icon is action
-     */
-    get isActionIcon() {
-        return (
-            typeof this.iconName === 'string' &&
-            this.iconName.split(':')[0] === 'action'
-        );
     }
 
     /**
@@ -543,6 +584,27 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
      */
 
     /**
+     * Compute the number of fields per column based on the container width.
+     */
+    computeFieldsPerColumn() {
+        if (!this.fieldsContainer || this._closed) {
+            return;
+        }
+        const containerWidth = this.fieldsContainer.offsetWidth;
+
+        if (containerWidth < MEDIA_QUERY_BREAKPOINTS.small) {
+            this._fieldSize = 12;
+        } else if (
+            containerWidth >= MEDIA_QUERY_BREAKPOINTS.small &&
+            containerWidth < MEDIA_QUERY_BREAKPOINTS.medium
+        ) {
+            this._fieldSize = 6;
+        } else if (containerWidth >= MEDIA_QUERY_BREAKPOINTS.medium) {
+            this._fieldSize = 4;
+        }
+    }
+
+    /**
      * Set the formatted date.
      */
     formatDate() {
@@ -554,6 +616,21 @@ export default class AvonniPrimitiveActivityTimelineItem extends LightningElemen
             return;
         }
         this.formattedDate = date.toFormat(this.dateFormat);
+    }
+
+    /**
+     * Setup the activity timeline item resize observer. Used to update the number of fields per column when the activity timeline is resized.
+     *
+     * @returns {AvonniResizeObserver} Resize observer.
+     */
+    initFieldsContainerObserver() {
+        if (!this.fieldsContainer) {
+            return;
+        }
+        this.resizeObserver = new AvonniResizeObserver(
+            this.fieldsContainer,
+            this.computeFieldsPerColumn.bind(this)
+        );
     }
 
     /**

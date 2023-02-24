@@ -493,7 +493,7 @@ export class ScheduleBase extends LightningElement {
      * @type {HTMLElement}
      */
     get panelElement() {
-        return this.template.querySelector('[data-element-id="div-panel"]');
+        return this.template.querySelector('[data-element-id^="div-panel"]');
     }
 
     /**
@@ -1167,6 +1167,31 @@ export class ScheduleBase extends LightningElement {
 
         window.addEventListener('mousemove', mouseMove);
         window.addEventListener('mouseup', mouseUp);
+    }
+
+    dispatchScheduleClick({ from, to }) {
+        if (!from || !to) {
+            return;
+        }
+
+        /**
+         * The event fired when the user clicks on a time slot of the schedule.
+         *
+         * @event
+         * @name scheduleclick
+         * @param {string} from Start of the clicked cell as an ISO 8601 string.
+         * @param {string} to End of the clicked cell as an ISO 8601 string.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('scheduleclick', {
+                detail: {
+                    from: this.createDate(Number(from)).toISO(),
+                    to: this.createDate(Number(to)).toISO()
+                },
+                bubbles: true
+            })
+        );
     }
 
     /**

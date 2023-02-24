@@ -637,7 +637,7 @@ export default class AvonniInputChoiceSet extends LightningElement {
 
         const value = event.currentTarget.value;
         const checkboxes = this.template.querySelectorAll(
-            '[data-element-id^="input"]'
+            '[data-element-id="input"]'
         );
         if (this.isMultiSelect) {
             this._value = this.handleValueChange(checkboxes);

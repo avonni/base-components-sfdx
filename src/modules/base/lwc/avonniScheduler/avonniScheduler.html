@@ -227,7 +227,7 @@
         ></c-avonni-filter-menu>
     </div>
 
-    <template if:false={isLoading}>
+    <div if:false={isLoading} onscheduleclick={handleScheduleClick}>
         <c-avonni-primitive-scheduler-timeline
             if:true={showTimeline}
             class="avonni-scheduler__schedule slds-show"
@@ -353,7 +353,7 @@
             onresourceselect={handleResourceSelect}
             onvisibleintervalchange={handleVisibleIntervalChange}
         ></c-avonni-primitive-scheduler-agenda>
-    </template>
+    </div>
 
     <!-- Loading spinner -->
     <lightning-spinner
@@ -405,9 +405,9 @@
                             <c-avonni-output-data
                                 label={field.label}
                                 type={field.type}
-                                type-attributes={field.typeAttributes}
                                 value={field.value}
                                 variant={field.variant}
+                                data-element-id="avonni-output-data-detail-popover-field"
                             ></c-avonni-output-data>
                         </div>
                     </template>

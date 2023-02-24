@@ -49,6 +49,7 @@
         0px
     );
 }
+
 .avonni-list__items-have-top-divider {
     --private-list-item-spacing-block-between: var(
         --avonni-list-item-divider-top-spacing-block-between,
@@ -59,6 +60,7 @@
         0px
     );
 }
+
 .avonni-list__items-have-bottom-divider {
     --private-list-item-spacing-block-between: var(
         --avonni-list-item-divider-bottom-spacing-block-between,
@@ -69,6 +71,7 @@
         0px
     );
 }
+
 .avonni-list__has-card-style {
     --private-list-item-spacing-block-between: var(
         --avonni-list-item-divider-around-spacing-block-between,
@@ -227,9 +230,11 @@
         0.25rem
     );
 }
+
 .avonni-list__item-icons {
     transform: translateY(-1px);
 }
+
 .avonni-list__item-icon {
     padding-left: 0.25rem;
     --slds-c-icon-color-background: var(
@@ -251,10 +256,12 @@
 a.avonni-list__item-header-link {
     color: var(--avonni-list-item-header-link-text-color, #0176d3);
 }
+
 a.avonni-list__item-header-link:hover,
 a.avonni-list__item-header-link:focus {
     color: var(--avonni-list-item-header-link-text-color-hover, #014486);
 }
+
 a.avonni-list__item-header-link:active {
     color: var(--avonni-list-item-header-link-text-color-active, #014486);
 }
@@ -262,10 +269,12 @@ a.avonni-list__item-header-link:active {
 a.avonni-list__item-info-link {
     color: var(--avonni-list-item-infos-link-text-color, #0176d3);
 }
+
 a.avonni-list__item-info-link:hover,
 a.avonni-list__item-info-link:focus {
     color: var(--avonni-list-item-infos-link-text-color-hover, #014486);
 }
+
 a.avonni-list__item-info-link:active {
     color: var(--avonni-list-item-infos-link-text-color-active, #014486);
 }
@@ -275,6 +284,7 @@ a.avonni-list__item-info-link:active {
     border-top-style: var(--avonni-list-item-styling-border, solid);
     border-top-color: var(--avonni-list-item-color-border, #dddbda);
 }
+
 .avonni-list__item-divider_bottom {
     border-bottom-width: var(--avonni-list-item-sizing-border, 1px);
     border-bottom-style: var(--avonni-list-item-styling-border, solid);
@@ -299,6 +309,7 @@ a.avonni-list__item-info-link:active {
 .avonni-list__item-text-color_inverse a.avonni-list__item-header-link {
     color: var(--avonni-list-item-header-link-text-color-inverse, white);
 }
+
 .avonni-list__item-text-color_inverse a.avonni-list__item-header-link:hover,
 .avonni-list__item-text-color_inverse a.avonni-list__item-header-link:focus {
     color: var(
@@ -306,6 +317,7 @@ a.avonni-list__item-info-link:active {
         var(--lwc-colorTextLinkInverseHover, rgba(255, 255, 255, 0.75))
     );
 }
+
 .avonni-list__item-text-color_inverse a.avonni-list__item-header-link:active {
     color: var(
         --avonni-list-item-header-link-text-color-inverse-active,
@@ -316,6 +328,7 @@ a.avonni-list__item-info-link:active {
 .avonni-list__item-text-color_inverse a.avonni-list__item-info-link {
     color: var(--avonni-list-item-infos-link-text-color-inverse, white);
 }
+
 .avonni-list__item-text-color_inverse a.avonni-list__item-info-link:hover,
 .avonni-list__item-text-color_inverse a.avonni-list__item-info-link:focus {
     color: var(
@@ -323,6 +336,7 @@ a.avonni-list__item-info-link:active {
         var(--lwc-colorTextLinkInverseHover, rgba(255, 255, 255, 0.75))
     );
 }
+
 .avonni-list__item-text-color_inverse a.avonni-list__item-info-link:active {
     color: var(
         --avonni-list-item-infos-link-text-color-inverse-active,
@@ -356,4 +370,8 @@ a.avonni-list__item-info-link:active {
         --avonni-list-item-icon-radius-border,
         0.25rem
     );
+}
+
+.avonni-list-item-body__vertical-alignment {
+    align-items: var(--avonni-list-item-body-vertical-alignment, center);
 }

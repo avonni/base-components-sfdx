@@ -60,8 +60,12 @@
     font-weight: var(--avonni-progress-circle-value-font-weight, 400);
 }
 
-.avonni-progress-circle_size-x-small .avonni-progress-circle__dots {
+.avonni-progress-circle_size-xx-small .avonni-progress-circle__dots {
     margin-bottom: 3px;
+}
+
+.avonni-progress-circle_size-x-small .avonni-progress-circle__dots {
+    margin-bottom: 5px;
 }
 
 .avonni-progress-circle_size-small .avonni-progress-circle__dots {
@@ -76,10 +80,16 @@
     margin-bottom: 20px;
 }
 
-.avonni-progress-circle_size-x-small {
+.avonni-progress-circle_size-xx-small {
     height: 26px;
     width: 26px;
     border-radius: 26px;
+}
+
+.avonni-progress-circle_size-x-small {
+    height: 40px;
+    width: 40px;
+    border-radius: 40px;
 }
 
 .avonni-progress-circle_size-small {
@@ -115,13 +125,22 @@
     background: rgb(255, 255, 255);
 }
 
-.avonni-progress-circle__content_size-x-small {
+.avonni-progress-circle__content_size-xx-small {
     border-radius: 26px;
     left: 4px;
     bottom: 4px;
     top: 4px;
     right: 4px;
     font-size: 6px;
+}
+
+.avonni-progress-circle__content_size-x-small {
+    border-radius: 40px;
+    left: 5px;
+    bottom: 5px;
+    top: 5px;
+    right: 5px;
+    font-size: 8px;
 }
 
 .avonni-progress-circle__content_size-small {
@@ -160,12 +179,20 @@
     font-size: 30px;
 }
 
-.avonni-progress-circle__title_size-x-small {
+.avonni-progress-circle__title_size-xx-small {
     font-size: 6px;
 }
 
-.avonni-progress-circle__title-top_size-x-small {
+.avonni-progress-circle__title-top_size-xx-small {
     width: 26px;
+}
+
+.avonni-progress-circle__title_size-x-small {
+    font-size: 8px;
+}
+
+.avonni-progress-circle__title-top_size-x-small {
+    width: 40px;
 }
 
 .avonni-progress-circle__title_size-small {
@@ -207,11 +234,18 @@
     right: 3px;
 }
 
-.avonni-progress-circle_thickness-x-small-size-x-small {
+.avonni-progress-circle_thickness-x-small-size-xx-small {
     left: 1px;
     bottom: 1px;
     top: 1px;
     right: 1px;
+}
+
+.avonni-progress-circle_thickness-x-small-size-x-small {
+    left: 1.5px;
+    bottom: 1.5px;
+    top: 1.5px;
+    right: 1.5px;
 }
 
 .avonni-progress-circle_thickness-x-small-size-small {
@@ -228,11 +262,18 @@
     right: 6px;
 }
 
-.avonni-progress-circle_thickness-small-size-x-small {
+.avonni-progress-circle_thickness-small-size-xx-small {
     left: 2px;
     bottom: 2px;
     top: 2px;
     right: 2px;
+}
+
+.avonni-progress-circle_thickness-small-size-x-small {
+    left: 3px;
+    bottom: 3px;
+    top: 3px;
+    right: 3px;
 }
 
 .avonni-progress-circle_thickness-small-size-small {
@@ -263,12 +304,20 @@
     right: 12px;
 }
 
-.avonni-progress-circle_thickness-large-size-x-small {
+.avonni-progress-circle_thickness-large-size-xx-small {
     left: 5px;
     bottom: 5px;
     top: 5px;
     right: 5px;
     font-size: 5px;
+}
+
+.avonni-progress-circle_thickness-large-size-x-small {
+    left: 6px;
+    bottom: 6px;
+    top: 6px;
+    right: 6px;
+    font-size: 6px;
 }
 
 .avonni-progress-circle_thickness-large-size-small {
@@ -299,12 +348,19 @@
     right: 15px;
 }
 
-.avonni-progress-circle_thickness-x-large-size-x-small {
+.avonni-progress-circle_thickness-x-large-size-xx-small {
     left: 6px;
     bottom: 6px;
     top: 6px;
     right: 6px;
     font-size: 4px;
+}
+
+.avonni-progress-circle_thickness-x-large-size-x-small {
+    left: 7px;
+    bottom: 7px;
+    top: 7px;
+    right: 7px;
 }
 
 .avonni-progress-circle_thickness-x-large-size-small {
@@ -334,8 +390,12 @@
     font-weight: var(--avonni-progress-circle-label-font-weight, 400);
 }
 
-.avonni-progress-circle__label_size-x-small {
+.avonni-progress-circle__label_size-xx-small {
     font-size: 3px;
+}
+
+.avonni-progress-circle__label_size-x-small {
+    font-size: 4px;
 }
 
 .avonni-progress-circle__label_size-small {

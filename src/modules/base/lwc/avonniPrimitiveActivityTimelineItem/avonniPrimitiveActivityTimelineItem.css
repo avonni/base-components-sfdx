@@ -152,6 +152,13 @@
     left: 3rem;
 }
 
-.avonni-activity-timeline-item-no-fields_margin {
+.avonni-primitive-activity-timeline-item__no-fields_margin {
     margin-left: 24px;
+}
+
+.avonni-primitive-activity-timeline-item__fields-container {
+    background-color: rgb(243, 243, 243);
+    border-radius: 0.25rem;
+    border: 1px solid rgb(229, 229, 229);
+    padding: 0rem 1rem 1rem 1rem;
 }

@@ -71,6 +71,15 @@ export default class AvonniSchedulerAgendaDayGroup {
     }
 
     /**
+     * End of the day.
+     *
+     * @type {DateTime}
+     */
+    get end() {
+        return this.date.endOf('day');
+    }
+
+    /**
      * Full formatted month name.
      *
      * @type {string}
@@ -86,6 +95,15 @@ export default class AvonniSchedulerAgendaDayGroup {
      */
     get month() {
         return this.date.toFormat('LLL');
+    }
+
+    /**
+     * Start of the day.
+     *
+     * @type {DateTime}
+     */
+    get start() {
+        return this.date.startOf('day');
     }
 
     /**

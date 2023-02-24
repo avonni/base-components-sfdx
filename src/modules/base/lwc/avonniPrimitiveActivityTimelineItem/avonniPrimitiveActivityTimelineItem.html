@@ -193,15 +193,12 @@
                             <div
                                 aria-hidden="false"
                                 class="
-                                    slds-box
-                                    slds-theme_shade
-                                    slds-m-top_x-small
+                                    avonni-primitive-activity-timeline-item__fields-container
                                     slds-m-horizontal_xx-small
-                                    slds-p-around_medium
                                 "
                             >
                                 <lightning-layout
-                                    horizontal-align="spread"
+                                    data-element-id="fields-container"
                                     multiple-rows="true"
                                 >
                                     <template
@@ -210,11 +207,12 @@
                                         for:index="index"
                                     >
                                         <lightning-layout-item
+                                            key={field.value}
                                             class="
                                                 slds-truncate
-                                                slds-m-around_small
+                                                slds-p-top_medium
                                             "
-                                            key={field.value}
+                                            size={fieldSize}
                                         >
                                             <c-avonni-output-data
                                                 label={field.label}

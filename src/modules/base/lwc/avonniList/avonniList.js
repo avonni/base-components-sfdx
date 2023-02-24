@@ -173,6 +173,8 @@ export default class AvonniList extends LightningElement {
     _dragging = false;
     _hasUsedInfiniteLoading = false;
 
+    _connected = false;
+
     renderedCallback() {
         if (!this._resizeObserver) {
             this.initWrapObserver();
@@ -195,10 +197,9 @@ export default class AvonniList extends LightningElement {
         });
     }
 
-    hasConnected = false;
     connectedCallback() {
         this.setItemProperties();
-        this.hasConnected = true;
+        this._connected = true;
     }
 
     disconnectedCallback() {
@@ -382,7 +383,7 @@ export default class AvonniList extends LightningElement {
             }
         );
 
-        if (this.hasConnected) {
+        if (this._connected) {
             this.setItemProperties();
         }
     }
@@ -464,7 +465,7 @@ export default class AvonniList extends LightningElement {
     set items(proxy) {
         this._items = normalizeArray(proxy, 'object');
 
-        if (this.hasConnected) {
+        if (this._connected) {
             this.setItemProperties();
         }
     }
@@ -541,7 +542,7 @@ export default class AvonniList extends LightningElement {
             item.variant = this._variant;
         });
 
-        if (this.hasConnected) {
+        if (this._connected) {
             this.setItemProperties();
         }
     }
@@ -573,17 +574,25 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-     * Apply object fit classes to images.
+     * Computed item class styling based on user specified attributes.
+     *
+     * @type {string}
+     */
+    get computedItemClass() {
+        return this.divider === 'around'
+            ? 'avonni-list__item-card-style'
+            : 'avonni-list__item-borderless';
+    }
+
+    /**
+     * Computed object fit class to images.
      */
     get computedImageMediaClass() {
-        return classSet('avonni-list__item-img').add({
-            'avonni-list__item-image_object-fit-contain':
-                this.imageAttributes.cropFit === 'contain',
-            'avonni-list__item-image_object-fit-fill':
-                this.imageAttributes.cropFit === 'fill',
-            'avonni-list__item-image_object-fit-none':
-                this.imageAttributes.cropFit === 'none'
-        });
+        return classSet('avonni-list__item-img')
+            .add(
+                `avonni-list__item-image_object-fit-${this.imageAttributes.cropFit}`
+            )
+            .toString();
     }
 
     /**
@@ -624,12 +633,100 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
-     * Query selector for the list container.
+     * Computed item class styling based on user specified attributes.
+     *
+     * @type {string}
      */
-    get listContainer() {
-        return this.template.querySelector(
-            '[data-element-id="list-container"]'
+    get computedItemWrapperClass() {
+        return classSet('avonni-list__item-wrapper avonni-list__item')
+            .add({
+                'avonni-list__item-sortable':
+                    this.sortable &&
+                    this._currentColumnCount === 1 &&
+                    this.variant === 'base',
+                'avonni-list__item-divider_top': this.divider === 'top',
+                'avonni-list__item-divider_bottom': this.divider === 'bottom'
+            })
+            .add(
+                `avonni-list__flex-col slds-size_${
+                    12 / this._currentColumnCount
+                }-of-12`
+            )
+            .toString();
+    }
+
+    /**
+     * Check if Image is present and set the list class styling according to attributes.
+     *
+     * @type {string}
+     */
+    get computedListClass() {
+        return classSet(
+            'avonni-list__item-menu slds-grid slds-is-relative avonni-list__flex-col'
+        )
+            .add({
+                'slds-grid_vertical': this._currentColumnCount === 1,
+                'slds-wrap':
+                    this._currentColumnCount > 1 && this.variant === 'base',
+                'avonni-list__items-without-divider': this.divider === '',
+                'avonni-list__has-card-style': this.divider === 'around',
+                'slds-has-dividers_top-space avonni-list__items-have-top-divider':
+                    this.divider === 'top',
+                'slds-has-dividers_bottom-space avonni-list__items-have-bottom-divider':
+                    this.divider === 'bottom'
+            })
+            .toString();
+    }
+
+    /**
+     * Only enable scrolling if enable or has been used
+     */
+    get computedListContainerClass() {
+        return classSet({
+            'slds-grid avonni-list__flex-col': this.variant === 'single-line',
+            'slds-scrollable_y':
+                this._hasUsedInfiniteLoading && this.variant === 'base'
+        }).toString();
+    }
+
+    /**
+     * Computed single line items.
+     */
+    get computedSingleLineItems() {
+        // the first index is the first item to display
+        const pageStart = this._currentColumnCount * this._singleLinePage;
+        let pageItems = this.computedItems.slice(
+            pageStart,
+            this._currentColumnCount + pageStart
         );
+        let nextPageItems = this.computedItems.slice(
+            this._currentColumnCount + pageStart,
+            this._currentColumnCount * 2 + pageStart
+        );
+        if (
+            nextPageItems.length === 0 &&
+            !this.isLoading &&
+            this.enableInfiniteLoading
+        ) {
+            // window.requestAnimationFrame required because handleLoadMore() cannot be called while updating template
+            window.requestAnimationFrame(() => {
+                this.handleLoadMore();
+            });
+        }
+        this._singleLinePageFirstIndex = pageStart;
+        return pageItems;
+    }
+
+    /**
+     * Items to be displayed in the list. On single-line lists, displayed items
+     * are a portion of total computed items to display on a single page of item.
+     *
+     * @type {array}
+     */
+    get displayedItems() {
+        return this.variant === 'single-line'
+            ? this.computedSingleLineItems
+            : this.computedItems;
     }
 
     /**
@@ -650,6 +747,9 @@ export default class AvonniList extends LightningElement {
         return this.computedMediaActions[0];
     }
 
+    /**
+     * Generate unique ID key.
+     */
     get generateKey() {
         return generateUUID();
     }
@@ -707,12 +807,39 @@ export default class AvonniList extends LightningElement {
     }
 
     /**
+     * Query selector for the list container.
+     */
+    get listContainer() {
+        return this.template.querySelector(
+            '[data-element-id="list-container"]'
+        );
+    }
+
+    /**
      * ARIA role of the menu, if the list is sortable.
      *
      * @type {string|undefined}
      */
     get menuRole() {
         return this.sortable ? 'listbox' : undefined;
+    }
+
+    /**
+     * On single-line variant, if there are items on the next page, enable the next page button.
+     *
+     * @type {boolean}
+     */
+    get nextPageDisabled() {
+        return this._singleLinePage >= this.totalPages - 1;
+    }
+
+    /**
+     * On single-line variant, if there are items on the previous page, enable the previous page button.
+     *
+     * @type {boolean}
+     */
+    get previousPageDisabled() {
+        return this._singleLinePage <= 0;
     }
 
     /**
@@ -747,6 +874,11 @@ export default class AvonniList extends LightningElement {
         );
     }
 
+    /**
+     * Check if Icon is left of content.
+     *
+     * @type {boolean}
+     */
     get showSortIconLeftOfContent() {
         return (
             this._currentColumnCount === 1 &&
@@ -756,19 +888,6 @@ export default class AvonniList extends LightningElement {
             !!this.sortableIconName &&
             this.sortableIconPosition === 'left'
         );
-    }
-
-    /**
-     * Items to be displayed in the list. On single-line lists, displayed items
-     * are a portion of total computed items to display on a single page of item.
-     *
-     * @type {array}
-     */
-    get displayedItems() {
-        if (this.variant === 'single-line') {
-            return this.computedSingleLineItems();
-        }
-        return this.computedItems;
     }
 
     /**
@@ -789,102 +908,6 @@ export default class AvonniList extends LightningElement {
         return (
             Math.ceil(this.computedItems.length / this._currentColumnCount) || 1
         );
-    }
-
-    /**
-     * On single-line variant, if there are items on the previous page, enable the previous page button.
-     *
-     * @type {boolean}
-     */
-    get previousPageDisabled() {
-        return this._singleLinePage <= 0;
-    }
-
-    /**
-     * On single-line variant, if there are items on the next page, enable the next page button.
-     *
-     * @type {boolean}
-     */
-    get nextPageDisabled() {
-        return this._singleLinePage >= this.totalPages - 1;
-    }
-
-    /**
-     * Check if Image is present and set the list class styling according to attributes.
-     *
-     * @type {string}
-     */
-    get computedListClass() {
-        return classSet(
-            'avonni-list__item-menu slds-grid slds-is-relative avonni-list__flex-col'
-        )
-            .add({
-                'slds-grid_vertical': this._currentColumnCount === 1,
-                'slds-wrap':
-                    this._currentColumnCount > 1 && this.variant === 'base',
-                'avonni-list__items-without-divider': this.divider === '',
-                'avonni-list__has-card-style': this.divider === 'around',
-                'slds-has-dividers_top-space avonni-list__items-have-top-divider':
-                    this.divider === 'top',
-                'slds-has-dividers_bottom-space avonni-list__items-have-bottom-divider':
-                    this.divider === 'bottom'
-            })
-            .toString();
-    }
-
-    /**
-     * Computed item class styling based on user specified attributes.
-     *
-     * @type {string}
-     */
-    get computedItemClass() {
-        return classSet()
-            .add({
-                'avonni-list__item-borderless': this.divider !== 'around',
-                'avonni-list__item-card-style': this.divider === 'around'
-            })
-            .toString();
-    }
-
-    /**
-     * Computed item class styling based on user specified attributes.
-     *
-     * @type {string}
-     */
-    get computedItemWrapperClass() {
-        return classSet('avonni-list__item-wrapper avonni-list__item')
-            .add({
-                'avonni-list__item-sortable':
-                    this.sortable &&
-                    this._currentColumnCount === 1 &&
-                    this.variant === 'base',
-                'avonni-list__item-divider_top': this.divider === 'top',
-                'avonni-list__item-divider_bottom': this.divider === 'bottom',
-                'avonni-list__flex-col slds-size_12-of-12':
-                    this._currentColumnCount === 1,
-                'avonni-list__flex-col slds-size_6-of-12':
-                    this._currentColumnCount === 2,
-                'avonni-list__flex-col slds-size_4-of-12':
-                    this._currentColumnCount === 3,
-                'avonni-list__flex-col slds-size_3-of-12':
-                    this._currentColumnCount === 4,
-                'avonni-list__flex-col slds-size_2-of-12':
-                    this._currentColumnCount === 6,
-                'avonni-list__flex-col slds-size_1-of-12':
-                    this._currentColumnCount === 12
-            })
-            .toString();
-    }
-
-    /**
-     * Only enable scrolling if enable or has been used
-     */
-    get computedListContainerClass() {
-        return classSet({
-            'slds-grid avonni-list__flex-col': this.variant === 'single-line',
-            'slds-scrollable_y':
-                this._hasUsedInfiniteLoading && this.variant === 'base'
-        }).toString();
     }
 
     /*
@@ -1097,6 +1120,11 @@ export default class AvonniList extends LightningElement {
         }
     }
 
+    /**
+     * Verify if moving elements with the keyboard.
+     *
+     * @param {HTMLElement} targetItem
+     */
     checkIfKeyboardMoved(targetItem) {
         const itemHasMoved = targetItem.dataset.moved === 'keyboard-moved';
         if (itemHasMoved) {
@@ -1138,6 +1166,11 @@ export default class AvonniList extends LightningElement {
                 null;
     }
 
+    /**
+     * Clean up the item before sending it to the event.
+     *
+     * @param {object} item
+     */
     cleanUpItem(item) {
         const itemCopy = deepCopy(item);
         delete itemCopy.index;
@@ -1146,13 +1179,13 @@ export default class AvonniList extends LightningElement {
         delete itemCopy.listHasImages;
         delete itemCopy.infos;
         delete itemCopy.icons;
-
         return itemCopy;
     }
 
     /**
      * Calculate the height of an item, including the row gap.
-     * @param {HTMLElement} item
+     *
+     * @param {HTMLElement} itemElement
      */
     computeItemHeight(itemElement) {
         const list = this.template.querySelector(
@@ -1194,31 +1227,6 @@ export default class AvonniList extends LightningElement {
         }
 
         return scrollStep;
-    }
-
-    computedSingleLineItems() {
-        // the first index is the first item to display
-        const pageStart = this._currentColumnCount * this._singleLinePage;
-        let pageItems = this.computedItems.slice(
-            pageStart,
-            this._currentColumnCount + pageStart
-        );
-        let nextPageItems = this.computedItems.slice(
-            this._currentColumnCount + pageStart,
-            this._currentColumnCount * 2 + pageStart
-        );
-        if (
-            nextPageItems.length === 0 &&
-            !this.isLoading &&
-            this.enableInfiniteLoading
-        ) {
-            // window.requestAnimationFrame required because handleLoadMore() cannot be called while updating template
-            window.requestAnimationFrame(() => {
-                this.handleLoadMore();
-            });
-        }
-        this._singleLinePageFirstIndex = pageStart;
-        return pageItems;
     }
 
     /**
@@ -1733,11 +1741,6 @@ export default class AvonniList extends LightningElement {
         this.autoScroll(this._currentY);
     }
 
-    /**
-     * When dragging is finished, reorder items or reset the list.
-     *
-     * @param {Event} event
-     */
     /**
      * When dragging is finished, reorder items or reset the list.
      *

@@ -37,6 +37,7 @@
         <div class="slds-grid slds-grid_vertical avonni-list__full-height">
             <p
                 if:true={label}
+                data-element-id="label"
                 class="slds-m-bottom_x-small avonni-list__header_font"
             >
                 {label}
@@ -199,7 +200,6 @@
                                         if:true={showSortIconInLeftImage}
                                         class="
                                             slds-p-horizontal_xx-small
-                                            icon-left
                                             avonni-list__item-sortable-icon-cursor
                                         "
                                         icon-name={sortableIconName}
@@ -235,7 +235,6 @@
                                     if:true={showSortIconLeftOfContent}
                                     class="
                                         slds-p-horizontal_xx-small
-                                        icon-left
                                         avonni-list__item-sortable-icon-cursor
                                     "
                                     icon-name={sortableIconName}
@@ -246,7 +245,7 @@
                                     class="
                                         slds-grid
                                         avonni-list__flex-col
-                                        slds-grid_vertical-align-center
+                                        avonni-list-item-body__vertical-alignment
                                         slds-has-flexi-truncate
                                         avonni-list-item-body
                                     "
@@ -381,7 +380,6 @@
                                     if:true={showSortIconRight}
                                     class="
                                         slds-m-right_x-small
-                                        icon-right
                                         avonni-list__item-sortable-icon-cursor
                                     "
                                     icon-name={sortableIconName}
@@ -459,14 +457,14 @@
                     </li>
                 </template>
                 <li
+                    if:true={isLoadingBelow}
+                    data-element-id="loading-spinner-container"
                     class="
                         avonni-list__flex-col
                         slds-size_12-of-12
                         slds-is-relative
                         avonni-list__lower-spinner
                     "
-                    data-element-id="loading-spinner-container"
-                    if:true={isLoadingBelow}
                 >
                     <lightning-spinner
                         data-element-id="loading-spinner-below"

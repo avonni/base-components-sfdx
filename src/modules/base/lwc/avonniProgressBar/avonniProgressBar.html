@@ -34,14 +34,13 @@
 
 <template>
     <div class={computedSizing}>
-        <lightning-layout vertical-align="end" pull-to-boundary="small">
+        <lightning-layout vertical-align="center" pull-to-boundary="small">
             <lightning-layout-item
                 if:true={showPositionLeft}
-                class="slds-p-bottom_x-small"
                 data-position-left
             >
                 <span
-                    class="avonni-progress-bar-font-weight_large"
+                    class="avonni-progress-bar__value_font"
                     aria-hidden="true"
                 >
                     {value}% {valueLabel}
@@ -54,7 +53,10 @@
                 <lightning-layout horizontal-align="spread">
                     <lightning-layout-item>
                         <div
-                            class="slds-p-bottom_x-small avonni-progress-bar__label_font"
+                            class="
+                                slds-p-bottom_x-small
+                                avonni-progress-bar__label_font
+                            "
                             if:true={label}
                         >
                             {label}
@@ -63,7 +65,10 @@
                             if:true={showPositionTopLeft}
                             data-position-top-left
                             aria-hidden="true"
-                            class="slds-p-left_xx-small avonni-progress-bar__value_font"
+                            class="
+                                slds-p-left_xx-small
+                                avonni-progress-bar__value_font
+                            "
                         >
                             {value}% {valueLabel}
                         </span>
@@ -92,6 +97,7 @@
                     <span class="slds-assistive-text">{assistiveText}</span>
                     <lightning-layout
                         horizontal-align="spread"
+                        vertical-align="center"
                         class="slds-p-top_x-small"
                     >
                         <lightning-layout-item
@@ -100,7 +106,10 @@
                         >
                             <span
                                 aria-hidden="true"
-                                class="avonni-progress-bar__value_bottom-right avonni-progress-bar__value_font"
+                                class="
+                                    avonni-progress-bar__value_bottom-right
+                                    avonni-progress-bar__value_font
+                                "
                             >
                                 {value}% {valueLabel}
                             </span>
@@ -111,7 +120,10 @@
                         >
                             <span
                                 aria-hidden="true"
-                                class="avonni-progress-bar__value_bottom-left avonni-progress-bar__value_font"
+                                class="
+                                    avonni-progress-bar__value_bottom-left
+                                    avonni-progress-bar__value_font
+                                "
                             >
                                 {value}% {valueLabel}
                             </span>
@@ -136,10 +148,12 @@
             </lightning-layout-item>
             <lightning-layout-item
                 if:true={showPositionRight}
-                class="slds-p-bottom_x-small"
                 data-position-right
             >
-                <span class="avonni-progress-bar__value_font" aria-hidden="true">
+                <span
+                    class="avonni-progress-bar__value_font"
+                    aria-hidden="true"
+                >
                     {value}% {valueLabel}
                 </span>
             </lightning-layout-item>

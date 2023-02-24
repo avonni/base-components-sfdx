@@ -90,7 +90,9 @@
                                 ></lightning-button-icon>
                             </div>
                         </div>
-                        <lightning-combobox
+                        <c-avonni-combobox
+                            class="avonni-calendar__year-combobox"
+                            hide-clear-icon
                             name="years"
                             label="Years"
                             variant="label-hidden"
@@ -99,10 +101,10 @@
                             placeholder={year}
                             options={yearsList}
                             disabled={disabled}
-                            data-element-id="lightning-combobox"
+                            data-element-id="avonni-combobox"
                             onchange={handleYearChange}
                         >
-                        </lightning-combobox>
+                        </c-avonni-combobox>
                     </div>
                 </template>
                 <table

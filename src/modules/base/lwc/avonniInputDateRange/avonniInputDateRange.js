@@ -276,7 +276,6 @@ export default class AvonniInputDateRange extends LightningElement {
     /**
      * The display style of the time when type='time' or type='datetime'.
      * Valid values are short, medium and long. Currently, medium and long styles look the same.
-     * On mobile devices this attribute has no effect.
      *
      * @type {string}
      * @default short
@@ -540,12 +539,10 @@ export default class AvonniInputDateRange extends LightningElement {
     get calendarValue() {
         const value = [];
         if (this.startDate) {
-            const normalizedDate = new Date(this.startDate).setHours(0, 0);
-            value.push(normalizedDate);
+            value.push(this.startDate);
         }
         if (this.endDate) {
-            const normalizedDate = new Date(this.endDate).setHours(0, 0);
-            value.push(normalizedDate);
+            value.push(this.endDate);
         }
         return value;
     }
@@ -693,16 +690,11 @@ export default class AvonniInputDateRange extends LightningElement {
             this.startTimeString = '';
             return;
         }
-        if (this.timezone) {
-            // Use the date and time from the given time zone
-            const stringDate = this.startDate.toLocaleString('en-us', {
-                timeZone: this.timezone
-            });
-            this._startDate = new Date(stringDate);
-        }
+        const date = this.getDateWithTimeZone(this.startDate);
+        this._startDate = new Date(date.ts);
 
         if (this.type === 'datetime') {
-            this.startTime = this.startDate.toTimeString().substring(0, 5);
+            this.startTime = date.toISOTime({ includeOffset: false });
             this.startTimeString = this.timeFormat(this.startDate);
         }
     }
@@ -716,18 +708,20 @@ export default class AvonniInputDateRange extends LightningElement {
             this.endTimeString = '';
             return;
         }
-        if (this.timezone) {
-            // Use the date and time from the given time zone
-            const stringDate = this.endDate.toLocaleString('en-us', {
-                timeZone: this.timezone
-            });
-            this._endDate = new Date(stringDate);
-        }
+        const date = this.getDateWithTimeZone(this.endDate);
+        this._endDate = new Date(date.ts);
 
         if (this.type === 'datetime') {
-            this.endTime = this.endDate.toTimeString().substring(0, 5);
+            this.endTime = date.toISOTime({ includeOffset: false });
             this.endTimeString = this.timeFormat(this.endDate);
         }
+    }
+
+    getDateWithTimeZone(date) {
+        return dateTimeObjectFrom(date, {
+            zone: this.timezone,
+            locale: 'en-US'
+        });
     }
 
     /**
@@ -761,21 +755,16 @@ export default class AvonniInputDateRange extends LightningElement {
      * @returns {date} formatted date depending on the date style.
      */
     dateFormat(value) {
-        let date = value.getDate();
-        let year = value.getFullYear();
-        let month = value.getMonth() + 1;
+        const date = this.getDateWithTimeZone(value);
 
-        if (this.dateStyle === 'medium') {
-            month = value.toLocaleString('default', { month: 'short' });
-            return `${month} ${date}, ${year}`;
+        switch (this.dateStyle) {
+            case 'medium':
+                return date.toFormat('LLL. d, y');
+            case 'long':
+                return date.toFormat('LLLL d, y');
+            default:
+                return date.toFormat('L/d/y');
         }
-
-        if (this.dateStyle === 'long') {
-            month = value.toLocaleString('default', { month: 'long' });
-            return `${month} ${date}, ${year}`;
-        }
-
-        return `${month}/${date}/${year}`;
     }
 
     /**
@@ -785,42 +774,22 @@ export default class AvonniInputDateRange extends LightningElement {
      * @returns {time} formatted time depending on the time style.
      */
     timeFormat(value) {
-        return this.timeStyle === 'short'
-            ? value.toLocaleString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-              })
-            : value.toLocaleString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-              });
+        const date = this.getDateWithTimeZone(value);
+        switch (this.timeStyle) {
+            case 'short':
+                return date.toFormat('t');
+            default:
+                return date.toFormat('tt');
+        }
     }
 
     toISOString(dateObject, timeString) {
         if (!dateObject) {
             return null;
         }
-        const time = timeString ? `T${timeString}` : 'T00:00:00';
-        const date = dateObject && dateObject.toISOString();
-
-        let dateTime = date.replace(/T[^Z]+/, time);
-        try {
-            const formattedWithTimeZone = new Date(dateTime).toLocaleString(
-                'en-US',
-                {
-                    timeZone: this.timezone,
-                    timeZoneName: 'longOffset'
-                }
-            );
-            const tz = formattedWithTimeZone.match(/GMT([-+]\d{2}:\d{2})?/);
-            if (tz[1]) {
-                dateTime = dateTime.replace('Z', tz[1]);
-            }
-        } catch {
-            // The time zone is not supported
-        }
-        return dateTime;
+        const date = this.getDateWithTimeZone(dateObject).toISO();
+        const time = timeString ? `T${timeString}` : 'T00:00:00.000';
+        return date.replace(/T[0-9:.]+/, time);
     }
 
     /**

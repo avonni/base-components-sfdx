@@ -47,7 +47,7 @@
         >
             <!-- Side panel: left position-->
             <template if:true={showLeftPanel}>
-                <div class={sidePanelClass} data-element-id="div-panel">
+                <div class={sidePanelClass} data-element-id="div-panel-left">
                     <div
                         class="slds-p-around_medium"
                         data-element-id="div-panel-content"
@@ -63,6 +63,7 @@
                         <div
                             if:false={hideResourcesFilter}
                             class="slds-m-top_medium"
+                            data-element-id="div-resources-filter"
                         >
                             <template
                                 for:each={resourceOptions}
@@ -85,6 +86,7 @@
                 <div
                     if:true={showSplitter}
                     class={splitterClass}
+                    data-element-id="div-splitter"
                     onmousedown={handleSplitterResizeMouseDown}
                 >
                     <lightning-button-icon
@@ -126,6 +128,7 @@
                 <div
                     class={scheduleWrapperClass}
                     data-element-id="div-schedule-wrapper"
+                    onclick={handleClick}
                 >
                     <!-- Day, week and month schedule -->
                     <template if:false={isYear}>
@@ -537,6 +540,7 @@
                 <div
                     if:true={showSplitter}
                     class={splitterClass}
+                    data-element-id="div-splitter"
                     onmousedown={handleSplitterResizeMouseDown}
                 >
                     <lightning-button-icon
@@ -545,6 +549,7 @@
                         icon-name="utility:left"
                         size="x-small"
                         variant="bare"
+                        data-element-id="lightning-button-icon-splitter-collapse"
                         onclick={handleSplitterCollapse}
                         onmousedown={stopPropagation}
                     ></lightning-button-icon>
@@ -555,6 +560,7 @@
                             slds-m-vertical_x-small
                             slds-m-horizontal_xx-small
                         "
+                        data-element-id="div-splitter-resize-handle"
                     >
                         <span class="slds-assistive-text">Resize</span>
                     </div>
@@ -565,11 +571,12 @@
                         icon-name="utility:right"
                         size="x-small"
                         variant="bare"
+                        data-element-id="lightning-button-icon-splitter-expand"
                         onclick={handleSplitterExpand}
                         onmousedown={stopPropagation}
                     ></lightning-button-icon>
                 </div>
-                <div class={sidePanelClass} data-element-id="div-panel">
+                <div class={sidePanelClass} data-element-id="div-panel-right">
                     <div
                         class="slds-p-around_medium"
                         data-element-id="div-panel-content"
@@ -585,6 +592,7 @@
                         <div
                             if:false={hideResourcesFilter}
                             class="slds-m-top_medium"
+                            data-element-id="div-resources-filter"
                         >
                             <template
                                 for:each={resourceOptions}

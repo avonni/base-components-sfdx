@@ -52,9 +52,14 @@ export default class AvonniInputChoiceOption {
         this.label = option.label;
         this.value = option.value;
         this.id = `checkbox-${index}`;
-        this.isChecked = value && value.indexOf(option.value) !== -1;
         this.iconName = option.iconName;
         this.iconPosition = option.iconPosition;
+
+        if (value && Array.isArray(value)) {
+            this.isChecked = value.includes(option.value);
+        } else {
+            this.isChecked = value === option.value;
+        }
     }
 
     /**

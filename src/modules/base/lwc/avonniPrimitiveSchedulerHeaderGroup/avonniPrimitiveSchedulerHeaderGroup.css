@@ -60,7 +60,7 @@
     );
 }
 
-.avonni-scheduler-header-group__header-cell:last-of-type {
+.avonni-scheduler-header-group__header-cell:last-of-type:not(.avonni-scheduler-header-group__header-cell_vertical) {
     border-right-width: 0;
 }
 

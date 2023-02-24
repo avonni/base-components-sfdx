@@ -65,3 +65,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.avonni-avatar__tags {
+    margin-right: calc(-1 * var(--lwc-spacingXxSmall, 0.25rem));
+    margin-left: calc(-1 * var(--lwc-spacingXxSmall, 0.25rem));
+}

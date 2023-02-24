@@ -124,10 +124,9 @@ export default class AvonniProgressBar extends LightningElement {
      * @returns {File} progressBar.html | progressBarVertical.html
      */
     render() {
-        if (this._orientation === 'horizontal') {
-            return progressBar;
-        }
-        return progressBarVertical;
+        return this._orientation === 'horizontal'
+            ? progressBar
+            : progressBarVertical;
     }
 
     /*
@@ -328,6 +327,15 @@ export default class AvonniProgressBar extends LightningElement {
      */
 
     /**
+     * Return assistive text.
+     *
+     * @type {string}
+     */
+    get assistiveText() {
+        return `Progress: ${this._value}%`;
+    }
+
+    /**
      * Computed Sizing class for the progress bar.
      *
      * @type {string}
@@ -411,15 +419,6 @@ export default class AvonniProgressBar extends LightningElement {
     }
 
     /**
-     * Return assistive text.
-     *
-     * @type {string}
-     */
-    get assistiveText() {
-        return `Progress: ${this._value}%`;
-    }
-
-    /**
      * Computed orientation width or height depending on vertical or horizontal display.
      *
      * @type {string}
@@ -449,6 +448,24 @@ export default class AvonniProgressBar extends LightningElement {
     }
 
     /**
+     * Verify Show position bottom left.
+     *
+     * @type {string | boolean}
+     */
+    get showPositionBottomLeft() {
+        return this._valuePosition === 'bottom-left' && this._showValue;
+    }
+
+    /**
+     * Verify Show position bottom right.
+     *
+     * @type {string | boolean}
+     */
+    get showPositionBottomRight() {
+        return this._valuePosition === 'bottom-right' && this._showValue;
+    }
+
+    /**
      * Verify Show position top right.
      *
      * @type {string | boolean}
@@ -464,24 +481,6 @@ export default class AvonniProgressBar extends LightningElement {
      */
     get showPositionTopLeft() {
         return this._valuePosition === 'top-left' && this._showValue;
-    }
-
-    /**
-     * Verify Show position bottom right.
-     *
-     * @type {string | boolean}
-     */
-    get showPositionBottomRight() {
-        return this._valuePosition === 'bottom-right' && this._showValue;
-    }
-
-    /**
-     * Verify Show position bottom left.
-     *
-     * @type {string | boolean}
-     */
-    get showPositionBottomLeft() {
-        return this._valuePosition === 'bottom-left' && this._showValue;
     }
 
     /**

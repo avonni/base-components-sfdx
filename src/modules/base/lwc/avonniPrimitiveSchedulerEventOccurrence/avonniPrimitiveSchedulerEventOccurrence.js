@@ -288,7 +288,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return this._from;
     }
     set from(value) {
-        this._from = value;
+        this._from = value instanceof DateTime ? value : this.createDate(value);
 
         if (this._connected) {
             this.updatePosition();
@@ -526,7 +526,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
         return this._to;
     }
     set to(value) {
-        this._to = value;
+        this._to = value instanceof DateTime ? value : this.createDate(value);
 
         if (this._connected) {
             this.updateLength();
@@ -1063,7 +1063,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
     }
 
     get startTime() {
-        return this.from.toFormat('HH:mm');
+        return this.from ? this.from.toFormat('HH:mm') : '';
     }
 
     /**
@@ -1372,10 +1372,16 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
                         resource.data[fieldName];
 
                     // If the field name is a date, parse it with the date format
-                    labels[position].value =
-                        computedValue instanceof DateTime
-                            ? computedValue.toFormat(this.dateFormat)
+                    if (
+                        ['from', 'to', 'recurrenceEndDate'].includes(fieldName)
+                    ) {
+                        const dateValue = this.createDate(computedValue);
+                        labels[position].value = dateValue
+                            ? dateValue.toFormat(this.dateFormat)
                             : computedValue;
+                    } else {
+                        labels[position].value = computedValue;
+                    }
                 }
                 labels[position].iconName = iconName;
             }
@@ -1432,7 +1438,7 @@ export default class AvonniPrimitiveSchedulerEventOccurrence extends LightningEl
      * @returns {Date}
      */
     getComparableTime(date) {
-        if (!this.isVerticalCalendar) {
+        if (!this.isVerticalCalendar || !date) {
             return date;
         }
         const time = this.createDate(date);

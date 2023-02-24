@@ -153,3 +153,75 @@ export function processInlineEditFinishCustom(
         }
     }
 }
+
+/**
+ * Dispatches the `cellchange` event with the `draftValues` in the
+ * detail object.
+ *
+ * @param {Object} dtInstance - datatable instance
+ * @param {Object} cellChange - object containing cell changes
+ */
+export function dispatchCellChangeEvent(dtInstance, cellChange) {
+    dtInstance.dispatchEvent(
+        new CustomEvent('cellchange', {
+            detail: {
+                draftValues: getResolvedCellChanges(
+                    dtInstance.state,
+                    cellChange
+                )
+            }
+        })
+    );
+}
+
+/**
+ * Constructs an array of resolved cell changes made via inline edit
+ * Each array item consists of an identifier of the row and column in order to locate
+ * the cell in which the changes were made
+ *
+ * It follows this format: [{ <columnName>: "<changes>", <keyField>: "<keyFieldIdentifier>" }]
+ * Ex. [{ name: "My changes", id: "2" }]; where column name is 'name' and 'id' is the keyField
+ * The keyField can be used to identify the row.
+ *
+ * @param {Object} state - datatable state object
+ * @param {Object} changes - list of cell changes to be resolved
+ * @returns {Array} - array containing changes and identifiers of column and row where the changes
+ *                    should be applied
+ */
+function getResolvedCellChanges(state, changes) {
+    const keyField = state.keyField;
+
+    return Object.keys(changes).reduce((result, rowKey) => {
+        // Get the changes made by column
+        const cellChanges = getCellChangesByColumn(state, changes[rowKey]);
+
+        if (Object.keys(cellChanges).length > 0) {
+            // Add identifier for which row has change
+            cellChanges[keyField] = rowKey;
+            result.push(cellChanges);
+        }
+
+        return result;
+    }, []);
+}
+
+/**
+ * Retrieves the changes in cells in a particular column
+ * Returns an object where each item follows this format:
+ * { <columnName>: "<changes>"} -> Ex. { name: "My changes" }
+ *
+ * @param {Object} state - Datatable state
+ * @param {Object} changes - The internal representation of changes in a row
+ * @returns {Object} - the list of customer changes in a column
+ */
+function getCellChangesByColumn(state, changes) {
+    return Object.keys(changes).reduce((result, colKey) => {
+        const columns = state.columns;
+        const columnIndex = state.headerIndexes[colKey];
+        const columnDef = columns[columnIndex];
+
+        result[columnDef.columnKey || columnDef.fieldName] = changes[colKey];
+
+        return result;
+    }, {});
+}

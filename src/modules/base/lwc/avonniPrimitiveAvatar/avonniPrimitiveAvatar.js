@@ -442,21 +442,15 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
 
     _updateClassList() {
         const { size, variant, groupedAvatar } = this;
-        const wrapperClass = classSet('avonni-avatar slds-is-relative')
+        const wrapperClass = classSet(
+            'slds-is-relative avonni-avatar__display_inline-block'
+        )
             .add(`avonni-avatar_${variant}`)
-            .add({
-                'avonni-avatar_xx-small': size === 'xx-small',
-                'slds-avatar_x-small': size === 'x-small',
-                'slds-avatar_small': size === 'small',
-                'slds-avatar_medium': size === 'medium',
-                'slds-avatar_large': size === 'large',
-                'avonni-avatar_x-large': size === 'x-large',
-                'avonni-avatar_xx-large': size === 'xx-large'
-            });
+            .add(`avonni-avatar_${size}`);
 
-        const avatarClass = classSet('slds-avatar')
+        const avatarClass = classSet('avonni-avatar')
             .add({
-                'slds-avatar_circle': variant === 'circle'
+                'avonni-avatar__border-radius_circle': variant === 'circle'
             })
             .add(computeSldsClass(this.fallbackIconName));
 
@@ -524,7 +518,7 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
             : '';
 
         this.entityClass = classSet(
-            `slds-avatar slds-current-color avonni-avatar__entity slds-icon-${iconCategory}-${iconName}`
+            `avonni-avatar slds-current-color avonni-avatar__entity slds-icon-${iconCategory}-${iconName}`
         )
             .add(`avonni-avatar_${entityPosition}`)
             .add({

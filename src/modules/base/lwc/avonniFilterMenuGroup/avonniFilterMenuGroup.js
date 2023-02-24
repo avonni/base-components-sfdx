@@ -393,6 +393,11 @@ export default class AvonniFilterMenuGroup extends LightningElement {
         this.dispatchApply();
     }
 
+    /**
+     * Handle the load more event.
+     *
+     * @param {Event} event `loadmore` event fired by the menu.
+     */
     handleLoadMore(event) {
         event.stopPropagation();
         const menuName = event.target.dataset.name;
@@ -429,6 +434,9 @@ export default class AvonniFilterMenuGroup extends LightningElement {
      * Handle a click on the "Reset" button, in the vertical variant.
      */
     handleResetClick() {
+        if (!this.isVertical) {
+            return;
+        }
         this.reset();
         this.dispatchReset();
     }

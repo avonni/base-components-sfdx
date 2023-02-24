@@ -453,7 +453,9 @@ export default class AvonniCalendar extends LightningElement {
      */
     get tableClasses() {
         const isLabeled = this._dateLabels.length > 0;
-        return classSet('slds-datepicker__month')
+        return classSet(
+            'slds-datepicker__month slds-is-relative avonni-calendar__table'
+        )
             .add({ 'avonni-calendar__date-with-labels': isLabeled })
             .toString();
     }
