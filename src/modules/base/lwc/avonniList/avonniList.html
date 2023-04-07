@@ -96,10 +96,10 @@
                         key={generateKey}
                         onmousedown={dragStart}
                         onmousemove={drag}
-                        onmouseup={dragEnd}
+                        onmouseup={handleItemMouseUp}
+                        ontouchend={handleItemMouseUp}
                         ontouchstart={dragStart}
                         ontouchmove={drag}
-                        ontouchend={dragEnd}
                         onkeydown={handleKeyDown}
                         onclick={handleItemClick}
                         data-index={item.index}
@@ -254,7 +254,10 @@
 
                                     <c-avonni-avatar
                                         if:true={item.avatar}
-                                        class="slds-m-right_x-small"
+                                        class="
+                                            avonni-list-item-avatar
+                                            slds-m-right_x-small
+                                        "
                                         fallback-icon-name={item.avatar.fallbackIconName}
                                         src={item.avatar.src}
                                         size={item.avatar.size}

@@ -63,38 +63,19 @@ export default class AvonniChip extends LightningElement {
      * @type {string}
      */
     @api label;
+    /**
+     * Name to identify the chip.
+     *
+     * @type {string}
+     * @public
+     */
+    @api name;
 
     _outline = false;
     _variant = CHIP_VARIANTS.default;
 
-    showLeft = true;
-    showRight = true;
-
     renderedCallback() {
-        if (this.leftSlot) {
-            this.showLeft = this.leftSlot.assignedElements().length !== 0;
-        }
-        if (this.rightSlot) {
-            this.showRight = this.rightSlot.assignedElements().length !== 0;
-        }
-    }
-
-    /**
-     * Get left slot dom element.
-     *
-     * @type {Element}
-     */
-    get leftSlot() {
-        return this.template.querySelector('slot[name=left]');
-    }
-
-    /**
-     * Get right slot dom element.
-     *
-     * @type {Element}
-     */
-    get rightSlot() {
-        return this.template.querySelector('slot[name=right]');
+        this.updateSlotsVisibility();
     }
 
     /*
@@ -156,5 +137,44 @@ export default class AvonniChip extends LightningElement {
                 [`avonni-chip_theme-${this._variant}`]: this._variant
             })
             .toString();
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  PRIVATE METHODS
+     * -------------------------------------------------------------
+     */
+
+    updateSlotsVisibility() {
+        const leftSlot = this.template.querySelector(
+            '[data-element-id="slot-left"]'
+        );
+        const rightSlot = this.template.querySelector(
+            '[data-element-id="slot-right"]'
+        );
+
+        if (!leftSlot || !rightSlot) {
+            return;
+        }
+        if (leftSlot.assignedElements().length === 0) {
+            leftSlot.classList.add('slds-hide');
+        } else {
+            leftSlot.classList.remove('slds-hide');
+        }
+        if (rightSlot.assignedElements().length === 0) {
+            rightSlot.classList.add('slds-hide');
+        } else {
+            rightSlot.classList.remove('slds-hide');
+        }
+    }
+
+    /*
+     * ------------------------------------------------------------
+     *  EVENT HANDLERS AND DISPATCHERS
+     * -------------------------------------------------------------
+     */
+
+    handleSlotChange() {
+        this.updateSlotsVisibility();
     }
 }

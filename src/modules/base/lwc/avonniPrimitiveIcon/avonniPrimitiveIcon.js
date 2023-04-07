@@ -45,6 +45,7 @@ export default class AvonniPrimitiveIcon extends LightningElement {
     @api iconName;
     @api src;
     @api svgClass;
+    @api svgStyle;
     @api size = ICON_SIZES.default;
     @api variant;
 

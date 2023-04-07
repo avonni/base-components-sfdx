@@ -397,6 +397,15 @@ export default class AvonniRating extends LightningElement {
     }
 
     /**
+     * Returns true if the input is disabled or read-only.
+     *
+     * @type {boolean}
+     */
+    get isDisabled() {
+        return this.disabled || this.readOnly;
+    }
+
+    /**
      * Gets FieldConstraintApi.
      *
      * @type {object}
@@ -499,9 +508,7 @@ export default class AvonniRating extends LightningElement {
      * @param {Event} event
      */
     handleItemClick(event) {
-        if (this.readOnly || this.disabled) {
-            return;
-        }
+        if (this.readOnly || this.disabled) return;
 
         this._value = Number(event.currentTarget.value);
 

@@ -30,16 +30,110 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-chip-container__list-box_height {
-    height: fit-content;
+.avonni-chip-container__wrapper {
+    background-color: var(--avonni-chip-container-color-background, #ffffff);
+    border-radius: var(--avonni-chip-container-radius-border, 0.25rem);
 }
 
-.avonni-chip-container__wrapper_is-collapsed {
-    height: 35px;
-    overflow-y: hidden;
+.avonni-chip-container__wrapper {
+    padding-top: var(--avonni-chip-container-spacing-block-start, 0);
+    padding-bottom: var(--avonni-chip-container-spacing-block-end, 0);
+    padding-left: var(--avonni-chip-container-spacing-inline-start, 0);
+    padding-right: var(--avonni-chip-container-spacing-inline-end, 0);
+    border-style: var(--avonni-chip-container-styling-border);
+    border-width: var(--avonni-chip-container-sizing-border);
+    border-color: var(--avonni-chip-container-color-border);
 }
 
-.avonni-chip-container__show-more_centered {
+.avonni-chip-container__wrapper.avonni-chip-container__container {
+    padding-top: var(--avonni-chip-container-spacing-block-start, 0.125rem);
+    padding-bottom: var(--avonni-chip-container-spacing-block-end, 0.125rem);
+    padding-left: var(--avonni-chip-container-spacing-inline-start, 0.125rem);
+    padding-right: var(--avonni-chip-container-spacing-inline-end, 0.125rem);
+    border-style: var(--avonni-chip-container-styling-border, solid);
+    border-width: var(--avonni-chip-container-sizing-border, 1px);
+    border-color: var(--avonni-chip-container-color-border, #e5e5e5);
+}
+
+.avonni-chip-container__wrapper.avonni-chip-container__no-items {
+    border-color: transparent;
+}
+
+.avonni-chip-container__wrapper .avonni-chip-container__item:first-of-type {
+    padding-left: 0.125rem;
+}
+
+.avonni-chip-container__hidden-chip {
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.avonni-chip-container__action-menu {
+    z-index: 7001;
+
+    /* Needed to prevent a potential scroll jump when the menu appears */
+    top: 0;
+    left: 0;
+}
+
+/*
+* ------------------------------------------------------------
+*  SORTABLE
+* -------------------------------------------------------------
+*/
+.avonni-chip-container__chip-sortable {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+}
+
+.avonni-chip-container__item_sortable-single-line {
+    padding-right: 0.125rem;
+}
+
+.avonni-chip-container__list_dragging,
+.avonni-chip-container__list_dragging .avonni-chip-container__chip-sortable,
+.avonni-chip-container__list_dragging .avonni-chip-container__chip-sortable a {
+    cursor: grabbing;
+}
+
+/* Sortable moving border */
+.avonni-chip-container__chip_before-border::before,
+.avonni-chip-container__chip_after-border::after {
+    content: '';
+    background-color: #747474;
     position: absolute;
-    top: 1rem;
+    z-index: 1;
+}
+
+.avonni-chip-container__item.avonni-chip-container__chip_before-border::before,
+.avonni-chip-container__item.avonni-chip-container__chip_after-border::after {
+    width: 2px;
+    top: 1px;
+    bottom: 0;
+}
+
+.avonni-chip-container__item.avonni-chip-container__chip_before-border::before {
+    left: -1px;
+}
+
+.avonni-chip-container__item.avonni-chip-container__chip_after-border::after {
+    right: -1px;
+}
+
+/* Sortable moving border in single-line collapsed popover */
+.avonni-chip-container__hidden-chip.avonni-chip-container__chip_after-border::after,
+.avonni-chip-container__hidden-chip.avonni-chip-container__chip_before-border::before {
+    right: 0;
+    left: 0;
+    height: 2px;
+}
+
+.avonni-chip-container__hidden-chip.avonni-chip-container__chip_after-border::after {
+    bottom: -1px;
+}
+
+.avonni-chip-container__hidden-chip.avonni-chip-container__chip_before-border::before {
+    top: -1px;
 }

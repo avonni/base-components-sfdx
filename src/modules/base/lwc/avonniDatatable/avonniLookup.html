@@ -33,11 +33,13 @@
 -->
 
 <template>
-    <c-avonni-progress-ring
-        value={value}
-        direction={typeAttributes.direction}
-        hide-icon={typeAttributes.hideIcon}
-        size={typeAttributes.size}
-        variant={typeAttributes.variant}
-    ></c-avonni-progress-ring>
+    <div class="slds-p-around_x-small">
+        <c-avonni-primitive-cell-lookup
+            col-key-value={colKeyValue}
+            row-key-value={rowKeyValue}
+            value={value}
+            path={typeAttributes.path}
+            target={typeAttributes.target}
+        ></c-avonni-primitive-cell-lookup>
+    </div>
 </template>

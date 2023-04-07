@@ -44,7 +44,7 @@
 }
 
 .avonni-avatar-group_in-line .avonni-avatar-group__avatar_color-border,
-span .avonni-avatar-group_in-line {
+li .avonni-avatar-group_in-line {
     --avonni-avatar-color-border: var(
         --avonni-avatar-group-avatar-stack-color-border,
         #ffffff
@@ -131,16 +131,13 @@ button.avonni-avatar-group__avatar-in-line-button {
 }
 
 /* List layouts (visible or in hidden dropdown) --- */
-.avonni-avatar-group__avatar-container.slds-show .avonni-avatar-group__avatar {
+.avonni-avatar-group__avatar-container_list .avonni-avatar-group__avatar {
     display: block;
 }
-.avonni-avatar-group__avatar-container.slds-show,
-.avonni-avatar-group__action-button-list.slds-show,
-.avonni-avatar-group__hidden-avatar-container {
-    padding: 0.5rem 0.75rem;
-}
-.avonni-avatar-group__avatar-container.slds-show:hover,
-.avonni-avatar-group__hidden-avatar-container:hover {
+.avonni-avatar-group__avatar-container_list:hover,
+.avonni-avatar-group__avatar-container_list:focus,
+.avonni-avatar-group__hidden-avatar-container:hover,
+.avonni-avatar-group__hidden-avatar-container:focus {
     background-color: rgb(240, 240, 240);
 }
 .avonni-avatar-group__hidden-avatar-container {
@@ -163,14 +160,18 @@ button.avonni-avatar-group__avatar-in-line-button {
 /* --- */
 
 /* Outline --- */
-.slds-avatar:focus,
-.avonni-avatar-group__avatar:focus,
-.slds-avatar-grouped:focus,
-.avonni-avatar-group__hidden-avatar-container:focus,
-.avonni-avatar-group__action-button:focus {
-    outline: none;
-    box-shadow: rgb(53, 125, 219) 0 0 0 2px;
+.avonni-avatar-group__avatar-container_grid:focus .avonni-avatar-group__avatar,
+.avonni-avatar-group__avatar-container_stack:focus .avonni-avatar-group__avatar,
+.avonni-avatar-group__action-button:focus,
+.avonni-avatar-group__plus:focus {
+    outline: solid var(--lwc-brandAccessible, #0176d3);
 }
+
+.avonni-avatar-group__hidden-avatar-container:focus,
+.avonni-avatar-group__avatar-container_list:focus {
+    outline: none;
+}
+
 .avonni-avatar-group__avatar .slds-avatar-grouped {
     border-radius: var(--lwc-borderRadiusMedium, 0.3rem);
 }
@@ -189,9 +190,6 @@ button.avonni-avatar-group__avatar-in-line-button {
     display: inline-block;
     position: relative;
     cursor: pointer;
-}
-.avonni-avatar-group__action-button-list {
-    display: block;
 }
 
 .avonni-avatar-group__action-button {

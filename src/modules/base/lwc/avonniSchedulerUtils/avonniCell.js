@@ -54,6 +54,7 @@ export default class AvonniSchedulerCell {
         this.end = props.end;
         this.events = normalizeArray(props.events);
         this.placeholders = normalizeArray(props.placeholders);
+        this.removedByTimeChange = false;
         this.timezone = props.timezone;
         this._startDate = dateTimeObjectFrom(this.start, {
             zone: this.timezone
@@ -89,10 +90,17 @@ export default class AvonniSchedulerCell {
         ).add({
             'avonni-scheduler__calendar-cell_outside-of-current-month':
                 this.currentMonth && this.currentMonth !== this.month,
-            'avonni-scheduler__calendar-cell_today': this.isToday
+            'avonni-scheduler__calendar-cell_today': this.isToday,
+            'slds-theme_shade slds-theme_alert-texture':
+                this.removedByTimeChange
         });
     }
 
+    /**
+     * True if the start date is today.
+     *
+     * @type {boolean}
+     */
     get isToday() {
         const today = dateTimeObjectFrom(Date.now(), {
             zone: this.timezone
@@ -102,6 +110,15 @@ export default class AvonniSchedulerCell {
             this._startDate.month === today.month &&
             this._startDate.day === today.day
         );
+    }
+
+    /**
+     * Unique key to use in the template iterations.
+     *
+     * @type {string|number}
+     */
+    get key() {
+        return this.removedByTimeChange ? 'removed' : this.start;
     }
 
     /**
@@ -130,6 +147,17 @@ export default class AvonniSchedulerCell {
      */
     get showMoreLabel() {
         return `+${this.overflowingEvents.length} more`;
+    }
+
+    /**
+     * Title of the cell, used in the calendar display.
+     *
+     * @type {string}
+     */
+    get title() {
+        return this.removedByTimeChange
+            ? 'This time slot does not exist due to the time change.'
+            : undefined;
     }
 
     /**

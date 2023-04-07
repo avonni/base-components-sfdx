@@ -281,7 +281,7 @@
                                 "
                                 available-time-frames={availableTimeFrames}
                                 headers={hourHeaders}
-                                start={start}
+                                start={hourHeadersStart}
                                 time-span={hourHeadersTimeSpan}
                                 timezone={timezone}
                                 variant="vertical"
@@ -315,15 +315,23 @@
                                                 for:item="cell"
                                             >
                                                 <div
-                                                    key={cell.start}
+                                                    key={cell.key}
                                                     class={cell.computedClass}
                                                     data-element-id="div-cell"
                                                     data-end={cell.end}
                                                     data-start={cell.start}
+                                                    title={cell.title}
                                                     oncontextmenu={handleEmptySpotContextMenu}
                                                     onmousedown={handleMouseDown}
                                                     ondblclick={handleDoubleClick}
                                                 >
+                                                    <span
+                                                        if:true={cell.title}
+                                                        class="
+                                                            slds-assistive-text
+                                                        "
+                                                        >{cell.title}</span
+                                                    >
                                                     <!-- Cell content visible only for the month time span -->
                                                     <div
                                                         if:true={isMonth}

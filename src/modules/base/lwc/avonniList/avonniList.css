@@ -252,6 +252,11 @@
     );
 }
 
+/* AVATAR */
+.avonni-list-item-avatar {
+    --avonni-avatar-image-object-fit: var(--avonni-list-item-avatar-image-object-fit, 'cover');
+}
+
 /* LINK COLORS */
 a.avonni-list__item-header-link {
     color: var(--avonni-list-item-header-link-text-color, #0176d3);

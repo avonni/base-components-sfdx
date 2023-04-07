@@ -77,7 +77,7 @@
                                 role="presentation"
                             >
                                 <a
-                                    class="slds-color-picker__swatch-trigger"
+                                    class={computedSwatchTriggerClass}
                                     aria-disabled={disabled}
                                     aria-label={color.label}
                                     aria-readonly={readOnly}
@@ -86,6 +86,7 @@
                                     title={color.label}
                                     data-color={color.color}
                                     data-label={color.label}
+                                    data-selectable
                                     data-token={color.value}
                                     data-element-id="a-grid"
                                     onblur={handleBlur}
@@ -94,10 +95,26 @@
                                     onfocus={handleFocus}
                                 >
                                     <span
-                                        class="slds-swatch"
+                                        class="
+                                            slds-swatch
+                                            slds-grid
+                                            slds-grid_align-center
+                                            slds-grid_vertical-align-center
+                                        "
                                         data-color={color.color}
                                         data-element-id="span-swatch"
                                     >
+                                        <span
+                                            class="
+                                                avonni-color-palette__selected-checkmark
+                                            "
+                                        >
+                                            <c-avonni-primitive-icon
+                                                icon-name="utility:check"
+                                                svg-style="max-width:100%;max-height:100%;"
+                                                variant="bare"
+                                            ></c-avonni-primitive-icon>
+                                        </span>
                                         <span class="slds-assistive-text">
                                             {color.color}
                                         </span>

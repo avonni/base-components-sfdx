@@ -32,10 +32,14 @@
 
 const HEX = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 const HEXA = /^#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{4})$/;
-const RGB = /^rgb\((((((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5]),\s?)){2}|((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5])\s)){2})((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5]))|((((([1-9]?\d(\.\d+)?)|100|(\.\d+))%,\s?){2}|((([1-9]?\d(\.\d+)?)|100|(\.\d+))%\s){2})(([1-9]?\d(\.\d+)?)|100|(\.\d+))%))\)$/;
-const RGBA = /^rgba\((((((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5]),\s?)){3})|(((([1-9]?\d(\.\d+)?)|100|(\.\d+))%,\s?){3}))|(((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5])\s){3})|(((([1-9]?\d(\.\d+)?)|100|(\.\d+))%\s){3}))\/\s)((0?\.\d+)|[01]|(([1-9]?\d(\.\d+)?)|100|(\.\d+))%)\)$/;
-const HSL = /^hsl\(((((([12]?[1-9]?\d)|[12]0\d|(3[0-5]\d))(\.\d+)?)|(\.\d+))(deg)?|(0|0?\.\d+)turn|(([0-6](\.\d+)?)|(\.\d+))rad)((,\s?(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2}|(\s(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2})\)$/;
-const HSLA = /^hsla\(((((([12]?[1-9]?\d)|[12]0\d|(3[0-5]\d))(\.\d+)?)|(\.\d+))(deg)?|(0|0?\.\d+)turn|(([0-6](\.\d+)?)|(\.\d+))rad)(((,\s?(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2},\s?)|((\s(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2}\s\/\s))((0?\.\d+)|[01]|(([1-9]?\d(\.\d+)?)|100|(\.\d+))%)\)$/;
+const RGB =
+    /^rgb\((((((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5]),\s?)){2}|((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5])\s)){2})((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5]))|((((([1-9]?\d(\.\d+)?)|100|(\.\d+))%,\s?){2}|((([1-9]?\d(\.\d+)?)|100|(\.\d+))%\s){2})(([1-9]?\d(\.\d+)?)|100|(\.\d+))%))\)$/;
+const RGBA =
+    /^rgba\((((((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5]),\s?)){3})|(((([1-9]?\d(\.\d+)?)|100|(\.\d+))%,\s?){3}))|(((((1?[1-9]?\d)|10\d|(2[0-4]\d)|25[0-5])\s){3})|(((([1-9]?\d(\.\d+)?)|100|(\.\d+))%\s){3}))\/\s)((0?\.\d+)|[01]|(([1-9]?\d(\.\d+)?)|100|(\.\d+))%)\)$/;
+const HSL =
+    /^hsl\(((((([12]?[1-9]?\d)|[12]0\d|(3[0-5]\d))(\.\d+)?)|(\.\d+))(deg)?|(0|0?\.\d+)turn|(([0-6](\.\d+)?)|(\.\d+))rad)((,\s?(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2}|(\s(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2})\)$/;
+const HSLA =
+    /^hsla\(((((([12]?[1-9]?\d)|[12]0\d|(3[0-5]\d))(\.\d+)?)|(\.\d+))(deg)?|(0|0?\.\d+)turn|(([0-6](\.\d+)?)|(\.\d+))rad)(((,\s?(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2},\s?)|((\s(([1-9]?\d(\.\d+)?)|100|(\.\d+))%){2}\s\/\s))((0?\.\d+)|[01]|(([1-9]?\d(\.\d+)?)|100|(\.\d+))%)\)$/;
 
 export function generateColors(color) {
     let colors = {
@@ -168,13 +172,22 @@ export function colorType(value) {
     return null;
 }
 
+/**
+ * Determines if a color is light.
+ * Useful when trying to figure out what text-color to use (black or white) with a certain background-color.
+ * Ref: https://stackoverflow.com/a/3943023
+ */
+export function isLightColor(r, g, b, limit) {
+    return r * 0.299 + g * 0.587 + b * 0.114 > (limit ? limit : 186);
+}
+
 export function RGBToHex(rgb) {
     let sep = rgb.indexOf(',') > -1 ? ',' : ' ';
 
     rgb = rgb.substr(4).split(')')[0].split(sep);
 
     for (let i in rgb) {
-        if (rgb.hasOwnProperty(i)) {
+        if (rgb[i]) {
             if (rgb[i].indexOf('%') > -1) {
                 rgb[i] = Math.round(
                     (rgb[i].substr(0, rgb[i].length - 1) / 100) * 255
@@ -210,7 +223,7 @@ export function RGBAToHexA(rgba) {
     }
 
     for (let i in rgba) {
-        if (rgba.hasOwnProperty(i)) {
+        if (rgba[i]) {
             if (rgba[i].indexOf('%') > -1) {
                 let p = rgba[i].substr(0, rgba[i].length - 1) / 100;
 
@@ -292,7 +305,7 @@ export function RGBToHSL(rgb) {
     rgb = rgb.substr(4).split(')')[0].split(sep);
 
     for (let i in rgb) {
-        if (rgb.hasOwnProperty(i)) {
+        if (rgb[i]) {
             if (rgb[i].indexOf('%') > -1) {
                 rgb[i] = Math.round(
                     (rgb[i].substr(0, rgb[i].length - 1) / 100) * 255
@@ -345,7 +358,7 @@ export function RGBAToHSLA(rgba) {
     }
 
     for (let i in rgba) {
-        if (rgba.hasOwnProperty(i)) {
+        if (rgba[i]) {
             if (rgba[i].indexOf('%') > -1) {
                 let p = rgba[i].substr(0, rgba[i].length - 1) / 100;
 

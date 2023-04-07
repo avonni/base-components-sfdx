@@ -46,6 +46,7 @@ export {
 export {
     generateColors,
     colorType,
+    isLightColor,
     RGBToHex,
     RGBAToHexA,
     hexToRGB,

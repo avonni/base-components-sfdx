@@ -31,7 +31,7 @@
  */
 
 .slds-color-picker__custom {
-    max-width: 20rem;
+    max-width: var(--avonni-color-gradient-max-width, 20rem);
     cursor: pointer;
 }
 

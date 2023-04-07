@@ -764,4 +764,14 @@ export default class AvonniVisualPicker extends LightningElement {
             })
         );
     }
+
+    /**
+     * Input keyup event handler.
+     *
+     * @param {Event} event
+     */
+    handleKeyUp(event) {
+        if (event.key !== 'Enter') return;
+        event.currentTarget.click();
+    }
 }

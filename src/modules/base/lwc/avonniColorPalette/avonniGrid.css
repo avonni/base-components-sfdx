@@ -31,3 +31,29 @@
  */
 
 @import './avonniShared.css';
+
+.slds-color-picker__swatch-trigger.avonni-color-picker__show-selected-outline.slds-is-selected
+    .slds-swatch {
+    position: relative;
+    border: var(--avonni-color-palette-swatch-selected-border-width, 1px) solid
+        var(--avonni-color-palette-swatch-selected-border-color, white);
+    outline-width: var(
+        --avonni-color-palette-swatch-selected-outline-width,
+        2px
+    );
+    outline-style: solid;
+}
+
+.slds-color-picker__swatch-trigger:focus,
+.slds-color-picker__swatch-trigger:active {
+    border-radius: var(--avonni-color-palette-swatch-border-radius, 0.25rem);
+}
+
+.avonni-color-palette__selected-checkmark {
+    display: none;
+}
+
+.slds-color-picker__swatch-trigger.avonni-color-picker__show-selected-checkmark.slds-is-selected
+    .avonni-color-palette__selected-checkmark {
+    display: block;
+}

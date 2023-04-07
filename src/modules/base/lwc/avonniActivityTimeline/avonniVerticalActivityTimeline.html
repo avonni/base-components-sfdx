@@ -40,12 +40,20 @@
                     <div class="slds-media__figure" if:true={iconName}>
                         <lightning-icon
                             data-element-id="avonni-activity-timeline-icon"
+                            class="avonni-activity-timeline__icon"
                             icon-name={iconName}
                             size={iconSize}
                         ></lightning-icon>
                     </div>
                     <div class="slds-media__body" if:true={title}>
-                        <h2 class="slds-section__title">{title}</h2>
+                        <h2
+                            class="
+                                slds-section__title
+                                avonni-activity-timeline__title
+                            "
+                        >
+                            {title}
+                        </h2>
                     </div>
                 </div>
             </div>

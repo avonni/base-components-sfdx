@@ -477,6 +477,18 @@ export default class AvonniInputCounter extends LightningElement {
     }
 
     /**
+     * Value normalized to be passed in the validation constraint. If the type is percent, the value is multiplied by 100 to reflect its end result (0.1 will be transformed into 10%).
+     *
+     * @type {number}
+     */
+    get validationValue() {
+        if (this.type === 'percent' && !isNaN(this.value)) {
+            return this.value * 100;
+        }
+        return this.value;
+    }
+
+    /**
      * Compute constraintApi with fieldConstraintApiWithProxyInput.
      */
     get _constraint() {
@@ -488,7 +500,7 @@ export default class AvonniInputCounter extends LightningElement {
             this._constraintApiProxyInputUpdater =
                 this._constraintApi.setInputAttributes({
                     type: () => 'number',
-                    value: () => this.value,
+                    value: () => this.validationValue,
                     max: () => this.max,
                     min: () => this.min,
                     step: () => this.inputStep,
@@ -592,8 +604,7 @@ export default class AvonniInputCounter extends LightningElement {
         this._value = increaseNumberByStep({
             value: this.value,
             increment,
-            step: this.step,
-            fractionDigits: this.fractionDigits
+            step: this.step
         });
         this.normalizeValue();
         this.dispatchChange();

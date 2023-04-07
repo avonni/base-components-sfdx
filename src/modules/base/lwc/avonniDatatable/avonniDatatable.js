@@ -38,7 +38,6 @@ import {
     normalizeString
 } from 'c/utilsPrivate';
 import {
-    dispatchCellChangeEvent,
     getCellValue,
     getCurrentSelectionLength,
     isSelectedRow,
@@ -55,6 +54,7 @@ import counter from './avonniCounter.html';
 import dateRange from './avonniDateRange.html';
 import dynamicIcon from './avonniDynamicIcon.html';
 import image from './avonniImage.html';
+import lookup from './avonniLookup.html';
 import progressBar from './avonniProgressBar.html';
 import progressCircle from './avonniProgressCircle.html';
 import progressRing from './avonniProgressRing.html';
@@ -95,6 +95,7 @@ const CUSTOM_TYPES_EDITABLE = [
     'combobox',
     'counter',
     'date-range',
+    'lookup',
     'rating',
     'rich-text',
     'slider',
@@ -145,7 +146,8 @@ export default class AvonniDatatable extends LightningDatatable {
         },
         badge: {
             template: badge,
-            typeAttributes: ['variant']
+            typeAttributes: ['variant'],
+            standardCellLayout: true
         },
         'checkbox-button': {
             template: checkboxButton,
@@ -197,7 +199,8 @@ export default class AvonniDatatable extends LightningDatatable {
         },
         'dynamic-icon': {
             template: dynamicIcon,
-            typeAttributes: ['alternativeText', 'option']
+            typeAttributes: ['alternativeText', 'option'],
+            standardCellLayout: true
         },
         image: {
             template: image,
@@ -208,7 +211,12 @@ export default class AvonniDatatable extends LightningDatatable {
                 'srcset',
                 'thumbnail',
                 'width'
-            ]
+            ],
+            standardCellLayout: true
+        },
+        lookup: {
+            template: lookup,
+            typeAttributes: ['path', 'target']
         },
         'progress-bar': {
             template: progressBar,
@@ -226,7 +234,8 @@ export default class AvonniDatatable extends LightningDatatable {
         },
         'progress-ring': {
             template: progressRing,
-            typeAttributes: ['direction', 'hideIcon', 'size', 'variant']
+            typeAttributes: ['direction', 'hideIcon', 'size', 'variant'],
+            standardCellLayout: true
         },
         'progress-circle': {
             template: progressCircle,
@@ -236,7 +245,8 @@ export default class AvonniDatatable extends LightningDatatable {
                 'size',
                 'thickness',
                 'variant'
-            ]
+            ],
+            standardCellLayout: true
         },
         qrcode: {
             template: qrcode,
@@ -249,7 +259,8 @@ export default class AvonniDatatable extends LightningDatatable {
                 'errorCorrection',
                 'padding',
                 'size'
-            ]
+            ],
+            standardCellLayout: true
         },
         rating: {
             template: rating,
@@ -277,7 +288,8 @@ export default class AvonniDatatable extends LightningDatatable {
             typeAttributes: [
                 'disabled',
                 'label',
-                'maxlength',
+                'minLength',
+                'maxLength',
                 'name',
                 'placeholder'
             ]
@@ -308,6 +320,10 @@ export default class AvonniDatatable extends LightningDatatable {
             this.handleEditCell
         );
 
+        this.addEventListener('privateeditcustomcell', (event) => {
+            event.detail.callbacks.dispatchCellChangeEvent(this.state);
+        });
+
         this.template.addEventListener(
             'privateavatarclick',
             this.handleDispatchEvents
@@ -337,6 +353,20 @@ export default class AvonniDatatable extends LightningDatatable {
                 );
             }
         );
+        this.template.addEventListener('getcomboboxoptions', (event) => {
+            const fieldName = event.detail.name;
+            const column = this.columns.find((c) => c.fieldName === fieldName);
+            if (!column) return;
+
+            const options = column.typeAttributes.options;
+            // if options is a fieldname, get the options from the data
+            if (options?.fieldName) {
+                const field = this.state.data[0][options.fieldName];
+                event.detail.callbacks.getComboboxOptions(field);
+            } else {
+                event.detail.callbacks.getComboboxOptions(options);
+            }
+        });
     }
 
     renderedCallback() {
@@ -990,11 +1020,10 @@ export default class AvonniDatatable extends LightningDatatable {
 
         // Add the new cell value to the state dirty values
         dirtyValues[rowKeyValue][colKeyValue] = value;
-
-        // Show yellow background and save/cancel button
-        super.updateRowsState(this.state);
-
-        dispatchCellChangeEvent(this, dirtyValues);
+        if (value !== this.state.inlineEdit.editedValue) {
+            // Show yellow background and save/cancel button
+            super.updateRowsState(this.state);
+        }
     };
 
     /**

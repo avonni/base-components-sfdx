@@ -40,7 +40,8 @@
     border-style: var(--avonni-chip-styling-border, solid);
     border-radius: var(--avonni-chip-radius-border, 15rem);
     font-size: var(--avonni-chip-label-font-size, 0.75rem);
-    font-weight: 700;
+    font-style: var(--avonni-chip-label-font-style, normal);
+    font-weight: var(--avonni-chip-label-font-weight, 700);
     line-height: var(--avonni-chip-line-height, normal);
     white-space: nowrap;
     display: -webkit-inline-box;
@@ -56,83 +57,101 @@
 .avonni-chip_outline {
     background-color: #ffffff !important;
 }
+
 .avonni-chip_theme-alt-inverse {
     background-color: var(--avonni-chip-alt-inverse-color-background, #032d60);
     border-color: var(--avonni-chip-alt-inverse-color-border, transparent);
     color: var(--avonni-chip-alt-inverse-text-color, #ffffff);
 }
+
 .avonni-chip_theme-base {
     background-color: var(--avonni-chip-base-color-background, #ecebea);
     border-color: var(--avonni-chip-base-color-border, transparent);
     color: var(--avonni-chip-base-text-color, #080707);
 }
+
 .avonni-chip_theme-brand {
     background-color: var(--avonni-chip-brand-color-background, #0070d1);
     border-color: var(--avonni-chip-brand-color-border, transparent);
     color: var(--avonni-chip-brand-text-color, #ffffff);
 }
+
 .avonni-chip_theme-error {
     background-color: var(--avonni-chip-error-color-background, #ea001e);
     border-color: var(--avonni-chip-error-color-border, transparent);
     color: var(--avonni-chip-error-text-color, #ffffff);
 }
+
 .avonni-chip_theme-info {
     background-color: var(--avonni-chip-info-color-background, #706e6b);
     border-color: var(--avonni-chip-info-color-border, transparent);
     color: var(--avonni-chip-info-text-color, #ffffff);
 }
+
 .avonni-chip_theme-inverse {
     background-color: var(--avonni-chip-inverse-color-background, #001639);
     border-color: var(--avonni-chip-inverse-color-border, transparent);
     color: var(--avonni-chip-inverse-text-color, #ffffff);
 }
+
 .avonni-chip_theme-offline {
     background-color: var(--avonni-chip-offline-color-background, #444444);
     border-color: var(--avonni-chip-offline-color-border, transparent);
     color: var(--avonni-chip-offline-text-color, #ffffff);
 }
+
 .avonni-chip_theme-success {
     background-color: var(--avonni-chip-success-color-background, #2e844a);
     border-color: var(--avonni-chip-success-color-border, transparent);
     color: var(--avonni-chip-success-text-color, #ffffff);
 }
+
 .avonni-chip_theme-warning {
     background-color: var(--avonni-chip-warning-color-background, #fe9339);
     border-color: var(--avonni-chip-warning-color-border, transparent);
     color: var(--avonni-chip-warning-text-color, #080707);
 }
+
 .avonni-chip_outline.avonni-chip_theme-alt-inverse {
     color: var(--avonni-chip-alt-inverse-outline-color, #032d60);
     border-color: var(--avonni-chip-alt-inverse-outline-color, #032d60);
 }
+
 .avonni-chip_outline.avonni-chip_theme-base {
     border-color: var(--avonni-chip-base-outline-color, #ecebea);
     color: var(--avonni-chip-base-outline-color, #080707);
 }
+
 .avonni-chip_outline.avonni-chip_theme-brand {
     border-color: var(--avonni-chip-brand-outline-color, #0070d1);
     color: var(--avonni-chip-brand-outline-color, #0070d1);
 }
+
 .avonni-chip_outline.avonni-chip_theme-error {
     border-color: var(--avonni-chip-error-outline-color, #ea001e);
     color: var(--avonni-chip-error-outline-color, #ea001e);
 }
+
 .avonni-chip_outline.avonni-chip_theme-info {
     border-color: var(--avonni-chip-info-outline-color, #706e6b);
     color: var(--avonni-chip-info-outline-color, #706e6b);
 }
+
 .avonni-chip_outline.avonni-chip_theme-inverse {
     border-color: var(--avonni-chip-inverse-outline-color, #001639);
     color: var(--avonni-chip-inverse-outline-color, #001639);
 }
+
 .avonni-chip_outline.avonni-chip_theme-offline {
     border-color: var(--avonni-chip-offline-outline-color, #444444);
     color: var(--avonni-chip-offline-outline-color, #444444);
 }
+
 .avonni-chip_outline.avonni-chip_theme-success {
     border-color: var(--avonni-chip-success-outline-color, #2e844a);
     color: var(--avonni-chip-success-outline-color, #2e844a);
 }
+
 .avonni-chip_outline.avonni-chip_theme-warning {
     border-color: var(--avonni-chip-warning-outline-color, #fe9339);
     color: var(--avonni-chip-warning-outline-color, #fe9339);

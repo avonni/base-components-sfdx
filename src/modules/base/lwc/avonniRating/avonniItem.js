@@ -31,14 +31,16 @@ export default class AvonniAvonniRatingItem {
                     'avonni-rating__continuous-icon': isContinuous,
                     'avonni-rating__icon_selected': this.selected,
                     'avonni-rating__active-icon':
-                        !this.disabled && !this.readOnly
+                        !this.disabled && !this.readOnly,
+                    'avonni-rating__icon_read-only': this.readOnly
                 });
         } else {
             classes.add({
                 'slds-button_outline-brand': !this.selected,
                 'slds-button_brand': this.selected,
                 'avonni-rating__continuous': isContinuous,
-                'avonni-rating__active': !this.disabled && !this.readOnly
+                'avonni-rating__active': !this.disabled && !this.readOnly,
+                'avonni-rating__icon_read-only': this.readOnly
             });
         }
         return classes.toString();

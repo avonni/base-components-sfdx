@@ -38,11 +38,11 @@
     border-radius: var(--avonni-pill-container-radius-border, 0.25rem);
     --slds-c-pill-container-spacing-block-end: var(
         --avonni-pill-container-spacing-block-end,
-        0.125rem
+        0
     );
     --slds-c-pill-container-spacing-block-start: var(
         --avonni-pill-container-spacing-block-start,
-        0.125rem
+        0
     );
     --slds-c-pill-container-spacing-inline-end: var(
         --avonni-pill-container-spacing-inline-end,
@@ -108,15 +108,18 @@
     position: absolute;
     z-index: 1;
 }
+
 .avonni-pill-container__item.avonni-pill-container__pill_before-border::before,
 .avonni-pill-container__item.avonni-pill-container__pill_after-border::after {
     width: 2px;
     top: 1px;
     bottom: 0;
 }
+
 .avonni-pill-container__item.avonni-pill-container__pill_before-border::before {
     left: -1px;
 }
+
 .avonni-pill-container__item.avonni-pill-container__pill_after-border::after {
     right: -1px;
 }
@@ -128,9 +131,11 @@
     left: 0;
     height: 2px;
 }
+
 .avonni-pill-container__hidden-pill.avonni-pill-container__pill_after-border::after {
     bottom: -1px;
 }
+
 .avonni-pill-container__hidden-pill.avonni-pill-container__pill_before-border::before {
     top: -1px;
 }

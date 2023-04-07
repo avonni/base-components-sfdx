@@ -37,7 +37,8 @@ import {
     deepCopy,
     getWeekNumber,
     normalizeBoolean,
-    normalizeString
+    normalizeString,
+    numberOfUnitsBetweenDates
 } from 'c/utilsPrivate';
 import { classSet } from 'c/utils';
 import Column from './avonniColumn';
@@ -397,7 +398,8 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
     get columnClass() {
         return classSet('avonni-scheduler__calendar-column')
             .add({
-                'avonni-scheduler__calendar-column_day': this.isDay
+                'avonni-scheduler__calendar-column_day':
+                    this.isDay && this.timeSpan.unit === 1
             })
             .toString();
     }
@@ -475,6 +477,11 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
             : this._dayHeadersLoading || this._hourHeadersLoading;
     }
 
+    /**
+     * Computed CSS class for the horizontal header wrapper.
+     *
+     * @type {string}
+     */
     get horizontalHeaderWrapperClass() {
         return classSet(
             'avonni-scheduler__calendar-day-header-wrapper slds-theme_default slds-is-relative slds-grid'
@@ -512,6 +519,25 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
                 span: 1
             }
         ];
+    }
+
+    /**
+     * Start date to use for the hour headers. Prevent a 23 hour day on the spring time change day.
+     *
+     * @type {DateTime}
+     */
+    get hourHeadersStart() {
+        const startOfDay = this.start.startOf('day');
+        const endOfDay = this.start.endOf('day');
+        const numberOfHours = numberOfUnitsBetweenDates(
+            'hour',
+            startOfDay,
+            endOfDay
+        );
+        const isSpringTimeChange = numberOfHours < 24;
+        return isSpringTimeChange
+            ? addToDate(this.start, 'day', 1)
+            : this.start;
     }
 
     /**
@@ -1260,13 +1286,13 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
     getVisibleWeekdays(startDate) {
         const span = this.timeSpan.span;
         const oneDay = this.isDay && span <= 1;
+        const weekday = startDate.weekday === 7 ? 0 : startDate.weekday;
         let availableDays = this.availableDaysOfTheWeek;
 
         if (oneDay) {
-            availableDays = [startDate.weekday];
+            availableDays = [weekday];
         } else if (this.isDay) {
             availableDays = [];
-            const weekday = startDate.weekday === 7 ? 0 : startDate.weekday;
             let dayIndex = this.availableDaysOfTheWeek.findIndex(
                 (dayNumber) => {
                     return dayNumber === weekday;
@@ -2133,7 +2159,12 @@ export default class AvonniPrimitiveSchedulerCalendar extends ScheduleBase {
         this._hourHeadersLoading = false;
 
         // Update the start date in case it was not available
-        this.start = start;
+        if (start.hour !== this.hourHeadersStart.hour) {
+            this.start =
+                this.hourHeadersStart.ts === this.start.ts
+                    ? start
+                    : this.start.set({ hour: start.hour });
+        }
 
         this.eventHeaderCells.yAxis = cells;
         const end = addToDate(start, unit, span) - 1;

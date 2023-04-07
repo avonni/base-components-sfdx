@@ -45,61 +45,8 @@
     margin-left: 0.25rem;
 }
 
-.slds-swatch-read-only {
-    padding: 0.3rem 0.5rem;
-}
-
 .slds-tabs_default__content {
     padding-bottom: 0;
-}
-
-.slds-nubbin_top {
-    position: absolute;
-    top: 100%;
-    margin-top: 1rem;
-    transform: translateX(-50%);
-    left: 50%;
-}
-
-.slds-nubbin_bottom {
-    position: absolute;
-    top: auto;
-    margin-bottom: 1rem;
-    transform: translateX(-50%);
-    left: 50%;
-}
-
-.slds-nubbin_top-left {
-    position: absolute;
-    top: 100%;
-    margin-top: 1rem;
-}
-
-.slds-nubbin_top-right {
-    position: absolute;
-    top: 100%;
-    margin-top: 1rem;
-}
-
-.slds-nubbin_bottom-left {
-    position: absolute;
-    top: auto;
-    margin-bottom: 1rem;
-}
-
-.slds-nubbin_bottom-right {
-    position: absolute;
-    top: auto;
-    margin-bottom: 1rem;
-}
-
-.avonni-color-picker__popover-button {
-    display: grid;
-    width: 100%;
-}
-
-.avonni-color-picker__main-button:disabled {
-    background-color: #ecebea;
 }
 
 .avonni-color-picker__spinner-container {
@@ -111,17 +58,67 @@
     max-height: 180px;
 }
 
-.avonni-color-picker__popover-body {
-    width: var(--avonni-color-picker-popover-width, 16rem);
-}
-
-.avonni-color-picker__dropdown {
-    max-width: none;
-}
-
 .avonni-color-picker__label {
     color: var(--avonni-color-picker-label-text-color, #3e3e3c);
     font-size: var(--avonni-color-picker-label-font-size, 0.75rem);
     font-weight: var(--avonni-color-picker-label-font-weight, 400);
     font-style: var(--avonni-color-picker-label-font-style, normal);
+}
+
+.avonni-color-picker-tabs_default {
+    display: block;
+    width: 100%;
+}
+
+.avonni-color-picker-tabs_default__item {
+    color: #444;
+    position: relative;
+    padding: 0 0.75rem;
+    margin-bottom: -1px;
+}
+
+.avonni-color-picker-tabs_default__item.slds-is-active {
+    color: #181818;
+}
+
+.avonni-color-picker-tabs_default__item.slds-is-active
+    .avonni-color-picker-tabs_default__link {
+    font-weight: 700;
+}
+
+.avonni-color-picker-tabs_default__item.slds-is-active:after {
+    background-color: #1b96ff;
+    height: 3px;
+}
+
+.avonni-color-picker-tabs_default__item:after {
+    display: block;
+    content: '';
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    position: absolute;
+}
+
+.avonni-color-picker-tabs_default__link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    color: currentColor;
+    border: 0;
+    text-transform: inherit;
+    z-index: 1;
+}
+
+.avonni-color-picker-tabs_default__nav {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #e5e5e5;
 }

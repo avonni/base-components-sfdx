@@ -50,10 +50,32 @@
     overscroll-behavior-block: contain;
 }
 
-[class*="slds-nubbin_"]::before{
+[class*='slds-nubbin_']::before {
     background: #f3f3f3;
 }
 
 .avonni-horizontal-activity-timeline__popover {
     --avonni-output-data-label-font-weight: bold;
+}
+
+.avonni-activity-timeline__title {
+    font-size: var(--avonni-activity-timeline-title-font-size, 1rem);
+    font-weight: var(--avonni-activity-timeline-title-font-weight, 400);
+    font-style: var(--avonni-activity-timeline-title-font-style, normal);
+    color: var(--avonni-activity-timeline-title-text-color, #080707);
+}
+
+.avonni-activity-timeline__icon {
+    --sds-c-icon-radius-border: var(
+        --avonni-activity-timeline-icon-radius-border
+    );
+    --sds-c-icon-color-background: var(
+        --avonni-activity-timeline-icon-color-background
+    );
+    --sds-c-icon-color-foreground: var(
+        --avonni-activity-timeline-icon-color-foreground
+    );
+    --sds-c-icon-color-foreground-default: var(
+        --avonni-activity-timeline-icon-color-foreground-default
+    );
 }

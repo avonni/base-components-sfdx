@@ -1,0 +1,184 @@
+<!--
+/**
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Avonni Labs, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the copyright holder nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+
+<template>
+    <div class={computedContainerClass} data-element-id="div-container">
+        <label class={computedLabelClass} data-element-id="label">
+            <abbr if:true={required} title="required" class="slds-required"
+                >*</abbr
+            >
+            {label}
+        </label>
+        <lightning-helptext
+            if:true={fieldLevelHelp}
+            class="slds-m-right_xx-small"
+            content={fieldLevelHelp}
+            data-element-id="lightning-helptext"
+        ></lightning-helptext>
+        <div>
+            <!-- Loading spinner -->
+            <template if:true={isLoading}>
+                <div class="avonni-color-picker__spinner-container">
+                    <lightning-spinner
+                        size="small"
+                        data-element-id="lightning-spinner"
+                    ></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <div class="avonni-color-picker-tabs_default">
+                    <!-- Tabs -->
+                    <ul
+                        if:true={isBase}
+                        class="avonni-color-picker-tabs_default__nav"
+                        role="tablist"
+                        data-element-id="ul-tabs"
+                    >
+                        <li
+                            class="
+                                avonni-color-picker-tabs_default__item
+                                slds-is-active
+                            "
+                            title="Default"
+                            role="presentation"
+                        >
+                            <a
+                                class="
+                                    avonni-color-picker-tabs_default__link
+                                    avonni-color-picker__tab
+                                "
+                                href="javascript:void(0);"
+                                role="tab"
+                                data-group-name="tabs"
+                                data-element-id="default"
+                                data-tab-name="default"
+                                onclick={handleTabClick}
+                                >Default</a
+                            >
+                        </li>
+                        <li
+                            if:true={tokens.length}
+                            class="avonni-color-picker-tabs_default__item"
+                            title="Tokens"
+                            role="presentation"
+                            data-element-id="li-tokens-tab"
+                        >
+                            <a
+                                class="
+                                    avonni-color-picker-tabs_default__link
+                                    avonni-color-picker__tab
+                                "
+                                href="javascript:void(0);"
+                                role="tab"
+                                data-element-id="a-tokens-tab"
+                                data-group-name="tabs"
+                                data-tab-name="tokens"
+                                onclick={handleTabClick}
+                                >Tokens</a
+                            >
+                        </li>
+                        <li
+                            class="avonni-color-picker-tabs_default__item"
+                            title="Custom"
+                            role="presentation"
+                        >
+                            <a
+                                class="
+                                    avonni-color-picker-tabs_default__link
+                                    avonni-color-picker__tab
+                                "
+                                href="javascript:void(0);"
+                                role="tab"
+                                data-group-name="tabs"
+                                data-element-id="custom"
+                                data-tab-name="custom"
+                                onclick={handleTabClick}
+                                >Custom</a
+                            >
+                        </li>
+                    </ul>
+
+                    <div
+                        class={computedTabBodyClass}
+                        data-element-id="tab-body"
+                        tabindex="-1"
+                    >
+                        <!-- Color palette -->
+                        <c-avonni-color-palette
+                            if:false={showColorGradient}
+                            class="
+                                slds-show
+                                slds-scrollable_y
+                                avonni-color-picker__default-palette
+                            "
+                            columns={columns}
+                            disabled={disabled}
+                            hide-outline={paletteHideOutline}
+                            is-loading={paletteIsLoading}
+                            read-only={readOnly}
+                            show-checkmark={paletteShowCheckmark}
+                            value={value}
+                            variant={colorPaletteVariant}
+                            data-element-id="avonni-color-palette"
+                            onchange={handleColorPaletteChange}
+                        ></c-avonni-color-palette>
+
+                        <!-- Color Gradient -->
+                        <c-avonni-color-gradient
+                            if:true={showColorGradient}
+                            class="avonni-color-picker__inline-color-gradient"
+                            disabled={disabled}
+                            message-when-bad-input={messageWhenBadInput}
+                            opacity={opacity}
+                            value={computedGradientValue}
+                            read-only={readOnly}
+                            data-element-id="avonni-color-gradient"
+                            onchange={handleColorGradientChange}
+                        ></c-avonni-color-gradient>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div
+        if:true={helpMessage}
+        class="slds-form-element__help"
+        aria-live="assertive"
+        data-help-message
+        role="alert"
+    >
+        {helpMessage}
+    </div>
+</template>

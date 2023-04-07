@@ -40,9 +40,10 @@ import {
     normalizeArray
 } from 'c/utilsPrivate';
 import { FieldConstraintApi, InteractingState } from 'c/inputUtils';
-
 import { classSet } from 'c/utils';
 import { generateUUID } from 'c/utils';
+import standard from './avonniStandard.html';
+import inline from './avonniInline.html';
 
 const VARIANTS = {
     valid: ['standard', 'label-inline', 'label-hidden', 'label-stacked'],
@@ -100,7 +101,7 @@ const DEFAULT_COLORS = [
     '#ffb758',
     '#bd35bd',
     '#5778c1',
-    '#5ebbff',
+    '#1b96ff',
     '#00aea9',
     '#3bba4c',
     '#f4bc25',
@@ -117,6 +118,8 @@ const DEFAULT_COLORS = [
 const DEFAULT_COLUMNS = 7;
 const DEFAULT_TAB = 'default';
 const MINIMUM_TILE_SIZE = 5;
+const DEFAULT_TILE_WIDTH = 20;
+const DEFAULT_TILE_HEIGHT = 20;
 
 /**
  * @class
@@ -182,6 +185,7 @@ export default class AvonniColorPicker extends LightningElement {
     _groups = [];
     _hideColorInput = false;
     _hideClearIcon = false;
+    _inline = false;
     _isLoading = false;
     _menuAlignment = MENU_ALIGNMENTS.default;
     _menuNubbin = false;
@@ -189,6 +193,10 @@ export default class AvonniColorPicker extends LightningElement {
     _menuVariant = MENU_VARIANTS.default;
     _name;
     _opacity = false;
+    _paletteHideOutline = false;
+    _paletteShowCheckmark = false;
+    _paletteTileWidth;
+    _paletteTileHeight;
     _readOnly = false;
     _required = false;
     _tokens = [];
@@ -197,7 +205,8 @@ export default class AvonniColorPicker extends LightningElement {
     _variant = VARIANTS.default;
 
     _currentTab = DEFAULT_TAB;
-    _draftToken = {};
+    _lastSelectedDefault;
+    _lastSelectedToken;
 
     currentToken = {};
     dropdownOpened = false;
@@ -227,18 +236,11 @@ export default class AvonniColorPicker extends LightningElement {
             this.initSwatchColor();
             this._rendered = true;
         }
+        this.setPaletteData();
+    }
 
-        const palette = this.template.querySelector(
-            '[data-element-id^="avonni-color-palette"]'
-        );
-        if (this.dropdownVisible && palette) {
-            const paletteWidth = palette.clientWidth;
-            const tileWidth = Math.floor(paletteWidth / this.columns - 8);
-            const tileSize =
-                tileWidth > MINIMUM_TILE_SIZE ? tileWidth : MINIMUM_TILE_SIZE;
-            palette.tileWidth = tileSize;
-            palette.tileHeight = tileSize;
-        }
+    render() {
+        return this.inline ? inline : standard;
     }
 
     /*
@@ -252,7 +254,7 @@ export default class AvonniColorPicker extends LightningElement {
      *
      * @public
      * @type {string[]}
-     * @default [“#e3abec”, “#c2dbf6”, ”#9fd6ff”, ”#9de7da”, ”#9df0bf”, ”#fff099”, ”#fed49a”, ”#d073df”, ”#86b9f3”, ”#5ebbff”, ”#44d8be”, ”#3be281”, ”#ffe654”, ”#ffb758”, ”#bd35bd”, ”#5778c1”, ”#5ebbff”, ”#00aea9”, ”#3bba4c”, ”#f4bc25”, ”#f99120”, ”#580d8c”, ”#001870”, ”#0a2399”, ”#097476”, ”#096a50”, ”#b67d11”, ”#b85d0d”]
+     * @default [“#e3abec”, “#c2dbf6”, ”#9fd6ff”, ”#9de7da”, ”#9df0bf”, ”#fff099”, ”#fed49a”, ”#d073df”, ”#86b9f3”, ”#5ebbff”, ”#44d8be”, ”#3be281”, ”#ffe654”, ”#ffb758”, ”#bd35bd”, ”#5778c1”, ”#1b96ff”, ”#00aea9”, ”#3bba4c”, ”#f4bc25”, ”#f99120”, ”#580d8c”, ”#001870”, ”#0a2399”, ”#097476”, ”#096a50”, ”#b67d11”, ”#b85d0d”]
      */
     @api
     get colors() {
@@ -262,10 +264,15 @@ export default class AvonniColorPicker extends LightningElement {
     set colors(value) {
         const colors = normalizeArray(value);
         this._colors = colors.length > 0 ? colors : DEFAULT_COLORS;
+
+        if (this._isConnected) {
+            this.setPaletteData();
+            this.setLastSelectedColor();
+        }
     }
 
     /**
-     * Number of columns in the palette.
+     * Number of columns in the palette. If unspecified, defaults to 7 except when inline is present.
      *
      * @public
      * @type {number}
@@ -277,11 +284,15 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     set columns(value) {
-        const normalizedValue = parseInt(value, 10);
-        this._columns =
-            !isNaN(normalizedValue) && normalizedValue
-                ? parseInt(value, 10)
-                : DEFAULT_COLUMNS;
+        if (!value) {
+            this._columns = value;
+        } else {
+            const normalizedValue = parseInt(value, 10);
+            this._columns =
+                !isNaN(normalizedValue) && normalizedValue
+                    ? normalizedValue
+                    : DEFAULT_COLUMNS;
+        }
     }
 
     /**
@@ -313,6 +324,7 @@ export default class AvonniColorPicker extends LightningElement {
 
     set groups(value) {
         this._groups = normalizeArray(value);
+        this.setPaletteData();
     }
 
     /**
@@ -331,7 +343,7 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
-     * If true, hide the input color value.
+     * If present, hide the input color value.
      *
      * @public
      * @type {boolean}
@@ -344,6 +356,22 @@ export default class AvonniColorPicker extends LightningElement {
 
     set hideColorInput(value) {
         this._hideColorInput = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the popover is deactivated and its content is directly shown on the page.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get inline() {
+        return this._inline;
+    }
+
+    set inline(value) {
+        this._inline = normalizeBoolean(value);
     }
 
     /**
@@ -467,6 +495,72 @@ export default class AvonniColorPicker extends LightningElement {
     }
 
     /**
+     * If present, the selected palette swatch outline is hidden.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get paletteHideOutline() {
+        return this._paletteHideOutline;
+    }
+
+    set paletteHideOutline(value) {
+        this._paletteHideOutline = normalizeBoolean(value);
+    }
+
+    /**
+     * If present, the selected palette swatch shows a checkmark.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get paletteShowCheckmark() {
+        return this._paletteShowCheckmark;
+    }
+
+    set paletteShowCheckmark(value) {
+        this._paletteShowCheckmark = normalizeBoolean(value);
+    }
+
+    /**
+     * Specifies the palette swatches tile height.
+     *
+     * @public
+     * @type {number}
+     * @default 20
+     */
+    @api
+    get paletteTileHeight() {
+        return this._paletteTileHeight;
+    }
+
+    set paletteTileHeight(value) {
+        this._paletteTileHeight = Number(value);
+        this.setPaletteData();
+    }
+
+    /**
+     * Specifies the palette swatches tile width.
+     *
+     * @public
+     * @type {boolean}
+     * @default 20
+     */
+    @api
+    get paletteTileWidth() {
+        return this._paletteTileWidth;
+    }
+
+    set paletteTileWidth(value) {
+        this._paletteTileWidth = Number(value);
+        this.setPaletteData();
+    }
+
+    /**
      * If present, the input field is read-only and cannot be edited by users.
      *
      * @public
@@ -511,7 +605,11 @@ export default class AvonniColorPicker extends LightningElement {
 
     set tokens(value) {
         this._tokens = normalizeArray(value);
-        if (this.isConnected) this.computeToken();
+
+        if (this._isConnected) {
+            this.computeToken();
+            this.setPaletteData();
+        }
     }
 
     /**
@@ -549,13 +647,15 @@ export default class AvonniColorPicker extends LightningElement {
         if (value && typeof value === 'string') {
             this._value = value;
             this.inputValue = value;
-            if (this._isConnected) this.computeToken();
         } else {
             this._value = null;
             this._inputValue = '';
-            this.currentToken = {};
         }
-        this.initSwatchColor();
+
+        if (this._isConnected) {
+            this.computeToken();
+            this.setLastSelectedColor();
+        }
     }
 
     /**
@@ -604,6 +704,12 @@ export default class AvonniColorPicker extends LightningElement {
         return this._currentTab === 'tokens' || this.type === 'tokens'
             ? this.tokens
             : this.colors;
+    }
+
+    get computedDropdownTriggerClass() {
+        return classSet('slds-dropdown-trigger slds-dropdown-trigger_click')
+            .add({ 'slds-is-open': this.dropdownVisible })
+            .toString();
     }
 
     /**
@@ -986,6 +1092,7 @@ export default class AvonniColorPicker extends LightningElement {
             this.currentToken = {};
         }
         this.initSwatchColor();
+        this.setLastSelectedColor();
     }
 
     /**
@@ -1003,10 +1110,53 @@ export default class AvonniColorPicker extends LightningElement {
         this.value = undefined;
         this.inputValue = '';
         this.currentToken = {};
-        this._draftToken = {};
         this.focus();
 
         this.dispatchClear();
+    }
+
+    /**
+     * In inline mode, set the last selected color for default and tokens tab.
+     */
+    setLastSelectedColor() {
+        if (this.inline) {
+            const isTokensColor = this.currentToken.value;
+            const isDefaultColor = this.colors.includes(this.value);
+            if (isTokensColor) {
+                this._lastSelectedToken = this.value;
+            } else if (isDefaultColor) {
+                this._lastSelectedDefault = this.value;
+            }
+        }
+    }
+
+    setPaletteData() {
+        const palette = this.template.querySelector(
+            '[data-element-id="avonni-color-palette"]'
+        );
+        if (!palette) {
+            return;
+        }
+
+        // We set the colors and groups after the palette is rendered,
+        // to prevent speed issue in Salesforce, when Locker Service is enabled
+        // and there are a lot of colors and/or groups.
+        palette.colors = this.computedColors;
+        palette.groups = this.groups;
+
+        if (this.inline) {
+            palette.tileWidth = this._paletteTileWidth || DEFAULT_TILE_WIDTH;
+            palette.tileHeight = this._paletteTileHeight || DEFAULT_TILE_HEIGHT;
+        } else {
+            const paletteWidth = palette.clientWidth;
+            const columns = this.columns || DEFAULT_COLUMNS;
+            const tileWidth = Math.floor(paletteWidth / columns - 8);
+            const tileSize = Math.max(tileWidth, MINIMUM_TILE_SIZE);
+            palette.tileWidth =
+                this._paletteTileWidth || tileSize || DEFAULT_TILE_WIDTH;
+            palette.tileHeight =
+                this._paletteTileHeight || tileSize || DEFAULT_TILE_HEIGHT;
+        }
     }
 
     /**
@@ -1019,22 +1169,41 @@ export default class AvonniColorPicker extends LightningElement {
 
         if (event.detail) {
             this.newValue =
-                this.opacity && Number(event.detail.alpha) < 1
+                event.detail.token ||
+                (this.opacity && Number(event.detail.alpha) < 1
                     ? event.detail.hexa
-                    : event.detail.hex;
-            this._draftToken = {
-                label: event.detail.label,
-                value: event.detail.token
-            };
+                    : event.detail.hex);
         }
     }
 
     /**
-     * Handle a change in the color palette. Save and close the popover right away.
+     * Handle a change in the color gradient.
      *
      * @param {Event} event
      */
-    handleDefaultAndTokenChange(event) {
+    handleColorGradientChange(event) {
+        if (this.inline) {
+            this.handleChangeAndDone(event);
+        } else {
+            this.handleChange(event);
+        }
+    }
+
+    /**
+     * Handle a change in the color palette.
+     *
+     * @param {Event} event
+     */
+    handleColorPaletteChange(event) {
+        this.handleChangeAndDone(event);
+    }
+
+    /**
+     * Handle a color change. Save and close the popover right away.
+     *
+     * @param {Event} event
+     */
+    handleChangeAndDone(event) {
         this.handleChange(event);
         this.handleDone();
     }
@@ -1046,17 +1215,9 @@ export default class AvonniColorPicker extends LightningElement {
         if (!this.readOnly && this.newValue) {
             // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.value = this.newValue;
-            this.currentToken = { ...this._draftToken };
             this.newValue = null;
-
-            if (!this.menuIconName) {
-                this.elementSwatch.style.background = this.value;
-            }
-            if (this.colorGradient) {
-                this.colorGradient.renderValue(this.value);
-            }
-
-            this.dispatchChange(generateColors(this.value));
+            const color = this.currentToken.color || this.value;
+            this.dispatchChange(generateColors(color));
         }
 
         this.toggleMenuVisibility();
@@ -1067,10 +1228,6 @@ export default class AvonniColorPicker extends LightningElement {
      */
     handleCancel() {
         this.newValue = null;
-
-        if (this.colorGradient) {
-            this.colorGradient.renderValue(this.value);
-        }
         this.toggleMenuVisibility();
     }
 
@@ -1160,7 +1317,7 @@ export default class AvonniColorPicker extends LightningElement {
      *
      * @param {Event} event
      */
-    handleMenuKeyup(event) {
+    handleMenuKeyUp(event) {
         if (event.keyCode === 9) {
             this.tabPressed = false;
         } else if (event.keyCode === 16) {
@@ -1190,7 +1347,7 @@ export default class AvonniColorPicker extends LightningElement {
      * Dropdown menu visibility toggle.
      */
     toggleMenuVisibility() {
-        if (!this.disabled) {
+        if (!this.disabled && !this.inline) {
             this.dropdownVisible = !this.dropdownVisible;
 
             if (!this.dropdownOpened && this.dropdownVisible) {
@@ -1203,10 +1360,6 @@ export default class AvonniColorPicker extends LightningElement {
                 this.pollBoundingRect();
                 this.loadPalette();
             }
-
-            this.template
-                .querySelector('[data-element-id="div-dropdown-trigger"]')
-                .classList.toggle('slds-is-open');
         }
     }
 
@@ -1254,23 +1407,42 @@ export default class AvonniColorPicker extends LightningElement {
      */
     handleTabClick(event) {
         event.preventDefault();
+        const targetName = event.currentTarget.dataset.tabName;
+
+        // In inline mode, a tab click selects the last selected color of that tab, except for 'custom'.
+        if (this.inline) {
+            if (
+                targetName === 'default' &&
+                this._lastSelectedDefault &&
+                this._lastSelectedDefault !== this.value
+            ) {
+                // eslint-disable-next-line @lwc/lwc/no-api-reassignments
+                this.value = this._lastSelectedDefault;
+                this.dispatchChange(generateColors(this.value));
+            } else if (
+                targetName === 'tokens' &&
+                this._lastSelectedToken &&
+                this._lastSelectedToken !== this.value
+            ) {
+                // eslint-disable-next-line @lwc/lwc/no-api-reassignments
+                this.value = this._lastSelectedToken;
+                this.dispatchChange(generateColors(this.currentToken.color));
+            }
+        }
 
         this.template
             .querySelectorAll('[data-group-name="tabs"]')
             .forEach((tab) => {
-                const tabName = tab.dataset.tabName;
-                const targetName = event.currentTarget.dataset.tabName;
-
-                if (tabName === targetName) {
+                if (tab.dataset.tabName === targetName) {
                     tab.parentElement.classList.add('slds-is-active');
-                    this._currentTab = tabName;
+                    this._currentTab = targetName;
                 } else {
                     tab.parentElement.classList.remove('slds-is-active');
                 }
             });
 
         const palette = this.template.querySelector(
-            '[data-element-id="avonni-color-palette-default"]'
+            '[data-element-id="avonni-color-palette"]'
         );
         if (palette) {
             palette.colors = [...this.computedColors];
@@ -1296,10 +1468,6 @@ export default class AvonniColorPicker extends LightningElement {
             }
             // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.value = color;
-
-            if (this.colorGradient) {
-                this.colorGradient.renderValue(color);
-            }
             this.dispatchChange(generateColors(color));
         } else if (color === '') {
             this.clearInput();

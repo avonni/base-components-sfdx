@@ -64,15 +64,17 @@
         >
             <template for:each={visibleItems} for:item="pill" for:index="index">
                 <li
+                    data-element-id="li-item"
+                    data-index={index}
                     key={pill.name}
                     class={computedListItemClass}
                     role="presentation"
-                    data-element-id="li-item"
-                    data-index={index}
                     onmousemove={handlePillMouseMove}
                     onmousedown={handlePillMouseDown}
                 >
                     <c-avonni-primitive-pill
+                        data-element-id="avonni-primitive-pill"
+                        data-index={index}
                         class={computedPillClass}
                         actions={actions}
                         avatar={pill.avatar}
@@ -81,8 +83,6 @@
                         name={pill.name}
                         role="option"
                         tabindex="-1"
-                        data-element-id="avonni-primitive-pill"
-                        data-index={index}
                         onactionclick={handleActionClick}
                         onclick={handlePillClick}
                     ></c-avonni-primitive-pill>
@@ -94,71 +94,71 @@
             <!-- Show more -->
             <lightning-button
                 if:true={isCollapsed}
+                data-element-id="lightning-button-show-more"
                 class="slds-p-horizontal_xx-small"
                 label={buttonLabel}
                 variant="base"
-                data-element-id="lightning-button-show-more"
                 onclick={handleExpand}
                 onmouseenter={handleMoreButtonMouseEnter}
                 onmouseleave={handleMoreButtonMouseLeave}
             ></lightning-button>
             <div
                 if:true={showPopover}
+                data-element-id="div-popover"
                 class="
-                    slds-dropdown slds-dropdown_left slds-dropdown_length-7
+                    slds-dropdown slds-dropdown_right slds-dropdown_length-7
                     slds-p-vertical_none
                     slds-p-horizontal_xx-small
                 "
-                data-element-id="div-popover"
                 onfocusin={handlePopoverFocusIn}
                 onfocusout={handlePopoverFocusOut}
                 onscroll={handlePopoverScroll}
             >
-                <ul
-                    aria-describedby="instructions"
-                    aria-labelledby="label"
-                    aria-orientation="vertical"
-                    onkeydown={handleKeyDown}
-                    onopenactionmenu={handleOpenHiddenActionMenu}
-                >
-                    <template for:each={hiddenItems} for:item="pill">
-                        <li
-                            key={pill.name}
-                            class={computedHiddenListItemClass}
-                            role="presentation"
-                            data-element-id="li-item-hidden"
-                            data-index={pill.index}
-                            data-name={pill.name}
-                            onmousemove={handlePillMouseMove}
-                            onmousedown={handlePillMouseDown}
-                        >
-                            <c-avonni-primitive-pill
-                                class={computedPillClass}
-                                actions={actions}
-                                avatar={pill.avatar}
-                                href={pill.href}
-                                label={pill.label}
-                                name={pill.name}
-                                role="option"
-                                tabindex="-1"
-                                variant="list"
-                                data-element-id="avonni-primitive-pill-hidden"
+                    <ul
+                        aria-describedby="instructions"
+                        aria-labelledby="label"
+                        aria-orientation="vertical"
+                        onkeydown={handleKeyDown}
+                        onopenactionmenu={handleOpenHiddenActionMenu}
+                    >
+                        <template for:each={hiddenItems} for:item="pill">
+                            <li
+                                data-element-id="li-item-hidden"
                                 data-index={pill.index}
-                                onactionclick={handleActionClick}
-                                onclick={handlePillClick}
-                            ></c-avonni-primitive-pill>
-                        </li>
-                    </template>
-                </ul>
+                                data-name={pill.name}
+                                key={pill.name}
+                                class={computedHiddenListItemClass}
+                                role="presentation"
+                                onmousemove={handlePillMouseMove}
+                                onmousedown={handlePillMouseDown}
+                            >
+                                <c-avonni-primitive-pill
+                                    data-element-id="avonni-primitive-pill-hidden"
+                                    data-index={pill.index}
+                                    class={computedPillClass}
+                                    actions={actions}
+                                    avatar={pill.avatar}
+                                    href={pill.href}
+                                    label={pill.label}
+                                    name={pill.name}
+                                    role="option"
+                                    tabindex="-1"
+                                    variant="list"
+                                    onactionclick={handleActionClick}
+                                    onclick={handlePillClick}
+                                ></c-avonni-primitive-pill>
+                            </li>
+                        </template>
+                    </ul>
             </div>
         </div>
 
         <c-avonni-primitive-dropdown-menu
             if:true={showActionMenu}
+            data-element-id="avonni-primitive-dropdown-menu"
             class="slds-is-absolute avonni-pill-container__action-menu"
             show={showActionMenu}
             items={actions}
-            data-element-id="avonni-primitive-dropdown-menu"
             onclose={handleCloseActionMenu}
             onprivateselect={handleActionSelect}
         ></c-avonni-primitive-dropdown-menu>

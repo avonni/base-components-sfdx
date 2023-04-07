@@ -117,7 +117,8 @@
 
 /* If the avatar is in a group, the size is set by the parent */
 :host(.slds-avatar-grouped) .avonni-avatar,
-:host(.slds-avatar-grouped) .avonni-avatar {
+:host(.slds-avatar-grouped) .avonni-avatar_square,
+:host(.slds-avatar-grouped) .avonni-avatar_circle {
     width: 100%;
     height: 100%;
 }
@@ -502,7 +503,7 @@
 
 .avonni-avatar__image {
     height: 100%;
-    object-fit: cover;
+    object-fit: var(--avonni-avatar-image-object-fit, 'cover');
 }
 
 /** 

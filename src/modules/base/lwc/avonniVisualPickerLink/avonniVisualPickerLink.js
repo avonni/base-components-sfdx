@@ -69,7 +69,9 @@ export default class AvonniVisualPickerLink extends LightningElement {
     @api title;
 
     _completed = false;
+
     _iconPosition = ICON_POSITIONS.default;
+
     _infoOnly = false;
 
     showTitle = true;
@@ -100,7 +102,7 @@ export default class AvonniVisualPickerLink extends LightningElement {
      */
 
     /**
-     * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#With-Completed-Steps">completed</a>.
+     * If present, a checkmark is added to the icon.
      *
      * @type {boolean}
      * @public
@@ -135,7 +137,7 @@ export default class AvonniVisualPickerLink extends LightningElement {
     }
 
     /**
-     * If present, the picker is displayed as <a href="https://www.lightningdesignsystem.com/components/welcome-mat/#Info-only">info only</a>.
+     * If present, The <a> tags are removed from the tiles. The tiles also lose their button appearance, removing borders and shadows.
      *
      * @type {boolean}
      * @public
@@ -162,10 +164,10 @@ export default class AvonniVisualPickerLink extends LightningElement {
      * @type {string}
      */
     get computedContainerClass() {
-        return classSet('slds-welcome-mat__tile')
+        return classSet('avonni-visual-picker-link__tile')
             .add({
                 'slds-welcome-mat__tile_complete': this._completed,
-                'slds-welcome-mat__tile_info-only': this._infoOnly
+                'avonni-visual-picker-link__tile_info-only': this._infoOnly
             })
             .toString();
     }
@@ -178,9 +180,9 @@ export default class AvonniVisualPickerLink extends LightningElement {
     get computedTileBodyClass() {
         return classSet('slds-welcome-mat__tile-body')
             .add({
-                'avonni-welcome-mat__tile-body-right':
+                'avonni-visual-picker-link__tile-body-right':
                     this._iconPosition === 'right',
-                'avonni-welcome-mat__tile-no-icon': !this.iconName
+                'avonni-visual-picker-link__tile-no-icon': !this.iconName
             })
             .toString();
     }
@@ -195,7 +197,8 @@ export default class AvonniVisualPickerLink extends LightningElement {
             'slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center'
         )
             .add({
-                'avonni-media__figure-right': this._iconPosition === 'right'
+                'avonni-visual-picker-link__figure-right':
+                    this._iconPosition === 'right'
             })
             .toString();
     }

@@ -195,6 +195,10 @@ export default class AvonniColorGradient extends LightningElement {
             this._value = value;
             this.colors = generateColors(this._value);
 
+            if (this.opacity) {
+                this.setOpacityColor(this.colors.H);
+            }
+
             if (this.init) {
                 this.setPaletteColor(this.colors.H);
                 this.setSwatchColor(this.value);
@@ -721,11 +725,13 @@ export default class AvonniColorGradient extends LightningElement {
      * @param {string} value
      */
     setOpacityColor(value) {
-        let opacity = this.template.querySelector('.avonni-opacity-input');
+        const opacity = this.template.querySelector('.avonni-opacity-input');
 
-        opacity.style.backgroundImage = this.disabled
-            ? 'none'
-            : `linear-gradient(to right, hsla(0,100%,50%, 0), hsla(${value},100%,50%,1))`;
+        if (opacity) {
+            opacity.style.backgroundImage = this.disabled
+                ? 'none'
+                : `linear-gradient(to right, hsla(0,100%,50%, 0), hsla(${value},100%,50%,1))`;
+        }
     }
 
     /**

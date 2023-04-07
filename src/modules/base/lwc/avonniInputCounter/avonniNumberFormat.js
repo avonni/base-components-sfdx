@@ -131,12 +131,7 @@ export function hasValidNumberSymbol(value) {
     return value.match(matchSymbols) ? true : false;
 }
 
-export function increaseNumberByStep({
-    value,
-    increment,
-    step,
-    fractionDigits
-}) {
+export function increaseNumberByStep({ value, increment, step }) {
     const startingValue = value === '' || value == null ? '0' : value;
     const stepAsFloat = parseFloat(step);
 
@@ -147,5 +142,5 @@ export function increaseNumberByStep({
         const increaseBy = increment * stepAsFloat;
         result = parseFloat(startingValue) + increaseBy;
     }
-    return Number(result.toFixed(fractionDigits));
+    return Number(result);
 }

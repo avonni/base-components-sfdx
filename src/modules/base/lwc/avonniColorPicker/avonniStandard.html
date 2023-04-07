@@ -47,10 +47,7 @@
             data-element-id="lightning-helptext"
         ></lightning-helptext>
         <div class="slds-grid">
-            <div
-                class="slds-dropdown-trigger slds-dropdown-trigger_click"
-                data-element-id="div-dropdown-trigger"
-            >
+            <div class={computedDropdownTriggerClass}>
                 <button
                     class={computedButtonClass}
                     disabled={disabled}
@@ -100,7 +97,7 @@
                             onmouseenter={handleMenuMouseEnter}
                             onmouseleave={handleMenuMouseLeave}
                             onkeydown={handleMenuKeydown}
-                            onkeyup={handleMenuKeyup}
+                            onkeyup={handleMenuKeyUp}
                             onblur={handleMenuBlur}
                         >
                             <!-- Loading spinner -->
@@ -122,21 +119,22 @@
                                     class="
                                         slds-popover__body
                                         avonni-color-picker__popover-body
-                                        slds-tabs_default
+                                        avonni-color-picker-tabs_default
                                     "
                                     onblur={handleMenuBlur}
-                                    onchange={handleDefaultAndTokenChange}
                                 >
                                     <!-- Tabs -->
                                     <ul
                                         if:true={isBase}
-                                        class="slds-tabs_default__nav"
+                                        class="
+                                            avonni-color-picker-tabs_default__nav
+                                        "
                                         role="tablist"
                                         data-element-id="ul-tabs"
                                     >
                                         <li
                                             class="
-                                                slds-tabs_default__item
+                                                avonni-color-picker-tabs_default__item
                                                 slds-is-active
                                             "
                                             title="Default"
@@ -144,7 +142,7 @@
                                         >
                                             <a
                                                 class="
-                                                    slds-tabs_default__link
+                                                    avonni-color-picker-tabs_default__link
                                                     avonni-color-picker__tab
                                                 "
                                                 href="javascript:void(0);"
@@ -159,14 +157,16 @@
                                         </li>
                                         <li
                                             if:true={tokens.length}
-                                            class="slds-tabs_default__item"
+                                            class="
+                                                avonni-color-picker-tabs_default__item
+                                            "
                                             title="Tokens"
                                             role="presentation"
                                             data-element-id="li-tokens-tab"
                                         >
                                             <a
                                                 class="
-                                                    slds-tabs_default__link
+                                                    avonni-color-picker-tabs_default__link
                                                     avonni-color-picker__tab
                                                 "
                                                 href="javascript:void(0);"
@@ -180,13 +180,15 @@
                                             >
                                         </li>
                                         <li
-                                            class="slds-tabs_default__item"
+                                            class="
+                                                avonni-color-picker-tabs_default__item
+                                            "
                                             title="Custom"
                                             role="presentation"
                                         >
                                             <a
                                                 class="
-                                                    slds-tabs_default__link
+                                                    avonni-color-picker-tabs_default__link
                                                     avonni-color-picker__tab
                                                 "
                                                 href="javascript:void(0);"
@@ -215,14 +217,16 @@
                                                 slds-scrollable_y
                                                 avonni-color-picker__default-palette
                                             "
-                                            colors={computedColors}
                                             columns={columns}
-                                            groups={groups}
+                                            hide-outline={paletteHideOutline}
                                             is-loading={paletteIsLoading}
                                             read-only={readOnly}
+                                            show-checkmark={paletteShowCheckmark}
+                                            value={value}
                                             variant={colorPaletteVariant}
                                             data-element-id="avonni-color-palette"
                                             onblur={handleMenuBlur}
+                                            onchange={handleColorPaletteChange}
                                         ></c-avonni-color-palette>
 
                                         <!-- Color Gradient -->
@@ -233,8 +237,8 @@
                                             value={computedGradientValue}
                                             read-only={readOnly}
                                             data-element-id="avonni-color-gradient"
-                                            onchange={handleChange}
                                             onblur={handleMenuBlur}
+                                            onchange={handleColorGradientChange}
                                         ></c-avonni-color-gradient>
                                     </div>
                                 </div>

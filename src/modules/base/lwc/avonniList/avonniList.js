@@ -207,6 +207,9 @@ export default class AvonniList extends LightningElement {
             this._resizeObserver.disconnect();
             this._resizeObserver = undefined;
         }
+
+        window.removeEventListener('mouseup', this._dragEndMethod);
+        window.removeEventListener('touchend', this._dragEndMethod);
     }
 
     /*
@@ -1688,6 +1691,10 @@ export default class AvonniList extends LightningElement {
             // Close any open button menu
             this._draggedElement.focus();
         }
+
+        this._dragEndMethod = this.dragEnd.bind(this);
+        window.addEventListener('mouseup', this._dragEndMethod);
+        window.addEventListener('touchend', this._dragEndMethod);
     }
 
     /**
@@ -1746,42 +1753,13 @@ export default class AvonniList extends LightningElement {
      *
      * @param {Event} event
      */
-    dragEnd(event) {
-        window.clearInterval(this._scrollingInterval);
+    dragEnd() {
+        window.removeEventListener('mouseup', this._dragEndMethod);
+        window.removeEventListener('touchend', this._dragEndMethod);
+
+        clearInterval(this._scrollingInterval);
         this._scrollingInterval = null;
         this._dragging = false;
-
-        if (this._draggedIndex === null) {
-            return;
-        }
-
-        if (event && event.button === 0) {
-            const index = Number(event.currentTarget.dataset.index);
-            const item = this.computedItems[index];
-
-            /**
-             * The event fired when the mouse is released on an item.
-             *
-             * @event
-             * @name itemmouseup
-             * @param {object} item Item clicked.
-             * @param {string} name Name of the item clicked.
-             * @public
-             * @bubbles
-             */
-            const itemMouseUpEvent = new CustomEvent('itemmouseup', {
-                detail: {
-                    item: this.cleanUpItem(item),
-                    name: item.name
-                },
-                bubbles: true
-            });
-            itemMouseUpEvent.clientX = event.clientX;
-            itemMouseUpEvent.clientY = event.clientY;
-            itemMouseUpEvent.pageX = event.pageX;
-            itemMouseUpEvent.pageY = event.pageY;
-            this.dispatchEvent(itemMouseUpEvent);
-        }
 
         if (!this._draggedElement) {
             return;
@@ -1995,6 +1973,38 @@ export default class AvonniList extends LightningElement {
                 }
             })
         );
+    }
+
+    handleItemMouseUp(event) {
+        if (event.button !== 0) {
+            return;
+        }
+
+        const index = Number(event.currentTarget.dataset.index);
+        const item = this.computedItems[index];
+
+        /**
+         * The event fired when the mouse is released on an item.
+         *
+         * @event
+         * @name itemmouseup
+         * @param {object} item Item clicked.
+         * @param {string} name Name of the item clicked.
+         * @public
+         * @bubbles
+         */
+        const itemMouseUpEvent = new CustomEvent('itemmouseup', {
+            detail: {
+                item: this.cleanUpItem(item),
+                name: item.name
+            },
+            bubbles: true
+        });
+        itemMouseUpEvent.clientX = event.clientX;
+        itemMouseUpEvent.clientY = event.clientY;
+        itemMouseUpEvent.pageX = event.pageX;
+        itemMouseUpEvent.pageY = event.pageY;
+        this.dispatchEvent(itemMouseUpEvent);
     }
 
     /**

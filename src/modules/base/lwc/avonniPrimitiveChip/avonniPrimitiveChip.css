@@ -1,0 +1,23 @@
+.primitive-chip__avatar {
+    --avonni-avatar-sizing-border: var(--avonni-chip-avatar-sizing-border);
+    --avonni-avatar-color-border: var(--avonni-chip-avatar-color-border);
+    --avonni-avatar-styling-border: var(--avonni-chip-avatar-styling-border);
+    --avonni-avatar-initials-text-color: var(
+        --avonni-chip-avatar-initials-text-color
+    );
+    --avonni-avatar-initials-text-font-weight: var(
+        --avonni-chip-avatar-initials-text-font-weight
+    );
+    --slds-c-icon-color-background: var(
+        --avonni-chip-avatar-icon-color-background
+    );
+    --slds-c-icon-color-foreground: var(
+        --avonni-chip-avatar-icon-color-foreground
+    );
+    --slds-c-icon-color-foreground-default: var(
+        --avonni-chip-avatar-icon-color-foreground-default
+    );
+    --avonni-avatar-image-object-fit: var(
+        --avonni-chip-avatar-image-object-fit
+    );
+}

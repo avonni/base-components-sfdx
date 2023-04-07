@@ -33,16 +33,14 @@
 -->
 
 <template>
-    <div class="slds-p-around_x-small">
-        <c-avonni-image
-            src={value}
-            alternative-text={typeAttributes.alternativeText}
-            srcset={typeAttributes.srcset}
-            sizes={typeAttributes.sizes}
-            width={typeAttributes.width}
-            height={typeAttributes.height}
-            fluid="true"
-            thumbnail={typeAttributes.thumbnail}
-        ></c-avonni-image>
-    </div>
+    <c-avonni-image
+        src={value}
+        alternative-text={typeAttributes.alternativeText}
+        srcset={typeAttributes.srcset}
+        sizes={typeAttributes.sizes}
+        width={typeAttributes.width}
+        height={typeAttributes.height}
+        fluid="true"
+        thumbnail={typeAttributes.thumbnail}
+    ></c-avonni-image>
 </template>

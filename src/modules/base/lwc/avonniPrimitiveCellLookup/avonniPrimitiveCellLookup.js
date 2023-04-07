@@ -32,15 +32,11 @@
 
 import { LightningElement, api } from 'lwc';
 
-export default class AvonniPrimitiveCellCombobox extends LightningElement {
+export default class AvonniPrimitiveCellLookup extends LightningElement {
     @api colKeyValue;
     @api rowKeyValue;
-    @api disabled;
-    @api dropdownAlignment;
-    @api dropdownLength;
-    @api isMultiSelect;
-    @api options;
-    @api placeholder;
+    @api path;
+    @api target;
 
     _value;
     visible = false;
@@ -48,11 +44,6 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
     readOnly = true;
 
     connectedCallback() {
-        // Dispatches the inline edit event to the parent component.
-        this.template.addEventListener('inlineeditchange', (event) => {
-            this.handleChange(event);
-        });
-
         this.template.addEventListener('ieditfinishedcustom', () => {
             this.toggleInlineEdit();
         });
@@ -70,42 +61,21 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
 
     /*----------- Inline Editing Functions -------------*/
 
-    get displayedValue() {
-        if (this.isMultiSelect && this.value) {
-            const selectedOptions = this.options.filter((option) =>
-                this.value.includes(option.value)
-            );
-            return selectedOptions.map((option) => ({
-                label: option.label,
-                name: option.value
-            }));
-        } else if (this.isMultiSelect && !this.value) {
-            return [];
-        }
-
-        const selectedOption = this.options.find(
-            (option) => option.value === this.value
-        );
-        return selectedOption?.label ?? this.value;
-    }
-
-    get displayPillContainer() {
-        return this.isMultiSelect && this.displayedValue?.length > 0;
-    }
-
     /**
      * Return true if cell is editable and not disabled.
      *
      * @type {Boolean}
      */
     get showEditButton() {
-        return this.editable && !this.disabled;
+        return this.editable;
     }
 
-    // Toggles the visibility of the inline edit panel and the readOnly property of combobox.
+    get editedValue() {
+        return this.label ? this.label : this.state.inlineEdit.editedValue;
+    }
+
     toggleInlineEdit() {
         this.visible = !this.visible;
-        this.readOnly = !this.readOnly;
     }
 
     getStateAndColumnsEvent() {
@@ -131,9 +101,9 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
 
     // Checks if the column is editable.
     isEditable() {
-        let combobox = {};
-        combobox = this.columns.find((column) => column.type === 'combobox');
-        this.editable = combobox.editable;
+        let lookup = {};
+        lookup = this.columns.find((column) => column.type === 'lookup');
+        this.editable = lookup.editable;
     }
 
     // Handles the edit button click and dispatches the event.
@@ -152,66 +122,5 @@ export default class AvonniPrimitiveCellCombobox extends LightningElement {
         );
         this.getStateAndColumnsEvent();
         this.toggleInlineEdit();
-    }
-
-    handleChange(event) {
-        const detail = {
-            value: event.detail.value,
-            colKeyValue: this.colKeyValue,
-            rowKeyValue: this.rowKeyValue,
-            callbacks: {
-                dispatchCellChangeEvent: this.dispatchCellChangeEvent.bind(this)
-            }
-        };
-        this._value = event.detail.value;
-        this.dispatchEvent(
-            new CustomEvent('privateeditcustomcell', {
-                detail: detail,
-                bubbles: true,
-                composed: true
-            })
-        );
-    }
-
-    dispatchCellChangeEvent(state) {
-        const dirtyValues = state.inlineEdit.dirtyValues;
-        dirtyValues[this.rowKeyValue][this.colKeyValue] = this.value;
-        this.dispatchEvent(
-            new CustomEvent('cellchangecustom', {
-                detail: {
-                    draftValues: this.getResolvedCellChanges(state, dirtyValues)
-                },
-                bubbles: true,
-                composed: true
-            })
-        );
-    }
-
-    getResolvedCellChanges(state, dirtyValues) {
-        const keyField = state.keyField;
-        return Object.keys(dirtyValues).reduce((result, rowKey) => {
-            // Get the changes made by column
-            const cellChanges = this.getCellChangesByColumn(
-                state,
-                dirtyValues[rowKey]
-            );
-            if (Object.keys(cellChanges).length > 0) {
-                // Add identifier for which row has change
-                cellChanges[keyField] = rowKey;
-                result.push(cellChanges);
-            }
-            return result;
-        }, []);
-    }
-
-    getCellChangesByColumn(state, changes) {
-        return Object.keys(changes).reduce((result, colKey) => {
-            const columns = state.columns;
-            const columnIndex = state.headerIndexes[colKey];
-            const columnDef = columns[columnIndex];
-            result[columnDef.columnKey || columnDef.fieldName] =
-                changes[colKey];
-            return result;
-        }, {});
     }
 }

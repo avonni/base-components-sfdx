@@ -36,61 +36,77 @@
     <div class="slds-welcome-mat">
         <div class={computedContainerClass}>
             <div class="slds-media">
-                <div if:true={leftPosition} class={computedIconContainerClass}>
-                    <div class="slds-welcome-mat__tile-figure">
-                        <div class="slds-welcome-mat__tile-icon-container">
-                            <lightning-icon
-                                icon-name={iconName}
-                                data-element-id="lightning-icon-left"
-                                class="avonni-visual-picker-icon"
-                            ></lightning-icon>
-                            <lightning-icon
-                                icon-name="utility:check"
-                                alternative-text="Completed"
-                                variant="inverse"
-                                size="xx-small"
-                                class="slds-icon-action-check"
-                            ></lightning-icon>
+                <template if:true={iconName}>
+                    <div
+                        if:true={leftPosition}
+                        class={computedIconContainerClass}
+                    >
+                        <div class="slds-welcome-mat__tile-figure">
+                            <div class="slds-welcome-mat__tile-icon-container">
+                                <lightning-icon
+                                    icon-name={iconName}
+                                    data-element-id="lightning-icon-left"
+                                    class="avonni-visual-picker-link__icon"
+                                ></lightning-icon>
+                                <lightning-icon
+                                    if:true={completed}
+                                    class="slds-icon-action-check"
+                                    icon-name="utility:check"
+                                    alternative-text="Completed"
+                                    variant="inverse"
+                                    size="xx-small"
+                                ></lightning-icon>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
                 <div class="slds-media__body">
                     <div class={computedTileBodyClass}>
                         <template if:true={showTitle}>
-                            <h3 class="slds-welcome-mat__tile-title">
+                            <h3 class="avonni-visual-picker-link__tile-title">
                                 <slot name="title"></slot>
                             </h3>
                         </template>
                         <template if:false={showTitle}>
                             <template if:true={title}>
-                                <div class="slds-welcome-mat__tile-title">
+                                <div
+                                    class="
+                                        avonni-visual-picker-link__tile-title
+                                    "
+                                >
                                     {title}
                                 </div>
                             </template>
                         </template>
-                        <p class="slds-welcome-mat__tile-description">
+                        <p class="avonni-visual-picker-link__tile-description">
                             <slot></slot>
                         </p>
                     </div>
                 </div>
-                <div if:false={leftPosition} class={computedIconContainerClass}>
-                    <div class="slds-welcome-mat__tile-figure">
-                        <div class="slds-welcome-mat__tile-icon-container">
-                            <lightning-icon
-                                data-element-id="lightning-icon-right"
-                                class="avonni-visual-picker-icon"
-                                icon-name={iconName}
-                            ></lightning-icon>
-                            <lightning-icon
-                                icon-name="utility:check"
-                                alternative-text="Completed"
-                                variant="inverse"
-                                size="xx-small"
-                                class="slds-icon-action-check"
-                            ></lightning-icon>
+                <template if:true={iconName}>
+                    <div
+                        if:false={leftPosition}
+                        class={computedIconContainerClass}
+                    >
+                        <div class="slds-welcome-mat__tile-figure">
+                            <div class="slds-welcome-mat__tile-icon-container">
+                                <lightning-icon
+                                    data-element-id="lightning-icon-right"
+                                    class="avonni-visual-picker-link__icon"
+                                    icon-name={iconName}
+                                ></lightning-icon>
+                                <lightning-icon
+                                    if:true={completed}
+                                    class="slds-icon-action-check"
+                                    icon-name="utility:check"
+                                    alternative-text="Completed"
+                                    variant="inverse"
+                                    size="xx-small"
+                                ></lightning-icon>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
             </div>
         </div>
     </div>

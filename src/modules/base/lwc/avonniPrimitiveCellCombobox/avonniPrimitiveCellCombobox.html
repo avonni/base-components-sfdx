@@ -46,7 +46,6 @@
             is-multi-select={isMultiSelect}
             disabled={disabled}
             dropdown-length={dropdownLength}
-            options={options}
             placeholder={placeholder}
             style="position: absolute; top: 0"
         ></c-avonni-primitive-datatable-iedit-panel-custom>
@@ -58,18 +57,14 @@
                 slds-grid_align-spread slds-grid_vertical-align-center
             "
         >
-            <c-avonni-combobox
-                disabled={disabled}
-                dropdown-alignment={dropdownalignment}
-                dropdown-length={dropdownLength}
-                is-multi-select={isMultiSelect}
-                options={options}
-                placeholder={placeholder}
-                read-only={readOnly}
-                variant="label-hidden"
-                value={value}
-                onchange={handleChange}
-            ></c-avonni-combobox>
+            <lightning-formatted-text
+                if:false={isMultiSelect}
+                value={displayedValue}
+            ></lightning-formatted-text>
+            <c-avonni-pill-container
+                if:true={isMultiSelect}
+                items={displayedValue}
+            ></c-avonni-pill-container>
             <template if:true={showEditButton}>
                 <c-avonni-primitive-cell-editable-button
                     onclick={handleEditButtonClick}

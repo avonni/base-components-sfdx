@@ -434,6 +434,15 @@ export default class AvonniProgressCircle extends LightningElement {
     }
 
     /**
+     * True if the title is on the bottom of the progress circle.
+     *
+     * @type {boolean}
+     */
+    get showPositionBottom() {
+        return this.titlePosition === 'bottom' && this.title;
+    }
+
+    /**
      * True if the title is on the top of the progress circle.
      *
      * @type {boolean}

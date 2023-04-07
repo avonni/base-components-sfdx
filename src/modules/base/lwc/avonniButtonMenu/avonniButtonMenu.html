@@ -37,8 +37,8 @@
         class={computedButtonClass}
         disabled={disabled}
         aria-expanded={computedAriaExpanded}
-        title={computedTitle}
-        accesskey={computedAccessKey}
+        title={title}
+        accesskey={accessKey}
         value={value}
         aria-haspopup="true"
         data-element-id="button"
@@ -46,6 +46,7 @@
         onblur={handleBlur}
         onfocus={handleFocus}
         type="button"
+        onkeydown={handleButtonKeyDown}
         onmousedown={handleButtonMouseDown}
     >
         <abbr
@@ -56,13 +57,14 @@
         >
         {label}
         <c-avonni-primitive-icon
+            class="slds-m-horizontal_xx-small"
             icon-name={iconName}
             svg-class="slds-button__icon"
             variant="bare"
             data-element-id="avonni-primitive-icon-main"
         ></c-avonni-primitive-icon>
 
-        <template if:true={computedShowDownIcon}>
+        <template if:false={computedHideDownIcon}>
             <c-avonni-primitive-icon
                 icon-name="utility:down"
                 svg-class="slds-button__icon slds-button__icon_x-small slds-m-left_xx-small"
@@ -71,7 +73,7 @@
             ></c-avonni-primitive-icon>
         </template>
 
-        <span class="slds-assistive-text">{computedAlternativeText}</span>
+        <span class="slds-assistive-text">{alternativeText}</span>
     </button>
 
     <template if:true={_dropdownOpened}>
@@ -105,5 +107,4 @@
             </template>
         </div>
     </template>
-    <slot name="dialogs"></slot>
 </template>

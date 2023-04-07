@@ -67,6 +67,7 @@
                         onblur={handleBlur}
                         onfocus={handleFocus}
                         onchange={handleChange}
+                        onkeyup={handleKeyUp}
                     />
                     <label for={item.value} data-element-id="label">
                         <span class={verticalVisualPickerTypeClass}>
@@ -173,6 +174,25 @@
                             </span>
                         </template>
                     </label>
+                    <div
+                        if:true={item.showSubItems}
+                        class="
+                            slds-box slds-box_small
+                            slds-m-top_xx-small
+                            slds-text-align_left
+                            avonni-vertical-visual-picker__sub-items
+                        "
+                    >
+                        <c-avonni-input-choice-set
+                            data-element-id="input-choice-set"
+                            data-value={item.value}
+                            disabled={item.disabled}
+                            is-multi-select={item.subItemsMultiSelect}
+                            options={item.subItems}
+                            value={value}
+                            onchange={handleSubItemsChange}
+                        ></c-avonni-input-choice-set>
+                    </div>
                 </div>
             </template>
         </div>

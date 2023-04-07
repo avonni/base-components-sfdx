@@ -89,6 +89,25 @@
     cursor: not-allowed;
 }
 
+/*-- Focus --*/
+.slds-visual-picker input:focus ~ label .slds-visual-picker__figure {
+    border: 1px solid transparent;
+    -webkit-box-shadow: var(--slds-c-button-shadow-focus, 0 0 3px #0070d2);
+    box-shadow: var(--slds-c-button-shadow-focus, 0 0 3px #0070d2);
+}
+
+/*-- Hover --*/
+.slds-visual-picker
+    input:not(:disabled)
+    ~ label:hover
+    .slds-visual-picker__figure {
+    cursor: pointer;
+    outline: 0;
+    border: 1px solid #1b96ff;
+    -webkit-box-shadow: 0 0 0 1px #1b96ff inset;
+    box-shadow: 0 0 0 1px #1b96ff inset;
+}
+
 /*-- Checked --*/
 .slds-visual-picker input:checked ~ label .slds-visual-picker__text {
     border-width: 1px;

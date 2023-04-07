@@ -68,7 +68,6 @@ export default class AvonniPillContainer extends LightningElement {
     _dragTimeOut;
     _expandTimeOut;
     _focusedIndex = 0;
-    _focusedTabIndex = 0;
     _focusOnRender = false;
     _hasFocus = false;
     _hiddenItemsStartIndex = 0;
@@ -256,6 +255,27 @@ export default class AvonniPillContainer extends LightningElement {
      */
 
     /**
+     * HTML element containing the instructions used during drag and drop.
+     *
+     * @type {HTMLElement}
+     */
+    get altTextElement() {
+        return this.template.querySelector(
+            '[data-element-id="span-instructions"]'
+        );
+    }
+
+    /**
+     * Label of the "show more" button.
+     *
+     * @type {string}
+     */
+    get buttonLabel() {
+        const hiddenCount = this.items.length - this._visibleItemsCount;
+        return `+${hiddenCount} more`;
+    }
+
+    /**
      * CSS classes of the items hidden in the single-line collapsed popover.
      *
      * @type {string}
@@ -312,11 +332,7 @@ export default class AvonniPillContainer extends LightningElement {
      * @type {string}
      */
     get computedPillClass() {
-        return classSet()
-            .add({
-                'avonni-pill-container__pill-sortable': this.sortable
-            })
-            .toString();
+        return this.sortable ? 'avonni-pill-container__pill-sortable' : '';
     }
 
     /**
@@ -326,21 +342,9 @@ export default class AvonniPillContainer extends LightningElement {
      */
     get computedWrapperClass() {
         return classSet('avonni-pill-container__wrapper slds-is-relative').add({
-            'slds-pill_container slds-p-top_none slds-p-bottom_none':
-                this.singleLine,
+            'slds-pill_container': this.singleLine,
             'avonni-pill-container__no-items': !this._visibleItemsCount
         });
-    }
-
-    /**
-     * HTML element containing the instructions used during drag and drop.
-     *
-     * @type {HTMLElement}
-     */
-    get altTextElement() {
-        return this.template.querySelector(
-            '[data-element-id="span-instructions"]'
-        );
     }
 
     /**
@@ -393,16 +397,6 @@ export default class AvonniPillContainer extends LightningElement {
     }
 
     /**
-     * Label of the "show more" button.
-     *
-     * @type {string}
-     */
-    get buttonLabel() {
-        const hiddenCount = this.items.length - this._visibleItemsCount;
-        return `+${hiddenCount} more`;
-    }
-
-    /**
      * Array of items that are always visible, even when the pill container is collapsed.
      *
      * @type {object[]}
@@ -411,6 +405,11 @@ export default class AvonniPillContainer extends LightningElement {
         return this.items.slice(0, this._visibleItemsCount);
     }
 
+    /**
+     * Wrapper HTML element.
+     *
+     * @type {HTMLElement}
+     */
     get wrapperElement() {
         return this.template.querySelector('[data-element-id="div-wrapper"]');
     }
@@ -445,51 +444,6 @@ export default class AvonniPillContainer extends LightningElement {
      *  PRIVATE METHODS
      * -------------------------------------------------------------
      */
-
-    /**
-     * Initialize the reordering of a pill.
-     *
-     * @param {number} index Index of the reordered pill.
-     */
-    initDragState(index) {
-        if (!this.sortable) return;
-
-        this._dragState = {
-            initialIndex: index,
-            lastHoveredIndex: index
-        };
-        this.wrapperElement.classList.add(
-            'avonni-pill-container__list_dragging'
-        );
-        this.updateAssistiveText(index + 1);
-    }
-
-    /**
-     * Initialize the screen resize observer.
-     *
-     * @returns {AvonniResizeObserver} Resize observer.
-     */
-    initResizeObserver() {
-        if (!this.wrapperElement) {
-            return null;
-        }
-        return new AvonniResizeObserver(
-            this.wrapperElement,
-            this.updateVisibleItems.bind(this)
-        );
-    }
-
-    /**
-     * Initialize the number visible items.
-     */
-    initVisibleItemsCount() {
-        const maxCount = this.items.length;
-        const count =
-            DEFAULT_NUMBER_OF_VISIBLE_ITEMS > maxCount
-                ? maxCount
-                : DEFAULT_NUMBER_OF_VISIBLE_ITEMS;
-        this._visibleItemsCount = !this.computedIsExpanded ? count : maxCount;
-    }
 
     /**
      * If the given position is close to the top or the bottom of the single-line collapsed popover, scroll the popover in this direction. Used to scroll automatically the popover when sorting an item.
@@ -570,6 +524,51 @@ export default class AvonniPillContainer extends LightningElement {
             }
         }
         return null;
+    }
+
+    /**
+     * Initialize the reordering of a pill.
+     *
+     * @param {number} index Index of the reordered pill.
+     */
+    initDragState(index) {
+        if (!this.sortable) return;
+
+        this._dragState = {
+            initialIndex: index,
+            lastHoveredIndex: index
+        };
+        this.wrapperElement.classList.add(
+            'avonni-pill-container__list_dragging'
+        );
+        this.updateAssistiveText(index + 1);
+    }
+
+    /**
+     * Initialize the screen resize observer.
+     *
+     * @returns {AvonniResizeObserver} Resize observer.
+     */
+    initResizeObserver() {
+        if (!this.wrapperElement) {
+            return null;
+        }
+        return new AvonniResizeObserver(
+            this.wrapperElement,
+            this.updateVisibleItems.bind(this)
+        );
+    }
+
+    /**
+     * Initialize the number visible items.
+     */
+    initVisibleItemsCount() {
+        const maxCount = this.items.length;
+        const count =
+            DEFAULT_NUMBER_OF_VISIBLE_ITEMS > maxCount
+                ? maxCount
+                : DEFAULT_NUMBER_OF_VISIBLE_ITEMS;
+        this._visibleItemsCount = !this.computedIsExpanded ? count : maxCount;
     }
 
     /**
@@ -707,6 +706,18 @@ export default class AvonniPillContainer extends LightningElement {
     }
 
     /**
+     * Save the visible items widths, to compute their visibility later.
+     */
+    saveItemsWidths() {
+        const items = this.template.querySelectorAll(
+            '[data-element-id^="li-item"]'
+        );
+        items.forEach((item, i) => {
+            this._itemsWidths[i] = item.offsetWidth;
+        });
+    }
+
+    /**
      * Make sure the focused item is visible in the hidden items popover, to prevent a jump of the scroll bar next time it is focused.
      */
     scrollToFocusedItem() {
@@ -730,18 +741,6 @@ export default class AvonniPillContainer extends LightningElement {
             popover.scrollTop +=
                 itemPosition.bottom - popoverPosition.bottom + 5;
         }
-    }
-
-    /**
-     * Save the visible items widths, to compute their visibility later.
-     */
-    saveItemsWidths() {
-        const items = this.template.querySelectorAll(
-            '[data-element-id^="li-item"]'
-        );
-        items.forEach((item, i) => {
-            this._itemsWidths[i] = item.offsetWidth;
-        });
     }
 
     /**

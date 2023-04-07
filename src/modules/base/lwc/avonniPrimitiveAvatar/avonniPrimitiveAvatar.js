@@ -552,7 +552,7 @@ export default class AvonniPrimitiveAvatar extends LightningElement {
             new CustomEvent('actionclick', {
                 bubbles: true,
                 detail: {
-                    name: event.currentTarget.value
+                    name: event.currentTarget.value || event.detail.value
                 }
             })
         );

@@ -55,8 +55,17 @@ export class SchedulerCellGroup {
      */
     initCells() {
         this.cells = [];
-        this.referenceCells.forEach((element) => {
-            this.cells.push(new Cell({ ...element, timezone: this.timezone }));
+        this.referenceCells.forEach((element, index) => {
+            const cell = new Cell({ ...element, timezone: this.timezone });
+            const nextCell = this.referenceCells[index + 1];
+            if (nextCell) {
+                const hasSameStart = nextCell.start === cell.start;
+                const isOneHour = cell.end - cell.start === 3600000 - 1;
+                if (hasSameStart && isOneHour) {
+                    cell.removedByTimeChange = true;
+                }
+            }
+            this.cells.push(cell);
         });
 
         const events = this.events;

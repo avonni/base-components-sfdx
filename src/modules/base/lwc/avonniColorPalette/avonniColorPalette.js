@@ -35,9 +35,10 @@ import {
     normalizeArray,
     normalizeBoolean,
     normalizeString,
-    generateColors
+    generateColors,
+    isLightColor
 } from 'c/utilsPrivate';
-import { generateUUID } from 'c/utils';
+import { classSet, generateUUID } from 'c/utils';
 import grid from './avonniGrid.html';
 import list from './avonniList.html';
 
@@ -58,7 +59,7 @@ const DEFAULT_COLORS = [
     '#ffb758',
     '#bd35bd',
     '#5778c1',
-    '#5ebbff',
+    '#1b96ff',
     '#00aea9',
     '#3bba4c',
     '#f4bc25',
@@ -74,7 +75,6 @@ const DEFAULT_COLORS = [
 
 const DEFAULT_TILE_WIDTH = 20;
 const DEFAULT_TILE_HEIGHT = 20;
-const DEFAULT_COLUMNS = 7;
 
 const VARIANTS = {
     default: 'grid',
@@ -89,19 +89,19 @@ const VARIANTS = {
  */
 export default class AvonniColorPalette extends LightningElement {
     _colors = DEFAULT_COLORS;
-    _columns = DEFAULT_COLUMNS;
+    _columns;
     _disabled = false;
     _groups = [];
+    _hideOutline = false;
     _isLoading = false;
     _readOnly = false;
+    _showCheckmark = false;
     _tileWidth = DEFAULT_TILE_WIDTH;
     _tileHeight = DEFAULT_TILE_HEIGHT;
     _value;
     _variant = VARIANTS.default;
 
     computedGroups = [];
-    currentLabel;
-    currentToken;
     _isConnected = false;
 
     connectedCallback() {
@@ -127,7 +127,7 @@ export default class AvonniColorPalette extends LightningElement {
      * Array of colors displayed in the default palette. Each color can either be a string or a color object.
      *
      * @type {(string[]|object[])}
-     * @default [“#e3abec”, “#c2dbf7”, ”#9fd6ff”, ”#9de7da”, ”#9df0bf”, ”#fff099”, ”#fed49a”, ”#d073df”, ”#86b9f3”, ”#5ebbff”, ”#44d8be”, ”#3be281”, ”#ffe654”, ”#ffb758”, ”#bd35bd”, ”#5778c1”, ”#5ebbff”, ”#00aea9”, ”#3bba4c”, ”#f4bc25”, ”#f99120”, ”#580d8c”, ”#001870”, ”#0a2399”, ”#097476”, ”#096a50”, ”#b67d11”, ”#b85d0d”]
+     * @default [“#e3abec”, “#c2dbf7”, ”#9fd6ff”, ”#9de7da”, ”#9df0bf”, ”#fff099”, ”#fed49a”, ”#d073df”, ”#86b9f3”, ”#5ebbff”, ”#44d8be”, ”#3be281”, ”#ffe654”, ”#ffb758”, ”#bd35bd”, ”#5778c1”, ”#1b96ff”, ”#00aea9”, ”#3bba4c”, ”#f4bc25”, ”#f99120”, ”#580d8c”, ”#001870”, ”#0a2399”, ”#097476”, ”#096a50”, ”#b67d11”, ”#b85d0d”]
      * @public
      */
     @api
@@ -137,16 +137,14 @@ export default class AvonniColorPalette extends LightningElement {
     set colors(value) {
         const colors = normalizeArray(value);
         this._colors = colors.length ? colors : DEFAULT_COLORS;
-
         if (this._isConnected) this.initGroups();
     }
 
     /**
-     * Specifies the number of columns that will be displayed.
+     * Specifies the number of columns displayed. If unspecified, the tiles spread to the width of the container.
      *
      * @public
      * @type {number}
-     * @default 7
      */
     @api
     get columns() {
@@ -189,7 +187,24 @@ export default class AvonniColorPalette extends LightningElement {
     set groups(value) {
         this._groups = normalizeArray(value);
 
-        if (this.isConnected) this.initGroups();
+        if (this._isConnected) this.initGroups();
+    }
+
+    /**
+     * If present, the selected outline is hidden.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get hideOutline() {
+        return this._hideOutline;
+    }
+
+    set hideOutline(value) {
+        this._hideOutline = normalizeBoolean(value);
+        this.initContainer();
     }
 
     /**
@@ -223,6 +238,23 @@ export default class AvonniColorPalette extends LightningElement {
 
     set readOnly(value) {
         this._readOnly = normalizeBoolean(value);
+        this.initContainer();
+    }
+
+    /**
+     * If present, the selected checkmark is shown.
+     *
+     * @public
+     * @type {boolean}
+     * @default false
+     */
+    @api
+    get showCheckmark() {
+        return this._showCheckmark;
+    }
+
+    set showCheckmark(value) {
+        this._showCheckmark = normalizeBoolean(value);
         this.initContainer();
     }
 
@@ -273,6 +305,7 @@ export default class AvonniColorPalette extends LightningElement {
 
     set value(value) {
         this._value = value;
+        this.initContainer();
     }
 
     /**
@@ -299,6 +332,32 @@ export default class AvonniColorPalette extends LightningElement {
      *  PRIVATE PROPERTIES
      * -------------------------------------------------------------
      */
+
+    /**
+     * CSS class of the swatch trigger element.
+     *
+     * @type {string}
+     */
+    get computedSwatchTriggerClass() {
+        return classSet('slds-color-picker__swatch-trigger')
+            .add({
+                'avonni-color-picker__show-selected-outline':
+                    this.variant === 'grid' && !this._hideOutline,
+                'avonni-color-picker__show-selected-checkmark':
+                    this.variant === 'grid' && this._showCheckmark
+            })
+            .toString();
+    }
+
+    /**
+     * Get the current color object.
+     */
+    get currentColor() {
+        return (
+            this.colors.find((col) => col.value && col.value === this.value) ||
+            {}
+        );
+    }
 
     /**
      * CSS class of the group wrapping div.
@@ -333,7 +392,7 @@ export default class AvonniColorPalette extends LightningElement {
     reset() {
         // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.value = '';
-        this.dispatchChange();
+        this.dispatchChange(generateColors(''));
     }
 
     /*
@@ -346,29 +405,54 @@ export default class AvonniColorPalette extends LightningElement {
      * Initialize Palette container.
      */
     initContainer() {
-        const containerWidth = this.columns * (Number(this.tileWidth) + 8);
-        const containerMinHeight = Number(this.tileHeight) + 8;
         const container = this.template.querySelector(
             '[data-element-id="div-palette-container"]'
         );
-
         if (container) {
-            container.style.width = `${containerWidth}px`;
-            container.style.minHeight = `${containerMinHeight}px`;
+            container.style.width = this.columns
+                ? `${this.columns * (Number(this.tileWidth) + 8)}px`
+                : '';
+            container.style.minHeight = `${Number(this.tileHeight) + 8}px`;
         }
 
         [
             ...this.template.querySelectorAll('[data-element-id="span-swatch"]')
         ].forEach((element) => {
-            if (this.disabled) {
-                element.style.backgroundColor = '#dddbda';
-            } else {
-                element.style.backgroundColor = element.dataset.color;
-            }
-
+            const backgroundColor = this.disabled
+                ? '#dddbda'
+                : element.dataset.color;
+            element.style.backgroundColor = backgroundColor;
+            element.style.borderRadius =
+                'var(--avonni-color-palette-swatch-border-radius, 0.125rem)';
             element.style.height = `${this.tileHeight}px`;
             element.style.width = `${this.tileWidth}px`;
+
+            if (this.variant === 'grid') {
+                // Style checkmark
+                if (this._showCheckmark) {
+                    const smallestLength = Math.min(
+                        this.tileHeight,
+                        this.tileWidth
+                    );
+                    const lengthStyle = `${
+                        smallestLength - smallestLength * 0.4
+                    }px`;
+                    element.firstChild.style.height = lengthStyle;
+                    element.firstChild.style.width = lengthStyle;
+
+                    const { R, G, B } = generateColors(element.dataset.color);
+                    const color = isLightColor(R, G, B) ? 'black' : 'white';
+                    element.firstChild.style.fill = `var(--avonni-color-palette-swatch-selected-checkmark-color, ${color})`;
+                }
+
+                // Style outline
+                if (!this._hideOutline) {
+                    element.style.outlineColor = `var(--avonni-color-palette-swatch-selected-outline-color, ${backgroundColor})`;
+                }
+            }
         });
+
+        this.selectColor();
     }
 
     /**
@@ -431,6 +515,25 @@ export default class AvonniColorPalette extends LightningElement {
             computedGroups.unshift(undefinedGroup);
         }
         this.computedGroups = computedGroups;
+    }
+
+    /**
+     * Mark a color as selected.
+     */
+    selectColor() {
+        // Unselect last selected color.
+        const selectedColor = this.template.querySelector('.slds-is-selected');
+        if (selectedColor) selectedColor.classList.remove('slds-is-selected');
+
+        // Select new token or color.
+        const elem = this.currentColor.value
+            ? this.template.querySelector(
+                  `[data-selectable][data-token="${this.currentColor.value}"]`
+              )
+            : this.template.querySelector(
+                  `[data-selectable][data-color="${this.value}"]`
+              );
+        if (elem) elem.classList.add('slds-is-selected');
     }
 
     /**
@@ -500,26 +603,19 @@ export default class AvonniColorPalette extends LightningElement {
             return;
         }
 
-        const selectedColor = this.template.querySelector('.slds-is-selected');
-        if (selectedColor) selectedColor.classList.remove('slds-is-selected');
-
-        const currentTarget = event.currentTarget;
-        currentTarget.classList.add('slds-is-selected');
+        const { color, token } = event.currentTarget.dataset;
         // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-        this.value = currentTarget.dataset.color;
-        this.currentLabel = currentTarget.dataset.label;
-        this.currentToken = currentTarget.dataset.token;
+        this.value = token || color;
         event.preventDefault();
-        this.dispatchChange();
+        this.dispatchChange(generateColors(color));
     }
 
     /**
      * Change event handler.
      */
-    dispatchChange() {
-        let colors = generateColors(this.value);
-
+    dispatchChange(colors) {
         if (!this.disabled && !this.readOnly) {
+            const color = this.currentColor;
             /**
              * The event fired when the value is changed.
              *
@@ -546,8 +642,8 @@ export default class AvonniColorPalette extends LightningElement {
                         rgb: colors.rgb,
                         rgba: colors.rgba,
                         alpha: colors.A,
-                        label: this.currentLabel,
-                        token: this.currentToken
+                        label: color.label,
+                        token: color.value
                     }
                 })
             );

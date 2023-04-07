@@ -33,7 +33,11 @@
 -->
 
 <template>
-    <div class={computedChipClass} data-element-id="chip-wrapper">
+    <div
+        if:true={label}
+        data-element-id="chip-wrapper"
+        class={computedChipClass}
+    >
         <c-avonni-chip
             label={label}
             variant={variant}
@@ -52,24 +56,26 @@
             <template if:true={showAvatar}>
                 <template if:true={showAvatarLeft}>
                     <c-avonni-primitive-avatar
+                        data-element-id="avatar-left"
+                        class="primitive-chip__avatar"
+                        fallback-icon-name={avatar.fallbackIconName}
                         slot="left"
+                        initials={avatar.initials}
                         size="x-small"
                         src={avatar.src}
-                        fallback-icon-name={avatar.fallbackIconName}
-                        initials={avatar.initials}
                         variant={avatar.variant}
-                        data-element-id="avatar-left"
                     ></c-avonni-primitive-avatar>
                 </template>
                 <template if:false={showAvatarLeft}>
                     <c-avonni-primitive-avatar
+                        data-element-id="avatar-right"
+                        class="primitive-chip__avatar"
+                        fallback-icon-name={avatar.fallbackIconName}
+                        initials={avatar.initials}
                         slot="right"
                         size="x-small"
                         src={avatar.src}
-                        fallback-icon-name={avatar.fallbackIconName}
-                        initials={avatar.initials}
                         variant={avatar.variant}
-                        data-element-id="avatar-right"
                     ></c-avonni-primitive-avatar>
                 </template>
             </template>

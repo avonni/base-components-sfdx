@@ -30,40 +30,135 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.avonni-welcome-mat__tile-body-right {
+.avonni-visual-picker-link__tile-body-right {
     border-left: 0;
     border-right: var(--lwc-borderWidthThin, 1px) solid
         var(--lwc-colorBorder, rgb(221, 219, 218));
 }
 
-.avonni-welcome-mat__tile-no-icon {
+.avonni-visual-picker-link__tile-no-icon {
     border: 0;
 }
 
-.avonni-media__figure-right {
+.avonni-visual-picker-link__figure-right {
     margin-left: 0.375rem;
     margin-right: 0.375rem;
 }
 
-.slds-welcome-mat__tile_info-only .avonni-welcome-mat__tile-body-right {
+.avonni-visual-picker-link__tile_info-only
+    .avonni-visual-picker-link__tile-body-right {
     border-right: 0;
 }
 
-.avonni-visual-picker-icon {
-    --sds-c-icon-radius-border: var(--avonni-visual-picker-icon-radius-border);
+.avonni-visual-picker-link__icon {
+    --sds-c-icon-radius-border: var(
+        var(
+            --avonni-visual-picker-icon-radius-border,
+            --avonni-visual-picker-link-icon-radius-border
+        )
+    );
     --sds-c-icon-color-background: var(
-        --avonni-visual-picker-icon-color-background
+        --avonni-visual-picker-icon-color-background,
+        var(--avonni-visual-picker-link-icon-color-background)
     );
     --sds-c-icon-color-foreground: var(
-        --avonni-visual-picker-icon-color-foreground
+        --avonni-visual-picker-icon-color-foreground,
+        var(--avonni-visual-picker-link-icon-color-foreground)
     );
     --sds-c-icon-color-foreground-default: var(
-        --avonni-visual-picker-icon-color-foreground-default
+        --avonni-visual-picker-icon-color-foreground-default,
+        var(--avonni-visual-picker-link-icon-color-foreground-default)
     );
 }
 
-.slds-welcome-mat__tile_complete .avonni-visual-picker-icon {
+.avonni-visual-picker-link__tile_complete .avonni-visual-picker-link__icon {
     --sds-c-icon-color-background: var(
         --avonni-visual-picker-icon-color-background-complete
     );
+}
+
+.avonni-visual-picker-link__tile-title {
+    color: var(--avonni-visual-picker-link-title-text-color, #080707);
+    font-weight: var(--avonni-visual-picker-link-title-font-weight, 700);
+    font-size: var(--avonni-visual-picker-link-title-font-size, 1em);
+    font-style: var(--avonni-visual-picker-link-title-font-style, normal);
+}
+
+.avonni-visual-picker-link__tile:not(.avonni-visual-picker-link__tile_complete):not(.avonni-visual-picker-link__tile_info-only) {
+    box-shadow: 0 2px 2px
+        var(--slds-g-color-neutral-base-10, rgba(0, 0, 0, 0.05));
+    border-radius: var(--avonni-visual-picker-link-tile-radius-border, 0.25rem);
+    background: var(
+        --avonni-visual-picker-link-tile-color-background,
+        rgb(255, 255, 255)
+    );
+}
+
+.avonni-visual-picker-link__tile:not(.avonni-visual-picker-link__tile_complete).avonni-visual-picker-link__tile_info-only {
+    background-color: var(
+        --avonni-visual-picker-link-tile-color-background-info-only
+    );
+}
+
+.avonni-visual-picker-link__tile.avonni-visual-picker-link__tile_info-only {
+    border-radius: var(--avonni-visual-picker-link-tile-radius-border, 0);
+    border-width: var(--avonni-visual-picker-link-tile-sizing-border);
+    border-style: var(--avonni-visual-picker-link-tile-styling-border);
+    border-color: var(--avonni-visual-picker-link-tile-color-border);
+}
+
+.avonni-visual-picker-link__tile:last-child {
+    margin-bottom: 0;
+}
+
+.avonni-visual-picker-link__tile:first-child {
+    margin-top: 0;
+}
+
+.avonni-visual-picker-link__tile {
+    margin: var(--lwc-spacingMedium, 1rem) 0;
+}
+
+.avonni-visual-picker-link__tile .slds-media {
+    padding: 0.5rem;
+}
+
+.avonni-visual-picker-link__box {
+    border-radius: var(--avonni-visual-picker-link-tile-radius-border, 0.25rem);
+    border-width: var(--avonni-visual-picker-link-tile-sizing-border, 1px);
+    border-style: var(--avonni-visual-picker-link-tile-styling-border, solid);
+    border-color: var(
+        --avonni-visual-picker-link-tile-color-border,
+        rgb(229, 229, 229)
+    );
+}
+
+.avonni-visual-picker-box_link {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+.avonni-visual-picker-box_link:hover,
+.avonni-visual-picker-box_link:focus {
+    cursor: pointer;
+    outline: 0;
+    border-width: var(
+        --avonni-visual-picker-link-tile-sizing-border-hover,
+        1px
+    );
+    border-style: var(
+        --avonni-visual-picker-link-tile-styling-border-hover,
+        solid
+    );
+    border-color: var(
+        --avonni-visual-picker-link-tile-color-border-hover,
+        #1b96ff
+    );
+    box-shadow: 0 0 0 1px
+        var(--avonni-visual-picker-link-tile-color-border-hover, #1b96ff) inset;
+}
+
+.avonni-visual-picker-link__tile_info-only
+    .avonni-visual-picker-link__tile-body {
+    border-left: 0;
 }

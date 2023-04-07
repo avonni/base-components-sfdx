@@ -65,6 +65,10 @@
     border-bottom: 1px solid #dddbda;
 }
 
+.avonni-input-choice-set__option-label {
+    cursor: pointer;
+}
+
 .slds-checkbox_button.avonni-input-choice-set__horizontal {
     border-right: 1px solid #dddbda;
     border-bottom: none;

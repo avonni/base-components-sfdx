@@ -104,13 +104,7 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
     }
 
     renderedCallback() {
-        if (this.inputs) {
-            this.inputs.forEach((item) => {
-                if (this._value.indexOf(item.value) > -1) {
-                    item.checked = true;
-                }
-            });
-        }
+        this._refreshCheckedAttributes();
     }
 
     /*
@@ -284,6 +278,8 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
                 description,
                 imgSrc,
                 mediaPosition,
+                subItems,
+                subItemsMultiSelect,
                 tags,
                 title,
                 value
@@ -310,22 +306,26 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
             const alternativeText = avatar
                 ? avatar.alternativeText || avatar.iconName || avatar.initials
                 : '';
-            const isChecked = this._value.indexOf(value) > -1;
+            const isChecked = this._isItemChecked(value, subItems);
+
             return {
                 key,
                 avatar,
                 description,
                 disabled,
                 imgSrc,
+                subItems,
+                subItemsMultiSelect,
                 title,
                 tags,
-                value,
+                value: value ? value : key,
                 mediaIsLeft,
                 mediaIsRight,
                 bodyClass,
                 descriptionClass,
                 alternativeText,
-                isChecked
+                isChecked,
+                showSubItems: isChecked && subItems
             };
         });
     }
@@ -510,6 +510,60 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
      */
 
     /**
+     * Dispatch the 'change' event.
+     */
+    _dispatchChange() {
+        const dispatchString =
+            this.type === 'radio' &&
+            this._items.every((item) => !item.subItems);
+        /**
+         * The event fired when the value changed.
+         *
+         * @event
+         * @name change
+         * @param {string|string[]} value Selected items' value. Returns a string if the type is radio and no items have subItems. Otherwise returns an array of string.
+         * @public
+         */
+        this.dispatchEvent(
+            new CustomEvent('change', {
+                detail: {
+                    value: dispatchString ? this._value[0] || null : this._value
+                }
+            })
+        );
+    }
+
+    /**
+     * Verifies if the item should be checked.
+     * @param {string} value item value
+     * @param {object[]} subItems item subitems
+     * @returns
+     */
+    _isItemChecked(value, subItems) {
+        const isPickerSelected = this._value.includes(value);
+        if (!subItems) return isPickerSelected;
+        const isSubItemSelected = subItems.some((subItem) =>
+            this._value.includes(subItem.value)
+        );
+        return isPickerSelected || isSubItemSelected;
+    }
+
+    /**
+     * Goes through every visual picker and sets the "checked" attribute.
+     */
+    _refreshCheckedAttributes() {
+        if (this.inputs) {
+            this.inputs.forEach((input) => {
+                const item = this._items.find(
+                    ({ value }) => value === input.value
+                );
+                input.checked =
+                    item && this._isItemChecked(item.value, item.subItems);
+            });
+        }
+    }
+
+    /**
      * Dispatches the blur event.
      */
     handleBlur() {
@@ -530,27 +584,70 @@ export default class AvonniVerticalVisualPicker extends LightningElement {
      */
     handleChange(event) {
         event.stopPropagation();
+        const targetValue = event.currentTarget.value;
+        const targetChecked = event.currentTarget.checked;
 
-        const value = this.inputs
-            .filter((input) => input.checked)
-            .map((input) => input.value);
-
-        this._value = value;
-
-        /**
-         * The event fired when the value changed.
-         *
-         * @event
-         * @name change
-         * @param {string|string[]} value Selected items' value. Returns an array of string if the type is checkbox. Returns a string otherwise.
-         * @public
-         */
-        this.dispatchEvent(
-            new CustomEvent('change', {
-                detail: {
-                    value: this.type === 'radio' ? value[0] || null : value
+        let newValue;
+        const item = this._items.find(({ value }) => value === targetValue);
+        if (this.type === 'radio' && targetChecked) {
+            newValue = [targetValue];
+        } else {
+            newValue = [...this._value];
+            if (targetChecked) {
+                newValue.push(targetValue);
+            } else {
+                newValue = newValue.filter((value) => value !== targetValue);
+                if (item && item.subItems) {
+                    const subItemsValue = item.subItems.map(
+                        ({ value }) => value
+                    );
+                    // Remove all subItems values from current value.
+                    newValue = newValue.filter(
+                        (value) => !subItemsValue.includes(value)
+                    );
                 }
-            })
+            }
+        }
+
+        this._value = newValue;
+        this._dispatchChange();
+    }
+
+    /**
+     * Input keyup event handler.
+     *
+     * @param {Event} event
+     */
+    handleKeyUp(event) {
+        if (event.key !== 'Enter') return;
+        event.currentTarget.click();
+    }
+
+    /**
+     * Sub Items change event handler.
+     *
+     * @param {Event} event
+     */
+    handleSubItemsChange(event) {
+        event.stopPropagation();
+        const subItemsValue = event.detail.value;
+        const subItemsSelected =
+            typeof subItemsValue === 'string' ? [subItemsValue] : subItemsValue;
+
+        let newValue = [...this._value];
+        const item = this._items.find(
+            ({ value }) => value === event.currentTarget.dataset.value
         );
+        const subItemsValues = item.subItems.map(({ value }) => value);
+
+        // Remove all subItems values from current value.
+        newValue = newValue.filter((value) => !subItemsValues.includes(value));
+
+        // Add the currently selected values of the input-choice-set.
+        newValue.push(...subItemsSelected);
+
+        this._value = newValue;
+        this._dispatchChange();
+        this._refreshCheckedAttributes();
     }
 }
